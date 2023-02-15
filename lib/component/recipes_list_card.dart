@@ -1,53 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:borscht/screen/RecipeDetails.dart';
-import 'package:borscht/model/RecipeMode.dart';
-
-class NewRecipe extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            ListView.builder(
-              physics: ScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: RecipeModel.demoRecipe.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
-                  ),
-                  child: InkWell(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RecipeDetails(
-                            recipeModel: RecipeModel.demoRecipe[index],
-                          ),
-                        )),
-                    child: RecipeCard(
-                      recipeModel: RecipeModel.demoRecipe[index],
-                    ),
-                  ),
-                );
-              },
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
+import 'package:borscht/model/recipe.dart';
 
 class RecipeCard extends StatefulWidget {
   final RecipeModel recipeModel;
-  RecipeCard({
+
+  const RecipeCard({
+    super.key,
     required this.recipeModel,
   });
 
@@ -58,6 +17,7 @@ class RecipeCard extends StatefulWidget {
 class _RecipeCardState extends State<RecipeCard> {
   bool loved = false;
   bool saved = false;
+
   @override
   Widget build(BuildContext context) {
     return Column(

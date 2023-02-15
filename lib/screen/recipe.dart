@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
-import 'package:borscht/model/RecipeMode.dart';
+import 'package:borscht/model/recipe.dart';
 
-class RecipeDetails extends StatelessWidget {
+class RecipePage extends StatelessWidget {
   final RecipeModel recipeModel;
-  RecipeDetails({
+
+  const RecipePage({super.key,
     required this.recipeModel,
   });
 
@@ -15,6 +16,7 @@ class RecipeDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     final _textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: SlidingUpPanel(
         parallaxEnabled: true,

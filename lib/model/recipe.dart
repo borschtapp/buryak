@@ -4,6 +4,7 @@ class RecipeModel {
   int servings;
   List<String> ingredients = [];
   String imgPath;
+
   RecipeModel({
     required this.title,
     required this.writer,
@@ -13,6 +14,7 @@ class RecipeModel {
     required this.imgPath,
     required this.ingredients,
   });
+
   static List<RecipeModel> demoRecipe = [
     RecipeModel(
       title: 'Gruyère, Bacon, and Spinach Scrambled Eggs',
