@@ -8,7 +8,8 @@ import '../model/recipe.dart';
 
 class RecipesList extends StatelessWidget {
   final List<RecordModel> recipes;
-  const RecipesList(this.recipes, {super.key});
+  final bool isFavorite;
+  const RecipesList(this.recipes, {super.key, required this.isFavorite});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class RecipesList extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(6),
                 onTap: () => context.pushNamed('recipe', params: {'recipeId': recipes[index].id}),
-                child: RecipeCard(recipes[index].id, Recipe.fromJson(recipes[index].data)),
+                child: RecipeCard(recipes[index].id, Recipe.fromJson(recipes[index].data), isFavorite: isFavorite),
               ),
             );
           },
@@ -41,7 +42,7 @@ class RecipesList extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(6),
                 onTap: () => context.pushNamed('recipe', params: {'recipeId': recipes[index].id}),
-                child: RecipeCard(recipes[index].id, Recipe.fromJson(recipes[index].data)),
+                child: RecipeCard(recipes[index].id, Recipe.fromJson(recipes[index].data), isFavorite: isFavorite),
               ),
             );
           },

@@ -19,9 +19,23 @@ class UserService {
 
     if (token != null) {
       pb.authStore.save(token, null);
+      refreshLogin();
       return pb.authStore.isValid;
     }
 
+    return false;
+  }
+
+  static Future<bool> refreshLogin() async {
+    try {
+      final authData = await pb.collection('users').authRefresh();
+      if (pb.authStore.isValid) {
+        await LocalStorage.instance.setString('token', authData.token);
+        return true;
+      }
+    } catch (e) {}
+
+    logout();
     return false;
   }
 

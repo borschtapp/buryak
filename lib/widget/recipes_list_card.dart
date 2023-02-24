@@ -1,3 +1,4 @@
+import 'package:buryak/service/user.dart';
 import 'package:flutter/material.dart';
 
 import '../model/recipe.dart';
@@ -5,7 +6,8 @@ import '../model/recipe.dart';
 class RecipeCard extends StatefulWidget {
   final String recipeId;
   final Recipe recipe;
-  const RecipeCard(this.recipeId, this.recipe, {super.key});
+  final bool isFavorite;
+  const RecipeCard(this.recipeId, this.recipe, {super.key, required this.isFavorite});
 
   @override
   State<RecipeCard> createState() => _RecipeCardState();
@@ -13,6 +15,12 @@ class RecipeCard extends StatefulWidget {
 
 class _RecipeCardState extends State<RecipeCard> {
   bool saved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    saved = widget.isFavorite;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +47,23 @@ class _RecipeCardState extends State<RecipeCard> {
                 top: 20,
                 right: 20,
                 child: InkWell(
-                  onTap: () {
+                  onTap: () async {
+                    if (!saved) {
+                      final body = <String, dynamic>{
+                        "user": UserService.pb.authStore.model.id,
+                        "recipe": widget.recipeId,
+                      };
+                      final record = await UserService.pb.collection('user_recipes').create(body: body);
+                    } else {
+                      final record = await UserService.pb.collection('user_recipes').getFirstListItem(
+                        "(user='${UserService.pb.authStore.model.id}' && recipe='${widget.recipeId}')",
+                      );
+
+                      if (record != null) {
+                        await UserService.pb.collection('user_recipes').delete(record.id);
+                      }
+                    }
+
                     setState(() {
                       saved = !saved;
                     });

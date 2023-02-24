@@ -23,7 +23,7 @@ class AsyncLoader<T> extends StatelessWidget {
 
         if (snapshot.hasError) {
           return Text(
-            snapshot.data as String,
+            snapshot.error.toString(),
             style: const TextStyle(color: Colors.cyan, fontSize: 36)
           );
         }

@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 
 import '../constants.dart';
 import '../service/user.dart';
@@ -18,11 +21,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _textFieldController = TextEditingController();
 
-  final Future<ResultList<RecordModel>> _recipesFuture = UserService.pb.collection('recipes').getList(
+  final Future<List<RecordModel>> _recipesFuture = UserService.pb.collection('user_recipes').getList(
     page: 1,
     perPage: 20,
     sort: '-created',
-  );
+    expand: 'recipe',
+  ).then((rsl) => rsl.items.map((e) => e.expand['recipe']![0]).toList());
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         top: false,
         bottom: false,
-        child: AsyncLoader<ResultList<RecordModel>>(
+        child: AsyncLoader<List<RecordModel>>(
           future: _recipesFuture,
           builder: (context, results) {
-            return RecipesList(results.items);
+            return RecipesList(results, isFavorite: true);
           },
         ),
       ),
@@ -66,9 +70,34 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               child: const Text('Import'),
-              onPressed: () {
+              onPressed: () async {
                 if (Validator.validateUrl(_textFieldController.text) == null) {
-                  Navigator.pop(context);
+                  final response = await http.get(
+                    Uri.parse('$pocketBaseUrl/api/krip/scrape?url=${_textFieldController.text}'),
+                  );
+
+                  if (response.statusCode == 200 || response.statusCode == 201) {
+                    Navigator.pop(context);
+
+                    final parsedJson = jsonDecode(response.body);
+                    final recipeId = parsedJson['id'];
+
+                    final body = <String, dynamic>{
+                      "user": UserService.pb.authStore.model.id,
+                      "recipe": recipeId,
+                    };
+                    final record = await UserService.pb.collection('user_recipes').create(body: body);
+
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Recipe imported.'),
+                      backgroundColor: Colors.green,
+                    ));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Error: ${response.statusCode}'),
+                      backgroundColor: Colors.red,
+                    ));
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(Validator.validateUrl(_textFieldController.text) ?? ''),
