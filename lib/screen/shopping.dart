@@ -1,0 +1,22 @@
+import 'package:flutter/material.dart';
+
+class ShoppingScreen extends StatefulWidget {
+  const ShoppingScreen({super.key});
+
+  @override
+  State<ShoppingScreen> createState() => _ShoppingScreenState();
+}
+
+class _ShoppingScreenState extends State<ShoppingScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: Center(
+          child: Text('Shopping List'),
+        ),
+      ),
+    );
+  }
+}

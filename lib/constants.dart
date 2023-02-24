@@ -12,3 +12,6 @@ const MaterialColor borschtColor = MaterialColor(0xFF72353D, <int, Color>{
   800: Color(0xFF552227),
   900: Color(0xFF42161A),
 });
+
+// Run pocketbase server with --http="YOUR-NON-LOOPBACK-IP:8090" so that your android device can reach the interface
+const pocketBaseUrl = "https://tomat.borscht.app";

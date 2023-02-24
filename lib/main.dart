@@ -1,9 +1,15 @@
+import 'package:buryak/service/local_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
+import 'router.dart';
 import 'constants.dart';
-import 'component/bottom_navigation.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalStorage.init();
+
+  usePathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -12,7 +18,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Borscht',
       theme: ThemeData(
@@ -21,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: borschtColor,
         // primarySwatch: Colors.green,
       ),
-      home: const BottomNavigation(),
+      routerConfig: router,
     );
   }
 }
