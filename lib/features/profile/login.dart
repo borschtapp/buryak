@@ -1,55 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pocketbase/pocketbase.dart';
 
-import 'home.dart';
-import 'login.dart';
-import '../service/user.dart';
-import '../utils/validator.dart';
-import '../widget/scaffold_login_page.dart';
+import '../../shared/service/user.dart';
+import '../../shared/validator.dart';
+import '../../shared/views/scaffold_login_page.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   bool _showPassword = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  Future<void> registerUsers() async {
+  Future<void> login() async {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text('Processing Data'),
         backgroundColor: Colors.green.shade300,
       ));
 
-      final userData = <String, dynamic>{
-        "name": nameController.text,
-        "email": emailController.text,
-        "emailVisibility": false,
-        "password": passwordController.text,
-        "passwordConfirm": passwordController.text,
-      };
-
-      dynamic res = await UserService.registerUser(userData);
+      RecordAuth? res = await UserService.login(
+        emailController.text,
+        passwordController.text,
+      );
 
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-      if (res['ErrorCode'] == null) {
-        context.goNamed('home');
-      } else {
+      if (res == null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: ${res['Message']}'),
+          content: const Text('Error: Unable to retrive user record.'),
           backgroundColor: Colors.red.shade300,
         ));
+      } else {
+        context.goNamed('home');
       }
     }
+  }
+
+  Future<void> googleLogin() async {
+    await UserService.oAuthLogin('google');
+
+    context.goNamed('home');
   }
 
   @override
@@ -64,34 +63,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Register an account',
+              'Welcome back',
+              style: textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Login to your account',
               style: textTheme.titleLarge,
             ),
             const SizedBox(height: 35),
-            TextFormField(
-              controller: nameController,
-              validator: (value) {
-                return Validator.validateName(value ?? "");
-              },
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                isDense: true,
-                hintText: 'Oleh',
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
             TextFormField(
               controller: emailController,
               validator: (value) {
@@ -148,9 +128,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 25),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Forgot password?'),
+              ],
+            ),
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: registerUsers,
+              onPressed: login,
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColorDark,
                 padding: const EdgeInsets.symmetric(
@@ -159,13 +147,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               child: Text(
-                'Register',
+                'Login now',
                 style: textTheme.labelLarge,
               ),
             ),
             const SizedBox(height: 15),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: googleLogin,
               style: TextButton.styleFrom(
                 backgroundColor: Colors.black,
                 padding: const EdgeInsets.symmetric(
@@ -188,8 +176,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             const SizedBox(height: 15),
             TextButton(
-              onPressed: () => context.goNamed('login'),
-              child: const Text('Login'),
+              onPressed: () => context.goNamed('register'),
+              child: const Text('Register')
             ),
           ],
         ),

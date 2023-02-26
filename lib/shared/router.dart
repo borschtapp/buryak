@@ -1,16 +1,16 @@
-import 'package:buryak/screen/explore.dart';
-import 'package:buryak/service/user.dart';
 import 'package:flutter/material.dart';
-import 'package:buryak/screen/recipe.dart';
 import 'package:go_router/go_router.dart';
 
-import 'screen/home.dart';
-import 'screen/planner.dart';
-import 'screen/profile.dart';
-import 'screen/shopping.dart';
-import 'screen/login.dart';
-import 'screen/register.dart';
-import 'widget/scaffold_navigation_bar.dart';
+import '../features/explore/explore.dart';
+import 'service/user.dart';
+import '../features/recipes/recipe.dart';
+import '../features/recipes/home.dart';
+import '../features/planner/planner.dart';
+import '../features/profile/profile.dart';
+import '../features/shopping/shopping.dart';
+import '../features/profile/login.dart';
+import '../features/profile/register.dart';
+import 'views/scaffold_navigation_bar.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();

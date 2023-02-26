@@ -1,7 +1,7 @@
-import 'package:buryak/service/user.dart';
 import 'package:flutter/material.dart';
 
-import '../model/recipe.dart';
+import '../models/recipe.dart';
+import '../service/user.dart';
 
 class RecipeCard extends StatefulWidget {
   final String recipeId;

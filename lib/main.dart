@@ -1,9 +1,9 @@
-import 'package:buryak/service/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
-import 'router.dart';
-import 'constants.dart';
+import 'shared/router.dart';
+import 'shared/constants.dart';
+import 'shared/service/local_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

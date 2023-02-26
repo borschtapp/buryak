@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:go_router/go_router.dart';
 
-import '../constants.dart';
-import '../service/user.dart';
-import '../utils/validator.dart';
-import '../widget/recipes_list.dart';
-import '../widget/async_loader.dart';
+import '../../shared/constants.dart';
+import '../../shared/service/user.dart';
+import '../../shared/validator.dart';
+import '../../shared/views/recipes_list.dart';
+import '../../shared/views/async_loader.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -49,7 +49,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
       // ),
       centerTitle: true,
       // On Android by default its false
-      // title: Image.asset("assets/images/logo.png"),
       title: const Text("Borscht"),
       actions: <Widget>[
         IconButton(

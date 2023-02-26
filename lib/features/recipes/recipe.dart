@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../model/recipe.dart';
-import '../service/user.dart';
-import '../widget/async_loader.dart';
+import '../../shared/models/recipe.dart';
+import '../../shared/service/user.dart';
+import '../../shared/views/async_loader.dart';
 
 class RecipeScreen extends StatefulWidget {
   final String recipeId;

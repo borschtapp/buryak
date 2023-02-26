@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import '../models/recipe.dart';
 import 'recipes_list_card.dart';
-import '../model/recipe.dart';
 
 class RecipesList extends StatelessWidget {
   final List<RecordModel> recipes;

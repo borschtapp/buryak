@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import '../constants.dart';
-import '../service/user.dart';
-import '../widget/async_loader.dart';
+import '../../shared/constants.dart';
+import '../../shared/service/user.dart';
+import '../../shared/views/async_loader.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

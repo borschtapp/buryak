@@ -1,15 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
-import '../constants.dart';
-import '../service/user.dart';
-import '../utils/validator.dart';
-import '../widget/recipes_list.dart';
-import '../widget/async_loader.dart';
+import '../../shared/constants.dart';
+import '../../shared/service/user.dart';
+import '../../shared/validator.dart';
+import '../../shared/views/async_loader.dart';
+import '../../shared/views/recipes_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -122,8 +123,8 @@ class _HomeScreenState extends State<HomeScreen> {
       // ),
       centerTitle: true,
       // On Android by default its false
-      // title: Image.asset("assets/images/logo.png"),
-      title: const Text("Borscht"),
+      title: SvgPicture.asset("assets/images/logo.svg", height: 90),
+      // title: const Text("Borscht"),
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.search),
