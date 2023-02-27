@@ -1,0 +1,30 @@
+name: Flutter
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - run: flutter pub get
+      - run: flutter test
+      - run: flutter build web --web-renderer html --release
+
+      - name: Copy and run
+        uses: mdallasanta/ssh-scp-deploy@v1.2.0
+        with:
+          local: './build/web'
+          remote: '~/www'
+          host: ${{secrets.DEPLOY_HOST}}
+          user: ${{secrets.DEPLOY_USERNAME}}
+          key: ${{secrets.DEPLOY_PRIVATE_KEY}}
+          ssh_options: -o StrictHostKeyChecking=no
