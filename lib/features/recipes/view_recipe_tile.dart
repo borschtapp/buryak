@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../models/recipe.dart';
-import '../service/user.dart';
+import '../../shared/models/recipe.dart';
+import '../../shared/providers/user.dart';
+import '../../shared/extensions.dart';
+import '../../shared/extensions.dart';
 
-class RecipeCard extends StatefulWidget {
+class RecipeTile extends StatefulWidget {
+  const RecipeTile(this.recipeId, this.recipe, {super.key, required this.isFavorite});
+
   final String recipeId;
   final Recipe recipe;
   final bool isFavorite;
-  const RecipeCard(this.recipeId, this.recipe, {super.key, required this.isFavorite});
 
   @override
-  State<RecipeCard> createState() => _RecipeCardState();
+  State<RecipeTile> createState() => _RecipeTileState();
 }
 
-class _RecipeCardState extends State<RecipeCard> {
+class _RecipeTileState extends State<RecipeTile> {
   bool saved = false;
 
   @override
@@ -25,27 +28,35 @@ class _RecipeCardState extends State<RecipeCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Stack(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Expanded(
+          child: Stack(
             fit: StackFit.passthrough,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Hero(
-                  tag: widget.recipeId,
-                  child: Image(
-                    height: 300,
+                borderRadius: context.shapeLarge,
+                child: Container(
+                  foregroundDecoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withAlpha(200),
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: const [0, 0.3],
+                    ),
+                  ),
+                  child: Image.network(
+                    widget.recipe.image != null ? widget.recipe.image!.last.url! : 'https://i.imgur.com/IRAxUoq.jpg',
                     fit: BoxFit.cover,
-                    image: NetworkImage(widget.recipe.image != null ? widget.recipe.image!.last.url! : 'https://i.imgur.com/IRAxUoq.jpg'),
                   ),
                 ),
               ),
               Positioned(
-                top: 20,
-                right: 20,
+                top: 14,
+                right: 14,
                 child: InkWell(
                   onTap: () async {
                     if (!saved) {
@@ -59,7 +70,7 @@ class _RecipeCardState extends State<RecipeCard> {
                         "(user='${UserService.pb.authStore.model.id}' && recipe='${widget.recipeId}')",
                       );
 
-                      if (record != null) {
+                      if (record.id != null) {
                         await UserService.pb.collection('user_recipes').delete(record.id);
                       }
                     }
@@ -71,14 +82,16 @@ class _RecipeCardState extends State<RecipeCard> {
                   child: Icon(
                     saved ? Icons.bookmark_added : Icons.bookmark_add_outlined,
                     color: Colors.white,
-                    size: 36,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 15),
-          Row(
+        ),
+        const SizedBox(height: 15),
+        SizedBox(
+          height: 68,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
@@ -89,11 +102,15 @@ class _RecipeCardState extends State<RecipeCard> {
                     Text(
                       widget.recipe.name!,
                       style: Theme.of(context).textTheme.titleMedium,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       widget.recipe.getCombinedAuthor() ?? '',
                       style: Theme.of(context).textTheme.labelMedium,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ],
                 ),
@@ -113,7 +130,7 @@ class _RecipeCardState extends State<RecipeCard> {
               ),
             ],
           ),
-        ],
+        )],
       ),
     );
   }

@@ -1,75 +1,156 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../features/explore/explore.dart';
-import 'service/user.dart';
-import '../features/recipes/recipe.dart';
-import '../features/recipes/home.dart';
-import '../features/planner/planner.dart';
-import '../features/profile/profile.dart';
-import '../features/shopping/shopping.dart';
-import '../features/profile/login.dart';
-import '../features/profile/register.dart';
-import 'views/scaffold_navigation_bar.dart';
+import 'providers/user.dart';
+import 'views/root_layout.dart';
+import '../features/explore/screen_explore.dart';
+import '../features/planner/screen_planner.dart';
+import '../features/profile/screen_login.dart';
+import '../features/profile/screen_profile.dart';
+import '../features/profile/screen_register.dart';
+import '../features/recipes/screen_recipes.dart';
+import '../features/recipes/screen_recipes_single.dart';
+import '../features/shopping/screen_shopping.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
-final _shellNavigatorKey = GlobalKey<NavigatorState>();
+const _pageKey = ValueKey('_pageKey');
+const _scaffoldKey = ValueKey('_scaffoldKey');
+
+const List<NavigationDestination> destinations = [
+  NavigationDestination(
+    label: 'Explore',
+    route: '/explore',
+    icon: Icon(Icons.explore),
+  ),
+  NavigationDestination(
+    label: 'Recipes',
+    route: '/recipes',
+    icon: Icon(Icons.menu_book),
+  ),
+  NavigationDestination(
+    label: 'Planner',
+    route: '/planner',
+    icon: Icon(Icons.today),
+  ),
+  NavigationDestination(
+    label: 'Shopping',
+    route: '/shopping',
+    icon: Icon(Icons.storefront),
+  ),
+  NavigationDestination(
+    label: 'Profile',
+    route: '/profile',
+    icon: Icon(Icons.person),
+  ),
+];
+
+class NavigationDestination {
+  const NavigationDestination({
+    required this.route,
+    required this.label,
+    required this.icon,
+    this.child,
+  });
+
+  final String route;
+  final String label;
+  final Icon icon;
+  final Widget? child;
+}
 
 final router = GoRouter(
-  navigatorKey: _rootNavigatorKey,
+  initialLocation: '/recipes',
   routes: [
-    ShellRoute(
-      navigatorKey: _shellNavigatorKey,
-      builder: (context, state, child) {
-        return ScaffoldWithNavigationBar(child: child);
-      },
+    GoRoute(
+      name: 'explore',
+      path: '/explore',
+      redirect: _authGuard,
+      pageBuilder: (context, state) => const MaterialPage<void>(
+        key: _pageKey,
+        child: RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 0,
+          child: ExploreScreen(),
+        ),
+      ),
+    ),
+
+    GoRoute(
+      name: 'recipes',
+      path: '/recipes',
+      redirect: _authGuard,
+      pageBuilder: (context, state) => const MaterialPage<void>(
+        key: _pageKey,
+        child: RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 1,
+          child: RecipesScreen(),
+        ),
+      ),
       routes: [
         GoRoute(
-          name: 'explore',
-          path: '/explore',
-          builder: (context, state) => const ExploreScreen(),
-        ),
-        GoRoute(
-          name: 'home',
-          path: '/',
-          builder: (context, state) => const HomeScreen(),
-          redirect: _authGuard,
-        ),
-        GoRoute(
-          name: 'planner',
-          path: '/planner',
-          builder: (context, state) => const PlannerScreen(),
-          redirect: _authGuard,
-        ),
-        GoRoute(
-          name: 'shopping',
-          path: '/shopping',
-          builder: (context, state) => const ShoppingScreen(),
-          redirect: _authGuard,
-        ),
-        GoRoute(
-          name: 'profile',
-          path: '/profile',
-          builder: (context, state) => const ProfileScreen(),
-          redirect: _authGuard,
+          name: 'recipe',
+          path: ':rid',
+          pageBuilder: (context, state) => MaterialPage<void>(
+            key: state.pageKey,
+            child: RootLayout(
+              key: _scaffoldKey,
+              currentIndex: 1,
+              child: RecipeScreen(recipeId: state.params['rid']!),
+            ),
+          ),
         ),
       ],
     ),
+
     GoRoute(
-      parentNavigatorKey: _rootNavigatorKey,
-      name: 'recipe',
-      path: '/recipe/:recipeId',
-      builder: (context, state) => RecipeScreen(recipeId: state.params['recipeId']!),
+      name: 'planner',
+      path: '/planner',
+      redirect: _authGuard,
+      pageBuilder: (context, state) => const MaterialPage<void>(
+        key: _pageKey,
+        child: RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 2,
+          child: PlannerScreen(),
+        ),
+      ),
     ),
+
     GoRoute(
-      parentNavigatorKey: _rootNavigatorKey,
+      name: 'shopping',
+      path: '/shopping',
+      redirect: _authGuard,
+      pageBuilder: (context, state) => const MaterialPage<void>(
+        key: _pageKey,
+        child: RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 3,
+          child: ShoppingScreen(),
+        ),
+      ),
+    ),
+
+    GoRoute(
+      name: 'profile',
+      path: '/profile',
+      redirect: _authGuard,
+      pageBuilder: (context, state) => const MaterialPage<void>(
+        key: _pageKey,
+        child: RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 4,
+          child: ProfileScreen(),
+        ),
+      ),
+    ),
+
+    GoRoute(
       name: 'login',
       path: '/login',
       builder: (context, state) => const LoginScreen(),
       redirect: _loginGuard,
     ),
     GoRoute(
-      parentNavigatorKey: _rootNavigatorKey,
       name: 'register',
       path: '/register',
       builder: (context, state) => const RegisterScreen(),

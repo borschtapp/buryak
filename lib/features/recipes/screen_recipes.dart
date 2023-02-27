@@ -3,23 +3,23 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
+import '../../shared/extensions.dart';
 import '../../shared/constants.dart';
-import '../../shared/service/user.dart';
+import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 import '../../shared/views/async_loader.dart';
-import '../../shared/views/recipes_list.dart';
+import 'view_recipes_grid.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class RecipesScreen extends StatefulWidget {
+  const RecipesScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<RecipesScreen> createState() => _RecipesScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _RecipesScreenState extends State<RecipesScreen> {
   final TextEditingController _textFieldController = TextEditingController();
 
   final Future<List<RecordModel>> _recipesFuture = UserService.pb.collection('user_recipes').getList(
@@ -33,15 +33,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: AsyncLoader<List<RecordModel>>(
-          future: _recipesFuture,
-          builder: (context, results) {
-            return RecipesList(results, isFavorite: true);
-          },
-        ),
+      body: AsyncLoader<List<RecordModel>>(
+        future: _recipesFuture,
+        builder: (context, results) {
+          return RecipesGridView(results, isFavorite: true);
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -113,24 +109,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  AppBar buildAppBar() {
+  AppBar? buildAppBar() {
+    if (context.isTablet) {
+      return null;
+    }
+
     return AppBar(
-      backgroundColor: borschtColor,
-      leading: const SizedBox(),
-      // leading: IconButton(
-      //   icon: SvgPicture.asset("assets/icons/menu.svg"),
-      //   onPressed: () {},
-      // ),
       centerTitle: true,
-      // On Android by default its false
-      title: SvgPicture.asset("assets/images/logo.svg", height: 90),
-      // title: const Text("Borscht"),
+      title: SvgPicture.asset("assets/images/logo.svg", height: kToolbarHeight + 20),
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.search),
           onPressed: () {},
         ),
-        const SizedBox(width: 5)
       ],
     );
   }

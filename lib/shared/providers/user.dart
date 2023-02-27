@@ -15,7 +15,7 @@ class UserService {
   static bool isLoggedIn() {
     if (pb.authStore.isValid) return true;
 
-    String? token = LocalStorage.instance.getString('token');
+    String? token = LocalStorage.getString('token');
 
     if (token != null) {
       pb.authStore.save(token, null);
@@ -30,7 +30,7 @@ class UserService {
     try {
       final authData = await pb.collection('users').authRefresh();
       if (pb.authStore.isValid) {
-        await LocalStorage.instance.setString('token', authData.token);
+        await LocalStorage.setString('token', authData.token);
         return true;
       }
     } catch (e) {}
@@ -56,7 +56,7 @@ class UserService {
     // print(pb.authStore.token);
     // print(pb.authStore.model.id);
 
-    await LocalStorage.instance.setString('token', authData.token);
+    await LocalStorage.setString('token', authData.token);
     return authData;
   }
 
@@ -88,14 +88,13 @@ class UserService {
       // save(token, model)
     }
 
-    await LocalStorage.instance.setString('token', authData.token);
+    await LocalStorage.setString('token', authData.token);
     return authData;
   }
 
   static Future<RecordModel> getUserModel() async {
     if (pb.authStore.model == null) {
-      RecordAuth authData = await pb.collection('users').authRefresh();
-      await LocalStorage.instance.setString('token', authData.token);
+      await refreshLogin();
     }
 
     return pb.authStore.model;
@@ -122,6 +121,6 @@ class UserService {
 
   static logout() async {
     pb.authStore.clear();
-    await LocalStorage.instance.remove('token');
+    await LocalStorage.remove('token');
   }
 }

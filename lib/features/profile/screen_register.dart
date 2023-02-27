@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../shared/service/user.dart';
+import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
 
@@ -40,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
       if (res['ErrorCode'] == null) {
-        context.goNamed('home');
+        context.goNamed('recipes');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Error: ${res['Message']}'),

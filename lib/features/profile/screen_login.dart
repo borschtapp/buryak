@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import '../../shared/service/user.dart';
+import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
 
@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.red.shade300,
         ));
       } else {
-        context.goNamed('home');
+        context.goNamed('recipes');
       }
     }
   }
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> googleLogin() async {
     await UserService.oAuthLogin('google');
 
-    context.goNamed('home');
+    context.goNamed('recipes');
   }
 
   @override
