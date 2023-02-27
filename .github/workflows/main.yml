@@ -24,7 +24,7 @@ jobs:
         uses: mdallasanta/ssh-scp-deploy@v1.2.0
         with:
           local: './build/web/'
-          remote: '~/www'
+          remote: '~/www/'
           host: ${{secrets.DEPLOY_HOST}}
           user: ${{secrets.DEPLOY_USERNAME}}
           key: ${{secrets.DEPLOY_PRIVATE_KEY}}
