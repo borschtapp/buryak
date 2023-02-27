@@ -23,7 +23,7 @@ jobs:
       - name: Copy and run
         uses: mdallasanta/ssh-scp-deploy@v1.2.0
         with:
-          local: './build/web'
+          local: './build/web/'
           remote: '~/www'
           host: ${{secrets.DEPLOY_HOST}}
           user: ${{secrets.DEPLOY_USERNAME}}
