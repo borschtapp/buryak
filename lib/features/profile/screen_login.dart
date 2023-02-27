@@ -129,10 +129,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 25),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+              children: const [
                 Text('Forgot password?'),
               ],
             ),
