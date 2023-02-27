@@ -28,6 +28,7 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="styles.css">
 
   <title>Borscht</title>
   <link rel="manifest" href="manifest.json">
@@ -40,7 +41,11 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
-  <div id="loading"></div>
+  <div class="loader-banner">
+    <img src="logo.png">
+    <div id="loading">Loading entrypoint...</div>
+  </div>
+
   <script>
     window.addEventListener('load', function(ev) {
       var loading = document.querySelector('#loading');
@@ -51,7 +56,7 @@
         },
         onEntrypointLoaded: async function(engineInitializer) {
           loading.textContent = "Initializing engine...";
-          let appRunner = await engineInitializer.initializeEngine({renderer: "html"});
+          let appRunner = await engineInitializer.initializeEngine();
 
           loading.textContent = "Running app...";
           await appRunner.runApp();

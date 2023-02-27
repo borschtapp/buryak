@@ -1,0 +1,27 @@
+body {
+    background: #FFFBFE;
+    color: #1C1B1F;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+      background: #1C1B1F;
+      color: #E6E1E5;
+  }
+}
+
+.loader-banner {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.loader-banner img {
+    width: 120px;
+    margin: 0 auto;
+    display: block;
+}
