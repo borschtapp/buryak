@@ -1,4 +1,6 @@
+import 'package:buryak/shared/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class NoAnimationPageTransitionsBuilder extends PageTransitionsBuilder {
   const NoAnimationPageTransitionsBuilder();
@@ -32,6 +34,14 @@ class ThemeProvider {
   static BorderRadius get shapeLarge => BorderRadius.circular(16);
   static BorderRadius get shapeExtraLarge => BorderRadius.circular(28);
 
+  static Widget logo(BuildContext context) {
+    return SvgPicture.asset(
+      "assets/images/logo.svg",
+      height: kToolbarHeight + 20,
+      colorFilter: ColorFilter.mode(context.colors.onPrimaryContainer, BlendMode.srcIn),
+    );
+  }
+
   CardTheme cardTheme() {
     return CardTheme(
       elevation: 0,
@@ -50,7 +60,7 @@ class ThemeProvider {
   AppBarTheme appBarTheme(ColorScheme colors) {
     return AppBarTheme(
       elevation: 0,
-      backgroundColor: colors.onPrimary,
+      backgroundColor: colors.secondaryContainer,
       foregroundColor: colors.onSurface,
     );
   }
@@ -101,18 +111,18 @@ class ThemeProvider {
   ThemeData light([Color? targetColor]) {
     final originalTheme = ThemeData.light(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
-      primary: const Color(0xFFB32733),
-      onPrimary: const Color(0xFFFFFFFF),
-      primaryContainer: const Color(0xFFFFDAD8),
-      onPrimaryContainer: const Color(0xFF410007),
-      secondary: const Color(0xFFA23761),
-      onSecondary: const Color(0xFFFFFFFF),
-      secondaryContainer: const Color(0xFFFFD9E2),
-      onSecondaryContainer: const Color(0xFF3E001D),
-      tertiary: const Color(0xFF516600),
-      onTertiary: const Color(0xFFFFFFFF),
-      tertiaryContainer: const Color(0xFFD1EE7B),
-      onTertiaryContainer: const Color(0xFF161E00),
+      primary: Color(0xFF9D3E56),
+      onPrimary: Color(0xFFFFFFFF),
+      primaryContainer: Color(0xFFFFD9DE),
+      onPrimaryContainer: Color(0xFF3F0016),
+      secondary: Color(0xFFA92F5A),
+      onSecondary: Color(0xFFFFFFFF),
+      secondaryContainer: Color(0xFFFFD9E0),
+      onSecondaryContainer: Color(0xFF3F0019),
+      tertiary: Color(0xFF576500),
+      onTertiary: Color(0xFFFFFFFF),
+      tertiaryContainer: Color(0xFFD9ED73),
+      onTertiaryContainer: Color(0xFF191E00),
     );
 
     return originalTheme.copyWith(
@@ -132,18 +142,18 @@ class ThemeProvider {
   ThemeData dark([Color? targetColor]) {
     final originalTheme = ThemeData.dark(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
-      primary: const Color(0xFFFFB3B1),
-      onPrimary: const Color(0xFF680011),
-      primaryContainer: const Color(0xFF90081F),
-      onPrimaryContainer: const Color(0xFFFFDAD8),
-      secondary: const Color(0xFFFFB1C8),
-      onSecondary: const Color(0xFF650032),
-      secondaryContainer: const Color(0xFF831E49),
-      onSecondaryContainer: const Color(0xFFFFD9E2),
-      tertiary: const Color(0xFFB6D263),
-      onTertiary: const Color(0xFF283500),
-      tertiaryContainer: const Color(0xFF3C4D00),
-      onTertiaryContainer: const Color(0xFFD1EE7B),
+      primary: Color(0xFFFFB2BF),
+      onPrimary: Color(0xFF610E29),
+      primaryContainer: Color(0xFF7F263F),
+      onPrimaryContainer: Color(0xFFFFD9DE),
+      secondary: Color(0xFFFFB1C3),
+      onSecondary: Color(0xFF66002D),
+      secondaryContainer: Color(0xFF891443),
+      onSecondaryContainer: Color(0xFFFFD9E0),
+      tertiary: Color(0xFFBDD05A),
+      onTertiary: Color(0xFF2C3400),
+      tertiaryContainer: Color(0xFF414C00),
+      onTertiaryContainer: Color(0xFFD9ED73),
     );
 
     return originalTheme.copyWith(

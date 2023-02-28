@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
@@ -35,15 +38,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
         "passwordConfirm": passwordController.text,
       };
 
-      dynamic res = await UserService.registerUser(userData);
+      try {
+        await UserService.registerUser(userData);
+      } catch (e) {
+        String msg = e.toString();
+        if(e is ClientException) {
+          msg = e.response['message'];
+          if (e.response['data'] != null) {
+            if (e.response['data']['name'] != null) {
+              msg = e.response['data']['name']['message'];
+            }
+            if (e.response['data']['password'] != null) {
+              msg = e.response['data']['password']['message'];
+            }
+            if (e.response['data']['email'] != null) {
+              msg = e.response['data']['email']['message'];
+            }
+          }
+        }
 
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-      if (res['ErrorCode'] == null) {
-        context.goNamed('recipes');
-      } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: ${res['Message']}'),
+          content: Text(msg),
           backgroundColor: Colors.red.shade300,
         ));
       }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../extensions.dart';
+import '../providers/theme.dart';
 
 class AdaptiveNavigation extends StatelessWidget {
   const AdaptiveNavigation({
@@ -35,7 +36,7 @@ class AdaptiveNavigation extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: SvgPicture.asset("assets/images/logo.svg", height: kToolbarHeight + 20),
+            title: ThemeProvider.logo(context),
           ),
           body: Row(
             children: [

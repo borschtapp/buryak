@@ -22,7 +22,7 @@ class ProfileDetails extends StatelessWidget {
             clipper: CustomShape(),
             child: Container(
               height: 170,
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).appBarTheme.backgroundColor,
             ),
           ),
           Center(

@@ -18,7 +18,7 @@ jobs:
 
       - run: flutter pub get
       - run: flutter test
-      - run: flutter build web --web-renderer html --release
+      - run: flutter build web --release
 
       - name: Copy and run
         uses: mdallasanta/ssh-scp-deploy@v1.2.0

@@ -1,3 +1,5 @@
+import 'package:buryak/features/privacy_screen.dart';
+import 'package:buryak/features/terms_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -155,6 +157,16 @@ final router = GoRouter(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
       redirect: _loginGuard,
+    ),
+    GoRoute(
+      name: 'privacy',
+      path: '/privacy-policy',
+      builder: (context, state) => const PrivacyPolicyScreen(),
+    ),
+    GoRoute(
+      name: 'terms',
+      path: '/terms-of-use',
+      builder: (context, state) => const TermsOfUseScreen(),
     ),
   ],
 );

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import '../../shared/extensions.dart';
 import '../../shared/constants.dart';
+import '../../shared/providers/theme.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 import '../../shared/views/async_loader.dart';
@@ -116,7 +117,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
 
     return AppBar(
       centerTitle: true,
-      title: SvgPicture.asset("assets/images/logo.svg", height: kToolbarHeight + 20),
+      title: ThemeProvider.logo(context),
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.search),

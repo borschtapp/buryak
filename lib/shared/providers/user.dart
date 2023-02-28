@@ -1,6 +1,6 @@
 import 'package:pocketbase/pocketbase.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import '../constants.dart';
 import 'local_storage.dart';
@@ -8,8 +8,9 @@ import 'local_storage.dart';
 class UserService {
   static final pb = PocketBase(pocketBaseUrl);
 
-  static final redirectUri =
-      kIsWeb ? "${Uri.base.origin}/auth-redirect.html" : "https://borscht.app/auth-redirect.html";
+  static final redirectUri = UniversalPlatform.isWeb
+      ? "${Uri.base.origin}/auth-redirect.html"
+      : "https://borscht.app/auth-redirect.html";
   static final callbackUrlScheme = redirectUri.split(':')[0];
 
   static bool isLoggedIn() {
@@ -40,12 +41,8 @@ class UserService {
   }
 
   static Future<dynamic> registerUser(Map<String, dynamic> data) async {
-    final record = await pb.collection('users').create(body: data);
-
-    // (optional) send an email verification request
-    // await pb.collection('users').requestVerification('test@example.com');
-
-    return record;
+    await pb.collection('users').create(body: data);
+    return login(data['email'], data['password']);
   }
 
   static Future<RecordAuth?> login(String email, String password) async {
@@ -64,8 +61,8 @@ class UserService {
     final authMethods = await pb.collection('users').listAuthMethods();
     final google = authMethods.authProviders.where((am) => am.name.toLowerCase() == provider).first;
     final responseUrl = await FlutterWebAuth.authenticate(
-        url: "${google.authUrl}$redirectUri",
-        callbackUrlScheme: callbackUrlScheme,
+      url: "${google.authUrl}$redirectUri",
+      callbackUrlScheme: callbackUrlScheme,
     );
 
     final parsedUri = Uri.parse(responseUrl);

@@ -1,3 +1,4 @@
+import 'package:buryak/shared/providers/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -52,7 +53,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       // ),
       centerTitle: true,
       // On Android by default its false
-      title: SvgPicture.asset("assets/images/logo.svg", height: kToolbarHeight + 20),
+      title: ThemeProvider.logo(context),
       // title: const Text("Borscht"),
       actions: <Widget>[
         IconButton(
