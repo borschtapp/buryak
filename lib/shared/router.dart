@@ -1,10 +1,12 @@
-import 'package:buryak/features/privacy_screen.dart';
-import 'package:buryak/features/terms_screen.dart';
+import 'package:buryak/shared/providers/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'providers/user.dart';
 import 'views/root_layout.dart';
+import '../features/privacy_screen.dart';
+import '../features/recipes/screen_import_recipe.dart';
+import '../features/terms_screen.dart';
 import '../features/explore/screen_explore.dart';
 import '../features/planner/screen_planner.dart';
 import '../features/profile/screen_login.dart';
@@ -19,14 +21,14 @@ const _scaffoldKey = ValueKey('_scaffoldKey');
 
 const List<NavigationDestination> destinations = [
   NavigationDestination(
+    label: 'Recipes',
+    route: '/',
+    icon: Icon(Icons.menu_book),
+  ),
+  NavigationDestination(
     label: 'Explore',
     route: '/explore',
     icon: Icon(Icons.explore),
-  ),
-  NavigationDestination(
-    label: 'Recipes',
-    route: '/recipes',
-    icon: Icon(Icons.menu_book),
   ),
   NavigationDestination(
     label: 'Planner',
@@ -60,8 +62,72 @@ class NavigationDestination {
 }
 
 final router = GoRouter(
-  initialLocation: '/recipes',
   routes: [
+    GoRoute(
+      name: 'home',
+      path: '/',
+      redirect: _authGuard,
+      pageBuilder: (context, state) => MaterialPage<void>(
+        key: _pageKey,
+        child: RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 0,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => GoRouter.of(context).pushNamed('import'),
+            child: const Icon(Icons.add),
+          ),
+          child: const RecipesScreen(),
+        ),
+      ),
+      routes: [
+        GoRoute(
+          name: 'recipe',
+          path: 'recipe/:rid',
+          pageBuilder: (context, state) => MaterialPage<void>(
+            key: state.pageKey,
+            child: RootLayout(
+              key: _scaffoldKey,
+              currentIndex: 0,
+              extendBodyBehindAppBar: true,
+              hideBottomNavigationBar: true,
+              appBar: AppBar(
+                leading: const BackButton(),
+                backgroundColor: Colors.transparent,
+                flexibleSpace: Container(
+                  decoration: ThemeProvider.gradient(Colors.black),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.share),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.bookmark_add_outlined),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              child: RecipeScreen(recipeId: state.params['rid']!),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'import',
+          path: 'import',
+          pageBuilder: (context, state) => MaterialPage<void>(
+            key: state.pageKey,
+            child: const RootLayout(
+              key: _scaffoldKey,
+              currentIndex: 0,
+              appBarTitle: 'Import Recipe',
+              hideBottomNavigationBar: true,
+              child: ImportRecipeScreen(),
+            ),
+          ),
+        ),
+      ],
+    ),
+
     GoRoute(
       name: 'explore',
       path: '/explore',
@@ -70,38 +136,10 @@ final router = GoRouter(
         key: _pageKey,
         child: RootLayout(
           key: _scaffoldKey,
-          currentIndex: 0,
+          currentIndex: 1,
           child: ExploreScreen(),
         ),
       ),
-    ),
-
-    GoRoute(
-      name: 'recipes',
-      path: '/recipes',
-      redirect: _authGuard,
-      pageBuilder: (context, state) => const MaterialPage<void>(
-        key: _pageKey,
-        child: RootLayout(
-          key: _scaffoldKey,
-          currentIndex: 1,
-          child: RecipesScreen(),
-        ),
-      ),
-      routes: [
-        GoRoute(
-          name: 'recipe',
-          path: ':rid',
-          pageBuilder: (context, state) => MaterialPage<void>(
-            key: state.pageKey,
-            child: RootLayout(
-              key: _scaffoldKey,
-              currentIndex: 1,
-              child: RecipeScreen(recipeId: state.params['rid']!),
-            ),
-          ),
-        ),
-      ],
     ),
 
     GoRoute(
@@ -158,15 +196,34 @@ final router = GoRouter(
       builder: (context, state) => const RegisterScreen(),
       redirect: _loginGuard,
     ),
+
     GoRoute(
       name: 'privacy',
       path: '/privacy-policy',
-      builder: (context, state) => const PrivacyPolicyScreen(),
+      pageBuilder: (context, state) => MaterialPage<void>(
+        key: state.pageKey,
+        child: const RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 4,
+          appBarTitle: 'Privacy Policy',
+          hideBottomNavigationBar: true,
+          child: PrivacyPolicyScreen(),
+        ),
+      ),
     ),
     GoRoute(
       name: 'terms',
       path: '/terms-of-use',
-      builder: (context, state) => const TermsOfUseScreen(),
+      pageBuilder: (context, state) => MaterialPage<void>(
+        key: state.pageKey,
+        child: const RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 4,
+          appBarTitle: 'Terms of Use',
+          hideBottomNavigationBar: true,
+          child: TermsOfUseScreen(),
+        ),
+      ),
     ),
   ],
 );

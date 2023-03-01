@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'providers/theme.dart';
 
@@ -17,6 +18,9 @@ extension TypographyUtils on BuildContext {
   bool get isTablet => mediaQuery.size.width > 730;
   bool get isDesktop => mediaQuery.size.width > 1200;
   bool get isMobile => !isTablet && !isDesktop;
+
+  void popOrGo(String location) => GoRouter.of(this).canPop() ? pop() : go(location);
+  void popOrGoNamed(String route) => GoRouter.of(this).canPop() ? pop() : goNamed(route);
 }
 
 extension BreakpointUtils on BoxConstraints {

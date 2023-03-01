@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.red.shade300,
         ));
       } else {
-        context.goNamed('recipes');
+        context.goNamed('home');
       }
     }
   }
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> googleLogin() async {
     await UserService.oAuthLogin('google');
 
-    context.goNamed('recipes');
+    context.goNamed('home');
   }
 
   @override

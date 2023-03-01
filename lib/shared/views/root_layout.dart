@@ -1,19 +1,31 @@
+import 'package:buryak/shared/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 import '../router.dart' as router;
 import 'adaptive_navigation.dart';
+import 'article_content.dart';
 
 class RootLayout extends StatelessWidget {
   const RootLayout({
     super.key,
     required this.child,
     required this.currentIndex,
+    this.appBar,
+    this.appBarTitle,
+    this.floatingActionButton,
+    this.hideBottomNavigationBar = false,
+    this.extendBodyBehindAppBar = false,
   });
 
   final Widget child;
+  final AppBar? appBar;
   final int currentIndex;
+  final String? appBarTitle;
+  final bool hideBottomNavigationBar;
+  final Widget? floatingActionButton;
+  final bool extendBodyBehindAppBar;
   static const _switcherKey = ValueKey('switcherKey');
   static const _navigationRailKey = ValueKey('navigationRailKey');
 
@@ -27,6 +39,11 @@ class RootLayout extends StatelessWidget {
 
       return AdaptiveNavigation(
         key: _navigationRailKey,
+        appBar: appBar,
+        appBarTitle: appBarTitle,
+        hideBottomNavigationBar: hideBottomNavigationBar,
+        floatingActionButton: floatingActionButton,
+        extendBodyBehindAppBar: extendBodyBehindAppBar,
         destinations: router.destinations
             .map((e) => NavigationDestination(icon: e.icon, label: e.label))
             .toList(),
@@ -37,7 +54,12 @@ class RootLayout extends StatelessWidget {
             Expanded(
               child: _Switcher(
                 key: _switcherKey,
-                child: child,
+                child: TabletAppBar(
+                  isMobile: dimens.isMobile,
+                  appBar: appBar,
+                  appBarTitle: appBarTitle,
+                  child: child,
+                ),
               ),
             ),
           ],

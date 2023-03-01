@@ -30,6 +30,7 @@ class AsyncLoader<T> extends StatelessWidget {
 
         return Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const CircularProgressIndicator(),
               const SizedBox(height: 8),

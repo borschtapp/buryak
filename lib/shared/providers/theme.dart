@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:buryak/shared/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,6 +42,21 @@ class ThemeProvider {
       "assets/images/logo.svg",
       height: kToolbarHeight + 20,
       colorFilter: ColorFilter.mode(context.colors.onPrimaryContainer, BlendMode.srcIn),
+    );
+  }
+
+  static Color randomColor() {
+    return Color(Random().nextInt(0xffffffff));
+  }
+
+  static BoxDecoration gradient(Color color) {
+    return BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: const [0, 1],
+        colors: [color, Colors.transparent],
+      ),
     );
   }
 

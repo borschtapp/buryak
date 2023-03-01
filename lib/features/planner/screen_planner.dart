@@ -10,13 +10,8 @@ class PlannerScreen extends StatefulWidget {
 class _PlannerScreenState extends State<PlannerScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: Center(
-          child: Text('Weekly Planner'),
-        ),
-      ),
+    return const Center(
+      child: Text('Weekly Planner'),
     );
   }
 }

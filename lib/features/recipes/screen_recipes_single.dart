@@ -1,13 +1,11 @@
 import 'dart:math';
 
-import 'package:buryak/shared/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import 'view_ingredients.dart';
 import 'view_instructions.dart';
-import '../../shared/views/article_content.dart';
+import '../../shared/extensions.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/views/async_loader.dart';
@@ -45,61 +43,28 @@ class _RecipeScreenState extends State<RecipeScreen> {
 
   Widget buildBase(BuildContext context, Recipe recipe) {
     if (context.isMobile) {
-      return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: mobileAppBar(context),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Image.network(
-                recipe.image != null
-                    ? recipe.image!.last.url!
-                    : 'https://i.imgur.com/IRAxUoq.jpg',
-                height: min(context.mediaQuery.size.height * 0.4, 400),
-                fit: BoxFit.cover,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: recipeCommon(recipe),
-              ),
-            ],
-          ),
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Image.network(
+              recipe.image != null
+                  ? recipe.image!.last.url!
+                  : 'https://i.imgur.com/IRAxUoq.jpg',
+              height: min(context.mediaQuery.size.height * 0.4, 400),
+              fit: BoxFit.cover,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: recipeCommon(recipe),
+            ),
+          ],
         ),
       );
     }
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: ArticleContent(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  BackButton(
-                    onPressed: () => GoRouter.of(context).go('/recipes'),
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.share),
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.bookmark_add_outlined),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              buildPage(context, recipe),
-            ],
-          ),
-        ),
-      ),
+    return SingleChildScrollView(
+      child: buildPage(context, recipe),
     );
   }
 
@@ -230,39 +195,6 @@ class _RecipeScreenState extends State<RecipeScreen> {
         ),
         const SizedBox(width: 20),
         Text('${recipe.recipeYield!} Servings'),
-      ],
-    );
-  }
-
-  AppBar mobileAppBar(BuildContext context) {
-    return AppBar(
-      leading: BackButton(
-        onPressed: () => GoRouter.of(context).goNamed('recipes'),
-      ),
-      backgroundColor: Colors.transparent,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient:
-              LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, stops: const [
-            0,
-            0.5,
-            1
-          ], colors: <Color>[
-            Colors.black.withAlpha(200),
-            Colors.black.withAlpha(125),
-            Colors.transparent,
-          ]),
-        ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.share),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.bookmark_add_outlined),
-          onPressed: () {},
-        ),
       ],
     );
   }

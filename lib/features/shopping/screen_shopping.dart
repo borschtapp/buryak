@@ -10,13 +10,8 @@ class ShoppingScreen extends StatefulWidget {
 class _ShoppingScreenState extends State<ShoppingScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: Center(
-          child: Text('Shopping List'),
-        ),
-      ),
+    return const Center(
+      child: Text('Shopping List'),
     );
   }
 }
