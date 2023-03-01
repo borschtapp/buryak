@@ -1,5 +1,6 @@
 import 'package:buryak/shared/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class NoAnimationPageTransitionsBuilder extends PageTransitionsBuilder {
@@ -98,6 +99,15 @@ class ThemeProvider {
     );
   }
 
+  NavigationBarThemeData navigationBarTheme(ColorScheme colors) {
+    return NavigationBarThemeData(
+      backgroundColor: colors.surfaceVariant,
+      surfaceTintColor: colors.surfaceTint,
+      indicatorColor: colors.primaryContainer,
+      elevation: 1,
+    );
+  }
+
   NavigationRailThemeData navigationRailTheme(ColorScheme colors) {
     return const NavigationRailThemeData();
   }
@@ -108,21 +118,33 @@ class ThemeProvider {
     );
   }
 
+  SystemUiOverlayStyle systemUiOverlayStyle(Brightness platformBrightness) {
+    if (platformBrightness == Brightness.dark) {
+      return SystemUiOverlayStyle.dark.copyWith(
+        systemNavigationBarColor: const Color(0xFF2A2730),
+      );
+    } else {
+      return SystemUiOverlayStyle.light.copyWith(
+        systemNavigationBarColor: const Color(0xFFE0D8E8),
+      );
+    }
+  }
+
   ThemeData light([Color? targetColor]) {
     final originalTheme = ThemeData.light(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
-      primary: Color(0xFF9D3E56),
-      onPrimary: Color(0xFFFFFFFF),
-      primaryContainer: Color(0xFFFFD9DE),
-      onPrimaryContainer: Color(0xFF3F0016),
-      secondary: Color(0xFFA92F5A),
-      onSecondary: Color(0xFFFFFFFF),
-      secondaryContainer: Color(0xFFFFD9E0),
-      onSecondaryContainer: Color(0xFF3F0019),
-      tertiary: Color(0xFF576500),
-      onTertiary: Color(0xFFFFFFFF),
-      tertiaryContainer: Color(0xFFD9ED73),
-      onTertiaryContainer: Color(0xFF191E00),
+      primary: const Color(0xFF9D3E56),
+      onPrimary: const Color(0xFFFFFFFF),
+      primaryContainer: const Color(0xFFFFD9DE),
+      onPrimaryContainer: const Color(0xFF3F0016),
+      secondary: const Color(0xFFA92F5A),
+      onSecondary: const Color(0xFFFFFFFF),
+      secondaryContainer: const Color(0xFFFFD9E0),
+      onSecondaryContainer: const Color(0xFF3F0019),
+      tertiary: const Color(0xFF576500),
+      onTertiary: const Color(0xFFFFFFFF),
+      tertiaryContainer: const Color(0xFFD9ED73),
+      onTertiaryContainer: const Color(0xFF191E00),
     );
 
     return originalTheme.copyWith(
@@ -133,6 +155,7 @@ class ThemeProvider {
       listTileTheme: listTileTheme(colorScheme),
       bottomAppBarTheme: bottomAppBarTheme(colorScheme),
       bottomNavigationBarTheme: bottomNavigationBarTheme(colorScheme),
+      navigationBarTheme: navigationBarTheme(colorScheme),
       navigationRailTheme: navigationRailTheme(colorScheme),
       tabBarTheme: tabBarTheme(colorScheme),
       drawerTheme: drawerTheme(colorScheme),
@@ -142,18 +165,18 @@ class ThemeProvider {
   ThemeData dark([Color? targetColor]) {
     final originalTheme = ThemeData.dark(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
-      primary: Color(0xFFFFB2BF),
-      onPrimary: Color(0xFF610E29),
-      primaryContainer: Color(0xFF7F263F),
-      onPrimaryContainer: Color(0xFFFFD9DE),
-      secondary: Color(0xFFFFB1C3),
-      onSecondary: Color(0xFF66002D),
-      secondaryContainer: Color(0xFF891443),
-      onSecondaryContainer: Color(0xFFFFD9E0),
-      tertiary: Color(0xFFBDD05A),
-      onTertiary: Color(0xFF2C3400),
-      tertiaryContainer: Color(0xFF414C00),
-      onTertiaryContainer: Color(0xFFD9ED73),
+      primary: const Color(0xFFFFB2BF),
+      onPrimary: const Color(0xFF610E29),
+      primaryContainer: const Color(0xFF7F263F),
+      onPrimaryContainer: const Color(0xFFFFD9DE),
+      secondary: const Color(0xFFFFB1C3),
+      onSecondary: const Color(0xFF66002D),
+      secondaryContainer: const Color(0xFF891443),
+      onSecondaryContainer: const Color(0xFFFFD9E0),
+      tertiary: const Color(0xFFBDD05A),
+      onTertiary: const Color(0xFF2C3400),
+      tertiaryContainer: const Color(0xFF414C00),
+      onTertiaryContainer: const Color(0xFFD9ED73),
     );
 
     return originalTheme.copyWith(
