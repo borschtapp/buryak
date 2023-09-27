@@ -46,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> googleLogin() async {
+    // await UserService.googleLogin();
     await UserService.oAuthLogin('google');
 
     context.goNamed('home');
@@ -129,10 +130,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 25),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
+              children: [
                 Text('Forgot password?'),
               ],
             ),

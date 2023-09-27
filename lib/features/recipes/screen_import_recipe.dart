@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 import '../../shared/constants.dart';
-import '../../shared/extensions.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 
@@ -55,12 +54,12 @@ class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
         };
         final record = await UserService.pb.collection('user_recipes').create(body: body);
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Recipe imported.'),
           backgroundColor: Colors.green,
         ));
 
-        GoRouter.of(context).goNamed('recipe', params: {'rid': recipeId});
+        GoRouter.of(context).goNamed('recipe', pathParameters: {'rid': recipeId});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Error: ${response.statusCode}'),

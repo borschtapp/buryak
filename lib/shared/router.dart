@@ -107,7 +107,7 @@ final router = GoRouter(
                   ),
                 ],
               ),
-              child: RecipeScreen(recipeId: state.params['rid']!),
+              child: RecipeScreen(recipeId: state.pathParameters['rid']!),
             ),
           ),
         ),

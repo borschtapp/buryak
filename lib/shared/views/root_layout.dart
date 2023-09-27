@@ -5,7 +5,6 @@ import 'package:universal_platform/universal_platform.dart';
 
 import '../router.dart' as router;
 import 'adaptive_navigation.dart';
-import 'article_content.dart';
 
 class RootLayout extends StatelessWidget {
   const RootLayout({

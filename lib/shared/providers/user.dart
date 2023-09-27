@@ -1,3 +1,4 @@
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -57,6 +58,30 @@ class UserService {
     return authData;
   }
 
+  static Future<RecordAuth?> googleLogin() async {
+    GoogleSignIn googleSignIn = GoogleSignIn(
+      scopes: [
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile',
+      ],
+    );
+
+    try {
+      var account = await googleSignIn.signIn();
+
+      if (account != null) {
+        var auth = await account.authentication;
+
+        if (auth.idToken != null) {
+          print(auth.idToken!);
+        }
+      }
+    } catch (error) {
+      print(error);
+    }
+    return null;
+  }
+
   static Future<RecordAuth?> oAuthLogin(String provider) async {
     final authMethods = await pb.collection('users').listAuthMethods();
     final google = authMethods.authProviders.where((am) => am.name.toLowerCase() == provider).first;
@@ -73,7 +98,7 @@ class UserService {
     }
 
     RecordAuth authData = await pb.collection('users')
-        .authWithOAuth2("google", code, google.codeVerifier, redirectUri);
+        .authWithOAuth2Code("google", code, google.codeVerifier, redirectUri);
 
     if (authData.record!.data['name'] == null) {
       await pb.collection('users').update(authData.record!.id, body: {

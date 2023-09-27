@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../shared/extensions.dart';
 import '../shared/views/article_content.dart';
@@ -14,7 +13,7 @@ class PrivacyPolicyScreen extends StatefulWidget {
 class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return const SingleChildScrollView(
       child: ArticleContent(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

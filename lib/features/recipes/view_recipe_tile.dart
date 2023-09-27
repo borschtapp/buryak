@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/extensions.dart';
-import '../../shared/extensions.dart';
 
 class RecipeTile extends StatefulWidget {
   const RecipeTile(this.recipeId, this.recipe, {super.key, required this.isFavorite});
@@ -70,9 +69,7 @@ class _RecipeTileState extends State<RecipeTile> {
                         "(user='${UserService.pb.authStore.model.id}' && recipe='${widget.recipeId}')",
                       );
 
-                      if (record.id != null) {
-                        await UserService.pb.collection('user_recipes').delete(record.id);
-                      }
+                      await UserService.pb.collection('user_recipes').delete(record.id);
                     }
 
                     setState(() {
