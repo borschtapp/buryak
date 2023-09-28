@@ -46,9 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> googleLogin() async {
-    // await UserService.googleLogin();
-    // await UserService.oAuthLogin('google');
-
+    await UserService.googleLogin();
     context.goNamed('home');
   }
 

@@ -26,6 +26,26 @@ class UserRepository {
     }
   }
 
+  static Future<User> oauthLogin(String provider, token) async {
+    Response response = await post(buildUri('/oauth/login'),
+        headers: buildHeaders(),
+        body: jsonEncode({'provider': provider, 'token': token}));
+
+    final statusType = (response.statusCode / 100).floor() * 100;
+    switch (statusType) {
+      case 200:
+        final json = jsonDecode(response.body);
+        return User.fromJson(json);
+      case 400:
+        final json = jsonDecode(response.body);
+        throw handleFormErrors(json);
+      case 300:
+      case 500:
+      default:
+        throw FormGeneralException(message: 'Error contacting the server!');
+    }
+  }
+
   static Future<User> register(String name, email, password) async {
     Response response = await post(buildUri('/users'),
         headers: buildHeaders(),

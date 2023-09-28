@@ -10,6 +10,7 @@ class User {
   final int id;
   String email;
   String name;
+  String? image;
   DateTime updated;
   DateTime created;
   String accessToken;
@@ -19,6 +20,7 @@ class User {
     required this.id,
     required this.name,
     required this.email,
+    this.image,
     required this.updated,
     required this.created,
     required this.accessToken,
@@ -32,6 +34,7 @@ class User {
       id: json['id'],
       email: json['email'],
       name: json['name'],
+      image: json['image'],
       updated: DateTime.parse(json['updated']),
       created: DateTime.parse(json['created']),
       accessToken: json['access_token'],
@@ -43,6 +46,7 @@ class User {
     'id': id,
     'name': name,
     'email': email,
+    'image': image,
     'updated': updated.toIso8601String(),
     'created': created.toIso8601String(),
     'access_token': accessToken,
