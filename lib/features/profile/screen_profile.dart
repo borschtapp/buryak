@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pocketbase/pocketbase.dart';
 
+import '../../shared/models/user.dart';
 import 'view_profile_details.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/views/async_loader.dart';
@@ -14,17 +14,17 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final Future<RecordModel> _profileFuture = UserService.getUserModel();
+  final Future<User> _profileFuture = UserService.getUserModel();
 
   @override
   Widget build(BuildContext context) {
-    return AsyncLoader<RecordModel>(
+    return AsyncLoader<User>(
       future: _profileFuture,
       builder: (context, profile) {
-        String? name = profile.data['name'];
-        String email = profile.data['email'];
-        String avatar = profile.data['avatar'];
-        // String avatar = "https://picsum.photos/200/200";
+        String? name = profile.name;
+        String email = profile.email;
+        // String avatar = profile.data['avatar'];
+        String avatar = "https://picsum.photos/200/200";
 
         return SingleChildScrollView(
           child: Column(

@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LocalStorage {
   static late final SharedPreferences _instance;
 
+  static const String userKey = 'user';
+
   static bool _init = false;
   static Future init() async {
     if (_init) return;

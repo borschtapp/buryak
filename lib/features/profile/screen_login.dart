@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pocketbase/pocketbase.dart';
 
+import '../../shared/models/user.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.green.shade300,
       ));
 
-      RecordAuth? res = await UserService.login(
+      User? res = await UserService.login(
         emailController.text,
         passwordController.text,
       );
@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> googleLogin() async {
     // await UserService.googleLogin();
-    await UserService.oAuthLogin('google');
+    // await UserService.oAuthLogin('google');
 
     context.goNamed('home');
   }

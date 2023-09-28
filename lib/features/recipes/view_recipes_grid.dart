@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pocketbase/pocketbase.dart';
 
 import '../../shared/models/recipe.dart';
 import '../../shared/extensions.dart';
 import 'view_recipe_tile.dart';
 
 class RecipesGridView extends StatelessWidget {
-  final List<RecordModel> recipes;
+  final List<Recipe> recipes;
   final bool isFavorite;
   const RecipesGridView(this.recipes, {super.key, required this.isFavorite});
 
@@ -24,11 +23,11 @@ class RecipesGridView extends StatelessWidget {
         ),
         itemCount: recipes.length,
         itemBuilder: (context, index) {
-          final recipe = Recipe.fromJson(recipes[index].data);
+          final recipe = recipes[index];
           return InkWell(
             borderRadius: context.shapeSmall,
             child: RecipeTile(recipes[index].id, recipe, isFavorite: isFavorite),
-            onTap: () => GoRouter.of(context).pushNamed('recipe', pathParameters: {'rid': recipes[index].id}),
+            onTap: () => GoRouter.of(context).pushNamed('recipe', pathParameters: {'rid': recipes[index].id.toString()}),
           );
         },
       );

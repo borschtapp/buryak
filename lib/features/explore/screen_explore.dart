@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
 
-import '../../shared/providers/user.dart';
+import '../../shared/models/recipe.dart';
+import '../../shared/repositories/recipe_repository.dart';
 import '../../shared/views/async_loader.dart';
 import '../recipes/view_recipes_grid.dart';
 
@@ -13,15 +13,11 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  final Future<List<RecordModel>> _recipesFuture = UserService.pb.collection('recipes').getList(
-    page: 1,
-    perPage: 50,
-    sort: '-created',
-  ).then((value) => value.items);
+  final Future<List<Recipe>> _recipesFuture = RecipeRepository.explore();
 
   @override
   Widget build(BuildContext context) {
-    return AsyncLoader<List<RecordModel>>(
+    return AsyncLoader<List<Recipe>>(
       future: _recipesFuture,
       builder: (context, results) {
         return RecipesGridView(results, isFavorite: false);

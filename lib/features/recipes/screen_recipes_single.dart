@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import 'view_ingredients.dart';
-import 'view_instructions.dart';
+import '../../shared/repositories/recipe_repository.dart';
 import '../../shared/extensions.dart';
 import '../../shared/models/recipe.dart';
-import '../../shared/providers/user.dart';
 import '../../shared/views/async_loader.dart';
+import 'view_ingredients.dart';
+import 'view_instructions.dart';
 
 class RecipeScreen extends StatefulWidget {
   const RecipeScreen({super.key, required this.recipeId});
@@ -25,10 +25,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
   @override
   void initState() {
     super.initState();
-    _recipeFuture = UserService.pb
-        .collection('recipes')
-        .getOne(widget.recipeId)
-        .then((model) => Recipe.fromJson(model.data));
+    _recipeFuture = RecipeRepository.findOne(int.parse(widget.recipeId));
   }
 
   @override
@@ -48,9 +45,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Image.network(
-              recipe.image != null
-                  ? recipe.image!.last.url!
-                  : 'https://i.imgur.com/IRAxUoq.jpg',
+              recipe.images != null ? recipe.images!.last.url : 'https://i.imgur.com/IRAxUoq.jpg',
               height: min(context.mediaQuery.size.height * 0.4, 400),
               fit: BoxFit.cover,
             ),
@@ -77,7 +72,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
           child: ClipRRect(
             borderRadius: context.shapeSmall,
             child: Image.network(
-              recipe.image != null ? recipe.image!.last.url! : 'https://i.imgur.com/IRAxUoq.jpg',
+              recipe.images != null ? recipe.images!.last.url : 'https://i.imgur.com/IRAxUoq.jpg',
               height: max(context.mediaQuery.size.height / 3, 400),
               fit: BoxFit.cover,
             ),
@@ -101,15 +96,14 @@ class _RecipeScreenState extends State<RecipeScreen> {
             style: context.textTheme.titleLarge,
           ),
         ),
-        if (recipe.aggregateRating != null && recipe.aggregateRating!.ratingValue != null)
+        if (recipe.rating != null && recipe.rating!.value != null)
           Align(
             alignment: Alignment.topRight,
             child: Padding(
               padding: const EdgeInsets.only(left: 5),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration:
-                    BoxDecoration(color: context.colors.primary, borderRadius: context.shapeSmall),
+                decoration: BoxDecoration(color: context.colors.primary, borderRadius: context.shapeSmall),
                 child: Row(
                   children: [
                     const Icon(
@@ -117,8 +111,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                       size: 15,
                       color: Colors.black,
                     ),
-                    Text(recipe.aggregateRating!.ratingValue!.toString(),
-                        style: const TextStyle(color: Colors.black)),
+                    Text(recipe.rating!.value!.toString(), style: const TextStyle(color: Colors.black)),
                   ],
                 ),
               ),
@@ -143,7 +136,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                 {launchUrlString(recipe.publisher!.url!)}
             },
             child: Text(
-              recipe.getCombinedAuthor() ?? '',
+              recipe.author != null ? recipe.author!.name! : '',
               style: context.textTheme.bodySmall,
             ),
           ),
@@ -158,7 +151,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
             style: context.textTheme.titleMedium,
           ),
         ),
-        Ingredients(recipe.recipeIngredient!),
+        Ingredients(recipe.ingredients!),
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 10),
           child: Text(
@@ -166,7 +159,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
             style: context.textTheme.titleMedium,
           ),
         ),
-        Instructions(recipe.recipeInstructions!),
+        Instructions(recipe.instructions!),
       ],
     );
   }
@@ -194,7 +187,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
           color: context.colors.secondary,
         ),
         const SizedBox(width: 20),
-        Text('${recipe.recipeYield!} Servings'),
+        Text('${recipe.yield!} Servings'),
       ],
     );
   }

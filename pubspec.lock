@@ -10,21 +10,13 @@ packages:
     source: hosted
     version: "61.0.0"
   adaptive_breakpoints:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: adaptive_breakpoints
       sha256: "3aa6ef09074fe7824dfdc9a6d9f955c8a3bae0fb71c495cbd72f471a87699b4f"
       url: "https://pub.dev"
     source: hosted
     version: "0.1.6"
-  adaptive_components:
-    dependency: "direct main"
-    description:
-      name: adaptive_components
-      sha256: "13a3a8db9c4aa7c25dbd28ea7ba0df4443218e04d251b6999f9bba968cac5d4f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.9"
   adaptive_navigation:
     dependency: "direct main"
     description:
@@ -105,14 +97,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      sha256: d57953e10f9f8327ce64a508a355f0b1ec902193f66288e8cb5070e7c47eeb2d
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.6"
   fake_async:
     dependency: transitive
     description:
@@ -196,10 +180,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "4b58412b92bd7d588f904425ef6d41a017da1f097e5e9428d2c27d275777e16e"
+      sha256: a07c781bf55bf11ae85133338e4850f0b4e33e261c44a66c750fc707d65d8393
       url: "https://pub.dev"
     source: hosted
-    version: "11.1.1"
+    version: "11.1.2"
   google_identity_services_web:
     dependency: transitive
     description:
@@ -272,14 +256,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
-  json_annotation:
-    dependency: transitive
+  jwt_decoder:
+    dependency: "direct main"
     description:
-      name: json_annotation
-      sha256: b10a7b2ff83d83c777edba3c6a0f97045ddadd56c944e1a23a3fdf43a1bf4467
+      name: jwt_decoder
+      sha256: "54774aebf83f2923b99e6416b4ea915d47af3bde56884eb622de85feabbc559f"
       url: "https://pub.dev"
     source: hosted
-    version: "4.8.1"
+    version: "2.0.1"
   lints:
     dependency: transitive
     description:
@@ -400,14 +384,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.6"
-  pocketbase:
-    dependency: "direct main"
-    description:
-      name: pocketbase
-      sha256: d1a77d4f9511783e91f850cdc1e4ad664a9b7a87a6366023c40f6acb8b631b23
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.15.1"
   pub_semver:
     dependency: transitive
     description:

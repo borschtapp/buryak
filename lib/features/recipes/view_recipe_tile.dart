@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/models/recipe.dart';
-import '../../shared/providers/user.dart';
 import '../../shared/extensions.dart';
+import '../../shared/repositories/recipe_repository.dart';
 
 class RecipeTile extends StatefulWidget {
   const RecipeTile(this.recipeId, this.recipe, {super.key, required this.isFavorite});
 
-  final String recipeId;
+  final int recipeId;
   final Recipe recipe;
   final bool isFavorite;
 
@@ -48,7 +48,7 @@ class _RecipeTileState extends State<RecipeTile> {
                     ),
                   ),
                   child: Image.network(
-                    widget.recipe.image != null ? widget.recipe.image!.last.url! : 'https://i.imgur.com/IRAxUoq.jpg',
+                    widget.recipe.images != null ? widget.recipe.images!.last.url : 'https://i.imgur.com/IRAxUoq.jpg',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -59,17 +59,9 @@ class _RecipeTileState extends State<RecipeTile> {
                 child: InkWell(
                   onTap: () async {
                     if (!saved) {
-                      final body = <String, dynamic>{
-                        "user": UserService.pb.authStore.model.id,
-                        "recipe": widget.recipeId,
-                      };
-                      final record = await UserService.pb.collection('user_recipes').create(body: body);
+                      await RecipeRepository.save(widget.recipeId);
                     } else {
-                      final record = await UserService.pb.collection('user_recipes').getFirstListItem(
-                        "(user='${UserService.pb.authStore.model.id}' && recipe='${widget.recipeId}')",
-                      );
-
-                      await UserService.pb.collection('user_recipes').delete(record.id);
+                      await RecipeRepository.unsave(widget.recipeId);
                     }
 
                     setState(() {
@@ -97,14 +89,14 @@ class _RecipeTileState extends State<RecipeTile> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.recipe.name!,
+                      widget.recipe.name,
                       style: Theme.of(context).textTheme.titleMedium,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      widget.recipe.getCombinedAuthor() ?? '',
+                      widget.recipe.author != null ? widget.recipe.author!.name! : '',
                       style: Theme.of(context).textTheme.labelMedium,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,

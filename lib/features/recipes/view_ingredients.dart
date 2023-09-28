@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../shared/models/recipe_ingredient.dart';
+
 class Ingredients extends StatelessWidget {
-  final List<String> ingredients;
+  final List<RecipeIngredient> ingredients;
   const Ingredients(this.ingredients, {super.key});
 
   @override
@@ -12,7 +14,7 @@ class Ingredients extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: ingredients.length,
       itemBuilder: (BuildContext context, int index) {
-        return Text(ingredients[index]);
+        return Text(ingredients[index].text);
       },
       separatorBuilder: (BuildContext context, int index) {
         return Divider(color: Theme.of(context).colorScheme.secondary.withOpacity(0.1), height: 15);
