@@ -43,9 +43,7 @@ class RootLayout extends StatelessWidget {
         hideBottomNavigationBar: hideBottomNavigationBar,
         floatingActionButton: floatingActionButton,
         extendBodyBehindAppBar: extendBodyBehindAppBar,
-        destinations: router.destinations
-            .map((e) => NavigationDestination(icon: e.icon, label: e.label))
-            .toList(),
+        destinations: router.destinations.map((e) => NavigationDestination(icon: e.icon, label: e.label)).toList(),
         selectedIndex: currentIndex,
         onDestinationSelected: onSelected,
         child: Column(
@@ -57,7 +55,9 @@ class RootLayout extends StatelessWidget {
                   isMobile: dimens.isMobile,
                   appBar: appBar,
                   appBarTitle: appBarTitle,
-                  child: child,
+                  child: SelectionArea(
+                    child: child,
+                  ),
                 ),
               ),
             ),
