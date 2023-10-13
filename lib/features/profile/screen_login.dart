@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../shared/models/user.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
@@ -22,25 +21,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> login() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text('Processing Data'),
-        backgroundColor: Colors.green.shade300,
-      ));
+      try {
+        await UserService.login(
+          emailController.text,
+          passwordController.text,
+        );
 
-      User? res = await UserService.login(
-        emailController.text,
-        passwordController.text,
-      );
-
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-      if (res == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text('Error: Unable to retrive user record.'),
-          backgroundColor: Colors.red.shade300,
-        ));
-      } else {
-        context.goNamed('home');
+        if (mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          context.goNamed('home');
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red.shade300,
+          ));
+        }
       }
     }
   }

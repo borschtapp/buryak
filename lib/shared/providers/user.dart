@@ -43,13 +43,10 @@ class UserService {
     return user;
   }
 
-  static Future<User?> login(String email, String password) async {
+  static Future<User> login(String email, String password) async {
     final user = await UserRepository.login(email, password);
-    if (user != null) {
-      await LocalStorage.setString(LocalStorage.userKey, jsonEncode(user.toJson()));
-      return user;
-    }
-    return null;
+    await LocalStorage.setString(LocalStorage.userKey, jsonEncode(user.toJson()));
+    return user;
   }
 
   static Future<User?> googleLogin() async {

@@ -25,20 +25,31 @@ class FormGeneralException implements Exception {
   FormGeneralException({
     required this.message,
   });
+
+  @override
+  String toString() {
+    return message;
+  }
 }
 
 class FormFieldsException extends FormGeneralException {
-  final Map<String, dynamic> errors;
+  final Map<String, dynamic> fields;
 
   FormFieldsException({
     required message,
-    required this.errors,
+    required this.fields,
   }) : super(message: message);
+
+  @override
+  String toString() {
+    var first = fields.entries.first;
+    return '${first.key}: ${first.value.first}';
+  }
 }
 
 Exception handleFormErrors(Map<String, dynamic> json) {
   if (json['fields'] != null) {
-    return FormFieldsException(message: json['message'], errors: json['fields']);
+    return FormFieldsException(message: json['message'], fields: json['fields']);
   } else {
     return FormGeneralException(message: json['message']);
   }

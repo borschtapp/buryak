@@ -1,5 +1,3 @@
-
-import 'package:buryak/shared/repositories/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,11 +22,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> registerUsers() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text('Processing Data'),
-        backgroundColor: Colors.green.shade300,
-      ));
-
       try {
         await UserService.registerUser(
             nameController.text,
@@ -36,21 +29,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
             passwordController.text
         );
 
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        context.goNamed('home');
-      } catch (e) {
-        String msg = e.toString();
-        if(e is FormFieldsException) {
-          var fieldError = e.errors.entries.first;
-          msg = '${fieldError.key} ${fieldError.value}';
-        } else if(e is FormGeneralException) {
-          msg = e.message;
+        if (mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          context.goNamed('home');
         }
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(msg),
-          backgroundColor: Colors.red.shade300,
-        ));
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red.shade300,
+          ));
+        }
       }
     }
   }
