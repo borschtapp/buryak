@@ -49,7 +49,7 @@ class UserRepository {
   static Future<User> register(String name, email, password) async {
     Response response = await post(buildUri('/users'),
         headers: buildHeaders(),
-        body: {'name': name, 'email': email, 'password': password});
+        body: jsonEncode({'name': name, 'email': email, 'password': password}));
 
     final statusType = (response.statusCode / 100).floor() * 100;
     switch (statusType) {
@@ -69,7 +69,7 @@ class UserRepository {
   static Future<User> refreshToken(User user) async {
     Response response = await post(buildUri('/token/refresh'),
         headers: buildHeaders(),
-        body: {'refresh_token': user.refreshToken});
+        body: jsonEncode({'refresh_token': user.refreshToken}));
 
         final statusType = (response.statusCode / 100).floor() * 100;
     switch (statusType) {

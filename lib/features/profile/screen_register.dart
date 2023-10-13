@@ -35,9 +35,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
             emailController.text,
             passwordController.text
         );
+
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        context.goNamed('home');
       } catch (e) {
         String msg = e.toString();
-        if(e is FormGeneralException) {
+        if(e is FormFieldsException) {
+          var fieldError = e.errors.entries.first;
+          msg = '${fieldError.key} ${fieldError.value}';
+        } else if(e is FormGeneralException) {
           msg = e.message;
         }
 
