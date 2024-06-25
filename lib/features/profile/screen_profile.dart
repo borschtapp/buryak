@@ -23,8 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, profile) {
         String? name = profile.name;
         String email = profile.email;
-        // String avatar = profile.data['avatar'];
-        String avatar = "https://picsum.photos/200/200";
+        String? image = profile.image;
 
         return SingleChildScrollView(
           child: Column(
@@ -32,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ProfileDetails(
                 name: name,
                 email: email,
-                avatar: avatar,
+                image: image,
               ),
               const SizedBox(height: 20),
               ProfileMenuItem(

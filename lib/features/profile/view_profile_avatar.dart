@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ProfileAvatar extends StatelessWidget {
-  final String avatar, name;
-  const ProfileAvatar({super.key, required this.avatar, required this.name});
+  final String? image;
+  final String name;
+  const ProfileAvatar({super.key, this.image, required this.name});
 
   @override
   Widget build(BuildContext context) {
-    if (avatar != "") {
+    if (image != null && image!.isNotEmpty) {
       return Container(
         height: 140,
         width: 140,
@@ -15,7 +16,7 @@ class ProfileAvatar extends StatelessWidget {
           border: Border.all(color: Colors.white, width: 6),
           image: DecorationImage(
             fit: BoxFit.cover,
-            image: NetworkImage(avatar),
+            image: NetworkImage(image!),
           ),
         ),
       );
