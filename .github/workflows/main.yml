@@ -9,12 +9,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'master'
-          # channel: 'stable'
+          channel: 'stable'
           cache: true
 
       - run: flutter pub get

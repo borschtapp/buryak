@@ -60,10 +60,8 @@ class UserService {
       if (account != null) {
         var auth = await account.authentication;
         final user = await UserRepository.oauthLogin('google', auth.accessToken);
-        if (user != null) {
-          await LocalStorage.setString(LocalStorage.userKey, jsonEncode(user.toJson()));
-          return user;
-        }
+        await LocalStorage.setString(LocalStorage.userKey, jsonEncode(user.toJson()));
+        return user;
       }
     } catch (error) {
       print(error);

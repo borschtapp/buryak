@@ -3,7 +3,7 @@ import 'unit.dart';
 
 class RecipeIngredient {
   int id;
-  double amount;
+  num amount;
   String? note;
   String text;
   Unit? unit;

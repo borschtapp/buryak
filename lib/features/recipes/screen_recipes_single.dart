@@ -92,7 +92,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
       children: [
         Expanded(
           child: Text(
-            recipe.name!,
+            recipe.name,
             style: context.textTheme.titleLarge,
           ),
         ),
@@ -132,8 +132,8 @@ class _RecipeScreenState extends State<RecipeScreen> {
             onTap: () => {
               if (recipe.author != null && recipe.author!.url != null)
                 {launchUrlString(recipe.author!.url!)}
-              else if (recipe.publisher != null && recipe.publisher!.url != null)
-                {launchUrlString(recipe.publisher!.url!)}
+              else if (recipe.publisher != null)
+                {launchUrlString(recipe.publisher!.url)}
             },
             child: Text(
               recipe.author != null ? recipe.author!.name! : '',

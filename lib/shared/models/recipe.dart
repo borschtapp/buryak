@@ -22,7 +22,7 @@ class Recipe {
   List<String>? categories;
   List<String>? cuisines;
   List<String>? keywords;
-  int? yield;
+  num? yield;
   List<String>? equipment;
   List<RecipeIngredient>? ingredients;
   List<RecipeInstruction>? instructions;
@@ -159,7 +159,7 @@ class Author {
 
 class Rating {
   int? count;
-  double? value;
+  num? value;
 
   Rating({
     this.count,

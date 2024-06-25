@@ -1,10 +1,5 @@
-import 'dart:convert';
-
 import 'package:buryak/shared/providers/user.dart';
-import 'package:buryak/shared/repositories/user_repository.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-
-import '../providers/storage.dart';
 
 class User {
   final int id;

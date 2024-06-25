@@ -34,10 +34,6 @@
   <link rel="manifest" href="manifest.json">
   <meta name="google-signin-client_id" content="339099570080-ajt9f3p31r11d9l72nq5allrv1h3ajq8.apps.googleusercontent.com" />
 
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    var serviceWorkerVersion = null;
-  </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 </head>
@@ -51,9 +47,9 @@
     window.addEventListener('load', function(ev) {
       var loading = document.querySelector('#loading');
       loading.textContent = "Loading entrypoint...";
-      _flutter.loader.loadEntrypoint({
+      _flutter.loader.load({
         serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
+          serviceWorkerVersion: '{{flutter_service_worker_version}}',
         },
         onEntrypointLoaded: async function(engineInitializer) {
           loading.textContent = "Initializing engine...";

@@ -76,10 +76,8 @@ class ThemeProvider {
   }
 
   AppBarTheme appBarTheme(ColorScheme colors) {
-    return AppBarTheme(
-      elevation: 0,
-      backgroundColor: colors.secondaryContainer,
-      foregroundColor: colors.onSurface,
+    return const AppBarTheme(
+      elevation: 0
     );
   }
 
@@ -98,29 +96,18 @@ class ThemeProvider {
     );
   }
 
-  BottomAppBarTheme bottomAppBarTheme(ColorScheme colors) {
-    return BottomAppBarTheme(
-      color: colors.surface,
-      elevation: 0,
-    );
-  }
-
-  BottomNavigationBarThemeData bottomNavigationBarTheme(ColorScheme colors) {
-    return BottomNavigationBarThemeData(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: colors.surfaceVariant,
-      selectedItemColor: colors.onSurface,
-      unselectedItemColor: colors.onSurfaceVariant,
-      elevation: 0,
-      landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
-    );
-  }
-
   NavigationBarThemeData navigationBarTheme(ColorScheme colors) {
     return NavigationBarThemeData(
-      backgroundColor: colors.surfaceVariant,
+      backgroundColor: colors.surface,
       surfaceTintColor: colors.surfaceTint,
       indicatorColor: colors.primaryContainer,
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return IconThemeData(color: colors.onPrimaryContainer);
+        }
+
+        return IconThemeData(color: colors.onSurface);
+      }),
       elevation: 1,
     );
   }
@@ -135,33 +122,36 @@ class ThemeProvider {
     );
   }
 
-  SystemUiOverlayStyle systemUiOverlayStyle(Brightness platformBrightness) {
-    if (platformBrightness == Brightness.dark) {
-      return SystemUiOverlayStyle.dark.copyWith(
-        systemNavigationBarColor: const Color(0xFF2A2730),
-      );
-    } else {
-      return SystemUiOverlayStyle.light.copyWith(
-        systemNavigationBarColor: const Color(0xFFE0D8E8),
-      );
-    }
+  SystemUiOverlayStyle systemUiOverlayStyle(BuildContext context) {
+    final theme = Theme.of(context);
+    return (theme.brightness == Brightness.light ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark).copyWith(
+      systemNavigationBarColor: theme.colorScheme.onTertiary,
+    );
   }
 
-  ThemeData light([Color? targetColor]) {
+  ThemeData themeLight([Color? targetColor]) {
     final originalTheme = ThemeData.light(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
-      primary: const Color(0xFF9D3E56),
-      onPrimary: const Color(0xFFFFFFFF),
-      primaryContainer: const Color(0xFFFFD9DE),
-      onPrimaryContainer: const Color(0xFF3F0016),
-      secondary: const Color(0xFFA92F5A),
-      onSecondary: const Color(0xFFFFFFFF),
-      secondaryContainer: const Color(0xFFFFD9E0),
-      onSecondaryContainer: const Color(0xFF3F0019),
-      tertiary: const Color(0xFF576500),
-      onTertiary: const Color(0xFFFFFFFF),
-      tertiaryContainer: const Color(0xFFD9ED73),
-      onTertiaryContainer: const Color(0xFF191E00),
+      primary: const Color(0xFF680019),
+      onPrimary: const Color(0xFFFFB3B6),
+      primaryContainer: const Color(0xFFFFDADA),
+      onPrimaryContainer: const Color(0xFF900828),
+      secondary: const Color(0xFF003829),
+      onSecondary: const Color(0xFF66DBB2),
+      secondaryContainer: const Color(0xFF83F8CD),
+      onSecondaryContainer: const Color(0xFF00513C),
+      tertiary: const Color(0xFF201A1A),
+      onTertiary: const Color(0xFFECE0DF),
+      tertiaryContainer: const Color(0xFFDBC9C7),
+      onTertiaryContainer: const Color(0xFF635656),
+      surface: const Color(0xFFECE0DF),
+      onSurface: const Color(0xFF2E2525),
+      outline: const Color(0xFF635656),
+      surfaceContainerHighest: const Color(0xFFA29494),
+      onSurfaceVariant: const Color(0xFF443737),
+      error: const Color(0xFF690005),
+      onError: const Color(0xFFFFB4AB),
+      onErrorContainer: const Color(0xFF93000A),
     );
 
     return originalTheme.copyWith(
@@ -170,30 +160,37 @@ class ThemeProvider {
       appBarTheme: appBarTheme(colorScheme),
       cardTheme: cardTheme(),
       listTileTheme: listTileTheme(colorScheme),
-      bottomAppBarTheme: bottomAppBarTheme(colorScheme),
-      bottomNavigationBarTheme: bottomNavigationBarTheme(colorScheme),
       navigationBarTheme: navigationBarTheme(colorScheme),
       navigationRailTheme: navigationRailTheme(colorScheme),
       tabBarTheme: tabBarTheme(colorScheme),
       drawerTheme: drawerTheme(colorScheme),
+      scaffoldBackgroundColor: colorScheme.surface,
     );
   }
 
-  ThemeData dark([Color? targetColor]) {
+  ThemeData themeDark([Color? targetColor]) {
     final originalTheme = ThemeData.dark(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
-      primary: const Color(0xFFFFB2BF),
-      onPrimary: const Color(0xFF610E29),
-      primaryContainer: const Color(0xFF7F263F),
-      onPrimaryContainer: const Color(0xFFFFD9DE),
-      secondary: const Color(0xFFFFB1C3),
-      onSecondary: const Color(0xFF66002D),
-      secondaryContainer: const Color(0xFF891443),
-      onSecondaryContainer: const Color(0xFFFFD9E0),
-      tertiary: const Color(0xFFBDD05A),
-      onTertiary: const Color(0xFF2C3400),
-      tertiaryContainer: const Color(0xFF414C00),
-      onTertiaryContainer: const Color(0xFFD9ED73),
+      primary: const Color(0xFFFFB3B6),
+      onPrimary: const Color(0xFF680019),
+      primaryContainer: const Color(0xFF900828),
+      onPrimaryContainer: const Color(0xFFFFDADA),
+      secondary: const Color(0xFF66DBB2),
+      onSecondary: const Color(0xFF003829),
+      secondaryContainer: const Color(0xFF00513C),
+      onSecondaryContainer: const Color(0xFF83F8CD),
+      tertiary: const Color(0xFFECE0DF),
+      onTertiary: const Color(0xFF201A1A),
+      tertiaryContainer: const Color(0xFF635656),
+      onTertiaryContainer: const Color(0xFFDBC9C7),
+      surface: const Color(0xFF2E2525),
+      onSurface: const Color(0xFFECE0DF),
+      outline: const Color(0xFF635656),
+      surfaceContainerHighest: const Color(0xFF443737),
+      onSurfaceVariant: const Color(0xFFA29494),
+      error: const Color(0xFFFFB4AB),
+      onError: const Color(0xFF690005),
+      onErrorContainer: const Color(0xFF93000A),
     );
 
     return originalTheme.copyWith(
@@ -202,12 +199,11 @@ class ThemeProvider {
       appBarTheme: appBarTheme(colorScheme),
       cardTheme: cardTheme(),
       listTileTheme: listTileTheme(colorScheme),
-      bottomAppBarTheme: bottomAppBarTheme(colorScheme),
-      bottomNavigationBarTheme: bottomNavigationBarTheme(colorScheme),
+      navigationBarTheme: navigationBarTheme(colorScheme),
       navigationRailTheme: navigationRailTheme(colorScheme),
       tabBarTheme: tabBarTheme(colorScheme),
       drawerTheme: drawerTheme(colorScheme),
-      scaffoldBackgroundColor: colorScheme.background,
+      scaffoldBackgroundColor: colorScheme.surface,
     );
   }
 }
