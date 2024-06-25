@@ -33,33 +33,15 @@
   <title>Borscht Cookbook</title>
   <link rel="manifest" href="manifest.json">
   <meta name="google-signin-client_id" content="339099570080-ajt9f3p31r11d9l72nq5allrv1h3ajq8.apps.googleusercontent.com" />
-
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer></script>
 </head>
 <body>
   <div class="loader-banner">
-    <img src="logo.png">
+    <img src="logo.png" alt="Borscht App">
     <div id="loading">Loading entrypoint...</div>
   </div>
 
   <script>
-    window.addEventListener('load', function(ev) {
-      var loading = document.querySelector('#loading');
-      loading.textContent = "Loading entrypoint...";
-      _flutter.loader.load({
-        serviceWorker: {
-          serviceWorkerVersion: '{{flutter_service_worker_version}}',
-        },
-        onEntrypointLoaded: async function(engineInitializer) {
-          loading.textContent = "Initializing engine...";
-          let appRunner = await engineInitializer.initializeEngine();
-
-          loading.textContent = "Running app...";
-          await appRunner.runApp();
-        }
-      });
-    });
+    {{flutter_bootstrap_js}}
   </script>
 </body>
 </html>
