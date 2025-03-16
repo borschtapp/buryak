@@ -1,30 +1,122 @@
-Uri buildUri(String path, [Map<String, dynamic /*String?|Iterable<String>*/ >? params]) {
-  return Uri(
-    scheme: 'https',
-    host: 'smetana.borscht.app',
-    // port: port,
-    path: '/api$path',
-    queryParameters: params,
-  );
-}
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
-Map<String, String> buildHeaders({String? accessToken}) {
-  Map<String, String> headers = {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-  };
-  if (accessToken != null) {
-    headers['Authorization'] = 'Bearer $accessToken';
+import '../providers/user.dart';
+
+/// Base URL config
+String baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://127.0.0.1:3000/api');
+
+/// Request Query Params
+typedef QueryParams = Map<String, dynamic>;
+
+/// Request Body
+typedef RequestBody = Map<String, dynamic>;
+
+/// Response Body
+typedef ResponseBody = dynamic;
+
+/// Api Header
+typedef ApiHeaderType = Map<String, String>;
+
+// Base class for API configuration, containing information such as path, method, authorization, and module.
+// The [module] attribute denotes the API's base path, specifying its category.
+abstract class Repository {
+  RequestMethod method;
+  String module;
+  String path;
+  bool isAuth;
+
+  Repository({
+    required this.method,
+    required this.module,
+    required this.path,
+    this.isAuth = true,
+  });
+
+  /// to generate full URL
+  String getUrlString({String? query}) {
+    return '$baseUrl$module$path${query ?? ""}';
   }
-  return headers;
+
+  /// redirection
+  Future<ResponseBody> sendRequest({QueryParams? queryParams, RequestBody? body, ApiHeaderType? headersCustom}) {
+    String query = '';
+    if (queryParams != null && queryParams.isNotEmpty) {
+      queryParams.forEach((key, value) {
+        if (value != null) {
+          query += '${query.isEmpty ? '?' : '&'}$key=${Uri.encodeComponent(value)}';
+        }
+      });
+    }
+    return RequestHandler.call(getUrlString(query: query), method,
+        authorized: isAuth, body: body, headersCustom: headersCustom);
+  }
 }
 
-class FormGeneralException implements Exception {
+enum RequestMethod { get, post, put, delete }
+
+extension MethodManager on RequestMethod {
+  Future<http.Response> request(Uri url, {Map<String, String>? headers, Object? body}) async {
+    switch (this) {
+      case RequestMethod.get:
+        return await http.get(url, headers: headers);
+      case RequestMethod.post:
+        return await http.post(url, headers: headers, body: body);
+      case RequestMethod.put:
+        return await http.put(url, headers: headers, body: body);
+      case RequestMethod.delete:
+        return await http.delete(url, headers: headers, body: body);
+    }
+  }
+}
+
+class RequestHandler {
+  /// The [urlString] is retrieved from api object.
+  /// The [method] is obtained using object.value.method.
+  /// For authorized requests, set [authorized] to true.
+  /// The [body] parameter stores the request parameters.
+  /// The [headersCustom] parameter holds custom header values.
+  /// For [RequestMethod.get] and [RequestMethod.delete], append the ID to the [urlString].
+  static Future<ResponseBody> call(String urlString, RequestMethod method,
+      {bool authorized = true, RequestBody? body, ApiHeaderType? headersCustom}) async {
+    try {
+      /// set the Headers
+      Map<String, String> headers = headersCustom ??
+          {
+            HttpHeaders.acceptHeader: "application/json",
+            HttpHeaders.contentTypeHeader: "application/json",
+            if (authorized) HttpHeaders.authorizationHeader: "Bearer ${UserService.getAccessToken()}",
+          };
+
+      /// Api call
+      final http.Response response =
+          await method.request(Uri.parse(urlString), headers: headers, body: json.encode(body));
+
+      final statusType = (response.statusCode / 100).floor() * 100;
+      switch (statusType) {
+        case 200:
+          final responseBody = json.decode(utf8.decode(response.bodyBytes));
+          return responseBody;
+        case 400:
+          final errorBody = json.decode(utf8.decode(response.bodyBytes));
+          throw handleFormErrors(errorBody);
+        case 300:
+        case 500:
+        default:
+          throw GeneralApiException(message: 'Error contacting the server!');
+      }
+    } catch (e) {
+      throw GeneralApiException(message: e.toString());
+    }
+  }
+}
+
+class GeneralApiException implements Exception {
   final String message;
 
-  FormGeneralException({
-    required this.message,
-  });
+  GeneralApiException({required this.message});
 
   @override
   String toString() {
@@ -32,10 +124,10 @@ class FormGeneralException implements Exception {
   }
 }
 
-class FormFieldsException extends FormGeneralException {
+class FieldsApiException extends GeneralApiException {
   final Map<String, dynamic> fields;
 
-  FormFieldsException({
+  FieldsApiException({
     required message,
     required this.fields,
   }) : super(message: message);
@@ -49,8 +141,8 @@ class FormFieldsException extends FormGeneralException {
 
 Exception handleFormErrors(Map<String, dynamic> json) {
   if (json['fields'] != null) {
-    return FormFieldsException(message: json['message'], fields: json['fields']);
+    return FieldsApiException(message: json['message'], fields: json['fields']);
   } else {
-    return FormGeneralException(message: json['message']);
+    return GeneralApiException(message: json['message']);
   }
 }

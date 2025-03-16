@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../shared/models/recipe.dart';
-import '../../shared/repositories/recipe_repository.dart';
 import '../../shared/repositories/repository.dart';
+import '../../shared/repositories/recipe_repository.dart';
 import '../../shared/validator.dart';
 import '../../shared/views/article_content.dart';
 
@@ -49,7 +49,7 @@ class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
         GoRouter.of(context).goNamed('recipe', pathParameters: {'rid': recipe.id.toString()});
       } catch (e) {
         String msg = e.toString();
-        if(e is FormGeneralException) {
+        if (e is GeneralApiException) {
           msg = e.message;
         }
 

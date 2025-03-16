@@ -1,111 +1,35 @@
-import 'dart:convert';
-
-import 'package:http/http.dart';
-
-import '../models/recipe.dart';
-import '../providers/user.dart';
 import 'repository.dart';
+import '../models/recipe.dart';
 
-class RecipeRepository {
+class RecipeRepository extends Repository {
+  RecipeRepository({required super.method, super.path = '', super.module = '/recipes', super.isAuth = true});
+
   static Future<List<Recipe>> findAll() async {
-    Response response = await get(buildUri('/recipes'),
-        headers: buildHeaders(accessToken: UserService.getAccessToken()));
-
-    final statusType = (response.statusCode / 100).floor() * 100;
-    switch (statusType) {
-      case 200:
-        final json = jsonDecode(response.body);
-        return json.map<Recipe>((json) => Recipe.fromJson(json)).toList();
-      case 400:
-        final json = jsonDecode(response.body);
-        throw handleFormErrors(json);
-      case 300:
-      case 500:
-      default:
-        throw FormGeneralException(message: 'Error contacting the server!');
-    }
+    ResponseBody response = await RecipeRepository(method: RequestMethod.get).sendRequest();
+    return response.map<Recipe>((json) => Recipe.fromJson(json)).toList();
   }
 
   static Future<Recipe> findOne(int recipeId) async {
-    Response response = await get(buildUri('/recipes/$recipeId'),
-        headers: buildHeaders(accessToken: UserService.getAccessToken()));
-
-    final statusType = (response.statusCode / 100).floor() * 100;
-    switch (statusType) {
-      case 200:
-        final json = jsonDecode(response.body);
-        return Recipe.fromJson(json);
-      case 400:
-        final json = jsonDecode(response.body);
-        throw handleFormErrors(json);
-      case 300:
-      case 500:
-      default:
-        throw FormGeneralException(message: 'Error contacting the server!');
-    }
+    ResponseBody response = await RecipeRepository(method: RequestMethod.get, path: '/$recipeId').sendRequest();
+    return Recipe.fromJson(response);
   }
 
   static Future<List<Recipe>> explore() async {
-    Response response = await get(buildUri('/recipes/explore'),
-        headers: buildHeaders(accessToken: UserService.getAccessToken()));
-
-    final statusType = (response.statusCode / 100).floor() * 100;
-    switch (statusType) {
-      case 200:
-        final json = jsonDecode(response.body);
-        return json.map<Recipe>((json) => Recipe.fromJson(json)).toList();
-      case 400:
-        final json = jsonDecode(response.body);
-        throw handleFormErrors(json);
-      case 300:
-      case 500:
-      default:
-        throw FormGeneralException(message: 'Error contacting the server!');
-    }
+    ResponseBody response = await RecipeRepository(method: RequestMethod.get, path: '/explore').sendRequest();
+    return response.map<Recipe>((json) => Recipe.fromJson(json)).toList();
   }
 
   static Future<Recipe> scrape(String url) async {
-    Response response = await get(buildUri('/recipes/scrape', {'url': url}),
-        headers: buildHeaders(accessToken: UserService.getAccessToken()));
-
-    final statusType = (response.statusCode / 100).floor() * 100;
-    switch (statusType) {
-      case 200:
-        final json = jsonDecode(response.body);
-        return Recipe.fromJson(json);
-      case 400:
-        final json = jsonDecode(response.body);
-        throw handleFormErrors(json);
-      case 300:
-      case 500:
-      default:
-        throw FormGeneralException(message: 'Error contacting the server!');
-    }
+    ResponseBody response =
+        await RecipeRepository(method: RequestMethod.get, path: '/scrape').sendRequest(queryParams: {'url': url});
+    return Recipe.fromJson(response);
   }
 
   static Future<void> save(int recipeId) async {
-    Response response = await post(buildUri('/recipes/$recipeId/save'),
-        headers: buildHeaders(accessToken: UserService.getAccessToken()));
-
-    final statusType = (response.statusCode / 100).floor() * 100;
-    switch (statusType) {
-      case 200:
-        return;
-      default:
-        throw FormGeneralException(message: response.body);
-    }
+    await RecipeRepository(method: RequestMethod.post, path: '/$recipeId/save').sendRequest();
   }
 
   static Future<void> unsave(int recipeId) async {
-    Response response = await delete(buildUri('/recipes/$recipeId/save'),
-        headers: buildHeaders(accessToken: UserService.getAccessToken()));
-
-    final statusType = (response.statusCode / 100).floor() * 100;
-    switch (statusType) {
-      case 200:
-        return;
-      default:
-        throw FormGeneralException(message: response.body);
-    }
+    await RecipeRepository(method: RequestMethod.delete, path: '/$recipeId/save').sendRequest();
   }
 }
