@@ -24,10 +24,10 @@ class Publisher {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'url': url,
-    'description': description,
-    'image': image,
-  };
+        'id': id,
+        'name': name,
+        'url': url,
+        'description': description,
+        'image': image,
+      };
 }

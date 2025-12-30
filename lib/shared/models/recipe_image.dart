@@ -21,9 +21,9 @@ class RecipeImage {
   }
 
   Map<String, dynamic> toJson() => {
-    'url': url,
-    'width': width,
-    'height': height,
-    'caption': caption,
-  };
+        'url': url,
+        'width': width,
+        'height': height,
+        'caption': caption,
+      };
 }

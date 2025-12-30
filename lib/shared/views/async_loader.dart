@@ -22,10 +22,7 @@ class AsyncLoader<T> extends StatelessWidget {
         }
 
         if (snapshot.hasError) {
-          return Text(
-            snapshot.error.toString(),
-            style: const TextStyle(color: Colors.cyan, fontSize: 36)
-          );
+          return Text(snapshot.error.toString(), style: const TextStyle(color: Colors.cyan, fontSize: 36));
         }
 
         return Center(
@@ -34,7 +31,7 @@ class AsyncLoader<T> extends StatelessWidget {
             children: [
               const CircularProgressIndicator(),
               const SizedBox(height: 8),
-              Text(this.loadingText ?? 'Loading...'),
+              Text(loadingText ?? 'Loading...'),
             ],
           ),
         );

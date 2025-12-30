@@ -30,12 +30,12 @@ class RecipeInstruction {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'order': order,
-    'title': title,
-    'text': text,
-    'url': url,
-    'image': image,
-    'video': video,
-  };
+        'id': id,
+        'order': order,
+        'title': title,
+        'text': text,
+        'url': url,
+        'image': image,
+        'video': video,
+      };
 }

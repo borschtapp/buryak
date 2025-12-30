@@ -128,9 +128,9 @@ class FieldsApiException extends GeneralApiException {
   final Map<String, dynamic> fields;
 
   FieldsApiException({
-    required message,
+    required super.message,
     required this.fields,
-  }) : super(message: message);
+  });
 
   @override
   String toString() {

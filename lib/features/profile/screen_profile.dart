@@ -49,7 +49,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 label: "Logout",
                 onTap: (context) async {
                   await UserService.logout();
-                  context.goNamed('login');
+                  if (context.mounted) {
+                    context.goNamed('login');
+                  }
                 },
               ),
             ],

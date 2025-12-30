@@ -1,7 +1,7 @@
 class Validator {
   static String? validateEmail(String value) {
     Pattern pattern = r'^[a-zA-Z0-9.]+(\+[a-zA-Z0-9.]+)?@[a-zA-Z0-9]+\.[a-zA-Z]+';
-    RegExp regex =  RegExp(pattern as String);
+    RegExp regex = RegExp(pattern as String);
     if (!regex.hasMatch(value)) {
       return 'Please enter a valid email address.';
     } else {
@@ -9,7 +9,7 @@ class Validator {
     }
   }
 
-  static String? validateDropDefaultData(value) {
+  static String? validateDropDefaultData(Object? value) {
     if (value == null) {
       return 'Please select an item.';
     } else {
@@ -19,7 +19,7 @@ class Validator {
 
   static String? validatePassword(String value) {
     Pattern pattern = r'^.{6,}$';
-    RegExp regex =  RegExp(pattern as String);
+    RegExp regex = RegExp(pattern as String);
     if (!regex.hasMatch(value)) {
       return 'Password must be at least 6 characters.';
     } else {
@@ -37,7 +37,7 @@ class Validator {
 
   static String? validateUrl(String value) {
     Pattern pattern = r'^https?:\/\/[^\s$.?#].[^\s]*$';
-    RegExp regex =  RegExp(pattern as String);
+    RegExp regex = RegExp(pattern as String);
     if (!regex.hasMatch(value)) {
       return 'Please enter a valid URL.';
     } else {

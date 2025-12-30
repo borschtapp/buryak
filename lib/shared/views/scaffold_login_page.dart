@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ScaffoldWithSimpleLayout extends StatelessWidget {
   final Widget child;
 
-  const ScaffoldWithSimpleLayout({Key? key, required this.child}) : super(key: key);
+  const ScaffoldWithSimpleLayout({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

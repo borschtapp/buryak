@@ -37,11 +37,13 @@ class AdaptiveNavigation extends StatelessWidget {
           extendBodyBehindAppBar: extendBodyBehindAppBar,
           appBar: buildMobileAppBar(context),
           floatingActionButton: floatingActionButton,
-          bottomNavigationBar: hideBottomNavigationBar ? null : NavigationBar(
-            destinations: destinations,
-            selectedIndex: selectedIndex,
-            onDestinationSelected: onDestinationSelected,
-          ),
+          bottomNavigationBar: hideBottomNavigationBar
+              ? null
+              : NavigationBar(
+                  destinations: destinations,
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: onDestinationSelected,
+                ),
         );
       }
 
@@ -53,18 +55,19 @@ class AdaptiveNavigation extends StatelessWidget {
         body: Row(
           children: [
             NavigationRail(
-              leading: floatingActionButton == null ? null : Column(
-                children: [
-                  floatingActionButton!,
-                  const SizedBox(height: 12),
-                ],
-              ),
+              leading: floatingActionButton == null
+                  ? null
+                  : Column(
+                      children: [
+                        floatingActionButton!,
+                        const SizedBox(height: 12),
+                      ],
+                    ),
               labelType: dimens.isDesktop ? NavigationRailLabelType.none : NavigationRailLabelType.all,
               extended: dimens.isDesktop,
               minExtendedWidth: 200,
-              destinations: destinations
-                  .map((e) => NavigationRailDestination(icon: e.icon, label: Text(e.label)))
-                  .toList(),
+              destinations:
+                  destinations.map((e) => NavigationRailDestination(icon: e.icon, label: Text(e.label))).toList(),
               selectedIndex: selectedIndex,
               onDestinationSelected: onDestinationSelected,
             ),
@@ -131,7 +134,6 @@ class TabletAppBar extends StatelessWidget {
                   ),
                 ],
               ),
-
               child,
             ],
           ),
@@ -140,4 +142,3 @@ class TabletAppBar extends StatelessWidget {
     );
   }
 }
-

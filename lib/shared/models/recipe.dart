@@ -91,40 +91,44 @@ class Recipe {
       created: DateTime.parse(json['created']),
       publisher: json['publisher'] != null ? Publisher.fromJson(json['publisher']) : null,
       images: json['images'] != null ? (json['images'] as List).map((i) => RecipeImage.fromJson(i)).toList() : null,
-      ingredients: json['ingredients'] != null ? (json['ingredients'] as List).map((i) => RecipeIngredient.fromJson(i)).toList() : null,
-      instructions: json['instructions'] != null ? (json['instructions'] as List).map((i) => RecipeInstruction.fromJson(i)).toList() : null,
+      ingredients: json['ingredients'] != null
+          ? (json['ingredients'] as List).map((i) => RecipeIngredient.fromJson(i)).toList()
+          : null,
+      instructions: json['instructions'] != null
+          ? (json['instructions'] as List).map((i) => RecipeInstruction.fromJson(i)).toList()
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'url': url,
-    'name': name,
-    'description': description,
-    'language': language,
-    'author': author?.toJson(),
-    'text': text,
-    'prep_time': prepTime,
-    'cook_time': cookTime,
-    'total_time': totalTime,
-    'difficulty': difficulty,
-    'method': method,
-    'diets': diets,
-    'categories': categories,
-    'cuisines': cuisines,
-    'keywords': keywords,
-    'yield': yield,
-    'equipment': equipment,
-    'rating': rating?.toJson(),
-    'video': video?.toJson(),
-    'published': published?.toIso8601String(),
-    'updated': updated.toIso8601String(),
-    'created': created.toIso8601String(),
-    'publisher': publisher?.toJson(),
-    'images': images?.map((x) => x.toJson()).toList(),
-    'ingredients': ingredients?.map((x) => x.toJson()).toList(),
-    'instructions': instructions?.map((x) => x.toJson()).toList(),
-  };
+        'id': id,
+        'url': url,
+        'name': name,
+        'description': description,
+        'language': language,
+        'author': author?.toJson(),
+        'text': text,
+        'prep_time': prepTime,
+        'cook_time': cookTime,
+        'total_time': totalTime,
+        'difficulty': difficulty,
+        'method': method,
+        'diets': diets,
+        'categories': categories,
+        'cuisines': cuisines,
+        'keywords': keywords,
+        'yield': yield,
+        'equipment': equipment,
+        'rating': rating?.toJson(),
+        'video': video?.toJson(),
+        'published': published?.toIso8601String(),
+        'updated': updated.toIso8601String(),
+        'created': created.toIso8601String(),
+        'publisher': publisher?.toJson(),
+        'images': images?.map((x) => x.toJson()).toList(),
+        'ingredients': ingredients?.map((x) => x.toJson()).toList(),
+        'instructions': instructions?.map((x) => x.toJson()).toList(),
+      };
 }
 
 class Author {
@@ -150,11 +154,11 @@ class Author {
   }
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'description': description,
-    'url': url,
-    'image': image,
-  };
+        'name': name,
+        'description': description,
+        'url': url,
+        'image': image,
+      };
 }
 
 class Rating {
@@ -174,9 +178,9 @@ class Rating {
   }
 
   Map<String, dynamic> toJson() => {
-    'count': count,
-    'value': value,
-  };
+        'count': count,
+        'value': value,
+      };
 }
 
 class Video {
@@ -205,10 +209,10 @@ class Video {
   }
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'description': description,
-    'embed_url': embedUrl,
-    'content_url': contentUrl,
-    'thumbnail_url': thumbnailUrl,
-  };
+        'name': name,
+        'description': description,
+        'embed_url': embedUrl,
+        'content_url': contentUrl,
+        'thumbnail_url': thumbnailUrl,
+      };
 }

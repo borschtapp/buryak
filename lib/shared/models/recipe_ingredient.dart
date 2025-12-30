@@ -30,11 +30,11 @@ class RecipeIngredient {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'amount': amount,
-    'note': note,
-    'text': text,
-    'unit': unit?.toJson(),
-    'food': food?.toJson(),
-  };
+        'id': id,
+        'amount': amount,
+        'note': note,
+        'text': text,
+        'unit': unit?.toJson(),
+        'food': food?.toJson(),
+      };
 }

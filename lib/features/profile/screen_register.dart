@@ -6,7 +6,7 @@ import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -23,11 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> registerUsers() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await UserService.registerUser(
-            nameController.text,
-            emailController.text,
-            passwordController.text
-        );
+        await UserService.registerUser(nameController.text, emailController.text, passwordController.text);
 
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();

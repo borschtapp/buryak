@@ -60,8 +60,8 @@ class ThemeProvider {
     );
   }
 
-  CardTheme cardTheme() {
-    return CardTheme(
+  CardThemeData cardTheme() {
+    return CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: shapeMedium),
       clipBehavior: Clip.antiAlias,
@@ -76,13 +76,11 @@ class ThemeProvider {
   }
 
   AppBarTheme appBarTheme(ColorScheme colors) {
-    return const AppBarTheme(
-      elevation: 0
-    );
+    return const AppBarTheme(elevation: 0);
   }
 
-  TabBarTheme tabBarTheme(ColorScheme colors) {
-    return TabBarTheme(
+  TabBarThemeData tabBarTheme(ColorScheme colors) {
+    return TabBarThemeData(
       labelColor: colors.secondary,
       unselectedLabelColor: colors.onSurfaceVariant,
       indicator: BoxDecoration(

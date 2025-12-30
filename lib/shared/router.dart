@@ -127,7 +127,6 @@ final router = GoRouter(
         ),
       ],
     ),
-
     GoRoute(
       name: 'explore',
       path: '/explore',
@@ -141,7 +140,6 @@ final router = GoRouter(
         ),
       ),
     ),
-
     GoRoute(
       name: 'planner',
       path: '/planner',
@@ -155,7 +153,6 @@ final router = GoRouter(
         ),
       ),
     ),
-
     GoRoute(
       name: 'shopping',
       path: '/shopping',
@@ -169,7 +166,6 @@ final router = GoRouter(
         ),
       ),
     ),
-
     GoRoute(
       name: 'profile',
       path: '/profile',
@@ -183,7 +179,6 @@ final router = GoRouter(
         ),
       ),
     ),
-
     GoRoute(
       name: 'login',
       path: '/login',
@@ -196,7 +191,6 @@ final router = GoRouter(
       builder: (context, state) => const RegisterScreen(),
       redirect: _loginGuard,
     ),
-
     GoRoute(
       name: 'privacy',
       path: '/privacy-policy',

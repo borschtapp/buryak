@@ -26,12 +26,12 @@ class Food {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'category': category?.toJson(),
-    'icon': icon,
-    'default_unit': defaultUnit?.toJson(),
-  };
+        'id': id,
+        'name': name,
+        'category': category?.toJson(),
+        'icon': icon,
+        'default_unit': defaultUnit?.toJson(),
+      };
 }
 
 class FoodCategory {
@@ -54,8 +54,8 @@ class FoodCategory {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'parent': parent?.toJson(),
-  };
+        'id': id,
+        'name': name,
+        'parent': parent?.toJson(),
+      };
 }

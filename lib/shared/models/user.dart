@@ -38,15 +38,15 @@ class User {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'email': email,
-    'image': image,
-    'updated': updated.toIso8601String(),
-    'created': created.toIso8601String(),
-    'access_token': accessToken,
-    'refresh_token': refreshToken,
-  };
+        'id': id,
+        'name': name,
+        'email': email,
+        'image': image,
+        'updated': updated.toIso8601String(),
+        'created': created.toIso8601String(),
+        'access_token': accessToken,
+        'refresh_token': refreshToken,
+      };
 
   bool isValidAccessToken() {
     final jwtData = JwtDecoder.decode(accessToken);
@@ -60,7 +60,9 @@ class User {
       () async {
         try {
           await UserService.refreshLogin();
-        } catch (e) {}
+        } catch (e) {
+          // ignore
+        }
       },
     );
     getNewToken();

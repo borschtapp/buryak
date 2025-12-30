@@ -17,7 +17,7 @@ class Instructions extends StatelessWidget {
         return Text(instructions[index].text);
       },
       separatorBuilder: (BuildContext context, int index) {
-        return Divider(color: Theme.of(context).colorScheme.secondary.withOpacity(0.1), height: 15);
+        return Divider(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1), height: 15);
       },
     );
   }

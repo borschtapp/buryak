@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
+import '../../shared/web_auth.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -18,6 +21,31 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (UniversalPlatform.isWeb) {
+      // authenticationEvents stream replaces onCurrentUserChanged in v7.
+      GoogleSignIn.instance.authenticationEvents.listen((event) async {
+        if (event is GoogleSignInAuthenticationEventSignIn) {
+          try {
+            await UserService.loginWithAccount(event.user);
+            if (mounted) {
+              context.goNamed('home');
+            }
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(e.toString()),
+                backgroundColor: Colors.red.shade300,
+              ));
+            }
+          }
+        }
+      });
+    }
+  }
 
   Future<void> login() async {
     if (_formKey.currentState!.validate()) {
@@ -45,7 +73,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> googleLogin() async {
     await UserService.googleLogin();
-    context.goNamed('home');
+    if (mounted) {
+      context.goNamed('home');
+    }
   }
 
   @override
@@ -149,33 +179,33 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 15),
-            ElevatedButton(
-              onPressed: googleLogin,
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 10,
+            if (UniversalPlatform.isWeb)
+              Center(child: renderGoogleSignInButton())
+            else
+              ElevatedButton(
+                onPressed: googleLogin,
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 20,
+                    horizontal: 10,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/icons/google.png'),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Continue with Google',
+                      style: textTheme.labelLarge,
+                    ),
+                  ],
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/icons/google.png'),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Continue with Google',
-                    style: textTheme.labelLarge,
-                  ),
-                ],
-              ),
-            ),
             const SizedBox(height: 15),
-            TextButton(
-              onPressed: () => context.goNamed('register'),
-              child: const Text('Register')
-            ),
+            TextButton(onPressed: () => context.goNamed('register'), child: const Text('Register')),
           ],
         ),
       ),

@@ -27,7 +27,8 @@ class RecipesGridView extends StatelessWidget {
           return InkWell(
             borderRadius: context.shapeSmall,
             child: RecipeTile(recipes[index].id, recipe, isFavorite: isFavorite),
-            onTap: () => GoRouter.of(context).pushNamed('recipe', pathParameters: {'rid': recipes[index].id.toString()}),
+            onTap: () =>
+                GoRouter.of(context).pushNamed('recipe', pathParameters: {'rid': recipes[index].id.toString()}),
           );
         },
       );

@@ -13,7 +13,6 @@ class RecipesScreen extends StatefulWidget {
 }
 
 class _RecipesScreenState extends State<RecipesScreen> {
-
   final Future<List<Recipe>> _recipesFuture = RecipeRepository.findAll();
 
   @override

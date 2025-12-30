@@ -36,11 +36,12 @@ class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
     );
   }
 
-  onPressed() async {
+  Future<void> onPressed() async {
     if (Validator.validateUrl(_textFieldController.text) == null) {
       try {
         Recipe recipe = await RecipeRepository.scrape(_textFieldController.text);
 
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Recipe imported.'),
           backgroundColor: Colors.green,
@@ -53,6 +54,7 @@ class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
           msg = e.message;
         }
 
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(msg),
           backgroundColor: Colors.red,
