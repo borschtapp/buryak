@@ -100,6 +100,7 @@ class TabletAppBar extends StatelessWidget {
   final bool isMobile;
   final AppBar? appBar;
   final String? appBarTitle;
+  final bool scrollable;
 
   const TabletAppBar({
     super.key,
@@ -107,6 +108,7 @@ class TabletAppBar extends StatelessWidget {
     required this.child,
     this.appBar,
     this.appBarTitle,
+    this.scrollable = true,
   });
 
   @override
@@ -115,30 +117,30 @@ class TabletAppBar extends StatelessWidget {
       return Container(alignment: Alignment.topLeft, child: child);
     }
 
-    return Container(
-      alignment: Alignment.topLeft,
-      child: SingleChildScrollView(
-        child: ArticleContent(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
+    final content = ArticleContent(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Row(
             children: [
+              appBar?.leading ?? BackButton(onPressed: () => context.popOrGoNamed('home')),
+              const SizedBox(width: 6),
+              if (appBarTitle != null) Text(appBarTitle!, style: Theme.of(context).textTheme.headlineSmall),
+              const Expanded(child: SizedBox()),
               Row(
-                children: [
-                  appBar?.leading ?? BackButton(onPressed: () => context.popOrGoNamed('home')),
-                  const SizedBox(width: 6),
-                  if (appBarTitle != null) Text(appBarTitle!, style: Theme.of(context).textTheme.headlineSmall),
-                  const Expanded(child: SizedBox()),
-                  Row(
-                    children: appBar?.actions ?? [],
-                  ),
-                ],
+                children: appBar?.actions ?? [],
               ),
-              child,
             ],
           ),
-        ),
+          if (scrollable) child else Expanded(child: child),
+        ],
       ),
+    );
+
+    return Container(
+      alignment: Alignment.topLeft,
+      child: scrollable ? SingleChildScrollView(child: content) : content,
     );
   }
 }

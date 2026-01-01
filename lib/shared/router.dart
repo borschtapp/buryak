@@ -15,6 +15,7 @@ import '../features/profile/screen_register.dart';
 import '../features/recipes/screen_recipes.dart';
 import '../features/recipes/screen_recipes_single.dart';
 import '../features/shopping/screen_shopping.dart';
+import '../features/profile/screen_settings.dart';
 
 const _pageKey = ValueKey('_pageKey');
 const _scaffoldKey = ValueKey('_scaffoldKey');
@@ -170,12 +171,23 @@ final router = GoRouter(
       name: 'profile',
       path: '/profile',
       redirect: _authGuard,
-      pageBuilder: (context, state) => const MaterialPage<void>(
+      pageBuilder: (context, state) => MaterialPage<void>(
         key: _pageKey,
         child: RootLayout(
           key: _scaffoldKey,
           currentIndex: 4,
-          child: ProfileScreen(),
+          appBar: AppBar(
+            title: const Text('Profile'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () => GoRouter.of(context).pushNamed('settings'),
+              ),
+              const SizedBox(width: 8),
+            ],
+          ),
+          child: const ProfileScreen(),
+          contentScrollable: false,
         ),
       ),
     ),
@@ -216,6 +228,21 @@ final router = GoRouter(
           appBarTitle: 'Terms of Use',
           hideBottomNavigationBar: true,
           child: TermsOfUseScreen(),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'settings',
+      path: '/settings',
+      pageBuilder: (context, state) => MaterialPage<void>(
+        key: state.pageKey,
+        child: const RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 4,
+          appBarTitle: 'Settings',
+          hideBottomNavigationBar: true,
+          contentScrollable: false,
+          child: SettingsScreen(),
         ),
       ),
     ),

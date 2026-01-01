@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
 import '../../shared/models/user.dart';
+import '../../shared/models/recipe.dart';
+import '../../shared/models/cookbook.dart';
+import '../../shared/repositories/recipe_repository.dart';
 import 'view_profile_details.dart';
+import 'view_profile_tabs.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/views/async_loader.dart';
 
@@ -15,6 +17,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final Future<User> _profileFuture = UserService.getUserModel();
+  final Future<List<Recipe>> _recipesFuture = RecipeRepository.findAll();
+  final List<Cookbook> _cookbooks = Cookbook.dummyData;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         String email = profile.email;
         String? image = profile.image;
 
-        return SingleChildScrollView(
+        return DefaultTabController(
+          length: 2,
           child: Column(
             children: [
               ProfileDetails(
@@ -33,26 +38,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 email: email,
                 image: image,
               ),
-              const SizedBox(height: 20),
-              ProfileMenuItem(
-                icon: const Icon(Icons.edit_document),
-                label: "Terms of Use",
-                onTap: (context) => context.pushNamed('terms'),
+              TabBar(
+                dividerColor: Colors.transparent,
+                labelColor: Theme.of(context).colorScheme.primary,
+                unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                indicatorSize: TabBarIndicatorSize.label,
+                tabs: const [
+                  Tab(text: "Recipes"),
+                  Tab(text: "Cookbooks"),
+                ],
               ),
-              ProfileMenuItem(
-                icon: const Icon(Icons.privacy_tip),
-                label: "Privacy Policy",
-                onTap: (context) => context.pushNamed('privacy'),
-              ),
-              ProfileMenuItem(
-                icon: const Icon(Icons.logout),
-                label: "Logout",
-                onTap: (context) async {
-                  await UserService.logout();
-                  if (context.mounted) {
-                    context.goNamed('login');
-                  }
-                },
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    AsyncLoader<List<Recipe>>(
+                      future: _recipesFuture,
+                      builder: (context, recipes) {
+                        return ProfileRecipesTab(recipes: recipes);
+                      },
+                    ),
+                    ProfileCookbooksTab(cookbooks: _cookbooks),
+                  ],
+                ),
               ),
             ],
           ),

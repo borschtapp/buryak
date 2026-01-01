@@ -16,6 +16,7 @@ class RootLayout extends StatelessWidget {
     this.floatingActionButton,
     this.hideBottomNavigationBar = false,
     this.extendBodyBehindAppBar = false,
+    this.contentScrollable = true,
   });
 
   final Widget child;
@@ -25,6 +26,7 @@ class RootLayout extends StatelessWidget {
   final bool hideBottomNavigationBar;
   final Widget? floatingActionButton;
   final bool extendBodyBehindAppBar;
+  final bool contentScrollable;
   static const _switcherKey = ValueKey('switcherKey');
   static const _navigationRailKey = ValueKey('navigationRailKey');
 
@@ -55,6 +57,7 @@ class RootLayout extends StatelessWidget {
                   isMobile: dimens.isMobile,
                   appBar: appBar,
                   appBarTitle: appBarTitle,
+                  scrollable: contentScrollable,
                   child: SelectionArea(
                     child: child,
                   ),
