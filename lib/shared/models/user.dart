@@ -1,15 +1,25 @@
 import 'package:buryak/shared/providers/user.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'household.dart';
 
+part 'user.g.dart';
+
+@JsonSerializable()
 class User {
-  final int id;
+  final String id;
   String email;
   String name;
   String? image;
   DateTime updated;
   DateTime created;
+  @JsonKey(name: 'access_token')
   String accessToken;
+  @JsonKey(name: 'refresh_token')
   String refreshToken;
+  @JsonKey(name: 'household_id')
+  String? householdId;
+  Household? household;
 
   User({
     required this.id,
@@ -20,51 +30,38 @@ class User {
     required this.created,
     required this.accessToken,
     required this.refreshToken,
+    this.householdId,
+    this.household,
   }) {
     getNewToken();
   }
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      email: json['email'],
-      name: json['name'],
-      image: json['image'],
-      updated: DateTime.parse(json['updated']),
-      created: DateTime.parse(json['created']),
-      accessToken: json['access_token'],
-      refreshToken: json['refresh_token'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'email': email,
-        'image': image,
-        'updated': updated.toIso8601String(),
-        'created': created.toIso8601String(),
-        'access_token': accessToken,
-        'refresh_token': refreshToken,
-      };
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 
   bool isValidAccessToken() {
     final jwtData = JwtDecoder.decode(accessToken);
-    return jwtData['exp'] < DateTime.now().millisecondsSinceEpoch;
+    return jwtData['exp'] * 1000 > DateTime.now().millisecondsSinceEpoch;
   }
 
   void getNewToken() async {
     final jwtData = JwtDecoder.decode(accessToken);
-    await Future.delayed(
-      Duration(milliseconds: jwtData['exp'] * 1000 - DateTime.now().millisecondsSinceEpoch),
-      () async {
-        try {
-          await UserService.refreshLogin();
-        } catch (e) {
-          // ignore
-        }
-      },
-    );
+    int exp = jwtData['exp'];
+    int now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    int waitSeconds = exp - now;
+
+    if (waitSeconds > 0) {
+      await Future.delayed(
+        Duration(seconds: waitSeconds),
+        () async {
+          try {
+            await UserService.refreshLogin();
+          } catch (e) {
+            // ignore
+          }
+        },
+      );
+    }
     getNewToken();
   }
 }

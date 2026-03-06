@@ -1,40 +1,36 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'food.dart';
 import 'unit.dart';
 
+part 'recipe_ingredient.g.dart';
+
+@JsonSerializable()
 class RecipeIngredient {
-  int id;
-  num amount;
-  String? note;
-  String text;
-  Unit? unit;
-  Food? food;
+  final String id;
+  final double? amount;
+  final String? kind;
+  final String? note;
+  @JsonKey(name: 'raw_text')
+  final String? rawText;
+  final Food? food;
+  @JsonKey(name: 'food_id')
+  final String? foodId;
+  final Unit? unit;
+  @JsonKey(name: 'unit_id')
+  final String? unitId;
 
   RecipeIngredient({
     required this.id,
-    required this.amount,
+    this.amount,
+    this.kind,
     this.note,
-    required this.text,
-    this.unit,
+    this.rawText,
     this.food,
+    this.foodId,
+    this.unit,
+    this.unitId,
   });
 
-  factory RecipeIngredient.fromJson(Map<String, dynamic> json) {
-    return RecipeIngredient(
-      id: json['id'],
-      amount: json['amount'],
-      note: json['note'],
-      text: json['text'],
-      unit: json['unit'] != null ? Unit.fromJson(json['unit']) : null,
-      food: json['food'] != null ? Food.fromJson(json['food']) : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'amount': amount,
-        'note': note,
-        'text': text,
-        'unit': unit?.toJson(),
-        'food': food?.toJson(),
-      };
+  factory RecipeIngredient.fromJson(Map<String, dynamic> json) => _$RecipeIngredientFromJson(json);
+  Map<String, dynamic> toJson() => _$RecipeIngredientToJson(this);
 }

@@ -1,0 +1,2490 @@
+definitions:
+  api.AddMemberForm:
+    properties:
+      email:
+        example: newmember@example.com
+        format: email
+        type: string
+    required:
+    - email
+    type: object
+  api.AuthResponse:
+    properties:
+      access_token:
+        type: string
+      created:
+        type: string
+      email:
+        type: string
+      household:
+        $ref: '#/definitions/domain.Household'
+      household_id:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      recipes:
+        items:
+          $ref: '#/definitions/domain.Recipe'
+        type: array
+      refresh_token:
+        type: string
+      updated:
+        type: string
+    type: object
+  api.CollectionForm:
+    properties:
+      description:
+        type: string
+      name:
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  api.ImportRequest:
+    properties:
+      update:
+        type: boolean
+      url:
+        type: string
+    required:
+    - url
+    type: object
+  api.LoginForm:
+    properties:
+      email:
+        minLength: 6
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  api.MealPlanForm:
+    properties:
+      date:
+        example: "2024-12-25"
+        format: date
+        type: string
+      meal_type:
+        enum:
+        - breakfast
+        - lunch
+        - dinner
+        example: dinner
+        type: string
+      note:
+        type: string
+      recipe_id:
+        type: string
+      servings:
+        example: 4
+        minimum: 1
+        type: integer
+    required:
+    - date
+    - meal_type
+    type: object
+  api.RegisterForm:
+    properties:
+      email:
+        minLength: 6
+        type: string
+      name:
+        minLength: 2
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  api.RenewForm:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  api.ShoppingListForm:
+    properties:
+      name:
+        example: Milk
+        type: string
+      quantity:
+        example: 2
+        type: number
+      unit_id:
+        type: string
+    required:
+    - name
+    type: object
+  api.SubscribeRequest:
+    properties:
+      url:
+        type: string
+    required:
+    - url
+    type: object
+  api.UpdateCollectionForm:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  api.UpdateHouseholdForm:
+    properties:
+      name:
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  api.UpdateMealPlanForm:
+    properties:
+      date:
+        example: "2024-12-26"
+        format: date
+        type: string
+      meal_type:
+        enum:
+        - breakfast
+        - lunch
+        - dinner
+        example: lunch
+        type: string
+      note:
+        type: string
+      recipe_id:
+        type: string
+      servings:
+        example: 2
+        minimum: 1
+        type: integer
+    type: object
+  api.UpdateShoppingListForm:
+    properties:
+      is_bought:
+        example: true
+        type: boolean
+      name:
+        example: Organic Milk
+        type: string
+      quantity:
+        example: 1
+        type: number
+    type: object
+  api.UpdateUserForm:
+    properties:
+      email:
+        example: john@example.com
+        format: email
+        minLength: 6
+        type: string
+      name:
+        example: John Doe
+        minLength: 2
+        type: string
+    type: object
+  domain.Author:
+    properties:
+      description:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      url:
+        type: string
+    type: object
+  domain.Collection:
+    properties:
+      description:
+        type: string
+      household:
+        $ref: '#/definitions/domain.Household'
+      household_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      recipes:
+        items:
+          $ref: '#/definitions/domain.Recipe'
+        type: array
+      user_id:
+        type: string
+    type: object
+  domain.Error:
+    properties:
+      fields:
+        additionalProperties:
+          type: string
+        type: object
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  domain.Feed:
+    properties:
+      active:
+        type: boolean
+      created:
+        type: string
+      error_count:
+        type: integer
+      households:
+        items:
+          $ref: '#/definitions/domain.Household'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      publisher:
+        $ref: '#/definitions/domain.Publisher'
+      recipes:
+        items:
+          $ref: '#/definitions/domain.Recipe'
+        type: array
+      retrieved:
+        description: last successful retrieval time
+        type: string
+      updated:
+        type: string
+      url:
+        type: string
+    type: object
+  domain.Food:
+    properties:
+      default_unit:
+        $ref: '#/definitions/domain.Unit'
+      default_unit_id:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      taxonomies:
+        items:
+          $ref: '#/definitions/domain.Taxonomy'
+        type: array
+    type: object
+  domain.Household:
+    properties:
+      collections:
+        items:
+          $ref: '#/definitions/domain.Collection'
+        type: array
+      feeds:
+        items:
+          $ref: '#/definitions/domain.Feed'
+        type: array
+      id:
+        type: string
+      members:
+        items:
+          $ref: '#/definitions/domain.User'
+        type: array
+      name:
+        type: string
+      shopping_lists:
+        items:
+          $ref: '#/definitions/domain.ShoppingList'
+        type: array
+    type: object
+  domain.MealPlan:
+    properties:
+      date:
+        type: string
+      household_id:
+        type: string
+      id:
+        type: string
+      meal_type:
+        description: breakfast, lunch, dinner
+        type: string
+      note:
+        type: string
+      recipe:
+        $ref: '#/definitions/domain.Recipe'
+      recipe_id:
+        type: string
+      servings:
+        type: integer
+    type: object
+  domain.Nutrition:
+    properties:
+      calories:
+        description: The number of calories.
+        example: 450.5
+        type: number
+      carbs:
+        description: The number of grams of carbohydrates.
+        example: 60
+        type: number
+      carbs_fiber:
+        description: The number of grams of fiber.
+        example: 4.5
+        type: number
+      carbs_sugar:
+        description: The number of grams of sugar.
+        example: 10
+        type: number
+      cholesterol:
+        description: The number of milligrams of cholesterol.
+        example: 35
+        type: number
+      fat:
+        description: The number of grams of fat.
+        example: 15.2
+        type: number
+      fat_saturated:
+        description: The number of grams of saturated fat.
+        example: 5.1
+        type: number
+      fat_trans:
+        description: The number of grams of trans fat.
+        example: 0.1
+        type: number
+      protein:
+        description: The number of grams of protein.
+        example: 22
+        type: number
+      serving_size:
+        description: The serving size, in terms of the number of volume or mass.
+        example: 1 plate
+        type: string
+      sodium:
+        description: The number of milligrams of sodium.
+        example: 250
+        type: number
+    type: object
+  domain.Publisher:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      url:
+        type: string
+    type: object
+  domain.Rating:
+    properties:
+      count:
+        type: integer
+      reviews:
+        type: integer
+      value:
+        type: number
+    type: object
+  domain.Recipe:
+    properties:
+      author:
+        $ref: '#/definitions/domain.Author'
+      collections:
+        items:
+          $ref: '#/definitions/domain.Collection'
+        type: array
+      cook_time:
+        example: 1200
+        type: integer
+      created:
+        format: date-time
+        type: string
+      description:
+        example: A classic Italian pasta dish made with eggs, cheese, pancetta, and
+          pepper.
+        type: string
+      difficulty:
+        example: Medium
+        type: string
+      equipment:
+        example:
+        - '["Large pot"'
+        - ' "Frying pan"]'
+        items:
+          type: string
+        type: array
+      feed:
+        $ref: '#/definitions/domain.Feed'
+      feed_id:
+        type: string
+      household_id:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/domain.RecipeImage'
+        type: array
+      ingredients:
+        items:
+          $ref: '#/definitions/domain.RecipeIngredient'
+        type: array
+      instructions:
+        items:
+          $ref: '#/definitions/domain.RecipeInstruction'
+        type: array
+      is_based_on:
+        type: string
+      language:
+        example: en
+        type: string
+      method:
+        example: Stovetop
+        type: string
+      name:
+        example: Spaghetti Carbonara
+        type: string
+      nutrition:
+        $ref: '#/definitions/domain.Nutrition'
+      parent_id:
+        type: string
+      prep_time:
+        example: 900
+        type: integer
+      published:
+        format: date-time
+        type: string
+      publisher:
+        $ref: '#/definitions/domain.Publisher'
+      rating:
+        $ref: '#/definitions/domain.Rating'
+      taxonomies:
+        items:
+          $ref: '#/definitions/domain.Taxonomy'
+        type: array
+      text:
+        type: string
+      total_time:
+        example: 2100
+        type: integer
+      updated:
+        format: date-time
+        type: string
+      url:
+        type: string
+      user_id:
+        type: string
+      video:
+        $ref: '#/definitions/domain.Video'
+      yield:
+        example: 4
+        type: integer
+    type: object
+  domain.RecipeImage:
+    properties:
+      caption:
+        type: string
+      height:
+        type: integer
+      url:
+        type: string
+      width:
+        type: integer
+    type: object
+  domain.RecipeIngredient:
+    properties:
+      amount:
+        type: number
+      food:
+        $ref: '#/definitions/domain.Food'
+      food_id:
+        type: string
+      id:
+        type: string
+      kind:
+        description: '"main", "secondary", "essential"'
+        type: string
+      note:
+        type: string
+      raw_text:
+        description: original unparsed value
+        type: string
+      unit:
+        $ref: '#/definitions/domain.Unit'
+      unit_id:
+        type: string
+    type: object
+  domain.RecipeInstruction:
+    properties:
+      id:
+        type: string
+      image:
+        type: string
+      order:
+        type: integer
+      parent:
+        $ref: '#/definitions/domain.RecipeInstruction'
+      parent_id:
+        type: string
+      text:
+        type: string
+      title:
+        type: string
+      url:
+        type: string
+      video:
+        type: string
+    type: object
+  domain.ShoppingList:
+    properties:
+      household_id:
+        type: string
+      id:
+        type: string
+      is_bought:
+        type: boolean
+      product:
+        type: string
+      quantity:
+        type: number
+      unit:
+        $ref: '#/definitions/domain.Unit'
+      unit_id:
+        type: string
+    type: object
+  domain.Taxonomy:
+    properties:
+      canonical:
+        $ref: '#/definitions/domain.Taxonomy'
+      canonical_id:
+        description: For merging/aliases
+        type: string
+      foods:
+        items:
+          $ref: '#/definitions/domain.Food'
+        type: array
+      id:
+        type: string
+      label:
+        type: string
+      parent:
+        $ref: '#/definitions/domain.Taxonomy'
+      parent_id:
+        type: string
+      recipes:
+        items:
+          $ref: '#/definitions/domain.Recipe'
+        type: array
+      slug:
+        type: string
+      type:
+        description: diet, category, cuisine, keyword
+        type: string
+      units:
+        items:
+          $ref: '#/definitions/domain.Unit'
+        type: array
+    type: object
+  domain.Unit:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      taxonomies:
+        items:
+          $ref: '#/definitions/domain.Taxonomy'
+        type: array
+    type: object
+  domain.UploadedImage:
+    properties:
+      height:
+        type: integer
+      path:
+        type: string
+      width:
+        type: integer
+    type: object
+  domain.User:
+    properties:
+      created:
+        type: string
+      email:
+        type: string
+      household:
+        $ref: '#/definitions/domain.Household'
+      household_id:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      recipes:
+        items:
+          $ref: '#/definitions/domain.Recipe'
+        type: array
+      updated:
+        type: string
+    type: object
+  domain.Video:
+    properties:
+      content_url:
+        type: string
+      description:
+        type: string
+      embed_url:
+        type: string
+      name:
+        type: string
+      thumbnail_url:
+        type: string
+    type: object
+  handlers.SuccessMessage:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  types.ListResponse-domain_Collection:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Collection'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.ListResponse-domain_Feed:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Feed'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.ListResponse-domain_MealPlan:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.MealPlan'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.ListResponse-domain_Publisher:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Publisher'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.ListResponse-domain_Recipe:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Recipe'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.ListResponse-domain_ShoppingList:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.ShoppingList'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.ListResponse-domain_Taxonomy:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Taxonomy'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.ListResponse-domain_User:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.User'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.Meta:
+    properties:
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: The backend API for Borscht app.
+  license:
+    name: MIT license
+    url: https://opensource.org/license/mit/
+  title: Smetana API
+  version: "1.0"
+paths:
+  /_health:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SuccessMessage'
+      summary: Show the status of server.
+      tags:
+      - root
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user by email and password, returning access and refresh
+        tokens.
+      parameters:
+      - description: Login credentials
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/api.LoginForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      summary: Authenticate user and return tokens.
+      tags:
+      - auth
+  /api/v1/auth/oidc/callback:
+    get:
+      description: Handles the callback from the identity provider and issues local
+        tokens.
+      parameters:
+      - description: CSRF State
+        in: query
+        name: state
+        required: true
+        type: string
+      - description: Auth Code
+        in: query
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.Error'
+      summary: OIDC Consumer.
+      tags:
+      - auth
+  /api/v1/auth/oidc/login:
+    get:
+      description: Redirects the user to the configured OIDC provider.
+      responses:
+        "302":
+          description: Found
+      summary: OIDC Initiator.
+      tags:
+      - auth
+  /api/v1/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refresh access token using a valid refresh token.
+      parameters:
+      - description: Refresh token
+        in: body
+        name: refresh
+        required: true
+        schema:
+          $ref: '#/definitions/api.RenewForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      summary: Refresh access token.
+      tags:
+      - auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with name, email, and password. Creates an
+        associated personal Household.
+      parameters:
+      - description: User registration data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/api.RegisterForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/api.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/domain.Error'
+      summary: Create a new user.
+      tags:
+      - auth
+  /api/v1/collections:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns collections associated with the user's household.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_Collection'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: List user's collections.
+      tags:
+      - collections
+    post:
+      consumes:
+      - application/json
+      description: Create a new recipe collection for the current household.
+      parameters:
+      - description: Collection data
+        in: body
+        name: collection
+        required: true
+        schema:
+          $ref: '#/definitions/api.CollectionForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new collection.
+      tags:
+      - collections
+  /api/v1/collections/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: Delete a collection.
+      parameters:
+      - description: Collection ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete collection.
+      tags:
+      - collections
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: Collection ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Collection'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Returns a collection with all its recipes.
+      tags:
+      - collections
+    patch:
+      consumes:
+      - application/json
+      description: Rename collection or manage its recipes.
+      parameters:
+      - description: Collection ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Collection update data
+        in: body
+        name: collection
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateCollectionForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update collection.
+      tags:
+      - collections
+  /api/v1/collections/{id}/recipes/{recipeId}:
+    delete:
+      parameters:
+      - description: Collection ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Recipe ID
+        in: path
+        name: recipeId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove a recipe from a collection.
+      tags:
+      - collections
+    post:
+      parameters:
+      - description: Collection ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Recipe ID
+        in: path
+        name: recipeId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a recipe to a collection.
+      tags:
+      - collections
+  /api/v1/feeds:
+    get:
+      consumes:
+      - application/json
+      description: ByIDWithRecipes all feeds the user is subscribed to.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_Feed'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: List subscriptions
+      tags:
+      - feeds
+    post:
+      consumes:
+      - application/json
+      description: Subscribe to a valid RSS/Atom feed URL.
+      parameters:
+      - description: Subscribe request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.SubscribeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Feed'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Subscribe to an RSS feed
+      tags:
+      - feeds
+  /api/v1/feeds/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Unsubscribe from a feed by ID.
+      parameters:
+      - description: Feed ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Unsubscribe from a feed
+      tags:
+      - feeds
+  /api/v1/feeds/stream:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_Recipe'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: List a timeline of recipes from subscribed feeds.
+      tags:
+      - feeds
+  /api/v1/households/{id}:
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: Household ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Household'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Returns the details of a specific household.
+      tags:
+      - households
+    patch:
+      consumes:
+      - application/json
+      description: Rename a specific household.
+      parameters:
+      - description: Household ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Household data
+        in: body
+        name: household
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateHouseholdForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Household'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update household by ID.
+      tags:
+      - households
+  /api/v1/households/{id}/members:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns a list of users in a specific household.
+      parameters:
+      - description: Household ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: List household members by household ID.
+      tags:
+      - households
+    post:
+      consumes:
+      - application/json
+      description: Assigns a user to a specific household by email.
+      parameters:
+      - description: Household ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Member data
+        in: body
+        name: member
+        required: true
+        schema:
+          $ref: '#/definitions/api.AddMemberForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a member to the household by household ID.
+      tags:
+      - households
+  /api/v1/households/{id}/members/{userId}:
+    delete:
+      consumes:
+      - '*/*'
+      description: Disassociates a user from a specific household.
+      parameters:
+      - description: Household ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove a member from the household by IDs.
+      tags:
+      - households
+  /api/v1/mealplan:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns meal plan entries for the current household. Supports date
+        range filtering.
+      parameters:
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: from
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: to
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_MealPlan'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: List meal plan entries.
+      tags:
+      - mealplan
+    post:
+      consumes:
+      - application/json
+      description: Adds a new entry to the household's meal plan.
+      parameters:
+      - description: Meal plan data
+        in: body
+        name: mealplan
+        required: true
+        schema:
+          $ref: '#/definitions/api.MealPlanForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.MealPlan'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Schedule a meal.
+      tags:
+      - mealplan
+  /api/v1/mealplan/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: Remove a meal from the plan.
+      parameters:
+      - description: Meal Plan ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Cancel a meal.
+      tags:
+      - mealplan
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing meal plan entry (e.g. change date, servings,
+        or note).
+      parameters:
+      - description: Meal Plan ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Meal plan update data
+        in: body
+        name: mealplan
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateMealPlanForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.MealPlan'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Reschedule a meal.
+      tags:
+      - mealplan
+  /api/v1/publishers:
+    get:
+      consumes:
+      - '*/*'
+      description: List publishers stored in the database.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_Publisher'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: List all publishers.
+      tags:
+      - publishers
+  /api/v1/recipes:
+    get:
+      consumes:
+      - '*/*'
+      description: Query user's recipes by text, tags, or cuisine. Supports full-text
+        search on name/description. Taxonomies are comma-separated and used with OR
+        logic.
+      parameters:
+      - description: Text search
+        in: query
+        name: q
+        type: string
+      - description: Comma-separated taxonomy labels
+        in: query
+        name: taxonomies
+        type: string
+      - description: Cuisine filter (slug)
+        in: query
+        name: cuisine
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_Recipe'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Search recipes.
+      tags:
+      - recipes
+    post:
+      consumes:
+      - application/json
+      description: Create a new recipe from JSON body. The recipe is automatically
+        saved for the creator.
+      parameters:
+      - description: Recipe data
+        in: body
+        name: recipe
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Recipe'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Recipe'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new recipe.
+      tags:
+      - recipes
+  /api/v1/recipes/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: Delete a specific recipe by ID.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a recipe.
+      tags:
+      - recipes
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Recipe'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Return details of a specific recipe by its ID.
+      tags:
+      - recipes
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing recipe. Allows users to correct details.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated recipe data
+        in: body
+        name: recipe
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Recipe'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Recipe'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a recipe.
+      tags:
+      - recipes
+  /api/v1/recipes/{id}/favorite:
+    delete:
+      consumes:
+      - '*/*'
+      description: Remove a recipe from the "Favorites" list.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove a recipe from the user's collection.
+      tags:
+      - recipes
+    post:
+      consumes:
+      - '*/*'
+      description: Adds the recipe to the user's personal "Favorites" list.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Save a recipe.
+      tags:
+      - recipes
+  /api/v1/recipes/{id}/ingredients:
+    post:
+      consumes:
+      - application/json
+      description: Add a new ingredient to a recipe.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Ingredient data
+        in: body
+        name: ingredient
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RecipeIngredient'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.RecipeIngredient'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a recipe ingredient.
+      tags:
+      - recipes
+  /api/v1/recipes/{id}/ingredients/{ingredientId}:
+    delete:
+      consumes:
+      - '*/*'
+      description: Delete a specific recipe ingredient.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Ingredient ID
+        in: path
+        name: ingredientId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a recipe ingredient.
+      tags:
+      - recipes
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing recipe ingredient.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Ingredient ID
+        in: path
+        name: ingredientId
+        required: true
+        type: string
+      - description: Updated ingredient data
+        in: body
+        name: ingredient
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RecipeIngredient'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.RecipeIngredient'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a recipe ingredient.
+      tags:
+      - recipes
+  /api/v1/recipes/{id}/instructions:
+    post:
+      consumes:
+      - application/json
+      description: Add a new instruction to a recipe.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Instruction data
+        in: body
+        name: instruction
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RecipeInstruction'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.RecipeInstruction'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a recipe instruction.
+      tags:
+      - recipes
+  /api/v1/recipes/{id}/instructions/{instructionId}:
+    delete:
+      consumes:
+      - '*/*'
+      description: Delete a specific recipe instruction.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Instruction ID
+        in: path
+        name: instructionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a recipe instruction.
+      tags:
+      - recipes
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing recipe instruction.
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Instruction ID
+        in: path
+        name: instructionId
+        required: true
+        type: string
+      - description: Updated instruction data
+        in: body
+        name: instruction
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RecipeInstruction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.RecipeInstruction'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a recipe instruction.
+      tags:
+      - recipes
+  /api/v1/recipes/import:
+    post:
+      consumes:
+      - application/json
+      description: Backend attempts semantic extraction first, then AI extraction.
+        Returns the imported Recipe object.
+      parameters:
+      - description: Import request
+        in: body
+        name: import
+        required: true
+        schema:
+          $ref: '#/definitions/api.ImportRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Recipe'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Import a recipe from URL.
+      tags:
+      - recipes
+  /api/v1/shoppinglist:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns all shopping list items for the current household.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_ShoppingList'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: List shopping list items.
+      tags:
+      - shoppinglist
+    post:
+      consumes:
+      - application/json
+      description: Add a new item to the household shopping list.
+      parameters:
+      - description: Shopping list item data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/api.ShoppingListForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.ShoppingList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Add item to shopping list.
+      tags:
+      - shoppinglist
+  /api/v1/shoppinglist/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: Delete an item from the shopping list.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove shopping list item.
+      tags:
+      - shoppinglist
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing item on the shopping list.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Shopping list item data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateShoppingListForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ShoppingList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update shopping list item.
+      tags:
+      - shoppinglist
+  /api/v1/taxonomies:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns a list of all taxonomies. Supports filtering by type.
+      parameters:
+      - description: Filter by taxonomy type
+        in: query
+        name: type
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_Taxonomy'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: List all taxonomies.
+      tags:
+      - taxonomies
+  /api/v1/uploads:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload an image file via multipart form. Returns the public URL.
+      parameters:
+      - description: Image file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.UploadedImage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Upload an image.
+      tags:
+      - infrastructure
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: Delete the account of a specific user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user by ID.
+      tags:
+      - users
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Return details of a specific user.
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Update name or email of a specific user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User update data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateUserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update user by ID.
+      tags:
+      - users
+securityDefinitions:
+  ApiKeyAuth:
+    description: 'Bearer token authorization using JWT. Example: "Bearer {token}"'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -1,11 +1,19 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'recipe_instruction.g.dart';
+
+@JsonSerializable()
 class RecipeInstruction {
-  int id;
-  int? order;
-  String? title;
-  String text;
-  String? url;
-  String? image;
-  String? video;
+  final String id;
+  final int? order;
+  final String? title;
+  final String text;
+  final String? url;
+  final String? image;
+  final String? video;
+  @JsonKey(name: 'parent_id')
+  final String? parentId;
+  final RecipeInstruction? parent;
 
   RecipeInstruction({
     required this.id,
@@ -15,27 +23,10 @@ class RecipeInstruction {
     this.url,
     this.image,
     this.video,
+    this.parentId,
+    this.parent,
   });
 
-  factory RecipeInstruction.fromJson(Map<String, dynamic> json) {
-    return RecipeInstruction(
-      id: json['id'],
-      order: json['order'],
-      title: json['title'],
-      text: json['text'],
-      url: json['url'],
-      image: json['image'],
-      video: json['video'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'order': order,
-        'title': title,
-        'text': text,
-        'url': url,
-        'image': image,
-        'video': video,
-      };
+  factory RecipeInstruction.fromJson(Map<String, dynamic> json) => _$RecipeInstructionFromJson(json);
+  Map<String, dynamic> toJson() => _$RecipeInstructionToJson(this);
 }

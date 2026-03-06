@@ -1,21 +1,20 @@
+import 'package:json_annotation/json_annotation.dart';
+import 'taxonomy.dart';
+
+part 'unit.g.dart';
+
+@JsonSerializable()
 class Unit {
-  int id;
-  String name;
+  final String id;
+  final String name;
+  final List<Taxonomy>? taxonomies;
 
   Unit({
     required this.id,
     required this.name,
+    this.taxonomies,
   });
 
-  factory Unit.fromJson(Map<String, dynamic> json) {
-    return Unit(
-      id: json['id'],
-      name: json['name'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-      };
+  factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
+  Map<String, dynamic> toJson() => _$UnitToJson(this);
 }

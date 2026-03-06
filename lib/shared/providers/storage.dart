@@ -6,8 +6,8 @@ class LocalStorage {
   static const String userKey = 'user';
 
   static bool _init = false;
-  static Future init() async {
-    if (_init) return;
+  static Future<SharedPreferences> init() async {
+    if (_init) return _instance;
     _instance = await SharedPreferences.getInstance();
     _init = true;
     return _instance;

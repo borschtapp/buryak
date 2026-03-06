@@ -22,11 +22,24 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    unnecessary_const: true
+    prefer_single_quotes: true
+    always_declare_return_types: true
+    no_literal_bool_comparisons: true
+    use_key_in_widget_constructors: true
+    unnecessary_lambdas: true
+    require_trailing_commas: true
+    avoid_positional_boolean_parameters: true
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
 
 formatter:
   page_width: 120
+  trailing_commas: preserve
+
+analyzer:
+  language:
+    strict-casts: false
+    strict-inference: true
+    strict-raw-types: true

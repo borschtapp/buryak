@@ -1,29 +1,21 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'recipe_image.g.dart';
+
+@JsonSerializable()
 class RecipeImage {
-  String url;
-  int? width;
-  int? height;
-  String? caption;
+  final String? url;
+  final int? width;
+  final int? height;
+  final String? caption;
 
   RecipeImage({
+    this.url,
     this.width,
     this.height,
-    required this.url,
     this.caption,
   });
 
-  factory RecipeImage.fromJson(Map<String, dynamic> json) {
-    return RecipeImage(
-      width: json['width'],
-      height: json['height'],
-      url: json['url'],
-      caption: json['caption'],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'url': url,
-        'width': width,
-        'height': height,
-        'caption': caption,
-      };
+  factory RecipeImage.fromJson(Map<String, dynamic> json) => _$RecipeImageFromJson(json);
+  Map<String, dynamic> toJson() => _$RecipeImageToJson(this);
 }

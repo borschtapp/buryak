@@ -66,3 +66,20 @@ extension HumanizedDuration on Duration {
     return value;
   }
 }
+
+extension SecondsToDuration on int? {
+  String toFormattedDuration() {
+    if (this == null || this == 0) return 'n/a';
+    final duration = Duration(seconds: this!);
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes % 60;
+
+    if (hours > 0) {
+      if (minutes > 0) {
+        return '${hours}h ${minutes}m';
+      }
+      return '${hours}h';
+    }
+    return '${minutes}m';
+  }
+}

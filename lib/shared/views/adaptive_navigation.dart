@@ -30,52 +30,55 @@ class AdaptiveNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, dimens) {
-      if (dimens.isMobile) {
-        return Scaffold(
-          body: child,
-          extendBodyBehindAppBar: extendBodyBehindAppBar,
-          appBar: buildMobileAppBar(context),
-          floatingActionButton: floatingActionButton,
-          bottomNavigationBar: hideBottomNavigationBar
-              ? null
-              : NavigationBar(
-                  destinations: destinations,
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: onDestinationSelected,
-                ),
-        );
-      }
+    return LayoutBuilder(
+      builder: (context, dimens) {
+        if (dimens.isMobile) {
+          return Scaffold(
+            body: child,
+            extendBodyBehindAppBar: extendBodyBehindAppBar,
+            appBar: buildMobileAppBar(context),
+            floatingActionButton: floatingActionButton,
+            bottomNavigationBar: hideBottomNavigationBar
+                ? null
+                : NavigationBar(
+                    destinations: destinations,
+                    selectedIndex: selectedIndex,
+                    onDestinationSelected: onDestinationSelected,
+                  ),
+          );
+        }
 
-      return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: ThemeProvider.logo(context),
-        ),
-        body: Row(
-          children: [
-            NavigationRail(
-              leading: floatingActionButton == null
-                  ? null
-                  : Column(
-                      children: [
-                        floatingActionButton!,
-                        const SizedBox(height: 12),
-                      ],
-                    ),
-              labelType: dimens.isDesktop ? NavigationRailLabelType.none : NavigationRailLabelType.all,
-              extended: dimens.isDesktop,
-              minExtendedWidth: 200,
-              destinations:
-                  destinations.map((e) => NavigationRailDestination(icon: e.icon, label: Text(e.label))).toList(),
-              selectedIndex: selectedIndex,
-              onDestinationSelected: onDestinationSelected,
-            ),
-            Expanded(child: child),
-          ],
-        ),
-      );
-    });
+        return Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: ThemeProvider.logo(context),
+          ),
+          body: Row(
+            children: [
+              NavigationRail(
+                leading: floatingActionButton == null
+                    ? null
+                    : Column(
+                        children: [
+                          floatingActionButton!,
+                          const SizedBox(height: 12),
+                        ],
+                      ),
+                labelType: dimens.isDesktop ? NavigationRailLabelType.none : NavigationRailLabelType.all,
+                extended: dimens.isDesktop,
+                minExtendedWidth: 200,
+                destinations: destinations
+                    .map((e) => NavigationRailDestination(icon: e.icon, label: Text(e.label)))
+                    .toList(),
+                selectedIndex: selectedIndex,
+                onDestinationSelected: onDestinationSelected,
+              ),
+              Expanded(child: child),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   AppBar buildMobileAppBar(BuildContext context) {

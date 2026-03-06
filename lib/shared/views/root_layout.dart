@@ -32,42 +32,44 @@ class RootLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, dimens) {
-      void onSelected(int index) {
-        final destination = router.destinations[index];
-        GoRouter.of(context).go(destination.route);
-      }
+    return LayoutBuilder(
+      builder: (context, dimens) {
+        void onSelected(int index) {
+          final destination = router.destinations[index];
+          GoRouter.of(context).go(destination.route);
+        }
 
-      return AdaptiveNavigation(
-        key: _navigationRailKey,
-        appBar: appBar,
-        appBarTitle: appBarTitle,
-        hideBottomNavigationBar: hideBottomNavigationBar,
-        floatingActionButton: floatingActionButton,
-        extendBodyBehindAppBar: extendBodyBehindAppBar,
-        destinations: router.destinations.map((e) => NavigationDestination(icon: e.icon, label: e.label)).toList(),
-        selectedIndex: currentIndex,
-        onDestinationSelected: onSelected,
-        child: Column(
-          children: [
-            Expanded(
-              child: _Switcher(
-                key: _switcherKey,
-                child: TabletAppBar(
-                  isMobile: dimens.isMobile,
-                  appBar: appBar,
-                  appBarTitle: appBarTitle,
-                  scrollable: contentScrollable,
-                  child: SelectionArea(
-                    child: child,
+        return AdaptiveNavigation(
+          key: _navigationRailKey,
+          appBar: appBar,
+          appBarTitle: appBarTitle,
+          hideBottomNavigationBar: hideBottomNavigationBar,
+          floatingActionButton: floatingActionButton,
+          extendBodyBehindAppBar: extendBodyBehindAppBar,
+          destinations: router.destinations.map((e) => NavigationDestination(icon: e.icon, label: e.label)).toList(),
+          selectedIndex: currentIndex,
+          onDestinationSelected: onSelected,
+          child: Column(
+            children: [
+              Expanded(
+                child: _Switcher(
+                  key: _switcherKey,
+                  child: TabletAppBar(
+                    isMobile: dimens.isMobile,
+                    appBar: appBar,
+                    appBarTitle: appBarTitle,
+                    scrollable: contentScrollable,
+                    child: SelectionArea(
+                      child: child,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
-    });
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 

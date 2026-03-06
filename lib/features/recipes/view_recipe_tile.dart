@@ -5,9 +5,14 @@ import '../../shared/extensions.dart';
 import '../../shared/repositories/recipe_repository.dart';
 
 class RecipeTile extends StatefulWidget {
-  const RecipeTile(this.recipeId, this.recipe, {super.key, required this.isFavorite});
+  const RecipeTile(
+    this.recipeId,
+    this.recipe, {
+    super.key,
+    required this.isFavorite,
+  });
 
-  final int recipeId;
+  final String recipeId;
   final Recipe recipe;
   final bool isFavorite;
 
@@ -40,19 +45,20 @@ class _RecipeTileState extends State<RecipeTile> {
                   child: Container(
                     foregroundDecoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [
-                          Colors.black.withAlpha(200),
-                          Colors.transparent,
-                        ],
+                        colors: [Colors.black.withAlpha(200), Colors.transparent],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         stops: const [0, 0.3],
                       ),
                     ),
-                    child: Image.network(
-                      widget.recipe.images != null ? widget.recipe.images!.last.url : 'https://i.imgur.com/IRAxUoq.jpg',
-                      fit: BoxFit.cover,
-                    ),
+                    child: widget.recipe.images != null && widget.recipe.images!.isNotEmpty
+                        ? Image.network(
+                            widget.recipe.images!.last.url ?? '',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Image.asset('assets/images/recipe_placeholder.png', fit: BoxFit.cover),
+                          )
+                        : Image.asset('assets/images/recipe_placeholder.png', fit: BoxFit.cover),
                   ),
                 ),
                 Positioned(
@@ -70,10 +76,7 @@ class _RecipeTileState extends State<RecipeTile> {
                         saved = !saved;
                       });
                     },
-                    child: Icon(
-                      saved ? Icons.bookmark_added : Icons.bookmark_add_outlined,
-                      color: Colors.white,
-                    ),
+                    child: Icon(saved ? Icons.bookmark_added : Icons.bookmark_add_outlined, color: Colors.white),
                   ),
                 ),
               ],
@@ -98,7 +101,7 @@ class _RecipeTileState extends State<RecipeTile> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        widget.recipe.author != null ? widget.recipe.author!.name! : '',
+                        widget.recipe.author?.name ?? '',
                         style: Theme.of(context).textTheme.labelMedium,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -115,13 +118,13 @@ class _RecipeTileState extends State<RecipeTile> {
                       const SizedBox(width: 10),
                       const Icon(Icons.timer_outlined),
                       const SizedBox(width: 4),
-                      Text(widget.recipe.totalTime == null ? 'n/a' : '${widget.recipe.totalTime!}m'),
+                      Text(widget.recipe.totalTime.toFormattedDuration()),
                     ],
                   ),
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

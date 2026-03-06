@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/models/recipe.dart';
-import '../../shared/repositories/recipe_repository.dart';
+import '../../shared/repositories/feed_repository.dart';
 import '../../shared/views/async_loader.dart';
 import '../recipes/view_recipes_grid.dart';
+import '../../shared/providers/recipe_notifier.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -13,12 +14,31 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  final Future<List<Recipe>> _recipesFuture = RecipeRepository.explore();
+  late Future<List<Recipe>> _streamFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+    RecipeRefreshNotifier().addListener(_refresh);
+  }
+
+  @override
+  void dispose() {
+    RecipeRefreshNotifier().removeListener(_refresh);
+    super.dispose();
+  }
+
+  void _refresh() {
+    setState(() {
+      _streamFuture = FeedRepository.stream();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return AsyncLoader<List<Recipe>>(
-      future: _recipesFuture,
+      future: _streamFuture,
       builder: (context, results) {
         return RecipesGridView(results, isFavorite: false);
       },

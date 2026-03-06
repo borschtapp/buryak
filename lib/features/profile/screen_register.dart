@@ -32,10 +32,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red.shade300,
-          ));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(e.toString()), backgroundColor: Colors.red.shade300));
         }
       }
     }
@@ -52,88 +51,56 @@ class _RegisterScreenState extends State<RegisterScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Register an account',
-              style: textTheme.titleLarge,
-            ),
+            Text('Register an account', style: textTheme.titleLarge),
             const SizedBox(height: 35),
             TextFormField(
               controller: nameController,
+              onFieldSubmitted: (_) => registerUsers(),
               validator: (value) {
-                return Validator.validateName(value ?? "");
+                return Validator.validateName(value ?? '');
               },
               decoration: const InputDecoration(
                 labelText: 'Name',
                 isDense: true,
                 hintText: 'Oleh',
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ),
-                ),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width: 1)),
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width: 1)),
               ),
             ),
             const SizedBox(height: 20),
             TextFormField(
               controller: emailController,
+              onFieldSubmitted: (_) => registerUsers(),
               validator: (value) {
-                return Validator.validateEmail(value ?? "");
+                return Validator.validateEmail(value ?? '');
               },
               decoration: const InputDecoration(
                 labelText: 'Email',
                 isDense: true,
                 hintText: 'abc@example.com',
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ),
-                ),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width: 1)),
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width: 1)),
               ),
             ),
             const SizedBox(height: 20),
             TextFormField(
               obscureText: !_showPassword,
+              onFieldSubmitted: (_) => registerUsers(),
               controller: passwordController,
               validator: (value) {
-                return Validator.validatePassword(value ?? "");
+                return Validator.validatePassword(value ?? '');
               },
               decoration: InputDecoration(
                 labelText: 'Password',
                 isDense: true,
                 hintText: '********',
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ),
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ),
-                ),
+                enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width: 1)),
+                focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width: 1)),
                 suffixIcon: GestureDetector(
                   onTap: () {
                     setState(() => _showPassword = !_showPassword);
                   },
-                  child: Icon(
-                    _showPassword ? Icons.visibility_off : Icons.visibility,
-                  ),
+                  child: Icon(_showPassword ? Icons.visibility_off : Icons.visibility),
                 ),
               ),
             ),
@@ -142,44 +109,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onPressed: registerUsers,
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColorDark,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 10,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
               ),
-              child: Text(
-                'Register',
-                style: textTheme.labelLarge,
-              ),
+              child: Text('Register', style: textTheme.labelLarge),
             ),
+
             const SizedBox(height: 15),
-            ElevatedButton(
-              onPressed: () {},
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 10,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/icons/google.png'),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Continue with Google',
-                    style: textTheme.labelLarge,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 15),
-            TextButton(
-              onPressed: () => context.goNamed('login'),
-              child: const Text('Login'),
-            ),
+            TextButton(onPressed: () => context.goNamed('login'), child: const Text('Login')),
           ],
         ),
       ),

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:universal_platform/universal_platform.dart';
 
 import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
-import '../../shared/web_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,38 +19,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    if (UniversalPlatform.isWeb) {
-      // authenticationEvents stream replaces onCurrentUserChanged in v7.
-      GoogleSignIn.instance.authenticationEvents.listen((event) async {
-        if (event is GoogleSignInAuthenticationEventSignIn) {
-          try {
-            await UserService.loginWithAccount(event.user);
-            if (mounted) {
-              context.goNamed('home');
-            }
-          } catch (e) {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(e.toString()),
-                backgroundColor: Colors.red.shade300,
-              ));
-            }
-          }
-        }
-      });
-    }
-  }
-
   Future<void> login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await UserService.login(
-          emailController.text,
-          passwordController.text,
-        );
+        await UserService.login(emailController.text, passwordController.text);
 
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -62,19 +31,16 @@ class _LoginScreenState extends State<LoginScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red.shade300,
-          ));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.red.shade300,
+            ),
+          );
         }
       }
-    }
-  }
-
-  Future<void> googleLogin() async {
-    await UserService.googleLogin();
-    if (mounted) {
-      context.goNamed('home');
     }
   }
 
@@ -89,20 +55,15 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Welcome back',
-              style: textTheme.titleSmall,
-            ),
+            Text('Welcome back', style: textTheme.titleSmall),
             const SizedBox(height: 8),
-            Text(
-              'Login to your account',
-              style: textTheme.titleLarge,
-            ),
+            Text('Login to your account', style: textTheme.titleLarge),
             const SizedBox(height: 35),
             TextFormField(
               controller: emailController,
+              onFieldSubmitted: (_) => login(),
               validator: (value) {
-                return Validator.validateEmail(value ?? "");
+                return Validator.validateEmail(value ?? '');
               },
               decoration: const InputDecoration(
                 labelText: 'Email',
@@ -125,9 +86,10 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 20),
             TextFormField(
               obscureText: !_showPassword,
+              onFieldSubmitted: (_) => login(),
               controller: passwordController,
               validator: (value) {
-                return Validator.validatePassword(value ?? "");
+                return Validator.validatePassword(value ?? '');
               },
               decoration: InputDecoration(
                 labelText: 'Password',
@@ -149,9 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onTap: () {
                     setState(() => _showPassword = !_showPassword);
                   },
-                  child: Icon(
-                    _showPassword ? Icons.visibility_off : Icons.visibility,
-                  ),
+                  child: Icon(_showPassword ? Icons.visibility_off : Icons.visibility),
                 ),
               ),
             ),
@@ -159,53 +119,22 @@ class _LoginScreenState extends State<LoginScreen> {
             const Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Forgot password?'),
-              ],
+              children: [Text('Forgot password?')],
             ),
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: login,
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColorDark,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 10,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
               ),
-              child: Text(
-                'Login now',
-                style: textTheme.labelLarge,
-              ),
+              child: Text('Login now', style: textTheme.labelLarge),
             ),
             const SizedBox(height: 15),
-            if (UniversalPlatform.isWeb)
-              Center(child: renderGoogleSignInButton())
-            else
-              ElevatedButton(
-                onPressed: googleLogin,
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 20,
-                    horizontal: 10,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/icons/google.png'),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Continue with Google',
-                      style: textTheme.labelLarge,
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 15),
-            TextButton(onPressed: () => context.goNamed('register'), child: const Text('Register')),
+            TextButton(
+              onPressed: () => context.goNamed('register'),
+              child: const Text('Register'),
+            ),
           ],
         ),
       ),

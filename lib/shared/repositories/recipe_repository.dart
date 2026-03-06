@@ -1,35 +1,155 @@
 import 'repository.dart';
 import '../models/recipe.dart';
+import '../models/recipe_ingredient.dart';
+import '../models/recipe_instruction.dart';
+import '../providers/recipe_notifier.dart';
 
 class RecipeRepository extends Repository {
-  RecipeRepository({required super.method, super.path = '', super.module = '/recipes', super.isAuth = true});
+  RecipeRepository({
+    required super.method,
+    super.path = '',
+    super.module = '/api/v1/recipes',
+    super.isAuth = true,
+  });
 
-  static Future<List<Recipe>> findAll() async {
-    ResponseBody response = await RecipeRepository(method: RequestMethod.get).sendRequest();
-    return response.map<Recipe>((json) => Recipe.fromJson(json)).toList();
-  }
-
-  static Future<Recipe> findOne(int recipeId) async {
-    ResponseBody response = await RecipeRepository(method: RequestMethod.get, path: '/$recipeId').sendRequest();
-    return Recipe.fromJson(response);
-  }
-
-  static Future<List<Recipe>> explore() async {
-    ResponseBody response = await RecipeRepository(method: RequestMethod.get, path: '/explore').sendRequest();
-    return response.map<Recipe>((json) => Recipe.fromJson(json)).toList();
-  }
-
-  static Future<Recipe> scrape(String url) async {
+  static Future<List<Recipe>> findAll({
+    int? page,
+    int? limit,
+    String? q,
+    String? taxonomies,
+    String? cuisine,
+  }) async {
     ResponseBody response =
-        await RecipeRepository(method: RequestMethod.get, path: '/scrape').sendRequest(queryParams: {'url': url});
+        await RecipeRepository(
+          method: RequestMethod.get,
+        ).sendRequest(
+          queryParams: {
+            'q': ?q,
+            'taxonomies': ?taxonomies,
+            'cuisine': ?cuisine,
+            'page': ?page,
+            'limit': ?limit,
+          },
+        );
+    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json)).toList();
+  }
+
+  static Future<Recipe> findOne(String recipeId) async {
+    ResponseBody response = await RecipeRepository(
+      method: RequestMethod.get,
+      path: '/$recipeId',
+    ).sendRequest();
     return Recipe.fromJson(response);
   }
 
-  static Future<void> save(int recipeId) async {
-    await RecipeRepository(method: RequestMethod.post, path: '/$recipeId/save').sendRequest();
+  static Future<Recipe> create(Recipe recipe) async {
+    ResponseBody response = await RecipeRepository(
+      method: RequestMethod.post,
+    ).sendRequest(body: recipe.toJson());
+    Recipe created = Recipe.fromJson(response);
+    RecipeRefreshNotifier().notify();
+    return created;
   }
 
-  static Future<void> unsave(int recipeId) async {
-    await RecipeRepository(method: RequestMethod.delete, path: '/$recipeId/save').sendRequest();
+  static Future<Recipe> update(String id, Recipe recipe) async {
+    ResponseBody response = await RecipeRepository(
+      method: RequestMethod.patch,
+      path: '/$id',
+    ).sendRequest(body: recipe.toJson());
+    Recipe updated = Recipe.fromJson(response);
+    RecipeRefreshNotifier().notify();
+    return updated;
+  }
+
+  static Future<void> delete(String id) async {
+    await RecipeRepository(
+      method: RequestMethod.delete,
+      path: '/$id',
+    ).sendRequest();
+    RecipeRefreshNotifier().notify();
+  }
+
+  static Future<Recipe> import(String url, {bool update = false}) async {
+    ResponseBody response = await RecipeRepository(
+      method: RequestMethod.post,
+      path: '/import',
+    ).sendRequest(body: {'url': url, 'update': update});
+    Recipe imported = Recipe.fromJson(response);
+    RecipeRefreshNotifier().notify();
+    return imported;
+  }
+
+  static Future<void> save(String recipeId) async {
+    await RecipeRepository(
+      method: RequestMethod.post,
+      path: '/$recipeId/favorite',
+    ).sendRequest();
+    RecipeRefreshNotifier().notify();
+  }
+
+  static Future<void> unsave(String recipeId) async {
+    await RecipeRepository(
+      method: RequestMethod.delete,
+      path: '/$recipeId/favorite',
+    ).sendRequest();
+    RecipeRefreshNotifier().notify();
+  }
+
+  // Ingredients
+
+  static Future<RecipeIngredient> createIngredient(String recipeId, RecipeIngredient ingredient) async {
+    ResponseBody response = await RecipeRepository(
+      method: RequestMethod.post,
+      path: '/$recipeId/ingredients',
+    ).sendRequest(body: ingredient.toJson());
+    return RecipeIngredient.fromJson(response);
+  }
+
+  static Future<RecipeIngredient> updateIngredient(
+    String recipeId,
+    String ingredientId,
+    RecipeIngredient ingredient,
+  ) async {
+    ResponseBody response = await RecipeRepository(
+      method: RequestMethod.patch,
+      path: '/$recipeId/ingredients/$ingredientId',
+    ).sendRequest(body: ingredient.toJson());
+    return RecipeIngredient.fromJson(response);
+  }
+
+  static Future<void> deleteIngredient(String recipeId, String ingredientId) async {
+    await RecipeRepository(
+      method: RequestMethod.delete,
+      path: '/$recipeId/ingredients/$ingredientId',
+    ).sendRequest();
+  }
+
+  // Instructions
+
+  static Future<RecipeInstruction> createInstruction(String recipeId, RecipeInstruction instruction) async {
+    ResponseBody response = await RecipeRepository(
+      method: RequestMethod.post,
+      path: '/$recipeId/instructions',
+    ).sendRequest(body: instruction.toJson());
+    return RecipeInstruction.fromJson(response);
+  }
+
+  static Future<RecipeInstruction> updateInstruction(
+    String recipeId,
+    String instructionId,
+    RecipeInstruction instruction,
+  ) async {
+    ResponseBody response = await RecipeRepository(
+      method: RequestMethod.patch,
+      path: '/$recipeId/instructions/$instructionId',
+    ).sendRequest(body: instruction.toJson());
+    return RecipeInstruction.fromJson(response);
+  }
+
+  static Future<void> deleteInstruction(String recipeId, String instructionId) async {
+    await RecipeRepository(
+      method: RequestMethod.delete,
+      path: '/$recipeId/instructions/$instructionId',
+    ).sendRequest();
   }
 }

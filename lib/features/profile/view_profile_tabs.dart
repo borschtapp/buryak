@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 
-import '../../shared/models/cookbook.dart';
+import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/extensions.dart';
 
 class ProfileRecipesTab extends StatelessWidget {
-  final List<Recipe> recipes; // You might want to pass this or fetch it
+  final List<Recipe> recipes;
 
   const ProfileRecipesTab({super.key, required this.recipes});
 
   @override
   Widget build(BuildContext context) {
     if (recipes.isEmpty) {
-      return const Center(child: Text("No recipes yet."));
+      return const Center(
+        child: Text('No recipes yet.'),
+      );
     }
 
-    // We can reuse the existing RecipesGridView or create a similar one here
-    // For now, let's build a simple adaptive grid to demonstrate the layout.
     return Padding(
       padding: const EdgeInsets.all(16),
       child: GridView.builder(
         padding: EdgeInsets.zero,
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200, // Compact cards
+          maxCrossAxisExtent: 200,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
           childAspectRatio: 0.8,
@@ -37,9 +37,15 @@ class ProfileRecipesTab extends StatelessWidget {
               children: [
                 if (recipe.images != null && recipe.images!.isNotEmpty)
                   Image.network(
-                    recipe.images!.first.url,
+                    recipe.images!.first.url ?? '',
                     fit: BoxFit.cover,
-                  ),
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/images/recipe_placeholder.png',
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else
+                  Image.asset('assets/images/recipe_placeholder.png', fit: BoxFit.cover),
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -71,9 +77,9 @@ class ProfileRecipesTab extends StatelessWidget {
 }
 
 class ProfileCookbooksTab extends StatelessWidget {
-  final List<Cookbook> cookbooks;
+  final List<Collection> collections;
 
-  const ProfileCookbooksTab({super.key, required this.cookbooks});
+  const ProfileCookbooksTab({super.key, required this.collections});
 
   @override
   Widget build(BuildContext context) {
@@ -82,28 +88,27 @@ class ProfileCookbooksTab extends StatelessWidget {
       child: GridView.builder(
         padding: EdgeInsets.zero,
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 300, // Wider cards for cookbooks
+          maxCrossAxisExtent: 300,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
           childAspectRatio: 16 / 9,
         ),
-        itemCount: cookbooks.length,
+        itemCount: collections.length,
         itemBuilder: (context, index) {
-          final book = cookbooks[index];
+          final collection = collections[index];
           return Card(
             clipBehavior: Clip.antiAlias,
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Image.network(
-                    book.image,
-                    fit: BoxFit.cover,
+                  child: Container(
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.collections, size: 48, color: Colors.grey),
                   ),
                 ),
                 Positioned.fill(
-                    child: Container(
-                  color: Colors.black26,
-                )),
+                  child: Container(color: Colors.black26),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
@@ -111,24 +116,24 @@ class ProfileCookbooksTab extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        book.title,
+                        collection.name,
                         style: context.textTheme.titleMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        "${book.recipesCount} recipes",
+                        '${collection.recipes?.length ?? 0} recipes',
                         style: context.textTheme.bodySmall?.copyWith(color: Colors.white70),
                       ),
                     ],
                   ),
                 ),
-                Positioned(
+                const Positioned(
                   top: 8,
                   right: 8,
                   child: Icon(Icons.more_horiz, color: Colors.white),
-                )
+                ),
               ],
             ),
           );

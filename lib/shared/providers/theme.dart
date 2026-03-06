@@ -39,9 +39,12 @@ class ThemeProvider {
 
   static Widget logo(BuildContext context) {
     return SvgPicture.asset(
-      "assets/images/logo.svg",
+      'assets/images/logo.svg',
       height: kToolbarHeight + 20,
-      colorFilter: ColorFilter.mode(context.colors.onPrimaryContainer, BlendMode.srcIn),
+      colorFilter: ColorFilter.mode(
+        context.colors.onPrimaryContainer,
+        BlendMode.srcIn,
+      ),
     );
   }
 

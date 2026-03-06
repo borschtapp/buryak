@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import '../providers/user.dart';
 
 /// Base URL config
-String baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://127.0.0.1:3000/api');
+String baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://127.0.0.1:3000');
 
 /// Request Query Params
 typedef QueryParams = Map<String, dynamic>;
@@ -50,12 +50,17 @@ abstract class Repository {
         }
       });
     }
-    return RequestHandler.call(getUrlString(query: query), method,
-        authorized: isAuth, body: body, headersCustom: headersCustom);
+    return RequestHandler.call(
+      getUrlString(query: query),
+      method,
+      authorized: isAuth,
+      body: body,
+      headersCustom: headersCustom,
+    );
   }
 }
 
-enum RequestMethod { get, post, put, delete }
+enum RequestMethod { get, post, put, delete, patch }
 
 extension MethodManager on RequestMethod {
   Future<http.Response> request(Uri url, {Map<String, String>? headers, Object? body}) async {
@@ -68,6 +73,8 @@ extension MethodManager on RequestMethod {
         return await http.put(url, headers: headers, body: body);
       case RequestMethod.delete:
         return await http.delete(url, headers: headers, body: body);
+      case RequestMethod.patch:
+        return await http.patch(url, headers: headers, body: body);
     }
   }
 }
@@ -79,34 +86,61 @@ class RequestHandler {
   /// The [body] parameter stores the request parameters.
   /// The [headersCustom] parameter holds custom header values.
   /// For [RequestMethod.get] and [RequestMethod.delete], append the ID to the [urlString].
-  static Future<ResponseBody> call(String urlString, RequestMethod method,
-      {bool authorized = true, RequestBody? body, ApiHeaderType? headersCustom}) async {
+  static Future<ResponseBody> call(
+    String urlString,
+    RequestMethod method, {
+    bool authorized = true,
+    RequestBody? body,
+    ApiHeaderType? headersCustom,
+  }) async {
     try {
       /// set the Headers
-      Map<String, String> headers = headersCustom ??
+      Map<String, String> headers =
+          headersCustom ??
           {
-            HttpHeaders.acceptHeader: "application/json",
-            HttpHeaders.contentTypeHeader: "application/json",
-            if (authorized) HttpHeaders.authorizationHeader: "Bearer ${UserService.getAccessToken()}",
+            HttpHeaders.acceptHeader: 'application/json',
+            HttpHeaders.contentTypeHeader: 'application/json',
+            if (authorized) HttpHeaders.authorizationHeader: 'Bearer ${UserService.getAccessToken()}',
           };
 
       /// Api call
-      final http.Response response =
-          await method.request(Uri.parse(urlString), headers: headers, body: json.encode(body));
+      final http.Response response = await method.request(
+        Uri.parse(urlString),
+        headers: headers,
+        body: body != null ? json.encode(body) : null,
+      );
 
       final statusType = (response.statusCode / 100).floor() * 100;
+      final responseData = response.bodyBytes.isNotEmpty ? utf8.decode(response.bodyBytes) : null;
+
       switch (statusType) {
         case 200:
-          final responseBody = json.decode(utf8.decode(response.bodyBytes));
-          return responseBody;
+          if (response.statusCode == 204 || responseData == null || responseData.isEmpty) {
+            return null;
+          }
+          try {
+            return json.decode(responseData);
+          } catch (e) {
+            return responseData; // Return as string if not JSON
+          }
         case 400:
-          final errorBody = json.decode(utf8.decode(response.bodyBytes));
-          throw handleFormErrors(errorBody);
-        case 300:
-        case 500:
+          if (responseData == null || responseData.isEmpty) {
+            throw GeneralApiException(message: 'Request failed with status: ${response.statusCode}');
+          }
+          try {
+            final errorBody = json.decode(responseData);
+            throw handleFormErrors(errorBody);
+          } catch (e) {
+            if (e is GeneralApiException) rethrow;
+            throw GeneralApiException(message: 'Error ${response.statusCode}: $responseData');
+          }
         default:
-          throw GeneralApiException(message: 'Error contacting the server!');
+          throw GeneralApiException(
+            message: 'Server error: ${response.statusCode}${responseData != null ? ' - $responseData' : ''}',
+          );
       }
+    } on GeneralApiException {
+      rethrow;
     } catch (e) {
       throw GeneralApiException(message: e.toString());
     }
@@ -127,10 +161,7 @@ class GeneralApiException implements Exception {
 class FieldsApiException extends GeneralApiException {
   final Map<String, dynamic> fields;
 
-  FieldsApiException({
-    required super.message,
-    required this.fields,
-  });
+  FieldsApiException({required super.message, required this.fields});
 
   @override
   String toString() {
@@ -140,9 +171,13 @@ class FieldsApiException extends GeneralApiException {
 }
 
 Exception handleFormErrors(Map<String, dynamic> json) {
-  if (json['fields'] != null) {
-    return FieldsApiException(message: json['message'], fields: json['fields']);
+  final message = json['message']?.toString() ?? 'An error occurred';
+  if (json['fields'] != null && json['fields'] is Map) {
+    return FieldsApiException(
+      message: message,
+      fields: json['fields'] as Map<String, dynamic>,
+    );
   } else {
-    return GeneralApiException(message: json['message']);
+    return GeneralApiException(message: message);
   }
 }

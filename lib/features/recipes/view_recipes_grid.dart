@@ -8,30 +8,35 @@ import 'view_recipe_tile.dart';
 class RecipesGridView extends StatelessWidget {
   final List<Recipe> recipes;
   final bool isFavorite;
-  const RecipesGridView(this.recipes, {super.key, required this.isFavorite});
+  const RecipesGridView(
+    this.recipes, {
+    super.key,
+    required this.isFavorite,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return GridView.builder(
-        padding: const EdgeInsets.all(5),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: constraints.isMobile ? constraints.maxWidth ~/ 300 : constraints.maxWidth ~/ 350,
-          childAspectRatio: constraints.isMobile ? 1.2 : 1.1,
-          mainAxisSpacing: 1,
-          crossAxisSpacing: 1,
-        ),
-        itemCount: recipes.length,
-        itemBuilder: (context, index) {
-          final recipe = recipes[index];
-          return InkWell(
-            borderRadius: context.shapeSmall,
-            child: RecipeTile(recipes[index].id, recipe, isFavorite: isFavorite),
-            onTap: () =>
-                GoRouter.of(context).pushNamed('recipe', pathParameters: {'rid': recipes[index].id.toString()}),
-          );
-        },
-      );
-    });
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GridView.builder(
+          padding: const EdgeInsets.all(5),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: constraints.isMobile ? constraints.maxWidth ~/ 300 : constraints.maxWidth ~/ 350,
+            childAspectRatio: constraints.isMobile ? 1.2 : 1.1,
+            mainAxisSpacing: 1,
+            crossAxisSpacing: 1,
+          ),
+          itemCount: recipes.length,
+          itemBuilder: (context, index) {
+            final recipe = recipes[index];
+            return InkWell(
+              borderRadius: context.shapeSmall,
+              child: RecipeTile(recipe.id, recipe, isFavorite: isFavorite),
+              onTap: () => context.pushNamed('recipe', pathParameters: {'rid': recipe.id}),
+            );
+          },
+        );
+      },
+    );
   }
 }

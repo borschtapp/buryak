@@ -16,6 +16,7 @@ class ImportRecipeScreen extends StatefulWidget {
 
 class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
   final TextEditingController _textFieldController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,30 +25,40 @@ class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
         children: [
           TextField(
             controller: _textFieldController,
-            decoration: const InputDecoration(hintText: "Enter a recipe URL"),
+            decoration: const InputDecoration(hintText: 'Enter a recipe URL'),
+            textInputAction: TextInputAction.go,
+            onSubmitted: _isLoading ? null : (_) => onSubmitted(),
+            enabled: !_isLoading,
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: onPressed,
-            child: const Text('Import'),
-          ),
+          if (_isLoading)
+            const CircularProgressIndicator()
+          else
+            ElevatedButton(onPressed: onSubmitted, child: const Text('Import')),
         ],
       ),
     );
   }
 
-  Future<void> onPressed() async {
+  Future<void> onSubmitted() async {
     if (Validator.validateUrl(_textFieldController.text) == null) {
+      setState(() {
+        _isLoading = true;
+      });
       try {
-        Recipe recipe = await RecipeRepository.scrape(_textFieldController.text);
+        Recipe recipe = await RecipeRepository.import(_textFieldController.text);
 
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Recipe imported.'),
-          backgroundColor: Colors.green,
-        ));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(
+          const SnackBar(
+            content: Text('Recipe imported.'),
+            backgroundColor: Colors.green,
+          ),
+        );
 
-        GoRouter.of(context).goNamed('recipe', pathParameters: {'rid': recipe.id.toString()});
+        GoRouter.of(context).goNamed('recipe', pathParameters: {'rid': recipe.id});
       } catch (e) {
         String msg = e.toString();
         if (e is GeneralApiException) {
@@ -55,16 +66,26 @@ class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
         }
 
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(msg),
-          backgroundColor: Colors.red,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(msg),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(Validator.validateUrl(_textFieldController.text) ?? ''),
-        backgroundColor: Colors.red,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(Validator.validateUrl(_textFieldController.text) ?? ''),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 }
