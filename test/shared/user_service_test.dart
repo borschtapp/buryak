@@ -48,6 +48,10 @@ void main() {
         LocalStorage.userKey: jsonEncode(fakeUserJson(accessToken: kExpiredJwt)),
       });
 
+      // Suppress the immediate refreshLogin() HTTP call triggered by expired token
+      UserService.refreshLoginOverride = () async => false;
+      addTearDown(() => UserService.refreshLoginOverride = null);
+
       await UserService.init();
       expect(UserService.isLoggedIn(), isFalse);
     });
@@ -103,6 +107,24 @@ void main() {
 
       final stored = await LocalStorage.getString(LocalStorage.userKey);
       expect(stored, isNull);
+    });
+  });
+
+  group('UserService.getUserModel', () {
+    test('returns user when cached', () async {
+      FlutterSecureStorage.setMockInitialValues({
+        LocalStorage.userKey: jsonEncode(fakeUserJson()),
+      });
+
+      await UserService.init();
+      final user = UserService.getUserModel();
+      expect(user.id, equals('user-1'));
+      expect(user.email, equals('test@example.com'));
+    });
+
+    test('throws when no user is cached', () async {
+      await UserService.init();
+      expect(() => UserService.getUserModel(), throwsException);
     });
   });
 }

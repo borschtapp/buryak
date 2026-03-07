@@ -11,8 +11,13 @@ class UserService {
   static User? _currentUser;
   static Timer? _refreshTimer;
 
+  @visibleForTesting
+  static Future<bool> Function()? refreshLoginOverride;
+
   /// Call once at app startup after WidgetsFlutterBinding.ensureInitialized().
   static Future<void> init() async {
+    _cancelTokenRefresh();
+    _currentUser = null;
     try {
       final json = await LocalStorage.getString(LocalStorage.userKey);
       if (json != null) {
@@ -87,12 +92,12 @@ class UserService {
       final waitSeconds = exp - now;
 
       if (waitSeconds <= 0) {
-        unawaited(refreshLogin());
+        unawaited(refreshLoginOverride?.call() ?? refreshLogin());
         return;
       }
 
       _refreshTimer = Timer(Duration(seconds: waitSeconds), () async {
-        final success = await refreshLogin();
+        final success = await (refreshLoginOverride?.call() ?? refreshLogin());
         if (!success) {
           debugPrint('Token refresh failed; user logged out.');
         }
