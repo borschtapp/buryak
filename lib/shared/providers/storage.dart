@@ -1,30 +1,16 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LocalStorage {
-  static late final SharedPreferences _instance;
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   static const String userKey = 'user';
 
-  static bool _init = false;
-  static Future<SharedPreferences> init() async {
-    if (_init) return _instance;
-    _instance = await SharedPreferences.getInstance();
-    _init = true;
-    return _instance;
-  }
+  static Future<String?> getString(String key) => _storage.read(key: key);
 
-  static String? getString(String key) {
-    if (!_init) return null;
-    return _instance.getString(key);
-  }
+  static Future<void> setString(String key, String value) =>
+      _storage.write(key: key, value: value);
 
-  static Future<bool> setString(String key, String value) {
-    if (!_init) return Future.value(false);
-    return _instance.setString(key, value);
-  }
-
-  static Future<bool> remove(String key) {
-    if (!_init) return Future.value(false);
-    return _instance.remove(key);
-  }
+  static Future<void> remove(String key) => _storage.delete(key: key);
 }

@@ -25,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _profileFuture = UserService.getUserModel();
+    _profileFuture = Future.value(UserService.getUserModel());
     _recipesFuture = RecipeRepository.findAll(preload: 'images,collections,saved,publisher');
     _collectionsFuture = CollectionRepository.findAll(preload: 'recipes:5,recipes.images,total_recipes');
 

@@ -1,4 +1,3 @@
-import 'package:buryak/shared/providers/user.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'household.dart';
@@ -32,36 +31,17 @@ class User {
     required this.refreshToken,
     this.householdId,
     this.household,
-  }) {
-    getNewToken();
-  }
+  });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
 
   bool isValidAccessToken() {
-    final jwtData = JwtDecoder.decode(accessToken);
-    return jwtData['exp'] * 1000 > DateTime.now().millisecondsSinceEpoch;
-  }
-
-  void getNewToken() async {
-    final jwtData = JwtDecoder.decode(accessToken);
-    int exp = jwtData['exp'];
-    int now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    int waitSeconds = exp - now;
-
-    if (waitSeconds > 0) {
-      await Future.delayed(
-        Duration(seconds: waitSeconds),
-        () async {
-          try {
-            await UserService.refreshLogin();
-          } catch (e) {
-            // ignore
-          }
-        },
-      );
+    try {
+      final jwtData = JwtDecoder.decode(accessToken);
+      return jwtData['exp'] * 1000 > DateTime.now().millisecondsSinceEpoch;
+    } catch (_) {
+      return false;
     }
-    getNewToken();
   }
 }

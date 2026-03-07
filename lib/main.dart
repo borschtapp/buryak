@@ -3,13 +3,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'shared/app.dart';
-import 'shared/providers/storage.dart';
+import 'shared/providers/user.dart';
 
 void main() async {
-  await dotenv.load(fileName: 'dotenv', isOptional: true);
-
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalStorage.init();
+  await dotenv.load(fileName: 'dotenv', isOptional: true);
+  await UserService.init();
 
   usePathUrlStrategy();
   runApp(const MyApp());
