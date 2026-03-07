@@ -12,6 +12,7 @@ import '../features/explore/screen_explore.dart';
 import '../features/planner/screen_planner.dart';
 import '../features/profile/screen_login.dart';
 import '../features/profile/screen_profile.dart';
+import '../features/profile/screen_collection.dart';
 import '../features/profile/screen_register.dart';
 import '../features/recipes/screen_recipes.dart';
 import '../features/recipes/screen_recipes_single.dart';
@@ -88,6 +89,22 @@ final router = GoRouter(
       ),
     ),
     GoRoute(
+      name: 'collection',
+      path: '/collections/:cid',
+      redirect: _authGuard,
+      pageBuilder: (context, state) => MaterialPage<void>(
+        key: state.pageKey,
+        child: RootLayout(
+          key: _scaffoldKey,
+          currentIndex: 4,
+          hideBottomNavigationBar: true,
+          contentScrollable: false,
+          appBarTitle: 'Cookbook',
+          child: CollectionScreen(collectionId: state.pathParameters['cid']!),
+        ),
+      ),
+    ),
+    GoRoute(
       name: 'import',
       path: '/import',
       redirect: _authGuard,
@@ -155,7 +172,7 @@ final router = GoRouter(
             actions: [
               IconButton(
                 icon: const Icon(Icons.settings),
-                onPressed: () => GoRouter.of(context).pushNamed('settings'),
+                onPressed: () => GoRouter.of(context).goNamed('settings'),
               ),
               const SizedBox(width: 8),
             ],

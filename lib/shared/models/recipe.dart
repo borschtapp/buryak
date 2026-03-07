@@ -8,6 +8,7 @@ import 'recipe_instruction.dart';
 import 'nutrition.dart';
 import 'taxonomy.dart';
 import 'video.dart';
+import 'collection.dart';
 
 part 'recipe.g.dart';
 
@@ -45,6 +46,7 @@ class Recipe {
   final String? feedId;
   @JsonKey(name: 'is_based_on')
   final String? isBasedOn;
+  final List<Collection>? collections;
 
   Recipe({
     required this.id,
@@ -74,6 +76,7 @@ class Recipe {
     required this.created,
     this.feedId,
     this.isBasedOn,
+    this.collections,
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) => _$RecipeFromJson(json);

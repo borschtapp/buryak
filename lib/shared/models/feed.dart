@@ -22,6 +22,9 @@ class Feed {
   final List<Recipe>? recipes;
   final List<User>? users;
 
+  @JsonKey(name: 'total_recipes')
+  final int? totalRecipes;
+
   Feed({
     required this.id,
     required this.url,
@@ -35,6 +38,7 @@ class Feed {
     required this.updated,
     this.recipes,
     this.users,
+    this.totalRecipes,
   });
 
   factory Feed.fromJson(Map<String, dynamic> json) => _$FeedFromJson(json);

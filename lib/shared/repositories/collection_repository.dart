@@ -1,5 +1,7 @@
 import 'repository.dart';
 import '../models/collection.dart';
+import '../models/recipe.dart';
+import '../providers/collection_notifier.dart';
 
 class CollectionRepository extends Repository {
   CollectionRepository({
@@ -9,10 +11,28 @@ class CollectionRepository extends Repository {
     super.isAuth = true,
   });
 
-  static Future<List<Collection>> findAll({int? page, int? limit}) async {
+  static Future<List<Collection>> findAll({
+    required String preload,
+    String? q,
+    String? sort,
+    String? order,
+    int? page,
+    int? limit,
+    int? offset,
+  }) async {
     ResponseBody response = await CollectionRepository(
       method: RequestMethod.get,
-    ).sendRequest(queryParams: {'page': ?page, 'limit': ?limit});
+    ).sendRequest(
+      queryParams: {
+        'preload': preload,
+        'q': ?q,
+        'sort': ?sort,
+        'order': ?order,
+        'page': ?page,
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
     return (response['data'] as List).map<Collection>((json) => Collection.fromJson(json)).toList();
   }
 
@@ -34,7 +54,9 @@ class CollectionRepository extends Repository {
             'description': ?description,
           },
         );
-    return Collection.fromJson(response);
+    Collection created = Collection.fromJson(response);
+    CollectionRefreshNotifier().notify();
+    return created;
   }
 
   static Future<Collection> update(
@@ -54,13 +76,55 @@ class CollectionRepository extends Repository {
             'recipe_ids': ?recipeIds,
           },
         );
-    return Collection.fromJson(response);
+    Collection updated = Collection.fromJson(response);
+    CollectionRefreshNotifier().notify();
+    return updated;
   }
 
   static Future<void> delete(String id) async {
+    await CollectionRepository(method: RequestMethod.delete, path: '/$id').sendRequest();
+    CollectionRefreshNotifier().notify();
+  }
+
+  static Future<void> addRecipe(String collectionId, String recipeId) async {
+    await CollectionRepository(
+      method: RequestMethod.post,
+      path: '/$collectionId/recipes/$recipeId',
+    ).sendRequest();
+    CollectionRefreshNotifier().notify();
+  }
+
+  static Future<void> removeRecipe(String collectionId, String recipeId) async {
     await CollectionRepository(
       method: RequestMethod.delete,
-      path: '/$id',
+      path: '/$collectionId/recipes/$recipeId',
     ).sendRequest();
+    CollectionRefreshNotifier().notify();
+  }
+
+  static Future<List<Recipe>> getRecipes(String collectionId, {
+    required String preload,
+    String? q,
+    String? sort,
+    String? order,
+    int? page,
+    int? limit,
+    int? offset,
+  }) async {
+    ResponseBody response = await CollectionRepository(
+      method: RequestMethod.get,
+      path: '/$collectionId/recipes',
+    ).sendRequest(
+      queryParams: {
+        'preload': preload,
+        'q': ?q,
+        'sort': ?sort,
+        'order': ?order,
+        'page': ?page,
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json)).toList();
   }
 }

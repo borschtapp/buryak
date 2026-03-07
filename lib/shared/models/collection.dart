@@ -10,7 +10,12 @@ class Collection {
   final String? description;
   @JsonKey(name: 'household_id')
   final String? householdId;
+
+  // Warning, the fields below are most lickely empty
   final List<Recipe>? recipes;
+
+  @JsonKey(name: 'total_recipes')
+  final int? totalRecipes;
 
   Collection({
     required this.id,
@@ -18,6 +23,7 @@ class Collection {
     this.description,
     this.householdId,
     this.recipes,
+    this.totalRecipes,
   });
 
   factory Collection.fromJson(Map<String, dynamic> json) => _$CollectionFromJson(json);

@@ -31,7 +31,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
 
   void _refresh() {
     setState(() {
-      _recipesFuture = RecipeRepository.findAll();
+      _recipesFuture = RecipeRepository.findAll(preload: 'images,collections,saved,publisher');
     });
   }
 

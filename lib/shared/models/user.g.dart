@@ -16,7 +16,9 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
   accessToken: json['access_token'] as String,
   refreshToken: json['refresh_token'] as String,
   householdId: json['household_id'] as String?,
-  household: json['household'] == null ? null : Household.fromJson(json['household'] as Map<String, dynamic>),
+  household: json['household'] == null
+      ? null
+      : Household.fromJson(json['household'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{

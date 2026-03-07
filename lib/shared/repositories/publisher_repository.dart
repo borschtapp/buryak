@@ -9,14 +9,27 @@ class PublisherRepository extends Repository {
     super.isAuth = true,
   });
 
-  static Future<List<Publisher>> findAll({int? page, int? limit}) async {
+  static Future<List<Publisher>> findAll({
+    required String preload,
+    String? q,
+    String? sort,
+    String? order,
+    int? page,
+    int? limit,
+    int? offset,
+  }) async {
     ResponseBody response =
         await PublisherRepository(
           method: RequestMethod.get,
         ).sendRequest(
           queryParams: {
+            'preload': preload,
+            'q': ?q,
+            'sort': ?sort,
+            'order': ?order,
             'page': ?page,
             'limit': ?limit,
+            'offset': ?offset,
           },
         );
     return (response['data'] as List).map<Publisher>((json) => Publisher.fromJson(json)).toList();

@@ -10,14 +10,27 @@ class FeedRepository extends Repository {
     super.isAuth = true,
   });
 
-  static Future<List<Feed>> findAll({int? page, int? limit}) async {
+  static Future<List<Feed>> findAll({
+    required String preload,
+    String? q,
+    String? sort,
+    String? order,
+    int? page,
+    int? limit,
+    int? offset,
+  }) async {
     ResponseBody response =
         await FeedRepository(
           method: RequestMethod.get,
         ).sendRequest(
           queryParams: {
+            'preload': preload,
+            'q': ?q,
+            'sort': ?sort,
+            'order': ?order,
             'page': ?page,
             'limit': ?limit,
+            'offset': ?offset,
           },
         );
     return (response['data'] as List).map<Feed>((json) => Feed.fromJson(json)).toList();

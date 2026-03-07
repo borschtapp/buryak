@@ -7,6 +7,7 @@ import '../../shared/repositories/recipe_repository.dart';
 import 'view_profile_details.dart';
 import 'view_profile_tabs.dart';
 import '../../shared/providers/user.dart';
+import '../../shared/providers/collection_notifier.dart';
 import '../../shared/views/async_loader.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -17,9 +18,31 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final Future<User> _profileFuture = UserService.getUserModel();
-  final Future<List<Recipe>> _recipesFuture = RecipeRepository.findAll();
-  final Future<List<Collection>> _collectionsFuture = CollectionRepository.findAll();
+  late Future<User> _profileFuture;
+  late Future<List<Recipe>> _recipesFuture;
+  late Future<List<Collection>> _collectionsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileFuture = UserService.getUserModel();
+    _recipesFuture = RecipeRepository.findAll(preload: 'images,collections,saved,publisher');
+    _collectionsFuture = CollectionRepository.findAll(preload: 'recipes:5,recipes.images,total_recipes');
+
+    CollectionRefreshNotifier().addListener(_onCollectionRefresh);
+  }
+
+  @override
+  void dispose() {
+    CollectionRefreshNotifier().removeListener(_onCollectionRefresh);
+    super.dispose();
+  }
+
+  void _onCollectionRefresh() {
+    setState(() {
+      _collectionsFuture = CollectionRepository.findAll(preload: 'recipes:5,recipes.images,total_recipes');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

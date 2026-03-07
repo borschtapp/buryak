@@ -13,12 +13,19 @@ Feed _$FeedFromJson(Map<String, dynamic> json) => Feed(
   description: json['description'] as String?,
   websiteUrl: json['website_url'] as String?,
   active: json['active'] as bool?,
-  lastFetchedAt: json['last_fetched_at'] == null ? null : DateTime.parse(json['last_fetched_at'] as String),
+  lastFetchedAt: json['last_fetched_at'] == null
+      ? null
+      : DateTime.parse(json['last_fetched_at'] as String),
   errorCount: (json['error_count'] as num?)?.toInt(),
   created: DateTime.parse(json['created'] as String),
   updated: DateTime.parse(json['updated'] as String),
-  recipes: (json['recipes'] as List<dynamic>?)?.map((e) => Recipe.fromJson(e as Map<String, dynamic>)).toList(),
-  users: (json['users'] as List<dynamic>?)?.map((e) => User.fromJson(e as Map<String, dynamic>)).toList(),
+  recipes: (json['recipes'] as List<dynamic>?)
+      ?.map((e) => Recipe.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  users: (json['users'] as List<dynamic>?)
+      ?.map((e) => User.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  totalRecipes: (json['total_recipes'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$FeedToJson(Feed instance) => <String, dynamic>{
@@ -34,4 +41,5 @@ Map<String, dynamic> _$FeedToJson(Feed instance) => <String, dynamic>{
   'updated': instance.updated.toIso8601String(),
   'recipes': instance.recipes,
   'users': instance.users,
+  'total_recipes': instance.totalRecipes,
 };

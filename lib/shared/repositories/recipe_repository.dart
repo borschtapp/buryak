@@ -13,11 +13,15 @@ class RecipeRepository extends Repository {
   });
 
   static Future<List<Recipe>> findAll({
+    required String preload,
     int? page,
     int? limit,
     String? q,
     String? taxonomies,
     String? cuisine,
+    String? sort,
+    String? order,
+    int? offset,
   }) async {
     ResponseBody response =
         await RecipeRepository(
@@ -27,6 +31,10 @@ class RecipeRepository extends Repository {
             'q': ?q,
             'taxonomies': ?taxonomies,
             'cuisine': ?cuisine,
+            'preload': preload,
+            'sort': ?sort,
+            'order': ?order,
+            'offset': ?offset,
             'page': ?page,
             'limit': ?limit,
           },

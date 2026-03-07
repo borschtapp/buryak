@@ -13,7 +13,9 @@ MealPlan _$MealPlanFromJson(Map<String, dynamic> json) => MealPlan(
   note: json['note'] as String?,
   servings: (json['servings'] as num?)?.toInt(),
   recipeId: json['recipe_id'] as String?,
-  recipe: json['recipe'] == null ? null : Recipe.fromJson(json['recipe'] as Map<String, dynamic>),
+  recipe: json['recipe'] == null
+      ? null
+      : Recipe.fromJson(json['recipe'] as Map<String, dynamic>),
   householdId: json['household_id'] as String?,
 );
 
