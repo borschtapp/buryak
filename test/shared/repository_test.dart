@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:buryak/shared/repositories/repository.dart';
@@ -10,16 +9,10 @@ import '../helpers/fake_user.dart';
 
 // Minimal concrete Repository subclass for testing
 class _TestRepo extends Repository {
-  _TestRepo()
-      : super(method: RequestMethod.get, module: '/api', path: '/test');
+  _TestRepo() : super(method: RequestMethod.get, module: '/api', path: '/test');
 }
 
 void main() {
-  setUpAll(() {
-    // Initialize dotenv with an empty env so the fallback value is used.
-    dotenv.loadFromString(isOptional: true);
-  });
-
   setUp(() async {
     FlutterSecureStorage.setMockInitialValues({
       LocalStorage.userKey: jsonEncode(fakeUserJson()),
@@ -54,7 +47,9 @@ void main() {
     test('is a GeneralApiException', () {
       final e = FieldsApiException(
         message: 'Validation failed',
-        fields: {'email': ['taken']},
+        fields: {
+          'email': ['taken'],
+        },
       );
       expect(e, isA<GeneralApiException>());
     });
@@ -64,7 +59,9 @@ void main() {
     test('returns FieldsApiException when fields key is present', () {
       final json = {
         'message': 'Validation failed',
-        'fields': {'email': ['taken']},
+        'fields': {
+          'email': ['taken'],
+        },
       };
       final result = handleFormErrors(json);
       expect(result, isA<FieldsApiException>());
