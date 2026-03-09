@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../shared/models/recipe_ingredient.dart';
 import '../../shared/extensions.dart';
@@ -85,11 +86,11 @@ class Ingredients extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: const BoxDecoration(
-              color: Colors.green, // Placeholder color for icon
+            decoration: BoxDecoration(
+              color: context.colors.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.egg_alt, color: Colors.white), // Generic icon
+            child: _buildIngredientIcon(context, ingredient),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -105,5 +106,21 @@ class Ingredients extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildIngredientIcon(BuildContext context, RecipeIngredient ingredient) {
+    final icon = ingredient.food?.icon;
+    if (icon != null && icon.isNotEmpty) {
+      return ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: icon,
+          fit: BoxFit.cover,
+          errorWidget: (context, url, error) =>
+              Icon(Icons.shopping_basket_outlined, color: context.colors.onSurfaceVariant.withAlpha(150), size: 18),
+        ),
+      );
+    }
+
+    return Icon(Icons.shopping_basket_outlined, color: context.colors.onSurfaceVariant.withAlpha(150), size: 20);
   }
 }

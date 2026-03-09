@@ -104,7 +104,13 @@ final router = GoRouter(
         key: state.pageKey,
         child: RootLayout(
           currentIndex: 1,
-          child: ExploreScreen(),
+          floatingActionButton: Builder(
+            builder: (context) => FloatingActionButton(
+              onPressed: () => ExploreScreen.showAddFeedDialog(context),
+              child: const Icon(Icons.add),
+            ),
+          ),
+          child: const ExploreScreen(),
         ),
       ),
     ),

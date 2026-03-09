@@ -92,7 +92,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   Future<void> _showAddItemDialog() async {
     final items = await _itemsFuture;
     if (!mounted) return;
-    
+
     final controller = TextEditingController();
     final name = await showDialog<String>(
       context: context,

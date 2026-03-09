@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../shared/models/recipe_instruction.dart';
 import '../../shared/extensions.dart';
@@ -26,6 +27,30 @@ class Instructions extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
+              if (step.image != null) ...[
+                ClipRRect(
+                  borderRadius: context.shapeMedium,
+                  child: CachedNetworkImage(
+                    imageUrl: step.image!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    maxHeightDiskCache: 1200,
+                    placeholder: (context, url) => Container(
+                      height: 200,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: context.colors.surfaceContainerHighest,
+                        borderRadius: context.shapeMedium,
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const SizedBox.shrink(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               if (step.title != null) ...[
                 Text(step.title!, style: context.textTheme.titleMedium),
                 const SizedBox(height: 4),

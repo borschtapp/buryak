@@ -1,6 +1,7 @@
 import 'repository.dart';
 import '../models/feed.dart';
 import '../models/recipe.dart';
+import '../providers/feed_notifier.dart';
 
 class FeedRepository extends Repository {
   FeedRepository({
@@ -43,7 +44,9 @@ class FeedRepository extends Repository {
         ).sendRequest(
           body: {'url': url},
         );
-    return Feed.fromJson(response);
+    Feed feed = Feed.fromJson(response);
+    FeedRefreshNotifier().notify(action: 'create', feedId: feed.id, data: feed);
+    return feed;
   }
 
   static Future<void> unsubscribe(String id) async {
@@ -53,13 +56,14 @@ class FeedRepository extends Repository {
     ).sendRequest();
   }
 
-  static Future<List<Recipe>> stream({int? page, int? limit}) async {
+  static Future<List<Recipe>> stream({String? preload, int? page, int? limit}) async {
     ResponseBody response =
         await FeedRepository(
           method: RequestMethod.get,
           path: '/stream',
         ).sendRequest(
           queryParams: {
+            'preload': ?preload,
             'page': ?page,
             'limit': ?limit,
           },

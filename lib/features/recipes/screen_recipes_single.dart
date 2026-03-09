@@ -13,6 +13,8 @@ import '../../shared/views/root_layout.dart';
 import 'view_ingredients.dart';
 import 'view_instructions.dart';
 import 'view_recipe_actions.dart';
+import 'view_shopping_bottom_sheet.dart';
+import 'view_plan_bottom_sheet.dart';
 
 class RecipeScreen extends StatefulWidget {
   const RecipeScreen({super.key, required this.recipeId});
@@ -65,7 +67,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
               child: Column(
                 children: [
                   Expanded(child: buildMobile(context, recipe)),
-                  buildBottomBar(context),
+                  buildBottomBar(context, recipe),
                 ],
               ),
             );
@@ -294,7 +296,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
     );
   }
 
-  Widget buildBottomBar(BuildContext context) {
+  Widget buildBottomBar(BuildContext context, Recipe recipe) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
@@ -305,24 +307,36 @@ class _RecipeScreenState extends State<RecipeScreen> {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (context) => AddToShoppingBottomSheet(recipe: recipe),
+                );
+              },
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: BorderSide(color: context.colors.primary),
               ),
-              child: const Text('Add to'),
+              child: const Text('Add to shopping'),
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: FilledButton(
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (context) => AddToPlanBottomSheet(recipe: recipe),
+                );
+              },
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: const Color(0xFFFFB7B7), // Pinkish color from screenshot
-                foregroundColor: Colors.black,
+                backgroundColor: context.colors.primaryContainer,
+                foregroundColor: context.colors.onPrimaryContainer,
               ),
-              child: const Text('Go to cook'),
+              child: const Text('Add to plan'),
             ),
           ),
         ],

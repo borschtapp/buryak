@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../shared/extensions.dart';
 import '../../shared/models/meal_plan.dart';
@@ -49,6 +50,9 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 '${entry.servings ?? 1} serving${(entry.servings ?? 1) == 1 ? '' : 's'}',
                 style: context.textTheme.bodySmall,
               ),
+              onTap: entry.recipeId != null
+                  ? () => context.pushNamed('recipe', pathParameters: {'rid': entry.recipeId!})
+                  : null,
             );
           },
         );
