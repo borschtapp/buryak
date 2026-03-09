@@ -90,15 +90,14 @@ void main() {
   group('Repository.getUrlString', () {
     test('builds correct URL without query string', () {
       final repo = _TestRepo();
-      // baseUrl falls back to 'http://127.0.0.1:3000' when dotenv is absent
-      expect(repo.getUrlString(), equals('http://127.0.0.1:3000/api/test'));
+      expect(repo.getUrlString(), equals('https://smetana.borscht.app/api/test'));
     });
 
     test('appends query string when provided', () {
       final repo = _TestRepo();
       expect(
         repo.getUrlString(query: '?q=borscht'),
-        equals('http://127.0.0.1:3000/api/test?q=borscht'),
+        equals('https://smetana.borscht.app/api/test?q=borscht'),
       );
     });
   });
