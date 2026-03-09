@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:buryak/shared/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +19,7 @@ class NoAnimationPageTransitionsBuilder extends PageTransitionsBuilder {
 }
 
 class ThemeProvider {
-  final pageTransitionsTheme = const PageTransitionsTheme(
+  static const pageTransitionsTheme = PageTransitionsTheme(
     builders: <TargetPlatform, PageTransitionsBuilder>{
       TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
       TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
@@ -48,10 +46,6 @@ class ThemeProvider {
     );
   }
 
-  static Color randomColor() {
-    return Color(Random().nextInt(0xffffffff));
-  }
-
   static BoxDecoration gradient(Color color) {
     return BoxDecoration(
       gradient: LinearGradient(
@@ -63,7 +57,7 @@ class ThemeProvider {
     );
   }
 
-  CardThemeData cardTheme() {
+  static CardThemeData cardTheme() {
     return CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: shapeMedium),
@@ -71,18 +65,23 @@ class ThemeProvider {
     );
   }
 
-  ListTileThemeData listTileTheme(ColorScheme colors) {
+  static ListTileThemeData listTileTheme(ColorScheme colors) {
     return ListTileThemeData(
       shape: RoundedRectangleBorder(borderRadius: shapeMedium),
       selectedColor: colors.secondary,
     );
   }
 
-  AppBarTheme appBarTheme(ColorScheme colors) {
-    return const AppBarTheme(elevation: 0);
+  static AppBarTheme appBarTheme(ColorScheme colors, {required bool isDark}) {
+    return AppBarTheme(
+      elevation: 0,
+      systemOverlayStyle: (isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark).copyWith(
+        systemNavigationBarColor: colors.onTertiary,
+      ),
+    );
   }
 
-  TabBarThemeData tabBarTheme(ColorScheme colors) {
+  static TabBarThemeData tabBarTheme(ColorScheme colors) {
     return TabBarThemeData(
       labelColor: colors.secondary,
       unselectedLabelColor: colors.onSurfaceVariant,
@@ -97,7 +96,7 @@ class ThemeProvider {
     );
   }
 
-  NavigationBarThemeData navigationBarTheme(ColorScheme colors) {
+  static NavigationBarThemeData navigationBarTheme(ColorScheme colors) {
     return NavigationBarThemeData(
       backgroundColor: colors.surface,
       surfaceTintColor: colors.surfaceTint,
@@ -113,24 +112,17 @@ class ThemeProvider {
     );
   }
 
-  NavigationRailThemeData navigationRailTheme(ColorScheme colors) {
+  static NavigationRailThemeData navigationRailTheme(ColorScheme colors) {
     return const NavigationRailThemeData();
   }
 
-  DrawerThemeData drawerTheme(ColorScheme colors) {
+  static DrawerThemeData drawerTheme(ColorScheme colors) {
     return DrawerThemeData(
       backgroundColor: colors.surface,
     );
   }
 
-  SystemUiOverlayStyle systemUiOverlayStyle(BuildContext context) {
-    final theme = Theme.of(context);
-    return (theme.brightness == Brightness.light ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark).copyWith(
-      systemNavigationBarColor: theme.colorScheme.onTertiary,
-    );
-  }
-
-  ThemeData themeLight([Color? targetColor]) {
+  static ThemeData themeLight([Color? targetColor]) {
     final originalTheme = ThemeData.light(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
       primary: const Color(0xFF680019),
@@ -158,7 +150,7 @@ class ThemeProvider {
     return originalTheme.copyWith(
       pageTransitionsTheme: pageTransitionsTheme,
       colorScheme: colorScheme,
-      appBarTheme: appBarTheme(colorScheme),
+      appBarTheme: appBarTheme(colorScheme, isDark: false),
       cardTheme: cardTheme(),
       listTileTheme: listTileTheme(colorScheme),
       navigationBarTheme: navigationBarTheme(colorScheme),
@@ -169,7 +161,7 @@ class ThemeProvider {
     );
   }
 
-  ThemeData themeDark([Color? targetColor]) {
+  static ThemeData themeDark([Color? targetColor]) {
     final originalTheme = ThemeData.dark(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
       primary: const Color(0xFFFFB3B6),
@@ -197,7 +189,7 @@ class ThemeProvider {
     return originalTheme.copyWith(
       pageTransitionsTheme: pageTransitionsTheme,
       colorScheme: colorScheme,
-      appBarTheme: appBarTheme(colorScheme),
+      appBarTheme: appBarTheme(colorScheme, isDark: true),
       cardTheme: cardTheme(),
       listTileTheme: listTileTheme(colorScheme),
       navigationBarTheme: navigationBarTheme(colorScheme),

@@ -9,11 +9,14 @@ void showCollectionsBottomSheet(
   List<Collection>? initialCollections,
 }) {
   assert(recipeId.isNotEmpty, 'recipeId must not be empty');
+
+  final future = CollectionRepository.findAll(preload: 'recipes:5,recipes.images,total_recipes');
+
   showModalBottomSheet<void>(
     context: context,
     builder: (context) {
       return FutureBuilder<List<Collection>>(
-        future: CollectionRepository.findAll(preload: 'recipes:5,recipes.images,total_recipes'),
+        future: future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()));
@@ -49,8 +52,7 @@ void showCollectionsBottomSheet(
                         itemCount: collections.length,
                         itemBuilder: (context, index) {
                           final collection = collections[index];
-                          final originallyInCollection =
-                              initialCollections?.any((c) => c.id == collection.id) ?? false;
+                          final originallyInCollection = initialCollections?.any((c) => c.id == collection.id) ?? false;
 
                           final isInCollection = originallyInCollection
                               ? !localRemovedId.contains(collection.id)

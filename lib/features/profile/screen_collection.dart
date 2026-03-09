@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/collection_repository.dart';

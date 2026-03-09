@@ -41,7 +41,8 @@ class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
   }
 
   Future<void> onSubmitted() async {
-    if (Validator.validateUrl(_textFieldController.text) == null) {
+    final validationError = Validator.validateUrl(_textFieldController.text);
+    if (validationError == null) {
       setState(() {
         _isLoading = true;
       });
@@ -82,7 +83,7 @@ class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(Validator.validateUrl(_textFieldController.text) ?? ''),
+          content: Text(validationError),
           backgroundColor: Colors.red,
         ),
       );

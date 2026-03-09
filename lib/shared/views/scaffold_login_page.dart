@@ -42,7 +42,7 @@ class ScaffoldWithSimpleLayout extends StatelessWidget {
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
                     child: Container(
-                      constraints: const BoxConstraints(maxWidth: 21),
+                      constraints: const BoxConstraints(maxWidth: 210),
                       child: child,
                     ),
                   ),

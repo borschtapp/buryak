@@ -12,13 +12,9 @@ Taxonomy _$TaxonomyFromJson(Map<String, dynamic> json) => Taxonomy(
   type: json['type'] as String?,
   label: json['label'] as String?,
   parentId: json['parent_id'] as String?,
-  parent: json['parent'] == null
-      ? null
-      : Taxonomy.fromJson(json['parent'] as Map<String, dynamic>),
+  parent: json['parent'] == null ? null : Taxonomy.fromJson(json['parent'] as Map<String, dynamic>),
   canonicalId: json['canonical_id'] as String?,
-  canonical: json['canonical'] == null
-      ? null
-      : Taxonomy.fromJson(json['canonical'] as Map<String, dynamic>),
+  canonical: json['canonical'] == null ? null : Taxonomy.fromJson(json['canonical'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$TaxonomyToJson(Taxonomy instance) => <String, dynamic>{

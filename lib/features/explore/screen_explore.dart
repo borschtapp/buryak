@@ -4,7 +4,6 @@ import '../../shared/models/recipe.dart';
 import '../../shared/repositories/feed_repository.dart';
 import '../../shared/views/async_loader.dart';
 import '../recipes/view_recipes_grid.dart';
-import '../../shared/providers/recipe_notifier.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -20,13 +19,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
   void initState() {
     super.initState();
     _refresh();
-    RecipeRefreshNotifier().addListener(_refresh);
-  }
-
-  @override
-  void dispose() {
-    RecipeRefreshNotifier().removeListener(_refresh);
-    super.dispose();
   }
 
   void _refresh() {

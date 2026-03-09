@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../shared/models/collection.dart';
@@ -38,10 +39,10 @@ class ProfileRecipesTab extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 if (recipe.images != null && recipe.images!.isNotEmpty)
-                  Image.network(
-                    recipe.images!.first.url ?? '',
+                  CachedNetworkImage(
+                    imageUrl: recipe.images!.first.url ?? '',
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                    errorWidget: (context, url, error) => Image.asset(
                       'assets/images/recipe_placeholder.png',
                       fit: BoxFit.cover,
                     ),

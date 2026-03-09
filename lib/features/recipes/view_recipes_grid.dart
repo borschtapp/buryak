@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:math';
 
 import '../../shared/models/recipe.dart';
 import '../../shared/extensions.dart';
@@ -21,7 +22,9 @@ class RecipesGridView extends StatelessWidget {
         return GridView.builder(
           padding: const EdgeInsets.all(5),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: constraints.isMobile ? constraints.maxWidth ~/ 300 : constraints.maxWidth ~/ 350,
+            crossAxisCount: constraints.isMobile
+                ? max(1, constraints.maxWidth ~/ 300)
+                : max(1, constraints.maxWidth ~/ 350),
             childAspectRatio: constraints.isMobile ? 1.2 : 1.1,
             mainAxisSpacing: 1,
             crossAxisSpacing: 1,

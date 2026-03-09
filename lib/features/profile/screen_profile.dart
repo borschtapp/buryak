@@ -18,14 +18,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late Future<User> _profileFuture;
   late Future<List<Recipe>> _recipesFuture;
   late Future<List<Collection>> _collectionsFuture;
 
   @override
   void initState() {
     super.initState();
-    _profileFuture = Future.value(UserService.getUserModel());
     _recipesFuture = RecipeRepository.findAll(preload: 'images,collections,saved,publisher');
     _collectionsFuture = CollectionRepository.findAll(preload: 'recipes:5,recipes.images,total_recipes');
 
@@ -46,83 +44,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AsyncLoader<User>(
-      future: _profileFuture,
-      builder: (context, profile) {
-        String? name = profile.name;
-        String email = profile.email;
-        String? image = profile.image;
+    User profile;
+    try {
+      profile = UserService.getUserModel();
+    } catch (e) {
+      return const Center(child: Text('User not found. Please log in again.'));
+    }
 
-        return DefaultTabController(
-          length: 2,
-          child: Column(
-            children: [
-              ProfileDetails(name: name, email: email, image: image),
-              TabBar(
-                dividerColor: Colors.transparent,
-                labelColor: Theme.of(context).colorScheme.primary,
-                unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-                indicatorSize: TabBarIndicatorSize.label,
-                tabs: const [
-                  Tab(text: 'Recipes'),
-                  Tab(text: 'Cookbooks'),
-                ],
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    AsyncLoader<List<Recipe>>(
-                      future: _recipesFuture,
-                      builder: (context, recipes) {
-                        return ProfileRecipesTab(recipes: recipes);
-                      },
-                    ),
-                    AsyncLoader<List<Collection>>(
-                      future: _collectionsFuture,
-                      builder: (context, collections) {
-                        return ProfileCookbooksTab(collections: collections);
-                      },
-                    ),
-                  ],
+    String? name = profile.name;
+    String email = profile.email;
+    String? image = profile.image;
+
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          ProfileDetails(name: name, email: email, image: image),
+          TabBar(
+            dividerColor: Colors.transparent,
+            labelColor: Theme.of(context).colorScheme.primary,
+            unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+            indicatorSize: TabBarIndicatorSize.label,
+            tabs: const [
+              Tab(text: 'Recipes'),
+              Tab(text: 'Cookbooks'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                AsyncLoader<List<Recipe>>(
+                  future: _recipesFuture,
+                  builder: (context, recipes) {
+                    return ProfileRecipesTab(recipes: recipes);
+                  },
                 ),
-              ),
-            ],
+                AsyncLoader<List<Collection>>(
+                  future: _collectionsFuture,
+                  builder: (context, collections) {
+                    return ProfileCookbooksTab(collections: collections);
+                  },
+                ),
+              ],
+            ),
           ),
-        );
-      },
-    );
-  }
-}
-
-class ProfileMenuItem extends StatelessWidget {
-  final Icon icon;
-  final String label;
-  final void Function(BuildContext) onTap;
-
-  const ProfileMenuItem({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => onTap(context),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: SafeArea(
-          child: Row(
-            children: <Widget>[
-              icon,
-              const SizedBox(width: 20),
-              Text(label),
-              const Spacer(),
-              const Icon(Icons.arrow_forward),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }

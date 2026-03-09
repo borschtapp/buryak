@@ -3,14 +3,9 @@ import 'package:flutter/material.dart';
 import '../shared/extensions.dart';
 import '../shared/views/article_content.dart';
 
-class PrivacyPolicyScreen extends StatefulWidget {
+class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
 
-  @override
-  State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
-}
-
-class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   @override
   Widget build(BuildContext context) {
     return const SingleChildScrollView(

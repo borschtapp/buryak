@@ -1,10 +1,9 @@
-import 'package:buryak/shared/providers/theme.dart';
-import 'extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'providers/user.dart';
 import 'views/root_layout.dart';
+import 'widgets/fade_transition_page.dart';
 import '../features/privacy_screen.dart';
 import '../features/recipes/screen_import_recipe.dart';
 import '../features/terms_screen.dart';
@@ -16,22 +15,19 @@ import '../features/profile/screen_collection.dart';
 import '../features/profile/screen_register.dart';
 import '../features/recipes/screen_recipes.dart';
 import '../features/recipes/screen_recipes_single.dart';
-import '../features/recipes/view_recipe_actions.dart';
 import '../features/shopping/screen_shopping.dart';
 import '../features/profile/screen_settings.dart';
 
-const _scaffoldKey = ValueKey('_scaffoldKey');
-
-const List<NavigationDestination> destinations = [
-  NavigationDestination(label: 'Recipes', route: '/', icon: Icon(Icons.menu_book)),
-  NavigationDestination(label: 'Explore', route: '/explore', icon: Icon(Icons.explore)),
-  NavigationDestination(label: 'Planner', route: '/planner', icon: Icon(Icons.today)),
-  NavigationDestination(label: 'Shopping', route: '/shopping', icon: Icon(Icons.storefront)),
-  NavigationDestination(label: 'Profile', route: '/profile', icon: Icon(Icons.person)),
+const List<AppDestination> destinations = [
+  AppDestination(label: 'Recipes', route: '/', icon: Icon(Icons.menu_book)),
+  AppDestination(label: 'Explore', route: '/explore', icon: Icon(Icons.explore)),
+  AppDestination(label: 'Planner', route: '/planner', icon: Icon(Icons.today)),
+  AppDestination(label: 'Shopping', route: '/shopping', icon: Icon(Icons.storefront)),
+  AppDestination(label: 'Profile', route: '/profile', icon: Icon(Icons.person)),
 ];
 
-class NavigationDestination {
-  const NavigationDestination({
+class AppDestination {
+  const AppDestination({
     required this.route,
     required this.label,
     required this.icon,
@@ -50,10 +46,9 @@ final router = GoRouter(
       name: 'home',
       path: '/',
       redirect: _authGuard,
-      pageBuilder: (context, state) => MaterialPage<void>(
+      pageBuilder: (context, state) => FadeTransitionPage<void>(
         key: state.pageKey,
         child: RootLayout(
-          key: _scaffoldKey,
           currentIndex: 0,
           floatingActionButton: FloatingActionButton(
             onPressed: () => GoRouter.of(context).goNamed('import'),
@@ -69,23 +64,7 @@ final router = GoRouter(
       redirect: _authGuard,
       pageBuilder: (context, state) => MaterialPage<void>(
         key: state.pageKey,
-        child: RootLayout(
-          key: _scaffoldKey,
-          currentIndex: 0,
-          extendBodyBehindAppBar: true,
-          hideBottomNavigationBar: true,
-          contentScrollable: false,
-          appBar: AppBar(
-            leading: BackButton(onPressed: () => context.popOrGoNamed('home')),
-            backgroundColor: Colors.transparent,
-            flexibleSpace: Container(decoration: ThemeProvider.gradient(Colors.black)),
-            actions: [
-              RecipeActions(recipeId: state.pathParameters['rid']!),
-              const SizedBox(width: 8),
-            ],
-          ),
-          child: RecipeScreen(recipeId: state.pathParameters['rid']!),
-        ),
+        child: RecipeScreen(recipeId: state.pathParameters['rid']!),
       ),
     ),
     GoRoute(
@@ -95,7 +74,6 @@ final router = GoRouter(
       pageBuilder: (context, state) => MaterialPage<void>(
         key: state.pageKey,
         child: RootLayout(
-          key: _scaffoldKey,
           currentIndex: 4,
           hideBottomNavigationBar: true,
           contentScrollable: false,
@@ -111,7 +89,6 @@ final router = GoRouter(
       pageBuilder: (context, state) => MaterialPage<void>(
         key: state.pageKey,
         child: const RootLayout(
-          key: _scaffoldKey,
           currentIndex: 0,
           appBarTitle: 'Import Recipe',
           hideBottomNavigationBar: true,
@@ -123,10 +100,9 @@ final router = GoRouter(
       name: 'explore',
       path: '/explore',
       redirect: _authGuard,
-      pageBuilder: (context, state) => MaterialPage<void>(
+      pageBuilder: (context, state) => FadeTransitionPage<void>(
         key: state.pageKey,
         child: RootLayout(
-          key: _scaffoldKey,
           currentIndex: 1,
           child: ExploreScreen(),
         ),
@@ -136,10 +112,9 @@ final router = GoRouter(
       name: 'planner',
       path: '/planner',
       redirect: _authGuard,
-      pageBuilder: (context, state) => MaterialPage<void>(
+      pageBuilder: (context, state) => FadeTransitionPage<void>(
         key: state.pageKey,
         child: RootLayout(
-          key: _scaffoldKey,
           currentIndex: 2,
           child: PlannerScreen(),
         ),
@@ -149,23 +124,18 @@ final router = GoRouter(
       name: 'shopping',
       path: '/shopping',
       redirect: _authGuard,
-      pageBuilder: (context, state) => MaterialPage<void>(
+      pageBuilder: (context, state) => FadeTransitionPage<void>(
         key: state.pageKey,
-        child: RootLayout(
-          key: _scaffoldKey,
-          currentIndex: 3,
-          child: ShoppingScreen(),
-        ),
+        child: const ShoppingScreen(),
       ),
     ),
     GoRoute(
       name: 'profile',
       path: '/profile',
       redirect: _authGuard,
-      pageBuilder: (context, state) => MaterialPage<void>(
+      pageBuilder: (context, state) => FadeTransitionPage<void>(
         key: state.pageKey,
         child: RootLayout(
-          key: _scaffoldKey,
           currentIndex: 4,
           appBar: AppBar(
             title: const Text('Profile'),
@@ -200,7 +170,6 @@ final router = GoRouter(
       pageBuilder: (context, state) => MaterialPage<void>(
         key: state.pageKey,
         child: const RootLayout(
-          key: _scaffoldKey,
           currentIndex: 4,
           appBarTitle: 'Privacy Policy',
           hideBottomNavigationBar: true,
@@ -214,7 +183,6 @@ final router = GoRouter(
       pageBuilder: (context, state) => MaterialPage<void>(
         key: state.pageKey,
         child: const RootLayout(
-          key: _scaffoldKey,
           currentIndex: 4,
           appBarTitle: 'Terms of Use',
           hideBottomNavigationBar: true,
@@ -228,7 +196,6 @@ final router = GoRouter(
       pageBuilder: (context, state) => MaterialPage<void>(
         key: state.pageKey,
         child: const RootLayout(
-          key: _scaffoldKey,
           currentIndex: 4,
           appBarTitle: 'Settings',
           hideBottomNavigationBar: true,

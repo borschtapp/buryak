@@ -27,7 +27,6 @@ class RootLayout extends StatelessWidget {
   final Widget? floatingActionButton;
   final bool extendBodyBehindAppBar;
   final bool contentScrollable;
-  static const _switcherKey = ValueKey('switcherKey');
   static const _navigationRailKey = ValueKey('navigationRailKey');
 
   @override
@@ -53,8 +52,8 @@ class RootLayout extends StatelessWidget {
             children: [
               Expanded(
                 child: _Switcher(
-                  key: _switcherKey,
                   child: TabletAppBar(
+                    key: child.key ?? ValueKey(currentIndex),
                     isMobile: dimens.isMobile,
                     appBar: appBar,
                     appBarTitle: appBarTitle,
@@ -78,7 +77,6 @@ class _Switcher extends StatelessWidget {
 
   const _Switcher({
     required this.child,
-    super.key,
   });
 
   @override
@@ -86,7 +84,6 @@ class _Switcher extends StatelessWidget {
     return UniversalPlatform.isDesktop
         ? child
         : AnimatedSwitcher(
-            key: key,
             duration: const Duration(milliseconds: 200),
             switchInCurve: Curves.easeInOut,
             switchOutCurve: Curves.easeInOut,

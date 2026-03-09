@@ -13,7 +13,7 @@ class RecipeRepository extends Repository {
   });
 
   static Future<List<Recipe>> findAll({
-    required String preload,
+    String? preload,
     int? page,
     int? limit,
     String? q,
@@ -31,7 +31,7 @@ class RecipeRepository extends Repository {
             'q': ?q,
             'taxonomies': ?taxonomies,
             'cuisine': ?cuisine,
-            'preload': preload,
+            'preload': ?preload,
             'sort': ?sort,
             'order': ?order,
             'offset': ?offset,
@@ -55,7 +55,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.post,
     ).sendRequest(body: recipe.toJson());
     Recipe created = Recipe.fromJson(response);
-    RecipeRefreshNotifier().notify();
+    RecipeRefreshNotifier().notify(action: 'create', data: created);
     return created;
   }
 
@@ -65,7 +65,7 @@ class RecipeRepository extends Repository {
       path: '/$id',
     ).sendRequest(body: recipe.toJson());
     Recipe updated = Recipe.fromJson(response);
-    RecipeRefreshNotifier().notify();
+    RecipeRefreshNotifier().notify(action: 'update', data: updated);
     return updated;
   }
 
@@ -74,7 +74,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.delete,
       path: '/$id',
     ).sendRequest();
-    RecipeRefreshNotifier().notify();
+    RecipeRefreshNotifier().notify(action: 'delete', recipeId: id);
   }
 
   static Future<Recipe> import(String url, {bool update = false}) async {
@@ -83,7 +83,7 @@ class RecipeRepository extends Repository {
       path: '/import',
     ).sendRequest(body: {'url': url, 'update': update});
     Recipe imported = Recipe.fromJson(response);
-    RecipeRefreshNotifier().notify();
+    RecipeRefreshNotifier().notify(action: 'create', data: imported);
     return imported;
   }
 
@@ -92,7 +92,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.post,
       path: '/$recipeId/favorite',
     ).sendRequest();
-    RecipeRefreshNotifier().notify();
+    RecipeRefreshNotifier().notify(action: 'save', recipeId: recipeId);
   }
 
   static Future<void> unsave(String recipeId) async {
@@ -100,7 +100,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.delete,
       path: '/$recipeId/favorite',
     ).sendRequest();
-    RecipeRefreshNotifier().notify();
+    RecipeRefreshNotifier().notify(action: 'unsave', recipeId: recipeId);
   }
 
   // Ingredients

@@ -10,7 +10,7 @@ class PublisherRepository extends Repository {
   });
 
   static Future<List<Publisher>> findAll({
-    required String preload,
+    String? preload,
     String? q,
     String? sort,
     String? order,
@@ -23,7 +23,7 @@ class PublisherRepository extends Repository {
           method: RequestMethod.get,
         ).sendRequest(
           queryParams: {
-            'preload': preload,
+            'preload': ?preload,
             'q': ?q,
             'sort': ?sort,
             'order': ?order,

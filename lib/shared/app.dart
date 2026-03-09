@@ -13,18 +13,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    ThemeProvider themeProvider = ThemeProvider();
-
-    return AnnotatedRegion(
-      value: themeProvider.systemUiOverlayStyle(context),
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'Borscht',
-        theme: themeProvider.themeLight(),
-        darkTheme: themeProvider.themeDark(),
-        themeMode: ThemeMode.system,
-        routerConfig: router,
-      ),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'Borscht',
+      theme: ThemeProvider.themeLight(),
+      darkTheme: ThemeProvider.themeDark(),
+      themeMode: ThemeMode.system,
+      routerConfig: router,
     );
   }
 }

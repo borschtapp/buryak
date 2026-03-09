@@ -22,7 +22,17 @@ class AsyncLoader<T> extends StatelessWidget {
         }
 
         if (snapshot.hasError) {
-          return Text(snapshot.error.toString(), style: const TextStyle(color: Colors.cyan, fontSize: 36));
+          debugPrint('AsyncLoader error: ${snapshot.error}');
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Something went wrong. Please try again later.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
+          );
         }
 
         return Center(

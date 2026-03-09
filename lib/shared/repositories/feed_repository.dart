@@ -11,7 +11,7 @@ class FeedRepository extends Repository {
   });
 
   static Future<List<Feed>> findAll({
-    required String preload,
+    String? preload,
     String? q,
     String? sort,
     String? order,
@@ -24,7 +24,7 @@ class FeedRepository extends Repository {
           method: RequestMethod.get,
         ).sendRequest(
           queryParams: {
-            'preload': preload,
+            'preload': ?preload,
             'q': ?q,
             'sort': ?sort,
             'order': ?order,

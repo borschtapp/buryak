@@ -1,6 +1,6 @@
 class Validator {
   static String? validateEmail(String value) {
-    final regex = RegExp(r'^[a-zA-Z0-9.]+(\+[a-zA-Z0-9.]+)?@[a-zA-Z0-9]+\.[a-zA-Z]+$');
+    final regex = RegExp(r'^[\w\-\.\+]+@([\w\-\.]+\.)+[\w\-\.]{2,}$');
     if (!regex.hasMatch(value)) {
       return 'Please enter a valid email address.';
     }
@@ -31,7 +31,7 @@ class Validator {
   }
 
   static String? validateText(String value) {
-    if (value.isEmpty) {
+    if (value.trim().isEmpty) {
       return 'Text is too short.';
     }
     return null;

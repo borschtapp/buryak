@@ -11,6 +11,18 @@ void main() {
       expect(Validator.validateEmail('user+tag@example.com'), isNull);
     });
 
+    test('returns null for email with hyphens and underscores', () {
+      expect(Validator.validateEmail('my_user-name@example.com'), isNull);
+    });
+
+    test('returns null for email with subdomains', () {
+      expect(Validator.validateEmail('user@dept.example.co.uk'), isNull);
+    });
+
+    test('returns null for email with long TLD', () {
+      expect(Validator.validateEmail('user@history.museum'), isNull);
+    });
+
     test('returns error for email without @', () {
       expect(Validator.validateEmail('notanemail'), isNotNull);
     });
@@ -21,6 +33,14 @@ void main() {
 
     test('returns error for email with trailing garbage', () {
       expect(Validator.validateEmail('user@example.com!!!'), isNotNull);
+    });
+
+    test('returns error for email with no domain', () {
+      expect(Validator.validateEmail('user@'), isNotNull);
+    });
+
+    test('returns error for email with invalid TLD', () {
+      expect(Validator.validateEmail('user@example.c'), isNotNull); // 1-char tld commonly invalid
     });
   });
 
@@ -73,6 +93,18 @@ void main() {
       expect(Validator.validateUrl('http://example.com'), isNull);
     });
 
+    test('returns null for URL with port', () {
+      expect(Validator.validateUrl('http://localhost:8080'), isNull);
+    });
+
+    test('returns null for URL with query params', () {
+      expect(Validator.validateUrl('https://example.com?q=test&id=1'), isNull);
+    });
+
+    test('returns null for URL with fragment', () {
+      expect(Validator.validateUrl('https://example.com#section1'), isNull);
+    });
+
     test('returns error for URL without scheme', () {
       expect(Validator.validateUrl('example.com'), isNotNull);
     });
@@ -93,6 +125,10 @@ void main() {
 
     test('returns error for empty string', () {
       expect(Validator.validateText(''), isNotNull);
+    });
+
+    test('returns error for whitespace only', () {
+      expect(Validator.validateText('   '), isNotNull);
     });
   });
 }

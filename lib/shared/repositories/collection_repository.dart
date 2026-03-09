@@ -12,7 +12,7 @@ class CollectionRepository extends Repository {
   });
 
   static Future<List<Collection>> findAll({
-    required String preload,
+    String? preload,
     String? q,
     String? sort,
     String? order,
@@ -20,11 +20,9 @@ class CollectionRepository extends Repository {
     int? limit,
     int? offset,
   }) async {
-    ResponseBody response = await CollectionRepository(
-      method: RequestMethod.get,
-    ).sendRequest(
+    ResponseBody response = await CollectionRepository(method: RequestMethod.get).sendRequest(
       queryParams: {
-        'preload': preload,
+        'preload': ?preload,
         'q': ?q,
         'sort': ?sort,
         'order': ?order,
@@ -45,15 +43,12 @@ class CollectionRepository extends Repository {
   }
 
   static Future<Collection> create(String name, {String? description}) async {
-    ResponseBody response =
-        await CollectionRepository(
-          method: RequestMethod.post,
-        ).sendRequest(
-          body: {
-            'name': name,
-            'description': ?description,
-          },
-        );
+    ResponseBody response = await CollectionRepository(method: RequestMethod.post).sendRequest(
+      body: {
+        'name': name,
+        'description': ?description,
+      },
+    );
     Collection created = Collection.fromJson(response);
     CollectionRefreshNotifier().notify();
     return created;
@@ -102,8 +97,9 @@ class CollectionRepository extends Repository {
     CollectionRefreshNotifier().notify();
   }
 
-  static Future<List<Recipe>> getRecipes(String collectionId, {
-    required String preload,
+  static Future<List<Recipe>> getRecipes(
+    String collectionId, {
+    String? preload,
     String? q,
     String? sort,
     String? order,
@@ -111,20 +107,21 @@ class CollectionRepository extends Repository {
     int? limit,
     int? offset,
   }) async {
-    ResponseBody response = await CollectionRepository(
-      method: RequestMethod.get,
-      path: '/$collectionId/recipes',
-    ).sendRequest(
-      queryParams: {
-        'preload': preload,
-        'q': ?q,
-        'sort': ?sort,
-        'order': ?order,
-        'page': ?page,
-        'limit': ?limit,
-        'offset': ?offset,
-      },
-    );
+    ResponseBody response =
+        await CollectionRepository(
+          method: RequestMethod.get,
+          path: '/$collectionId/recipes',
+        ).sendRequest(
+          queryParams: {
+            'preload': ?preload,
+            'q': ?q,
+            'sort': ?sort,
+            'order': ?order,
+            'page': ?page,
+            'limit': ?limit,
+            'offset': ?offset,
+          },
+        );
     return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json)).toList();
   }
 }

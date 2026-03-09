@@ -5,7 +5,14 @@ class RecipeRefreshNotifier extends ChangeNotifier {
   factory RecipeRefreshNotifier() => _instance;
   RecipeRefreshNotifier._internal();
 
-  void notify() {
+  String? lastAction;
+  String? lastRecipeId;
+  dynamic lastData;
+
+  void notify({String? action, String? recipeId, dynamic data}) {
+    lastAction = action;
+    lastRecipeId = recipeId;
+    lastData = data;
     notifyListeners();
   }
 }

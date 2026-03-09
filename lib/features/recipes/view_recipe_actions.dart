@@ -21,31 +21,14 @@ class RecipeActions extends StatefulWidget {
 
 class _RecipeActionsState extends State<RecipeActions> {
   bool _isSaved = false;
-  Recipe? _loadedRecipe;
 
-  Recipe? get recipe => widget.recipe ?? _loadedRecipe;
+  Recipe? get recipe => widget.recipe;
 
   @override
   void initState() {
     super.initState();
     // In a real app, we'd check if it's already saved.
     // For now, matching the tile behavior.
-    if (widget.recipe == null) {
-      _loadRecipe();
-    }
-  }
-
-  Future<void> _loadRecipe() async {
-    try {
-      final recipe = await RecipeRepository.findOne(widget.recipeId);
-      if (mounted) {
-        setState(() {
-          _loadedRecipe = recipe;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading recipe for actions: $e');
-    }
   }
 
   @override
@@ -69,10 +52,10 @@ class _RecipeActionsState extends State<RecipeActions> {
           onPressed: recipe == null
               ? null
               : () => showCollectionsBottomSheet(
-                    context,
-                    recipeId: widget.recipeId,
-                    initialCollections: recipe?.collections,
-                  ),
+                  context,
+                  recipeId: widget.recipeId,
+                  initialCollections: recipe?.collections,
+                ),
         ),
         IconButton(
           icon: Icon(_isSaved ? Icons.bookmark_added : Icons.bookmark_add_outlined),
@@ -105,5 +88,4 @@ class _RecipeActionsState extends State<RecipeActions> {
       ],
     );
   }
-
 }

@@ -4,33 +4,33 @@ import '../../shared/extensions.dart';
 
 class Ingredients extends StatelessWidget {
   final List<RecipeIngredient> ingredients;
+  final List<String>? equipment;
 
-  const Ingredients(this.ingredients, {super.key});
+  const Ingredients(this.ingredients, {this.equipment, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Equipment Placeholder (Static as per screenshot suggestion)
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Equipment', style: context.textTheme.titleMedium?.copyWith(color: Colors.grey)),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  _buildEquipmentItem(context, Icons.kitchen, 'Oven'),
-                  const SizedBox(width: 16),
-                  _buildEquipmentItem(context, Icons.local_drink, 'Kettle'),
-                ],
-              ),
-            ],
+        if (equipment != null && equipment!.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Equipment', style: context.textTheme.titleMedium?.copyWith(color: Colors.grey)),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: equipment!.map((e) => _buildEquipmentItem(context, _getEquipmentIcon(e), e)).toList(),
+                ),
+              ],
+            ),
           ),
-        ),
-        const Divider(),
+          const Divider(),
+        ],
 
         // Portions & Header
         Padding(
@@ -39,29 +39,10 @@ class Ingredients extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Ingredients', style: context.textTheme.titleMedium),
-              // TextButton(
-              //     onPressed: () {}, child: const Text("Convert Units", style: TextStyle(color: Colors.pinkAccent))),
             ],
           ),
         ),
 
-        // Portion Counter
-        // Container(
-        //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        //   decoration: BoxDecoration(
-        //     border: Border.all(color: Colors.white24),
-        //     borderRadius: BorderRadius.circular(8),
-        //   ),
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //     children: [
-        //       IconButton(icon: const Icon(Icons.remove_circle_outline), onPressed: () {}),
-        //       Text("4 Portions", style: context.textTheme.titleMedium),
-        //       IconButton(icon: const Icon(Icons.add_circle_outline), onPressed: () {}),
-        //     ],
-        //   ),
-        // ),
-        // const SizedBox(height: 16),
         ...ingredients.map((e) => _buildIngredientRow(context, e)),
       ],
     );
@@ -82,6 +63,18 @@ class Ingredients extends StatelessWidget {
         Text(label, style: context.textTheme.bodySmall),
       ],
     );
+  }
+
+  IconData _getEquipmentIcon(String name) {
+    final lower = name.toLowerCase();
+    if (lower.contains('oven')) return Icons.kitchen;
+    if (lower.contains('microwave')) return Icons.microwave;
+    if (lower.contains('kettle')) return Icons.local_drink;
+    if (lower.contains('pan') || lower.contains('pot') || lower.contains('skillet')) return Icons.soup_kitchen;
+    if (lower.contains('blender') || lower.contains('mixer')) return Icons.blender;
+    if (lower.contains('scale')) return Icons.scale;
+    if (lower.contains('knife')) return Icons.restaurant;
+    return Icons.kitchen;
   }
 
   Widget _buildIngredientRow(BuildContext context, RecipeIngredient ingredient) {

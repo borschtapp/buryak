@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../shared/models/recipe.dart';
 import '../../shared/extensions.dart';
@@ -53,10 +54,10 @@ class _RecipeTileState extends State<RecipeTile> {
                       ),
                     ),
                     child: widget.recipe.images != null && widget.recipe.images!.isNotEmpty
-                        ? Image.network(
-                            widget.recipe.images!.last.url ?? '',
+                        ? CachedNetworkImage(
+                            imageUrl: widget.recipe.images!.last.url ?? '',
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
+                            errorWidget: (context, url, error) =>
                                 Image.asset('assets/images/recipe_placeholder.png', fit: BoxFit.cover),
                           )
                         : Image.asset('assets/images/recipe_placeholder.png', fit: BoxFit.cover),
@@ -83,6 +84,8 @@ class _RecipeTileState extends State<RecipeTile> {
                           } else {
                             await RecipeRepository.unsave(widget.recipeId);
                           }
+
+                          if (!mounted) return;
 
                           setState(() {
                             saved = !saved;
@@ -143,5 +146,4 @@ class _RecipeTileState extends State<RecipeTile> {
       ),
     );
   }
-
 }

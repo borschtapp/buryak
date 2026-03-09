@@ -50,7 +50,7 @@ class UserService {
     } catch (e) {
       debugPrint('UserService.refreshLogin error: $e');
       await logout();
-      return false;
+      rethrow;
     }
   }
 

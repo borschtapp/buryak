@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
 
     return ScaffoldWithSimpleLayout(
       child: Form(

@@ -13,10 +13,9 @@ RecipeImage _$RecipeImageFromJson(Map<String, dynamic> json) => RecipeImage(
   caption: json['caption'] as String?,
 );
 
-Map<String, dynamic> _$RecipeImageToJson(RecipeImage instance) =>
-    <String, dynamic>{
-      'url': instance.url,
-      'width': instance.width,
-      'height': instance.height,
-      'caption': instance.caption,
-    };
+Map<String, dynamic> _$RecipeImageToJson(RecipeImage instance) => <String, dynamic>{
+  'url': instance.url,
+  'width': instance.width,
+  'height': instance.height,
+  'caption': instance.caption,
+};

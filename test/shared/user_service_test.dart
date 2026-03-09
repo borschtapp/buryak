@@ -78,7 +78,7 @@ void main() {
 
     test('throws when no user is cached', () async {
       await UserService.init();
-      expect(() => UserService.getAccessToken(), throwsException);
+      expect(UserService.getAccessToken, throwsException);
     });
   });
 
@@ -94,7 +94,7 @@ void main() {
       await UserService.logout();
 
       expect(UserService.isLoggedIn(), isFalse);
-      expect(() => UserService.getAccessToken(), throwsException);
+      expect(UserService.getAccessToken, throwsException);
     });
 
     test('storage key is removed after logout', () async {
@@ -124,7 +124,7 @@ void main() {
 
     test('throws when no user is cached', () async {
       await UserService.init();
-      expect(() => UserService.getUserModel(), throwsException);
+      expect(UserService.getUserModel, throwsException);
     });
   });
 }

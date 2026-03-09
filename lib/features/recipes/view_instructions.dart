@@ -8,13 +8,11 @@ class Instructions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: instructions.length,
-      itemBuilder: (BuildContext context, int index) {
-        final step = instructions[index];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: instructions.asMap().entries.map((entry) {
+        final index = entry.key;
+        final step = entry.value;
         return Padding(
           padding: const EdgeInsets.only(bottom: 24.0),
           child: Column(
@@ -39,7 +37,7 @@ class Instructions extends StatelessWidget {
             ],
           ),
         );
-      },
+      }).toList(),
     );
   }
 }
