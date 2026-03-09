@@ -1,8 +1,8 @@
-name: Flutter
+name: Test
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
 
@@ -17,15 +17,5 @@ jobs:
           cache: true
 
       - run: flutter pub get
+      - run: flutter analyze
       - run: flutter test
-      - run: flutter build web --release
-
-      - name: Copy and run
-        uses: mdallasanta/ssh-scp-deploy@v1.2.0
-        with:
-          local: './build/web/*'
-          remote: '~/www'
-          host: ${{secrets.DEPLOY_HOST}}
-          user: ${{secrets.DEPLOY_USERNAME}}
-          key: ${{secrets.DEPLOY_PRIVATE_KEY}}
-          ssh_options: -o StrictHostKeyChecking=no
