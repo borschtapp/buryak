@@ -32,6 +32,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return AsyncLoader<List<Recipe>>(
       future: _streamFuture,
       builder: (context, results) {
+        if (results.isEmpty) {
+          return const Center(
+            child: Text('The feed is still empty.'),
+          );
+        }
         return RecipesGridView(results, isFavorite: false);
       },
     );

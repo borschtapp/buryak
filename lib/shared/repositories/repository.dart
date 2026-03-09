@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 import '../providers/user.dart';
 
 /// Base URL config
-String baseUrl = dotenv.get('API_BASE_URL', fallback: 'http://127.0.0.1:3000');
+const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'https://smetana.borscht.app');
 
 /// Request Query Params
 typedef QueryParams = Map<String, dynamic>;

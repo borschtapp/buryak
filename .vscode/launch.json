@@ -12,13 +12,17 @@
             "args": [
                 "-d",
                 "chrome",
+                "--dart-define-from-file=.env"
             ]
         },
         {
             "name": "buryak (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define-from-file=.env"
+            ]
         },
         {
             "name": "buryak (release mode)",
