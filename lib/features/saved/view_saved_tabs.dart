@@ -7,10 +7,10 @@ import '../../shared/models/recipe.dart';
 import '../../shared/extensions.dart';
 import '../../shared/repositories/collection_repository.dart';
 
-class ProfileRecipesTab extends StatelessWidget {
+class SavedRecipesTab extends StatelessWidget {
   final List<Recipe> recipes;
 
-  const ProfileRecipesTab({super.key, required this.recipes});
+  const SavedRecipesTab({super.key, required this.recipes});
 
   @override
   Widget build(BuildContext context) {
@@ -35,42 +35,50 @@ class ProfileRecipesTab extends StatelessWidget {
           final recipe = recipes[index];
           return Card(
             clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (recipe.images != null && recipe.images!.isNotEmpty)
-                  CachedNetworkImage(
-                    imageUrl: recipe.images!.first.url ?? '',
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => Image.asset(
-                      'assets/images/recipe_placeholder.png',
+            child: InkWell(
+              onTap: () {
+                GoRouter.of(context).pushNamed(
+                  'recipe',
+                  pathParameters: {'rid': recipe.id},
+                );
+              },
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (recipe.images != null && recipe.images!.isNotEmpty)
+                    CachedNetworkImage(
+                      imageUrl: recipe.images!.first.url ?? '',
                       fit: BoxFit.cover,
-                    ),
-                  )
-                else
-                  Image.asset('assets/images/recipe_placeholder.png', fit: BoxFit.cover),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [Colors.black87, Colors.transparent],
+                      errorWidget: (context, url, error) => Image.asset(
+                        'assets/images/recipe_placeholder.png',
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  else
+                    Image.asset('assets/images/recipe_placeholder.png', fit: BoxFit.cover),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [Colors.black87, Colors.transparent],
+                        ),
+                      ),
+                      child: Text(
+                        recipe.name,
+                        style: context.textTheme.titleSmall?.copyWith(color: Colors.white),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    child: Text(
-                      recipe.name,
-                      style: context.textTheme.titleSmall?.copyWith(color: Colors.white),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -79,10 +87,10 @@ class ProfileRecipesTab extends StatelessWidget {
   }
 }
 
-class ProfileCookbooksTab extends StatelessWidget {
+class SavedCookbooksTab extends StatelessWidget {
   final List<Collection> collections;
 
-  const ProfileCookbooksTab({super.key, required this.collections});
+  const SavedCookbooksTab({super.key, required this.collections});
 
   @override
   Widget build(BuildContext context) {

@@ -13,16 +13,16 @@ import '../features/profile/screen_login.dart';
 import '../features/profile/screen_profile.dart';
 import '../features/profile/screen_collection.dart';
 import '../features/profile/screen_register.dart';
-import '../features/recipes/screen_recipes.dart';
+import '../features/saved/screen_saved.dart';
 import '../features/recipes/screen_recipes_single.dart';
 import '../features/shopping/screen_shopping.dart';
 import '../features/profile/screen_settings.dart';
 
 const List<AppDestination> destinations = [
-  AppDestination(label: 'Recipes', route: '/', icon: Icon(Icons.menu_book)),
-  AppDestination(label: 'Explore', route: '/explore', icon: Icon(Icons.explore)),
+  AppDestination(label: 'Explore', route: '/', icon: Icon(Icons.explore)),
+  AppDestination(label: 'Saved', route: '/saved', icon: Icon(Icons.bookmark)),
   AppDestination(label: 'Planner', route: '/planner', icon: Icon(Icons.today)),
-  AppDestination(label: 'Shopping', route: '/shopping', icon: Icon(Icons.storefront)),
+  AppDestination(label: 'List', route: '/shopping', icon: Icon(Icons.list)),
   AppDestination(label: 'Profile', route: '/profile', icon: Icon(Icons.person)),
 ];
 
@@ -50,11 +50,13 @@ final router = GoRouter(
         key: state.pageKey,
         child: RootLayout(
           currentIndex: 0,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => GoRouter.of(context).pushNamed('import'),
-            child: const Icon(Icons.add),
+          floatingActionButton: Builder(
+            builder: (context) => FloatingActionButton(
+              onPressed: () => ExploreScreen.showAddFeedDialog(context),
+              child: const Icon(Icons.add),
+            ),
           ),
-          child: const RecipesScreen(),
+          child: const ExploreScreen(),
         ),
       ),
     ),
@@ -97,20 +99,18 @@ final router = GoRouter(
       ),
     ),
     GoRoute(
-      name: 'explore',
-      path: '/explore',
+      name: 'saved',
+      path: '/saved',
       redirect: _authGuard,
       pageBuilder: (context, state) => FadeTransitionPage<void>(
         key: state.pageKey,
         child: RootLayout(
           currentIndex: 1,
-          floatingActionButton: Builder(
-            builder: (context) => FloatingActionButton(
-              onPressed: () => ExploreScreen.showAddFeedDialog(context),
-              child: const Icon(Icons.add),
-            ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => GoRouter.of(context).pushNamed('import'),
+            child: const Icon(Icons.add),
           ),
-          child: const ExploreScreen(),
+          child: const SavedScreen(),
         ),
       ),
     ),
