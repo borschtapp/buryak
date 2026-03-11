@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../shared/models/recipe.dart';
-import '../../shared/models/recipe_ingredient.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
 import '../../shared/extensions.dart';
 

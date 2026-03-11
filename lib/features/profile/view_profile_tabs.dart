@@ -111,7 +111,7 @@ class ProfileCookbooksTab extends StatelessWidget {
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
                       onTap: () {
-                        GoRouter.of(context).goNamed(
+                        GoRouter.of(context).pushNamed(
                           'collection',
                           pathParameters: {'cid': collection.id},
                         );

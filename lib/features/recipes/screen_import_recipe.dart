@@ -59,7 +59,9 @@ class _ImportRecipeScreenState extends State<ImportRecipeScreen> {
           ),
         );
 
-        GoRouter.of(context).goNamed('recipe', pathParameters: {'rid': recipe.id});
+        if (context.mounted) {
+          GoRouter.of(context).pushReplacementNamed('recipe', pathParameters: {'rid': recipe.id});
+        }
       } catch (e) {
         String msg = e.toString();
         if (e is GeneralApiException) {

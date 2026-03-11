@@ -51,7 +51,7 @@ final router = GoRouter(
         child: RootLayout(
           currentIndex: 0,
           floatingActionButton: FloatingActionButton(
-            onPressed: () => GoRouter.of(context).goNamed('import'),
+            onPressed: () => GoRouter.of(context).pushNamed('import'),
             child: const Icon(Icons.add),
           ),
           child: const RecipesScreen(),
@@ -148,7 +148,7 @@ final router = GoRouter(
             actions: [
               IconButton(
                 icon: const Icon(Icons.settings),
-                onPressed: () => GoRouter.of(context).goNamed('settings'),
+                onPressed: () => GoRouter.of(context).pushNamed('settings'),
               ),
               const SizedBox(width: 8),
             ],
