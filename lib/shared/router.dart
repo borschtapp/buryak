@@ -120,7 +120,7 @@ final router = GoRouter(
       redirect: _authGuard,
       pageBuilder: (context, state) => FadeTransitionPage<void>(
         key: state.pageKey,
-        child: RootLayout(
+        child: const RootLayout(
           currentIndex: 2,
           child: PlannerScreen(),
         ),

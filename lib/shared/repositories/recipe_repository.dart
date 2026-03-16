@@ -39,7 +39,7 @@ class RecipeRepository extends Repository {
             'limit': ?limit,
           },
         );
-    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json)).toList();
+    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   static Future<Recipe> findOne(String recipeId) async {
@@ -47,14 +47,14 @@ class RecipeRepository extends Repository {
       method: RequestMethod.get,
       path: '/$recipeId',
     ).sendRequest();
-    return Recipe.fromJson(response);
+    return Recipe.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<Recipe> create(Recipe recipe) async {
     ResponseBody response = await RecipeRepository(
       method: RequestMethod.post,
     ).sendRequest(body: recipe.toJson());
-    Recipe created = Recipe.fromJson(response);
+    Recipe created = Recipe.fromJson(response as Map<String, dynamic>);
     RecipeRefreshNotifier().notify(action: 'create', data: created);
     return created;
   }
@@ -64,7 +64,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.patch,
       path: '/$id',
     ).sendRequest(body: recipe.toJson());
-    Recipe updated = Recipe.fromJson(response);
+    Recipe updated = Recipe.fromJson(response as Map<String, dynamic>);
     RecipeRefreshNotifier().notify(action: 'update', data: updated);
     return updated;
   }
@@ -82,7 +82,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.post,
       path: '/import',
     ).sendRequest(body: {'url': url, 'update': update});
-    Recipe imported = Recipe.fromJson(response);
+    Recipe imported = Recipe.fromJson(response as Map<String, dynamic>);
     RecipeRefreshNotifier().notify(action: 'create', data: imported);
     return imported;
   }
@@ -110,7 +110,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.post,
       path: '/$recipeId/ingredients',
     ).sendRequest(body: ingredient.toJson());
-    return RecipeIngredient.fromJson(response);
+    return RecipeIngredient.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<RecipeIngredient> updateIngredient(
@@ -122,7 +122,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.patch,
       path: '/$recipeId/ingredients/$ingredientId',
     ).sendRequest(body: ingredient.toJson());
-    return RecipeIngredient.fromJson(response);
+    return RecipeIngredient.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<void> deleteIngredient(String recipeId, String ingredientId) async {
@@ -139,7 +139,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.post,
       path: '/$recipeId/instructions',
     ).sendRequest(body: instruction.toJson());
-    return RecipeInstruction.fromJson(response);
+    return RecipeInstruction.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<RecipeInstruction> updateInstruction(
@@ -151,7 +151,7 @@ class RecipeRepository extends Repository {
       method: RequestMethod.patch,
       path: '/$recipeId/instructions/$instructionId',
     ).sendRequest(body: instruction.toJson());
-    return RecipeInstruction.fromJson(response);
+    return RecipeInstruction.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<void> deleteInstruction(String recipeId, String instructionId) async {

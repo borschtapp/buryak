@@ -16,7 +16,7 @@ class HouseholdRepository extends Repository {
       method: RequestMethod.get,
       path: '/$id',
     ).sendRequest();
-    return Household.fromJson(response);
+    return Household.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<Household> update(String id, String name) async {
@@ -27,7 +27,7 @@ class HouseholdRepository extends Repository {
         ).sendRequest(
           body: {'name': name},
         );
-    return Household.fromJson(response);
+    return Household.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<List<User>> findMembers(String id, {int? page, int? limit}) async {
@@ -41,7 +41,7 @@ class HouseholdRepository extends Repository {
             'limit': ?limit,
           },
         );
-    return (response['data'] as List).map<User>((json) => User.fromJson(json)).toList();
+    return (response['data'] as List).map<User>((json) => User.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   static Future<void> removeMember(String id, String userId) async {
@@ -58,7 +58,7 @@ class HouseholdRepository extends Repository {
       method: RequestMethod.get,
       path: '/$id/invites',
     ).sendRequest();
-    return (response as List).map<UserToken>((json) => UserToken.fromJson(json)).toList();
+    return (response as List).map<UserToken>((json) => UserToken.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   static Future<UserToken> createInvite(String id) async {
@@ -66,7 +66,7 @@ class HouseholdRepository extends Repository {
       method: RequestMethod.post,
       path: '/$id/invites',
     ).sendRequest();
-    return UserToken.fromJson(response);
+    return UserToken.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<void> deleteInvite(String id, String code) async {

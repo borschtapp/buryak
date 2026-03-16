@@ -20,7 +20,7 @@ class ShoppingListRepository extends Repository {
             'limit': ?limit,
           },
         );
-    return (response['data'] as List).map<ShoppingList>((json) => ShoppingList.fromJson(json)).toList();
+    return (response['data'] as List).map<ShoppingList>((json) => ShoppingList.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   static Future<ShoppingList> create(String name) async {
@@ -30,7 +30,7 @@ class ShoppingListRepository extends Repository {
         ).sendRequest(
           body: {'name': name},
         );
-    return ShoppingList.fromJson(response);
+    return ShoppingList.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<void> delete(String id) async {
@@ -53,7 +53,7 @@ class ShoppingListRepository extends Repository {
             'limit': ?limit,
           },
         );
-    return (response['data'] as List).map<ShoppingItem>((json) => ShoppingItem.fromJson(json)).toList();
+    return (response['data'] as List).map<ShoppingItem>((json) => ShoppingItem.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   static Future<ShoppingItem> createItem(String listId, {String? text, double? amount, String? foodId, String? unitId}) async {
@@ -69,7 +69,7 @@ class ShoppingListRepository extends Repository {
             'unit_id': ?unitId,
           },
         );
-    return ShoppingItem.fromJson(response);
+    return ShoppingItem.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<ShoppingItem> updateItem(String listId, String itemId, {String? name, double? amount, bool? isBought}) async {
@@ -84,7 +84,7 @@ class ShoppingListRepository extends Repository {
             'is_bought': ?isBought,
           },
         );
-    return ShoppingItem.fromJson(response);
+    return ShoppingItem.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<void> deleteItem(String listId, String itemId) async {

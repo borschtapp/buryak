@@ -31,7 +31,7 @@ class CollectionRepository extends Repository {
         'offset': ?offset,
       },
     );
-    return (response['data'] as List).map<Collection>((json) => Collection.fromJson(json)).toList();
+    return (response['data'] as List).map<Collection>((json) => Collection.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   static Future<Collection> findOne(String id) async {
@@ -39,7 +39,7 @@ class CollectionRepository extends Repository {
       method: RequestMethod.get,
       path: '/$id',
     ).sendRequest();
-    return Collection.fromJson(response);
+    return Collection.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<Collection> create(String name, {String? description}) async {
@@ -49,7 +49,7 @@ class CollectionRepository extends Repository {
         'description': ?description,
       },
     );
-    Collection created = Collection.fromJson(response);
+    Collection created = Collection.fromJson(response as Map<String, dynamic>);
     CollectionRefreshNotifier().notify();
     return created;
   }
@@ -71,7 +71,7 @@ class CollectionRepository extends Repository {
             'recipe_ids': ?recipeIds,
           },
         );
-    Collection updated = Collection.fromJson(response);
+    Collection updated = Collection.fromJson(response as Map<String, dynamic>);
     CollectionRefreshNotifier().notify();
     return updated;
   }
@@ -122,6 +122,6 @@ class CollectionRepository extends Repository {
             'offset': ?offset,
           },
         );
-    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json)).toList();
+    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json as Map<String, dynamic>)).toList();
   }
 }

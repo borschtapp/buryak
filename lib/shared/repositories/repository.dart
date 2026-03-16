@@ -45,7 +45,7 @@ abstract class Repository {
     if (queryParams != null && queryParams.isNotEmpty) {
       queryParams.forEach((key, value) {
         if (value != null) {
-          query += '${query.isEmpty ? '?' : '&'}$key=${Uri.encodeComponent(value)}';
+          query += '${query.isEmpty ? '?' : '&'}$key=${Uri.encodeComponent(value.toString())}';
         }
       });
     }
@@ -128,7 +128,7 @@ class RequestHandler {
           }
           try {
             final errorBody = json.decode(responseData);
-            throw handleFormErrors(errorBody);
+            throw handleFormErrors(errorBody as Map<String, dynamic>);
           } catch (e) {
             if (e is GeneralApiException) rethrow;
             throw GeneralApiException(message: 'Error ${response.statusCode}: $responseData');

@@ -34,7 +34,7 @@ class FeedRepository extends Repository {
             'offset': ?offset,
           },
         );
-    return (response['data'] as List).map<Feed>((json) => Feed.fromJson(json)).toList();
+    return (response['data'] as List).map<Feed>((json) => Feed.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   static Future<Feed> subscribe(String url) async {
@@ -44,7 +44,7 @@ class FeedRepository extends Repository {
         ).sendRequest(
           body: {'url': url},
         );
-    Feed feed = Feed.fromJson(response);
+    Feed feed = Feed.fromJson(response as Map<String, dynamic>);
     FeedRefreshNotifier().notify(action: 'create', feedId: feed.id, data: feed);
     return feed;
   }
@@ -68,6 +68,6 @@ class FeedRepository extends Repository {
             'limit': ?limit,
           },
         );
-    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json)).toList();
+    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json as Map<String, dynamic>)).toList();
   }
 }

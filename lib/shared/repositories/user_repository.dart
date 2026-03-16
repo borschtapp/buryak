@@ -21,7 +21,7 @@ class UserRepository extends Repository {
             'password': password,
           },
         );
-    return User.fromJson(response);
+    return User.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<User> register(String name, String email, String password) async {
@@ -37,7 +37,7 @@ class UserRepository extends Repository {
             'password': password,
           },
         );
-    return User.fromJson(response);
+    return User.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<User> refreshToken(User user) async {
@@ -47,8 +47,9 @@ class UserRepository extends Repository {
       isAuth: false,
     ).sendRequest(body: {'refresh_token': user.refreshToken});
 
-    user.accessToken = response['access_token'];
-    user.refreshToken = response['refresh_token'];
+    final body = response as Map<String, dynamic>;
+    user.accessToken = body['access_token'] as String;
+    user.refreshToken = body['refresh_token'] as String;
     return user;
   }
 
@@ -82,7 +83,7 @@ class UserRepository extends Repository {
       path: '/$id',
       module: '/api/v1/users',
     ).sendRequest();
-    return User.fromJson(response);
+    return User.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<User> update(String id, {String? name, String? email, String? currentPassword, String? newPassword}) async {
@@ -99,7 +100,7 @@ class UserRepository extends Repository {
             'new_password': ?newPassword,
           },
         );
-    return User.fromJson(response);
+    return User.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<void> delete(String id) async {

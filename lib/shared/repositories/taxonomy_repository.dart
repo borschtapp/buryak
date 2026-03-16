@@ -20,6 +20,6 @@ class TaxonomyRepository extends Repository {
             'limit': ?limit,
           },
         );
-    return (response['data'] as List).map<Taxonomy>((json) => Taxonomy.fromJson(json)).toList();
+    return (response['data'] as List).map<Taxonomy>((json) => Taxonomy.fromJson(json as Map<String, dynamic>)).toList();
   }
 }

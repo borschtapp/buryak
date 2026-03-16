@@ -21,7 +21,7 @@ class UserService {
     try {
       final json = await LocalStorage.getString(LocalStorage.userKey);
       if (json != null) {
-        _currentUser = User.fromJson(jsonDecode(json));
+        _currentUser = User.fromJson(jsonDecode(json) as Map<String, dynamic>);
         if (_currentUser != null) {
           _scheduleTokenRefresh(_currentUser!);
         }

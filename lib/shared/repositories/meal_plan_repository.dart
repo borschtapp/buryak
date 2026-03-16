@@ -26,7 +26,7 @@ class MealPlanRepository extends Repository {
             'limit': ?limit,
           },
         );
-    return (response['data'] as List).map<MealPlan>((json) => MealPlan.fromJson(json)).toList();
+    return (response['data'] as List).map<MealPlan>((json) => MealPlan.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   static Future<MealPlan> create(
@@ -48,7 +48,7 @@ class MealPlanRepository extends Repository {
             'recipe_id': ?recipeId,
           },
         );
-    return MealPlan.fromJson(response);
+    return MealPlan.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<MealPlan> update(
@@ -72,7 +72,7 @@ class MealPlanRepository extends Repository {
             'recipe_id': ?recipeId,
           },
         );
-    return MealPlan.fromJson(response);
+    return MealPlan.fromJson(response as Map<String, dynamic>);
   }
 
   static Future<void> delete(String id) async {

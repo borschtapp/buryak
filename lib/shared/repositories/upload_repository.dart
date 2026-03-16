@@ -18,7 +18,7 @@ class UploadRepository {
     final response = await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode == 201) {
-      return UploadedImage.fromJson(json.decode(response.body));
+      return UploadedImage.fromJson(json.decode(response.body) as Map<String, dynamic>);
     }
 
     throw GeneralApiException(message: 'Upload failed: ${response.statusCode}');

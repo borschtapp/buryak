@@ -32,6 +32,6 @@ class PublisherRepository extends Repository {
             'offset': ?offset,
           },
         );
-    return (response['data'] as List).map<Publisher>((json) => Publisher.fromJson(json)).toList();
+    return (response['data'] as List).map<Publisher>((json) => Publisher.fromJson(json as Map<String, dynamic>)).toList();
   }
 }

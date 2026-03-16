@@ -41,7 +41,7 @@ class User {
   bool isValidAccessToken() {
     try {
       final jwtData = JwtDecoder.decode(accessToken);
-      return jwtData['exp'] * 1000 > DateTime.now().millisecondsSinceEpoch;
+      return (jwtData['exp'] as num) * 1000 > DateTime.now().millisecondsSinceEpoch;
     } catch (_) {
       return false;
     }
