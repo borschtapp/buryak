@@ -34,7 +34,7 @@ extension DurationString on String {
   Duration toDuration() {
     final chunks = split(':');
     if (chunks.length == 1) {
-      throw Exception('Invalid duration string: $this');
+      throw FormatException('Invalid duration string: $this');
     } else if (chunks.length == 2) {
       return Duration(
         minutes: int.parse(chunks[0].trim()),
@@ -47,8 +47,16 @@ extension DurationString on String {
         seconds: int.parse(chunks[2].trim()),
       );
     } else {
-      throw Exception('Invalid duration string: $this');
+      throw FormatException('Invalid duration string: $this');
     }
+  }
+}
+
+extension StringExtensions on String {
+  String capitalize() {
+    if (isEmpty) return this;
+    if (length == 1) return toUpperCase();
+    return '${this[0].toUpperCase()}${substring(1)}';
   }
 }
 

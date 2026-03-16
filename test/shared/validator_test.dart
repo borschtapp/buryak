@@ -31,6 +31,10 @@ void main() {
       expect(Validator.validateEmail(''), isNotNull);
     });
 
+    test('returns error for whitespace only', () {
+      expect(Validator.validateEmail('   '), isNotNull);
+    });
+
     test('returns error for email with trailing garbage', () {
       expect(Validator.validateEmail('user@example.com!!!'), isNotNull);
     });
@@ -45,15 +49,15 @@ void main() {
   });
 
   group('Validator.validatePassword', () {
-    test('returns null for password with 6+ characters', () {
-      expect(Validator.validatePassword('secret'), isNull);
+    test('returns null for password with 8+ characters', () {
+      expect(Validator.validatePassword('secret12'), isNull);
     });
 
     test('returns null for long password', () {
       expect(Validator.validatePassword('a' * 64), isNull);
     });
 
-    test('returns error for password shorter than 6 characters', () {
+    test('returns error for password shorter than 8 characters', () {
       expect(Validator.validatePassword('abc'), isNotNull);
     });
 
@@ -61,8 +65,12 @@ void main() {
       expect(Validator.validatePassword(''), isNotNull);
     });
 
-    test('returns error for password of exactly 5 characters', () {
-      expect(Validator.validatePassword('abcde'), isNotNull);
+    test('returns error for whitespace only (length 8)', () {
+      expect(Validator.validatePassword('        '), isNotNull);
+    });
+
+    test('returns error for password of exactly 7 characters', () {
+      expect(Validator.validatePassword('abcdefg'), isNotNull);
     });
   });
 
@@ -77,6 +85,10 @@ void main() {
 
     test('returns error for empty name', () {
       expect(Validator.validateName(''), isNotNull);
+    });
+
+    test('returns error for whitespace only (length 3)', () {
+      expect(Validator.validateName('   '), isNotNull);
     });
 
     test('returns null for name of exactly 3 characters', () {
@@ -111,6 +123,10 @@ void main() {
 
     test('returns error for empty string', () {
       expect(Validator.validateUrl(''), isNotNull);
+    });
+
+    test('returns error for whitespace only', () {
+      expect(Validator.validateUrl('   '), isNotNull);
     });
 
     test('returns error for ftp scheme', () {

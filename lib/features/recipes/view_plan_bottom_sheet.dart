@@ -101,7 +101,7 @@ class _AddToPlanBottomSheetState extends State<AddToPlanBottomSheet> {
           SegmentedButton<String>(
             segments: _mealTypes.map((type) => ButtonSegment<String>(
               value: type,
-              label: Text(type[0].toUpperCase() + type.substring(1)),
+              label: Text(type.capitalize()),
             )).toList(),
             selected: {_selectedMealType},
             onSelectionChanged: (Set<String> newSelection) {
