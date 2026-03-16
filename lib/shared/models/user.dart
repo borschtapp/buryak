@@ -18,6 +18,8 @@ class User {
   String refreshToken;
   @JsonKey(name: 'household_id')
   String? householdId;
+
+  // Preload fields
   Household? household;
 
   User({

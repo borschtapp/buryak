@@ -34,12 +34,15 @@ class _AddToShoppingBottomSheetState extends State<AddToShoppingBottomSheet> {
           ?.where((i) => _selectedIngredientIds.contains(i.id))
           .toList();
 
-      if (selectedIngredients != null) {
+      if (selectedIngredients != null && selectedIngredients.isNotEmpty) {
+        final lists = await ShoppingListRepository.findAll();
+        final list = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
         for (final ingredient in selectedIngredients) {
-          final name = ingredient.food?.name ?? ingredient.rawText ?? ingredient.note ?? 'Unknown ingredient';
-          await ShoppingListRepository.create(
-            name,
-            quantity: ingredient.amount,
+          final name = ingredient.food?.name ?? ingredient.name ?? ingredient.rawText ?? ingredient.description ?? 'Unknown ingredient';
+          await ShoppingListRepository.createItem(
+            list.id,
+            text: name,
+            amount: ingredient.amount,
             unitId: ingredient.unitId,
           );
         }
@@ -98,7 +101,7 @@ class _AddToShoppingBottomSheetState extends State<AddToShoppingBottomSheet> {
                 itemCount: ingredients.length,
                 itemBuilder: (context, index) {
                   final ingredient = ingredients[index];
-                  final name = ingredient.food?.name ?? ingredient.rawText ?? ingredient.note ?? '';
+                  final name = ingredient.food?.name ?? ingredient.name ?? ingredient.rawText ?? ingredient.description ?? '';
                   final amount = "${ingredient.amount ?? ''} ${ingredient.unit?.name ?? ''}".trim();
 
                   return CheckboxListTile(

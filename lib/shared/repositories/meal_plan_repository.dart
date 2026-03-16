@@ -43,7 +43,7 @@ class MealPlanRepository extends Repository {
           body: {
             'date': date,
             'meal_type': mealType,
-            'note': ?note,
+            'description': ?note,
             'servings': ?servings,
             'recipe_id': ?recipeId,
           },
@@ -67,7 +67,7 @@ class MealPlanRepository extends Repository {
           body: {
             'date': ?date,
             'meal_type': ?mealType,
-            'note': ?note,
+            'description': ?note,
             'servings': ?servings,
             'recipe_id': ?recipeId,
           },

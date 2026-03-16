@@ -27,11 +27,11 @@ class Instructions extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              if (step.image != null) ...[
+              if (step.imageUrl != null) ...[
                 ClipRRect(
                   borderRadius: context.shapeMedium,
                   child: CachedNetworkImage(
-                    imageUrl: step.image!,
+                    imageUrl: step.imageUrl!,
                     fit: BoxFit.cover,
                     width: double.infinity,
                     maxHeightDiskCache: 1200,

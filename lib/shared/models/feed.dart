@@ -1,43 +1,42 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'publisher.dart';
 import 'recipe.dart';
-import 'user.dart';
 
 part 'feed.g.dart';
 
 @JsonSerializable()
 class Feed {
   final String id;
+  final bool active;
   final String url;
-  final String? name;
-  final String? description;
-  @JsonKey(name: 'website_url')
-  final String? websiteUrl;
-  final bool? active;
-  @JsonKey(name: 'last_fetched_at')
-  final DateTime? lastFetchedAt;
+  final String name;
   @JsonKey(name: 'error_count')
   final int? errorCount;
-  final DateTime created;
-  final DateTime updated;
-  final List<Recipe>? recipes;
-  final List<User>? users;
+  @JsonKey(name: 'last_sync_at')
+  final String? lastSyncAt;
+  @JsonKey(name: 'last_sync_success')
+  final bool? lastSyncSuccess;
+  final String? updated;
+  final String? created;
 
+  // Preload fields
   @JsonKey(name: 'total_recipes')
   final int? totalRecipes;
+  final Publisher? publisher;
+  final List<Recipe>? recipes;
 
   Feed({
     required this.id,
+    required this.active,
     required this.url,
-    this.name,
-    this.description,
-    this.websiteUrl,
-    this.active,
-    this.lastFetchedAt,
+    required this.name,
+    this.lastSyncAt,
+    this.lastSyncSuccess,
     this.errorCount,
-    required this.created,
-    required this.updated,
+    this.updated,
+    this.created,
+    this.publisher,
     this.recipes,
-    this.users,
     this.totalRecipes,
   });
 

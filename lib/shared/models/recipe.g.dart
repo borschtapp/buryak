@@ -11,33 +11,59 @@ Recipe _$RecipeFromJson(Map<String, dynamic> json) => Recipe(
   url: json['url'] as String?,
   name: json['name'] as String,
   description: json['description'] as String?,
-  images: (json['images'] as List<dynamic>?)?.map((e) => RecipeImage.fromJson(e as Map<String, dynamic>)).toList(),
+  imageUrl: json['image_url'] as String?,
+  images: (json['images'] as List<dynamic>?)
+      ?.map((e) => Image.fromJson(e as Map<String, dynamic>))
+      .toList(),
   language: json['language'] as String?,
-  publisher: json['publisher'] == null ? null : Publisher.fromJson(json['publisher'] as Map<String, dynamic>),
-  author: json['author'] == null ? null : Author.fromJson(json['author'] as Map<String, dynamic>),
+  publisher: json['publisher'] == null
+      ? null
+      : Publisher.fromJson(json['publisher'] as Map<String, dynamic>),
+  author: json['author'] == null
+      ? null
+      : Author.fromJson(json['author'] as Map<String, dynamic>),
   text: json['text'] as String?,
   prepTime: (json['prep_time'] as num?)?.toInt(),
   cookTime: (json['cook_time'] as num?)?.toInt(),
   totalTime: (json['total_time'] as num?)?.toInt(),
   difficulty: json['difficulty'] as String?,
   method: json['method'] as String?,
-  taxonomies: (json['taxonomies'] as List<dynamic>?)?.map((e) => Taxonomy.fromJson(e as Map<String, dynamic>)).toList(),
+  taxonomies: (json['taxonomies'] as List<dynamic>?)
+      ?.map((e) => Taxonomy.fromJson(e as Map<String, dynamic>))
+      .toList(),
   yield: (json['yield'] as num?)?.toInt(),
-  equipment: (json['equipment'] as List<dynamic>?)?.map((e) => e as String).toList(),
+  equipment: (json['equipment'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
   ingredients: (json['ingredients'] as List<dynamic>?)
       ?.map((e) => RecipeIngredient.fromJson(e as Map<String, dynamic>))
       .toList(),
   instructions: (json['instructions'] as List<dynamic>?)
       ?.map((e) => RecipeInstruction.fromJson(e as Map<String, dynamic>))
       .toList(),
-  nutrition: json['nutrition'] == null ? null : Nutrition.fromJson(json['nutrition'] as Map<String, dynamic>),
-  rating: json['rating'] == null ? null : Rating.fromJson(json['rating'] as Map<String, dynamic>),
-  video: json['video'] == null ? null : Video.fromJson(json['video'] as Map<String, dynamic>),
-  published: json['published'] == null ? null : DateTime.parse(json['published'] as String),
+  nutrition: json['nutrition'] == null
+      ? null
+      : Nutrition.fromJson(json['nutrition'] as Map<String, dynamic>),
+  rating: json['rating'] == null
+      ? null
+      : Rating.fromJson(json['rating'] as Map<String, dynamic>),
+  video: json['video'] == null
+      ? null
+      : Video.fromJson(json['video'] as Map<String, dynamic>),
+  published: json['published'] == null
+      ? null
+      : DateTime.parse(json['published'] as String),
   updated: DateTime.parse(json['updated'] as String),
   created: DateTime.parse(json['created'] as String),
   feedId: json['feed_id'] as String?,
+  feed: json['feed'] == null
+      ? null
+      : Feed.fromJson(json['feed'] as Map<String, dynamic>),
   isBasedOn: json['is_based_on'] as String?,
+  isSaved: json['is_saved'] as bool?,
+  parentId: json['parent_id'] as String?,
+  userId: json['user_id'] as String?,
+  householdId: json['household_id'] as String?,
   collections: (json['collections'] as List<dynamic>?)
       ?.map((e) => Collection.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -48,6 +74,7 @@ Map<String, dynamic> _$RecipeToJson(Recipe instance) => <String, dynamic>{
   'url': instance.url,
   'name': instance.name,
   'description': instance.description,
+  'image_url': instance.imageUrl,
   'images': instance.images,
   'language': instance.language,
   'publisher': instance.publisher,
@@ -70,6 +97,11 @@ Map<String, dynamic> _$RecipeToJson(Recipe instance) => <String, dynamic>{
   'updated': instance.updated.toIso8601String(),
   'created': instance.created.toIso8601String(),
   'feed_id': instance.feedId,
+  'feed': instance.feed,
   'is_based_on': instance.isBasedOn,
+  'is_saved': instance.isSaved,
+  'parent_id': instance.parentId,
+  'user_id': instance.userId,
+  'household_id': instance.householdId,
   'collections': instance.collections,
 };

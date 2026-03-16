@@ -8,22 +8,29 @@ part 'recipe_ingredient.g.dart';
 class RecipeIngredient {
   final String id;
   final double? amount;
-  final String? kind;
-  final String? note;
+  @JsonKey(name: 'max_amount')
+  final double? maxAmount;
+  final String? name;
+  final String? category;
+  final String? description;
   @JsonKey(name: 'raw_text')
   final String? rawText;
-  final Food? food;
   @JsonKey(name: 'food_id')
   final String? foodId;
-  final Unit? unit;
   @JsonKey(name: 'unit_id')
   final String? unitId;
+
+  // Preload fields
+  final Food? food;
+  final Unit? unit;
 
   RecipeIngredient({
     required this.id,
     this.amount,
-    this.kind,
-    this.note,
+    this.maxAmount,
+    this.name,
+    this.category,
+    this.description,
     this.rawText,
     this.food,
     this.foodId,

@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'image.dart';
 
 part 'publisher.g.dart';
 
@@ -6,19 +7,23 @@ part 'publisher.g.dart';
 class Publisher {
   final String id;
   final String name;
-  final String? url;
   final String? description;
-  final String? image;
+  final String url;
+  @JsonKey(name: 'image_url')
+  final String? imageUrl;
 
+  // Preload fields
+  final List<Image>? images;
   @JsonKey(name: 'total_recipes')
   final int? totalRecipes;
 
   Publisher({
     required this.id,
     required this.name,
-    this.url,
     this.description,
-    this.image,
+    required this.url,
+    this.imageUrl,
+    this.images,
     this.totalRecipes,
   });
 

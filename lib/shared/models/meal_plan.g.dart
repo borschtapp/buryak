@@ -10,10 +10,12 @@ MealPlan _$MealPlanFromJson(Map<String, dynamic> json) => MealPlan(
   id: json['id'] as String,
   date: json['date'] as String,
   mealType: json['meal_type'] as String,
-  note: json['note'] as String?,
+  description: json['description'] as String?,
   servings: (json['servings'] as num?)?.toInt(),
   recipeId: json['recipe_id'] as String?,
-  recipe: json['recipe'] == null ? null : Recipe.fromJson(json['recipe'] as Map<String, dynamic>),
+  recipe: json['recipe'] == null
+      ? null
+      : Recipe.fromJson(json['recipe'] as Map<String, dynamic>),
   householdId: json['household_id'] as String?,
 );
 
@@ -21,7 +23,7 @@ Map<String, dynamic> _$MealPlanToJson(MealPlan instance) => <String, dynamic>{
   'id': instance.id,
   'date': instance.date,
   'meal_type': instance.mealType,
-  'note': instance.note,
+  'description': instance.description,
   'servings': instance.servings,
   'recipe_id': instance.recipeId,
   'recipe': instance.recipe,

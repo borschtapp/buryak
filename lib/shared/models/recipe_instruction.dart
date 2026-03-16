@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'image.dart';
 
 part 'recipe_instruction.g.dart';
 
@@ -9,10 +10,15 @@ class RecipeInstruction {
   final String? title;
   final String text;
   final String? url;
-  final String? image;
-  final String? video;
+  @JsonKey(name: 'image_url')
+  final String? imageUrl;
+  @JsonKey(name: 'video_url')
+  final String? videoUrl;
   @JsonKey(name: 'parent_id')
   final String? parentId;
+
+  // Preload fields
+  final List<Image>? images;
   final RecipeInstruction? parent;
 
   RecipeInstruction({
@@ -21,8 +27,9 @@ class RecipeInstruction {
     this.title,
     required this.text,
     this.url,
-    this.image,
-    this.video,
+    this.imageUrl,
+    this.images,
+    this.videoUrl,
     this.parentId,
     this.parent,
   });

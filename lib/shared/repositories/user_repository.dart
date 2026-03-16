@@ -52,6 +52,30 @@ class UserRepository extends Repository {
     return user;
   }
 
+  static Future<void> logout(String refreshToken) async {
+    await UserRepository(
+      method: RequestMethod.post,
+      path: '/logout',
+      isAuth: false,
+    ).sendRequest(body: {'refresh_token': refreshToken});
+  }
+
+  static Future<void> forgotPassword(String email) async {
+    await UserRepository(
+      method: RequestMethod.post,
+      path: '/forgot-password',
+      isAuth: false,
+    ).sendRequest(body: {'email': email});
+  }
+
+  static Future<void> resetPassword(String token, String newPassword) async {
+    await UserRepository(
+      method: RequestMethod.post,
+      path: '/reset-password',
+      isAuth: false,
+    ).sendRequest(body: {'token': token, 'new_password': newPassword});
+  }
+
   static Future<User> findOne(String id) async {
     ResponseBody response = await UserRepository(
       method: RequestMethod.get,
@@ -61,7 +85,7 @@ class UserRepository extends Repository {
     return User.fromJson(response);
   }
 
-  static Future<User> update(String id, {String? name, String? email}) async {
+  static Future<User> update(String id, {String? name, String? email, String? currentPassword, String? newPassword}) async {
     ResponseBody response =
         await UserRepository(
           method: RequestMethod.patch,
@@ -71,6 +95,8 @@ class UserRepository extends Repository {
           body: {
             'name': ?name,
             'email': ?email,
+            'current_password': ?currentPassword,
+            'new_password': ?newPassword,
           },
         );
     return User.fromJson(response);

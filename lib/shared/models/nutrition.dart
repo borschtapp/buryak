@@ -4,6 +4,8 @@ part 'nutrition.g.dart';
 
 @JsonSerializable()
 class Nutrition {
+  @JsonKey(name: 'serving_size')
+  final String? servingSize;
   final double? calories;
   final double? carbs;
   @JsonKey(name: 'carbs_fiber')
@@ -17,11 +19,10 @@ class Nutrition {
   @JsonKey(name: 'fat_trans')
   final double? fatTrans;
   final double? protein;
-  @JsonKey(name: 'serving_size')
-  final String? servingSize;
   final double? sodium;
 
   Nutrition({
+    this.servingSize,
     this.calories,
     this.carbs,
     this.carbsFiber,
@@ -31,7 +32,6 @@ class Nutrition {
     this.fatSaturated,
     this.fatTrans,
     this.protein,
-    this.servingSize,
     this.sodium,
   });
 

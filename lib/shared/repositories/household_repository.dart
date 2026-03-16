@@ -1,6 +1,7 @@
 import 'repository.dart';
 import '../models/household.dart';
 import '../models/user.dart';
+import '../models/user_token.dart';
 
 class HouseholdRepository extends Repository {
   HouseholdRepository({
@@ -43,21 +44,42 @@ class HouseholdRepository extends Repository {
     return (response['data'] as List).map<User>((json) => User.fromJson(json)).toList();
   }
 
-  static Future<User> addMember(String id, String email) async {
-    ResponseBody response =
-        await HouseholdRepository(
-          method: RequestMethod.post,
-          path: '/$id/members',
-        ).sendRequest(
-          body: {'email': email},
-        );
-    return User.fromJson(response);
-  }
-
   static Future<void> removeMember(String id, String userId) async {
     await HouseholdRepository(
       method: RequestMethod.delete,
       path: '/$id/members/$userId',
     ).sendRequest();
+  }
+
+  // Invite management
+
+  static Future<List<UserToken>> listInvites(String id) async {
+    ResponseBody response = await HouseholdRepository(
+      method: RequestMethod.get,
+      path: '/$id/invites',
+    ).sendRequest();
+    return (response as List).map<UserToken>((json) => UserToken.fromJson(json)).toList();
+  }
+
+  static Future<UserToken> createInvite(String id) async {
+    ResponseBody response = await HouseholdRepository(
+      method: RequestMethod.post,
+      path: '/$id/invites',
+    ).sendRequest();
+    return UserToken.fromJson(response);
+  }
+
+  static Future<void> deleteInvite(String id, String code) async {
+    await HouseholdRepository(
+      method: RequestMethod.delete,
+      path: '/$id/invites/$code',
+    ).sendRequest();
+  }
+
+  static Future<void> joinHousehold(String code) async {
+    await HouseholdRepository(
+      method: RequestMethod.post,
+      path: '/invites/join',
+    ).sendRequest(body: {'code': code});
   }
 }

@@ -6,11 +6,15 @@ part 'unit.g.dart';
 @JsonSerializable()
 class Unit {
   final String id;
+  final String slug;
   final String name;
+
+  // Preload fields
   final List<Taxonomy>? taxonomies;
 
   Unit({
     required this.id,
+    required this.slug,
     required this.name,
     this.taxonomies,
   });

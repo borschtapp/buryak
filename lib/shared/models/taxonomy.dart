@@ -10,9 +10,11 @@ class Taxonomy {
   final String? label;
   @JsonKey(name: 'parent_id')
   final String? parentId;
-  final Taxonomy? parent;
   @JsonKey(name: 'canonical_id')
   final String? canonicalId;
+
+  // Preload fields
+  final Taxonomy? parent;
   final Taxonomy? canonical;
 
   Taxonomy({

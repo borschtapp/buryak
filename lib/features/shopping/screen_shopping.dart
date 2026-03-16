@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/extensions.dart';
+import '../../shared/models/shopping_item.dart';
 import '../../shared/models/shopping_list.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
 import '../../shared/views/async_loader.dart';
@@ -14,18 +15,23 @@ class ShoppingScreen extends StatefulWidget {
 }
 
 class _ShoppingScreenState extends State<ShoppingScreen> {
-  late Future<List<ShoppingList>> _itemsFuture;
+  late Future<(ShoppingList, List<ShoppingItem>)> _dataFuture;
 
   @override
   void initState() {
     super.initState();
-    _itemsFuture = ShoppingListRepository.findAll().then((list) {
-      _sortItems(list);
-      return list;
-    });
+    _dataFuture = _loadData();
   }
 
-  void _sortItems(List<ShoppingList> items) {
+  Future<(ShoppingList, List<ShoppingItem>)> _loadData() async {
+    final lists = await ShoppingListRepository.findAll();
+    final list = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
+    final items = await ShoppingListRepository.findItems(list.id);
+    _sortItems(items);
+    return (list, items);
+  }
+
+  void _sortItems(List<ShoppingItem> items) {
     items.sort((a, b) {
       if (a.isBought == b.isBought) return 0;
       if (a.isBought ?? false) return 1;
@@ -33,15 +39,17 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     });
   }
 
-  Future<void> _toggleItem(int index, ShoppingList item, List<ShoppingList> items) async {
+  Future<void> _toggleItem(int index, ShoppingItem item, String listId, List<ShoppingItem> items) async {
     final newValue = !(item.isBought ?? false);
     setState(() {
-      items[index] = ShoppingList(
+      items[index] = ShoppingItem(
         id: item.id,
-        householdId: item.householdId,
+        shoppingListId: item.shoppingListId,
         isBought: newValue,
-        product: item.product,
-        quantity: item.quantity,
+        text: item.text,
+        amount: item.amount,
+        food: item.food,
+        foodId: item.foodId,
         unit: item.unit,
         unitId: item.unitId,
       );
@@ -49,10 +57,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     });
 
     try {
-      await ShoppingListRepository.update(
-        item.id,
-        isBought: newValue,
-      );
+      await ShoppingListRepository.updateItem(listId, item.id, isBought: newValue);
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -69,13 +74,13 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     }
   }
 
-  Future<void> _deleteItem(int index, ShoppingList item, List<ShoppingList> items) async {
+  Future<void> _deleteItem(int index, ShoppingItem item, String listId, List<ShoppingItem> items) async {
     setState(() {
       items.removeAt(index);
     });
 
     try {
-      await ShoppingListRepository.delete(item.id);
+      await ShoppingListRepository.deleteItem(listId, item.id);
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -89,8 +94,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     }
   }
 
-  Future<void> _showAddItemDialog() async {
-    final items = await _itemsFuture;
+  Future<void> _showAddItemDialog(String listId, List<ShoppingItem> items) async {
     if (!mounted) return;
 
     final controller = TextEditingController();
@@ -101,7 +105,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(labelText: 'Product Name', hintText: 'e.g. Milk'),
+          decoration: const InputDecoration(labelText: 'Item Name', hintText: 'e.g. Milk'),
           onSubmitted: (val) => Navigator.pop(context, val),
         ),
         actions: [
@@ -113,7 +117,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
 
     if (name != null && name.trim().isNotEmpty) {
       try {
-        final newItem = await ShoppingListRepository.create(name.trim());
+        final newItem = await ShoppingListRepository.createItem(listId, text: name.trim());
         if (mounted) {
           setState(() {
             items.insert(0, newItem);
@@ -132,53 +136,54 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RootLayout(
-      currentIndex: 3,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddItemDialog,
-        child: const Icon(Icons.add),
-      ),
-      child: AsyncLoader<List<ShoppingList>>(
-        future: _itemsFuture,
-        builder: (context, items) {
-          if (items.isEmpty) {
-            return const Center(child: Text('Your shopping list is empty.'));
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: items.length,
-            separatorBuilder: (context, _) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return ListTile(
-                leading: Checkbox(
-                  value: item.isBought ?? false,
-                  onChanged: (_) => _toggleItem(index, item, items),
+    return AsyncLoader<(ShoppingList, List<ShoppingItem>)>(
+      future: _dataFuture,
+      builder: (context, data) {
+        final (list, items) = data;
+        return RootLayout(
+          currentIndex: 3,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _showAddItemDialog(list.id, items),
+            child: const Icon(Icons.add),
+          ),
+          child: items.isEmpty
+              ? const Center(child: Text('Your shopping list is empty.'))
+              : ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: items.length,
+                  separatorBuilder: (context, _) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    final label = item.food?.name ?? item.text ?? '';
+                    return ListTile(
+                      leading: Checkbox(
+                        value: item.isBought ?? false,
+                        onChanged: (_) => _toggleItem(index, item, list.id, items),
+                      ),
+                      title: Text(
+                        label,
+                        style: (item.isBought ?? false)
+                            ? context.textTheme.bodyMedium?.copyWith(
+                                decoration: TextDecoration.lineThrough,
+                                color: Colors.grey,
+                              )
+                            : null,
+                      ),
+                      subtitle: item.amount != null
+                          ? Text(
+                              '${item.amount} ${item.unit?.name ?? ''}',
+                              style: context.textTheme.bodySmall,
+                            )
+                          : null,
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () => _deleteItem(index, item, list.id, items),
+                      ),
+                    );
+                  },
                 ),
-                title: Text(
-                  item.product ?? '',
-                  style: (item.isBought ?? false)
-                      ? context.textTheme.bodyMedium?.copyWith(
-                          decoration: TextDecoration.lineThrough,
-                          color: Colors.grey,
-                        )
-                      : null,
-                ),
-                subtitle: item.quantity != null
-                    ? Text(
-                        '${item.quantity} ${item.unit?.name ?? ''}',
-                        style: context.textTheme.bodySmall,
-                      )
-                    : null,
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  onPressed: () => _deleteItem(index, item, items),
-                ),
-              );
-            },
-          );
-        },
-      ),
+        );
+      },
     );
   }
 }

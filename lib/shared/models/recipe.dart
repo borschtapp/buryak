@@ -1,8 +1,9 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'author.dart';
+import 'feed.dart';
+import 'image.dart';
 import 'publisher.dart';
 import 'rating.dart';
-import 'recipe_image.dart';
 import 'recipe_ingredient.dart';
 import 'recipe_instruction.dart';
 import 'nutrition.dart';
@@ -18,9 +19,9 @@ class Recipe {
   final String? url;
   final String name;
   final String? description;
-  final List<RecipeImage>? images;
+  @JsonKey(name: 'image_url')
+  final String? imageUrl;
   final String? language;
-  final Publisher? publisher;
   final Author? author;
   final String? text;
   @JsonKey(name: 'prep_time')
@@ -31,11 +32,8 @@ class Recipe {
   final int? totalTime;
   final String? difficulty;
   final String? method;
-  final List<Taxonomy>? taxonomies;
   final int? yield;
   final List<String>? equipment;
-  final List<RecipeIngredient>? ingredients;
-  final List<RecipeInstruction>? instructions;
   final Nutrition? nutrition;
   final Rating? rating;
   final Video? video;
@@ -46,13 +44,30 @@ class Recipe {
   final String? feedId;
   @JsonKey(name: 'is_based_on')
   final String? isBasedOn;
+  @JsonKey(name: 'is_saved')
+  final bool? isSaved;
+  @JsonKey(name: 'parent_id')
+  final String? parentId;
+  @JsonKey(name: 'user_id')
+  final String? userId;
+  @JsonKey(name: 'household_id')
+  final String? householdId;
+
+  // Preload fields
+  final Feed? feed;
+  final Publisher? publisher;
+  final List<Image>? images;
   final List<Collection>? collections;
+  final List<RecipeIngredient>? ingredients;
+  final List<RecipeInstruction>? instructions;
+  final List<Taxonomy>? taxonomies;
 
   Recipe({
     required this.id,
     this.url,
     required this.name,
     this.description,
+    this.imageUrl,
     this.images,
     this.language,
     this.publisher,
@@ -75,7 +90,12 @@ class Recipe {
     required this.updated,
     required this.created,
     this.feedId,
+    this.feed,
     this.isBasedOn,
+    this.isSaved,
+    this.parentId,
+    this.userId,
+    this.householdId,
     this.collections,
   });
 

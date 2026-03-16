@@ -8,20 +8,19 @@ part of 'shopping_list.dart';
 
 ShoppingList _$ShoppingListFromJson(Map<String, dynamic> json) => ShoppingList(
   id: json['id'] as String,
+  name: json['name'] as String,
   householdId: json['household_id'] as String?,
-  isBought: json['is_bought'] as bool?,
-  product: json['product'] as String?,
-  quantity: (json['quantity'] as num?)?.toDouble(),
-  unit: json['unit'] == null ? null : Unit.fromJson(json['unit'] as Map<String, dynamic>),
-  unitId: json['unit_id'] as String?,
+  isDefault: json['is_default'] as bool?,
+  items: (json['items'] as List<dynamic>?)
+      ?.map((e) => ShoppingItem.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
-Map<String, dynamic> _$ShoppingListToJson(ShoppingList instance) => <String, dynamic>{
-  'id': instance.id,
-  'household_id': instance.householdId,
-  'is_bought': instance.isBought,
-  'product': instance.product,
-  'quantity': instance.quantity,
-  'unit': instance.unit,
-  'unit_id': instance.unitId,
-};
+Map<String, dynamic> _$ShoppingListToJson(ShoppingList instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'household_id': instance.householdId,
+      'is_default': instance.isDefault,
+      'items': instance.items,
+    };

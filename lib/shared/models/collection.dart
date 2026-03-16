@@ -6,22 +6,24 @@ part 'collection.g.dart';
 @JsonSerializable()
 class Collection {
   final String id;
+  @JsonKey(name: 'household_id')
+  final String householdId;
+  @JsonKey(name: 'user_id')
+  final String userId;
   final String name;
   final String? description;
-  @JsonKey(name: 'household_id')
-  final String? householdId;
 
-  // Warning, the fields below are most lickely empty
-  final List<Recipe>? recipes;
-
+  // Preload fields, these are most likely empty
   @JsonKey(name: 'total_recipes')
   final int? totalRecipes;
+  final List<Recipe>? recipes;
 
   Collection({
     required this.id,
+    required this.householdId,
+    required this.userId,
     required this.name,
     this.description,
-    this.householdId,
     this.recipes,
     this.totalRecipes,
   });

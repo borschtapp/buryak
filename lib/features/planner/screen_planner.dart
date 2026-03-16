@@ -44,7 +44,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
             final entry = entries[index];
             return ListTile(
               leading: const Icon(Icons.restaurant_menu),
-              title: Text(entry.recipe?.name ?? entry.note ?? 'Meal'),
+              title: Text(entry.recipe?.name ?? entry.description ?? 'Meal'),
               subtitle: Text('${entry.date} · ${entry.mealType}'),
               trailing: Text(
                 '${entry.servings ?? 1} serving${(entry.servings ?? 1) == 1 ? '' : 's'}',

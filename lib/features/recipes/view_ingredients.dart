@@ -95,7 +95,7 @@ class Ingredients extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: Text(
-              ingredient.food?.name ?? ingredient.rawText ?? ingredient.note ?? '',
+              ingredient.food?.name ?? ingredient.name ?? ingredient.rawText ?? ingredient.description ?? '',
               style: context.textTheme.bodyLarge,
             ),
           ),
@@ -109,7 +109,7 @@ class Ingredients extends StatelessWidget {
   }
 
   Widget _buildIngredientIcon(BuildContext context, RecipeIngredient ingredient) {
-    final icon = ingredient.food?.icon;
+    final icon = ingredient.food?.imageUrl;
     if (icon != null && icon.isNotEmpty) {
       return ClipOval(
         child: CachedNetworkImage(

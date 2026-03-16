@@ -11,7 +11,10 @@ Publisher _$PublisherFromJson(Map<String, dynamic> json) => Publisher(
   name: json['name'] as String,
   url: json['url'] as String?,
   description: json['description'] as String?,
-  image: json['image'] as String?,
+  imageUrl: json['image_url'] as String?,
+  images: (json['images'] as List<dynamic>?)
+      ?.map((e) => Image.fromJson(e as Map<String, dynamic>))
+      .toList(),
   totalRecipes: (json['total_recipes'] as num?)?.toInt(),
 );
 
@@ -20,6 +23,7 @@ Map<String, dynamic> _$PublisherToJson(Publisher instance) => <String, dynamic>{
   'name': instance.name,
   'url': instance.url,
   'description': instance.description,
-  'image': instance.image,
+  'image_url': instance.imageUrl,
+  'images': instance.images,
   'total_recipes': instance.totalRecipes,
 };
