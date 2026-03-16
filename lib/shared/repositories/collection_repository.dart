@@ -1,127 +1,113 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'repository.dart';
 import '../models/collection.dart';
 import '../models/recipe.dart';
-import '../providers/collection_notifier.dart';
+import '../models/paginated_list.dart';
+
+part 'collection_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+CollectionRepository collectionRepository(Ref ref) => CollectionRepository(ref: ref);
 
 class CollectionRepository extends Repository {
-  CollectionRepository({
-    required super.method,
-    super.path = '',
-    super.module = '/api/v1/collections',
-    super.isAuth = true,
-  });
+  const CollectionRepository({required super.ref}) : super(module: '/api/v1/collections');
 
-  static Future<List<Collection>> findAll({
+  Future<PaginatedList<Collection>> findAll({
     String? preload,
     String? q,
     String? sort,
     String? order,
-    int? page,
     int? limit,
     int? offset,
   }) async {
-    ResponseBody response = await CollectionRepository(method: RequestMethod.get).sendRequest(
+    final response = await sendRequest(
+      method: .get,
       queryParams: {
         'preload': ?preload,
         'q': ?q,
         'sort': ?sort,
         'order': ?order,
-        'page': ?page,
         'limit': ?limit,
         'offset': ?offset,
       },
     );
-    return (response['data'] as List).map<Collection>((json) => Collection.fromJson(json as Map<String, dynamic>)).toList();
+    return PaginatedList<Collection>.fromJson(
+      ensureMap(response),
+      (json) => Collection.fromJson(ensureMap(json)),
+    );
   }
 
-  static Future<Collection> findOne(String id) async {
-    ResponseBody response = await CollectionRepository(
-      method: RequestMethod.get,
-      path: '/$id',
-    ).sendRequest();
-    return Collection.fromJson(response as Map<String, dynamic>);
+  Future<Collection> findOne(String id) async {
+    final response = await sendRequest(method: .get, path: '/$id');
+    return Collection.fromJson(ensureMap(response));
   }
 
-  static Future<Collection> create(String name, {String? description}) async {
-    ResponseBody response = await CollectionRepository(method: RequestMethod.post).sendRequest(
+  Future<Collection> create(String name, {String? description}) async {
+    final response = await sendRequest(
+      method: .post,
       body: {
         'name': name,
         'description': ?description,
       },
     );
-    Collection created = Collection.fromJson(response as Map<String, dynamic>);
-    CollectionRefreshNotifier().notify();
-    return created;
+    return Collection.fromJson(ensureMap(response));
   }
 
-  static Future<Collection> update(
+  Future<Collection> update(
     String id, {
     String? name,
     String? description,
     List<String>? recipeIds,
   }) async {
-    ResponseBody response =
-        await CollectionRepository(
-          method: RequestMethod.patch,
-          path: '/$id',
-        ).sendRequest(
-          body: {
-            'name': ?name,
-            'description': ?description,
-            'recipe_ids': ?recipeIds,
-          },
-        );
-    Collection updated = Collection.fromJson(response as Map<String, dynamic>);
-    CollectionRefreshNotifier().notify();
-    return updated;
+    final response = await sendRequest(
+      method: .patch,
+      path: '/$id',
+      body: {
+        'name': ?name,
+        'description': ?description,
+        'recipe_ids': ?recipeIds,
+      },
+    );
+    return Collection.fromJson(ensureMap(response));
   }
 
-  static Future<void> delete(String id) async {
-    await CollectionRepository(method: RequestMethod.delete, path: '/$id').sendRequest();
-    CollectionRefreshNotifier().notify();
+  Future<void> delete(String id) async {
+    await sendRequest(method: .delete, path: '/$id');
   }
 
-  static Future<void> addRecipe(String collectionId, String recipeId) async {
-    await CollectionRepository(
-      method: RequestMethod.post,
-      path: '/$collectionId/recipes/$recipeId',
-    ).sendRequest();
-    CollectionRefreshNotifier().notify();
+  Future<void> addRecipe(String collectionId, String recipeId) async {
+    await sendRequest(method: .post, path: '/$collectionId/recipes/$recipeId');
   }
 
-  static Future<void> removeRecipe(String collectionId, String recipeId) async {
-    await CollectionRepository(
-      method: RequestMethod.delete,
-      path: '/$collectionId/recipes/$recipeId',
-    ).sendRequest();
-    CollectionRefreshNotifier().notify();
+  Future<void> removeRecipe(String collectionId, String recipeId) async {
+    await sendRequest(method: .delete, path: '/$collectionId/recipes/$recipeId');
   }
 
-  static Future<List<Recipe>> getRecipes(
+  Future<PaginatedList<Recipe>> getRecipes(
     String collectionId, {
     String? preload,
     String? q,
     String? sort,
     String? order,
-    int? page,
     int? limit,
     int? offset,
   }) async {
-    ResponseBody response =
-        await CollectionRepository(
-          method: RequestMethod.get,
-          path: '/$collectionId/recipes',
-        ).sendRequest(
-          queryParams: {
-            'preload': ?preload,
-            'q': ?q,
-            'sort': ?sort,
-            'order': ?order,
-            'page': ?page,
-            'limit': ?limit,
-            'offset': ?offset,
-          },
-        );
-    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json as Map<String, dynamic>)).toList();
+    final response = await sendRequest(
+      method: .get,
+      path: '/$collectionId/recipes',
+      queryParams: {
+        'preload': ?preload,
+        'q': ?q,
+        'sort': ?sort,
+        'order': ?order,
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return PaginatedList<Recipe>.fromJson(
+      ensureMap(response),
+      (json) => Recipe.fromJson(ensureMap(json)),
+    );
   }
 }

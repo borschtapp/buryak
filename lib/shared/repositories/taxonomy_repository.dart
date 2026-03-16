@@ -1,25 +1,29 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'repository.dart';
 import '../models/taxonomy.dart';
+import '../models/paginated_list.dart';
+
+part 'taxonomy_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+TaxonomyRepository taxonomyRepository(Ref ref) => TaxonomyRepository(ref: ref);
 
 class TaxonomyRepository extends Repository {
-  TaxonomyRepository({
-    required super.method,
-    super.path = '',
-    super.module = '/api/v1/taxonomies',
-    super.isAuth = true,
-  });
+  const TaxonomyRepository({required super.ref}) : super(module: '/api/v1/taxonomies');
 
-  static Future<List<Taxonomy>> findAll({String? type, int? page, int? limit}) async {
-    ResponseBody response =
-        await TaxonomyRepository(
-          method: RequestMethod.get,
-        ).sendRequest(
-          queryParams: {
-            'type': ?type,
-            'page': ?page,
-            'limit': ?limit,
-          },
-        );
-    return (response['data'] as List).map<Taxonomy>((json) => Taxonomy.fromJson(json as Map<String, dynamic>)).toList();
+  Future<PaginatedList<Taxonomy>> findAll({String? type, int? limit, int? offset}) async {
+    final response = await sendRequest(
+      method: .get,
+      queryParams: {
+        'type': ?type,
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return PaginatedList<Taxonomy>.fromJson(
+      ensureMap(response),
+      (json) => Taxonomy.fromJson(ensureMap(json)),
+    );
   }
 }

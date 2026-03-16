@@ -1,73 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
 import '../../shared/extensions.dart';
+import '../../features/shopping/screen_shopping.dart';
 
-class AddToShoppingBottomSheet extends StatefulWidget {
+class AddToShoppingBottomSheet extends HookConsumerWidget {
   final Recipe recipe;
 
   const AddToShoppingBottomSheet({super.key, required this.recipe});
 
   @override
-  State<AddToShoppingBottomSheet> createState() => _AddToShoppingBottomSheetState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedIngredientIds = useState<Set<String>>(
+      (recipe.ingredients ?? []).map((i) => i.id).toSet(),
+    );
+    final isSaving = useState(false);
 
-class _AddToShoppingBottomSheetState extends State<AddToShoppingBottomSheet> {
-  final Set<String> _selectedIngredientIds = {};
-  bool _isSaving = false;
+    Future<void> save() async {
+      isSaving.value = true;
+      try {
+        final selectedIngredients = recipe.ingredients
+            ?.where((i) => selectedIngredientIds.value.contains(i.id))
+            .toList();
 
-  @override
-  void initState() {
-    super.initState();
-    // Select all ingredients by default
-    if (widget.recipe.ingredients != null) {
-      for (final ingredient in widget.recipe.ingredients!) {
-        _selectedIngredientIds.add(ingredient.id);
-      }
-    }
-  }
+        if (selectedIngredients != null) {
+          var listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
+          var lists = listsResponse.data;
+          if (lists.isEmpty) {
+            final newList = await ref.read(shoppingListRepositoryProvider).create('Shopping List', isDefault: true);
+            lists = [newList];
+          }
+          final primaryList = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
 
-  Future<void> _save() async {
-    setState(() => _isSaving = true);
-    try {
-      final selectedIngredients = widget.recipe.ingredients
-          ?.where((i) => _selectedIngredientIds.contains(i.id))
-          .toList();
+          final repo = ref.read(shoppingListRepositoryProvider);
+          final results = await Future.wait(
+            // TODO: use batch insert
+            selectedIngredients.map((ingredient) async {
+              try {
+                await repo.createItem(
+                  primaryList.id,
+                  ingredient.displayName,
+                  amount: ingredient.amount,
+                  unitId: ingredient.unitId,
+                );
+                return true;
+              } catch (e) {
+                debugPrint('Failed to add ${ingredient.displayName}: $e');
+                return false;
+              }
+            }),
+          );
+          final successCount = results.where((r) => r).length;
 
-      if (selectedIngredients != null && selectedIngredients.isNotEmpty) {
-        final lists = await ShoppingListRepository.findAll();
-        final list = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
-        for (final ingredient in selectedIngredients) {
-          final name = ingredient.food?.name ?? ingredient.name ?? ingredient.rawText ?? ingredient.description ?? 'Unknown ingredient';
-          await ShoppingListRepository.createItem(
-            list.id,
-            text: name,
-            amount: ingredient.amount,
-            unitId: ingredient.unitId,
+          ref.invalidate(shoppingItemsProvider);
+
+          if (context.mounted) {
+            context.pop();
+            final message = successCount == selectedIngredients.length
+                ? 'All ingredients added to shopping list'
+                : 'Added $successCount of ${selectedIngredients.length} ingredients';
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+          }
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
           );
         }
+      } finally {
+        isSaving.value = false;
       }
-
-      if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ingredients added to shopping list')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    final ingredients = widget.recipe.ingredients ?? [];
+    final ingredients = recipe.ingredients ?? [];
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -83,7 +94,7 @@ class _AddToShoppingBottomSheetState extends State<AddToShoppingBottomSheet> {
                 Text('Add to shopping', style: context.textTheme.titleLarge),
                 IconButton(
                   icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.pop(),
                 ),
               ],
             ),
@@ -101,22 +112,20 @@ class _AddToShoppingBottomSheetState extends State<AddToShoppingBottomSheet> {
                 itemCount: ingredients.length,
                 itemBuilder: (context, index) {
                   final ingredient = ingredients[index];
-                  final name = ingredient.food?.name ?? ingredient.name ?? ingredient.rawText ?? ingredient.description ?? '';
-                  final amount = "${ingredient.amount ?? ''} ${ingredient.unit?.name ?? ''}".trim();
-
                   return CheckboxListTile(
-                    value: _selectedIngredientIds.contains(ingredient.id),
+                    autofocus: index == 0,
+                    value: selectedIngredientIds.value.contains(ingredient.id),
                     onChanged: (value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedIngredientIds.add(ingredient.id);
-                        } else {
-                          _selectedIngredientIds.remove(ingredient.id);
-                        }
-                      });
+                      final newSet = Set<String>.from(selectedIngredientIds.value);
+                      if (value == true) {
+                        newSet.add(ingredient.id);
+                      } else {
+                        newSet.remove(ingredient.id);
+                      }
+                      selectedIngredientIds.value = newSet;
                     },
-                    title: Text(name),
-                    subtitle: amount.isNotEmpty ? Text(amount) : null,
+                    title: Text(ingredient.displayName),
+                    subtitle: ingredient.displayAmount.isNotEmpty ? Text(ingredient.displayAmount) : null,
                   );
                 },
               ),
@@ -124,8 +133,8 @@ class _AddToShoppingBottomSheetState extends State<AddToShoppingBottomSheet> {
           Padding(
             padding: const EdgeInsets.all(20),
             child: FilledButton(
-              onPressed: _isSaving || _selectedIngredientIds.isEmpty ? null : _save,
-              child: _isSaving
+              onPressed: isSaving.value || selectedIngredientIds.value.isEmpty ? null : save,
+              child: isSaving.value
                   ? const SizedBox(
                       height: 20,
                       width: 20,

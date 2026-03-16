@@ -1,96 +1,102 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'repository.dart';
 import '../models/shopping_list.dart';
 import '../models/shopping_item.dart';
+import '../models/paginated_list.dart';
+
+part 'shopping_list_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+ShoppingListRepository shoppingListRepository(Ref ref) => ShoppingListRepository(ref: ref);
 
 class ShoppingListRepository extends Repository {
-  ShoppingListRepository({
-    required super.method,
-    super.path = '',
-    super.module = '/api/v1/shoppinglists',
-    super.isAuth = true,
-  });
+  const ShoppingListRepository({required super.ref, super.client}) : super(module: '/api/v1/shoppinglists');
 
-  static Future<List<ShoppingList>> findAll({int? page, int? limit}) async {
-    ResponseBody response =
-        await ShoppingListRepository(
-          method: RequestMethod.get,
-        ).sendRequest(
-          queryParams: {
-            'page': ?page,
-            'limit': ?limit,
-          },
-        );
-    return (response['data'] as List).map<ShoppingList>((json) => ShoppingList.fromJson(json as Map<String, dynamic>)).toList();
+  Future<PaginatedList<ShoppingList>> findAll({int? limit, int? offset}) async {
+    final response = await sendRequest(
+      method: .get,
+      queryParams: {
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return PaginatedList<ShoppingList>.fromJson(
+      ensureMap(response),
+      (json) => ShoppingList.fromJson(ensureMap(json)),
+    );
   }
 
-  static Future<ShoppingList> create(String name) async {
-    ResponseBody response =
-        await ShoppingListRepository(
-          method: RequestMethod.post,
-        ).sendRequest(
-          body: {'name': name},
-        );
-    return ShoppingList.fromJson(response as Map<String, dynamic>);
+  Future<PaginatedList<ShoppingItem>> findItems(String listId, {int? limit, int? offset}) async {
+    final response = await sendRequest(
+      method: .get,
+      path: '/$listId/items',
+      queryParams: {
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return PaginatedList<ShoppingItem>.fromJson(
+      ensureMap(response),
+      (json) => ShoppingItem.fromJson(ensureMap(json)),
+    );
   }
 
-  static Future<void> delete(String id) async {
-    await ShoppingListRepository(
-      method: RequestMethod.delete,
+  Future<ShoppingList> create(String name, {bool? isDefault}) async {
+    final response = await sendRequest(
+      method: .post,
+      body: {
+        'name': name,
+        'is_default': ?isDefault,
+      },
+    );
+    return ShoppingList.fromJson(ensureMap(response));
+  }
+
+  Future<ShoppingList> update(String id, {String? name, bool? isDefault}) async {
+    final response = await sendRequest(
+      method: .patch,
       path: '/$id',
-    ).sendRequest();
+      body: {
+        'name': ?name,
+        'is_default': ?isDefault,
+      },
+    );
+    return ShoppingList.fromJson(ensureMap(response));
   }
 
-  // Item management
-
-  static Future<List<ShoppingItem>> findItems(String listId, {int? page, int? limit}) async {
-    ResponseBody response =
-        await ShoppingListRepository(
-          method: RequestMethod.get,
-          path: '/$listId/items',
-        ).sendRequest(
-          queryParams: {
-            'page': ?page,
-            'limit': ?limit,
-          },
-        );
-    return (response['data'] as List).map<ShoppingItem>((json) => ShoppingItem.fromJson(json as Map<String, dynamic>)).toList();
+  Future<void> delete(String id) async {
+    await sendRequest(method: .delete, path: '/$id');
   }
 
-  static Future<ShoppingItem> createItem(String listId, {String? text, double? amount, String? foodId, String? unitId}) async {
-    ResponseBody response =
-        await ShoppingListRepository(
-          method: RequestMethod.post,
-          path: '/$listId/items',
-        ).sendRequest(
-          body: {
-            'text': ?text,
-            'amount': ?amount,
-            'food_id': ?foodId,
-            'unit_id': ?unitId,
-          },
-        );
-    return ShoppingItem.fromJson(response as Map<String, dynamic>);
+  Future<ShoppingItem> createItem(String listId, String text, {double? amount, String? unitId, String? foodId}) async {
+    final response = await sendRequest(
+      method: .post,
+      path: '/$listId/items',
+      body: {
+        'text': text,
+        'amount': ?amount,
+        'unit_id': ?unitId,
+        'food_id': ?foodId,
+      },
+    );
+    return ShoppingItem.fromJson(ensureMap(response));
   }
 
-  static Future<ShoppingItem> updateItem(String listId, String itemId, {String? name, double? amount, bool? isBought}) async {
-    ResponseBody response =
-        await ShoppingListRepository(
-          method: RequestMethod.patch,
-          path: '/$listId/items/$itemId',
-        ).sendRequest(
-          body: {
-            'name': ?name,
-            'amount': ?amount,
-            'is_bought': ?isBought,
-          },
-        );
-    return ShoppingItem.fromJson(response as Map<String, dynamic>);
-  }
-
-  static Future<void> deleteItem(String listId, String itemId) async {
-    await ShoppingListRepository(
-      method: RequestMethod.delete,
+  Future<ShoppingItem> updateItem(String listId, String itemId, {String? text, double? amount, bool? isBought}) async {
+    final response = await sendRequest(
+      method: .patch,
       path: '/$listId/items/$itemId',
-    ).sendRequest();
+      body: {
+        'text': ?text,
+        'amount': ?amount,
+        'is_bought': ?isBought,
+      },
+    );
+    return ShoppingItem.fromJson(ensureMap(response));
+  }
+
+  Future<void> deleteItem(String listId, String itemId) async {
+    await sendRequest(method: .delete, path: '/$listId/items/$itemId');
   }
 }

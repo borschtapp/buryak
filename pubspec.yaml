@@ -39,10 +39,15 @@ dependencies:
   url_launcher: ^6.3.0
   jwt_decoder: ^2.0.1
   flutter_secure_storage: ^10.0.0
-  universal_platform: ^1.1.0
-  json_annotation: ^4.9.0
+  json_annotation: ^4.11.0
   share_plus: ^12.0.1
   intl: ^0.20.2
+  flutter_riverpod: ^3.3.1
+  riverpod_annotation: ^4.0.2
+  hooks_riverpod: ^3.3.1
+  flutter_hooks: ^0.21.3+1
+  animations: ^2.1.1
+  logger: ^2.6.2
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +61,8 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   json_serializable: ^6.13.0
   build_runner: ^2.11.1
+  riverpod_generator: ^4.0.3
+  mocktail: ^1.0.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

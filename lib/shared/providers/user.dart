@@ -1,120 +1,168 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:buryak/shared/repositories/user_repository.dart';
-import 'package:flutter/foundation.dart';
+import 'package:buryak/shared/repositories/repository.dart';
+import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/user.dart';
 import 'storage.dart';
+import '../util/logger.dart';
 
-class UserService {
-  static User? _currentUser;
-  static Timer? _refreshTimer;
+part 'user.g.dart';
 
-  @visibleForTesting
-  static Future<bool> Function()? refreshLoginOverride;
+@Riverpod(keepAlive: true)
+class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
+  Timer? _refreshTimer;
+  bool _isRefreshing = false;
+  bool _observerAdded = false;
 
-  /// Call once at app startup after WidgetsFlutterBinding.ensureInitialized().
-  static Future<void> init() async {
+  @override
+  User? build() {
+    if (!_observerAdded) {
+      WidgetsBinding.instance.addObserver(this);
+      _observerAdded = true;
+    }
+
+    ref.onDispose(() {
+      _cancelTokenRefresh();
+      WidgetsBinding.instance.removeObserver(this);
+    });
+    return null;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _cancelTokenRefresh();
+    } else if (state == AppLifecycleState.resumed) {
+      if (this.state != null) {
+        // When resuming, checked if token is expired and refresh if needed.
+        // This handles cases where the app was in background for a long time.
+        if (!this.state!.isValidAccessToken()) {
+          unawaited(refreshLogin(force: true));
+        } else {
+          _scheduleTokenRefresh(this.state!);
+        }
+      }
+    }
+  }
+
+  Future<void> init() async {
     _cancelTokenRefresh();
-    _currentUser = null;
     try {
       final json = await LocalStorage.getString(LocalStorage.userKey);
       if (json != null) {
-        _currentUser = User.fromJson(jsonDecode(json) as Map<String, dynamic>);
-        if (_currentUser != null) {
-          _scheduleTokenRefresh(_currentUser!);
+        final user = User.fromJson(jsonDecode(json) as Map<String, dynamic>);
+        state = user;
+        // If we don't have an access token (which is expected after restart),
+        // we need to refresh it.
+        if (user.accessToken.isEmpty) {
+          await refreshLogin(force: true);
+        } else {
+          _scheduleTokenRefresh(user);
         }
       }
-    } catch (e) {
-      debugPrint('UserService.init error: $e');
+    } catch (e, s) {
+      logger.e('AuthNotifier.init error', error: e, stackTrace: s);
       await logout();
     }
   }
 
-  static bool isLoggedIn() {
-    return _currentUser != null && _currentUser!.isValidAccessToken();
-  }
+  // Removed isLoggedIn and accessToken getters to comply with avoid_public_notifier_properties lint.
+  // Use the AuthStateX extension on the provider state instead.
 
-  static String getAccessToken() {
-    if (_currentUser == null) throw Exception('User not logged in');
-    return _currentUser!.accessToken;
-  }
+  /// Refreshes the login token. If [force] is true, it refreshes regardless of expiration.
+  Future<bool> refreshLogin({bool force = false}) async {
+    if (state == null || _isRefreshing) return false;
 
-  static Future<bool> refreshLogin() async {
-    if (_currentUser == null) return false;
+    // Skip if token is still valid and not forced
+    if (!force && state!.isValidAccessToken()) return true;
+
+    _isRefreshing = true;
     try {
-      final refreshed = await UserRepository.refreshToken(_currentUser!);
+      final refreshed = await ref.read(userRepositoryProvider).refreshToken(state!);
       await _persist(refreshed);
       return true;
-    } catch (e) {
-      debugPrint('UserService.refreshLogin error: $e');
-      await logout();
-      rethrow;
+    } catch (e, s) {
+      // If we get an unauthorized error during refresh, log as info and log out
+      if (e is GeneralApiException && e.statusCode == 401) {
+        logger.i('AuthNotifier.refreshLogin: Session expired (401)');
+        await logout();
+      } else {
+        logger.e('AuthNotifier.refreshLogin error', error: e, stackTrace: s);
+      }
+      return false;
+    } finally {
+      _isRefreshing = false;
     }
   }
 
-  static Future<User> registerUser(String name, String email, String password) async {
-    final user = await UserRepository.register(name, email, password);
+  Future<User> registerUser(String name, String email, String password) async {
+    final user = await ref.read(userRepositoryProvider).register(name, email, password);
     await _persist(user);
     return user;
   }
 
-  static Future<User> login(String email, String password) async {
-    final user = await UserRepository.login(email, password);
+  Future<User> login(String email, String password) async {
+    final user = await ref.read(userRepositoryProvider).login(email, password);
     await _persist(user);
     return user;
   }
 
-  static User getUserModel() {
-    if (_currentUser != null) return _currentUser!;
-    throw Exception('User not found');
-  }
-
-  static Future<void> logout() async {
+  Future<void> logout() async {
     _cancelTokenRefresh();
-    _currentUser = null;
+    state = null;
     await LocalStorage.remove(LocalStorage.userKey);
   }
 
-  static Future<void> deleteAccount() async {
-    if (_currentUser == null) throw Exception('User not logged in');
-    await UserRepository.delete(_currentUser!.id);
+  Future<void> deleteAccount() async {
+    final id = state?.id;
+    if (id == null) return;
+    await ref.read(userRepositoryProvider).delete(id);
     await logout();
   }
 
-  static Future<void> _persist(User user) async {
-    _currentUser = user;
-    await LocalStorage.setString(LocalStorage.userKey, jsonEncode(user.toJson()));
+  Future<void> _persist(User user) async {
+    state = user;
+    // Strip access token before persisting to storage
+    final userToStore = user.copyWith(accessToken: '');
+    await LocalStorage.setString(LocalStorage.userKey, jsonEncode(userToStore.toFullJson()));
     _scheduleTokenRefresh(user);
   }
 
-  static void _scheduleTokenRefresh(User user) {
-    _refreshTimer?.cancel();
+  void _scheduleTokenRefresh(User user) {
+    _cancelTokenRefresh();
     try {
       final jwtData = JwtDecoder.decode(user.accessToken);
-      final exp = jwtData['exp'] as int;
-      final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      final waitSeconds = exp - now;
+      final exp = (jwtData['exp'] as int) * 1000;
+      final now = DateTime.now().millisecondsSinceEpoch;
 
-      if (waitSeconds <= 0) {
-        unawaited(refreshLoginOverride?.call() ?? refreshLogin());
+      // Refresh 60 seconds before expiration
+      final refreshTimestamp = exp - 60000;
+      final waitMs = refreshTimestamp - now;
+
+      if (waitMs <= 0) {
+        unawaited(refreshLogin());
         return;
       }
 
-      _refreshTimer = Timer(Duration(seconds: waitSeconds), () async {
-        final success = await (refreshLoginOverride?.call() ?? refreshLogin());
-        if (!success) {
-          debugPrint('Token refresh failed; user logged out.');
-        }
+      _refreshTimer = Timer(Duration(milliseconds: waitMs), () async {
+        await refreshLogin();
       });
     } catch (e) {
-      debugPrint('Failed to schedule token refresh: $e');
+      logger.w('Failed to schedule token refresh - logging out', error: e);
+      unawaited(logout());
     }
   }
 
-  static void _cancelTokenRefresh() {
+  void _cancelTokenRefresh() {
     _refreshTimer?.cancel();
     _refreshTimer = null;
   }
+}
+
+extension AuthStateX on User? {
+  bool get isLoggedIn => this != null && this!.isValidAccessToken();
 }

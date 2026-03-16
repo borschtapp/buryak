@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../../shared/models/recipe_instruction.dart';
-import '../../shared/extensions.dart';
+import '../../models/recipe_instruction.dart';
+import '../../extensions.dart';
 
 class Instructions extends StatelessWidget {
   final List<RecipeInstruction> instructions;
@@ -9,11 +9,15 @@ class Instructions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: instructions.asMap().entries.map((entry) {
-        final index = entry.key;
-        final step = entry.value;
+    if (instructions.isEmpty) return const SizedBox.shrink();
+
+    final sortedItems = [...instructions]..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemCount: sortedItems.length,
+      itemBuilder: (context, index) {
+        final step = sortedItems[index];
         return Padding(
           padding: const EdgeInsets.only(bottom: 24.0),
           child: Column(
@@ -27,26 +31,26 @@ class Instructions extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              if (step.imageUrl != null) ...[
+              if (step.imageUrl != null && step.imageUrl!.trim().isNotEmpty) ...[
                 ClipRRect(
                   borderRadius: context.shapeMedium,
-                  child: CachedNetworkImage(
-                    imageUrl: step.imageUrl!,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    maxHeightDiskCache: 1200,
-                    placeholder: (context, url) => Container(
-                      height: 200,
+                  child: Semantics(
+                    label: 'Image for step ${step.order ?? index + 1}',
+                    child: CachedNetworkImage(
+                      imageUrl: step.imageUrl!,
+                      fit: BoxFit.cover,
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: context.colors.surfaceContainerHighest,
-                        borderRadius: context.shapeMedium,
+                      placeholder: (context, url) => Container(
+                        height: 200,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: context.colors.surfaceContainerHighest,
+                          borderRadius: context.shapeMedium,
+                        ),
+                        child: const Center(child: CircularProgressIndicator()),
                       ),
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      errorWidget: (context, url, error) => const SizedBox.shrink(),
                     ),
-                    errorWidget: (context, url, error) => const SizedBox.shrink(),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -62,7 +66,7 @@ class Instructions extends StatelessWidget {
             ],
           ),
         );
-      }).toList(),
+      },
     );
   }
 }

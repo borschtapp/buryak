@@ -3,17 +3,13 @@ definitions:
     properties:
       access_token:
         type: string
-      created:
-        type: string
       email:
         type: string
-      household:
-        $ref: '#/definitions/domain.Household'
       household_id:
         type: string
       id:
         type: string
-      image:
+      image_url:
         type: string
       name:
         type: string
@@ -22,8 +18,6 @@ definitions:
           $ref: '#/definitions/domain.Recipe'
         type: array
       refresh_token:
-        type: string
-      updated:
         type: string
     type: object
   api.CollectionForm:
@@ -229,20 +223,22 @@ definitions:
     properties:
       description:
         type: string
-      image:
+      id:
+        type: string
+      image_url:
         type: string
       name:
         type: string
+      recipes:
+        items:
+          $ref: '#/definitions/domain.Recipe'
+        type: array
       url:
         type: string
     type: object
   domain.Collection:
     properties:
       description:
-        type: string
-      household:
-        $ref: '#/definitions/domain.Household'
-      household_id:
         type: string
       id:
         type: string
@@ -257,14 +253,27 @@ definitions:
       user_id:
         type: string
     type: object
+  domain.Equipment:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/domain.Image'
+        type: array
+      name:
+        type: string
+      slug:
+        type: string
+    type: object
   domain.Feed:
     properties:
       active:
         type: boolean
-      created:
-        type: string
-      error_count:
-        type: integer
       id:
         type: string
       last_sync_at:
@@ -275,14 +284,14 @@ definitions:
         type: string
       publisher:
         $ref: '#/definitions/domain.Publisher'
+      publisher_id:
+        type: string
       recipes:
         items:
           $ref: '#/definitions/domain.Recipe'
         type: array
       total_recipes:
         type: integer
-      updated:
-        type: string
       url:
         type: string
     type: object
@@ -292,14 +301,12 @@ definitions:
         $ref: '#/definitions/domain.Unit'
       default_unit_id:
         type: string
+      description:
+        type: string
       id:
         type: string
       image_url:
         type: string
-      images:
-        items:
-          $ref: '#/definitions/domain.Image'
-        type: array
       name:
         type: string
       slug:
@@ -359,8 +366,6 @@ definitions:
         type: string
       description:
         type: string
-      household_id:
-        type: string
       id:
         type: string
       meal_type:
@@ -373,67 +378,24 @@ definitions:
       servings:
         type: integer
     type: object
-  domain.Nutrition:
-    properties:
-      calories:
-        description: The number of calories.
-        example: 450.5
-        type: number
-      carbs:
-        description: The number of grams of carbohydrates.
-        example: 60
-        type: number
-      carbs_fiber:
-        description: The number of grams of fiber.
-        example: 4.5
-        type: number
-      carbs_sugar:
-        description: The number of grams of sugar.
-        example: 10
-        type: number
-      cholesterol:
-        description: The number of milligrams of cholesterol.
-        example: 35
-        type: number
-      fat:
-        description: The number of grams of fat.
-        example: 15.2
-        type: number
-      fat_saturated:
-        description: The number of grams of saturated fat.
-        example: 5.1
-        type: number
-      fat_trans:
-        description: The number of grams of trans fat.
-        example: 0.1
-        type: number
-      protein:
-        description: The number of grams of protein.
-        example: 22
-        type: number
-      serving_size:
-        description: The serving size, in terms of the number of volume or mass.
-        example: 1 plate
-        type: string
-      sodium:
-        description: The number of milligrams of sodium.
-        example: 250
-        type: number
-    type: object
   domain.Publisher:
     properties:
       description:
         type: string
+      feeds:
+        items:
+          $ref: '#/definitions/domain.Feed'
+        type: array
       id:
         type: string
       image_url:
         type: string
-      images:
-        items:
-          $ref: '#/definitions/domain.Image'
-        type: array
       name:
         type: string
+      recipes:
+        items:
+          $ref: '#/definitions/domain.Recipe'
+        type: array
       total_recipes:
         type: integer
       url:
@@ -452,6 +414,8 @@ definitions:
     properties:
       author:
         $ref: '#/definitions/domain.Author'
+      author_id:
+        type: string
       collections:
         items:
           $ref: '#/definitions/domain.Collection'
@@ -459,9 +423,6 @@ definitions:
       cook_time:
         example: 1200
         type: integer
-      created:
-        format: date-time
-        type: string
       description:
         example: A classic Italian pasta dish made with eggs, cheese, pancetta, and
           pepper.
@@ -470,17 +431,10 @@ definitions:
         example: Medium
         type: string
       equipment:
-        example:
-          - '["Large pot"'
-          - ' "Frying pan"]'
         items:
-          type: string
+          $ref: '#/definitions/domain.Equipment'
         type: array
-      feed:
-        $ref: '#/definitions/domain.Feed'
       feed_id:
-        type: string
-      household_id:
         type: string
       id:
         type: string
@@ -498,8 +452,6 @@ definitions:
         items:
           $ref: '#/definitions/domain.RecipeInstruction'
         type: array
-      is_based_on:
-        type: string
       is_saved:
         type: boolean
       language:
@@ -512,9 +464,7 @@ definitions:
         example: Spaghetti Carbonara
         type: string
       nutrition:
-        $ref: '#/definitions/domain.Nutrition'
-      parent_id:
-        type: string
+        $ref: '#/definitions/domain.RecipeNutrition'
       prep_time:
         example: 900
         type: integer
@@ -523,8 +473,12 @@ definitions:
         type: string
       publisher:
         $ref: '#/definitions/domain.Publisher'
+      publisher_id:
+        type: string
       rating:
         $ref: '#/definitions/domain.Rating'
+      source_url:
+        type: string
       taxonomies:
         items:
           $ref: '#/definitions/domain.Taxonomy'
@@ -534,9 +488,6 @@ definitions:
       total_time:
         example: 2100
         type: integer
-      updated:
-        format: date-time
-        type: string
       url:
         type: string
       user_id:
@@ -566,7 +517,7 @@ definitions:
         type: string
       id:
         type: string
-      maxAmount:
+      max_amount:
         description: upper bound for range quantities (e.g. "1–2 cups")
         type: number
       name:
@@ -608,6 +559,83 @@ definitions:
       video_url:
         type: string
     type: object
+  domain.RecipeNutrition:
+    properties:
+      calcium:
+        description: The number of milligrams of calcium.
+        type: number
+      calories:
+        description: The number of calories.
+        example: 450.5
+        type: number
+      carbs:
+        description: The number of grams of carbohydrates.
+        example: 60
+        type: number
+      carbs_fiber:
+        description: The number of grams of fiber.
+        example: 4.5
+        type: number
+      carbs_sugar:
+        description: The number of grams of sugar.
+        example: 10
+        type: number
+      cholesterol:
+        description: The number of milligrams of cholesterol.
+        example: 35
+        type: number
+      copper:
+        description: The number of milligrams of copper.
+        type: number
+      fat:
+        description: The number of grams of fat.
+        example: 15.2
+        type: number
+      fat_saturated:
+        description: The number of grams of saturated fat.
+        example: 5.1
+        type: number
+      fat_trans:
+        description: The number of grams of trans fat.
+        example: 0.1
+        type: number
+      iron:
+        description: The number of milligrams of iron.
+        type: number
+      magnesium:
+        description: The number of milligrams of magnesium.
+        type: number
+      manganese:
+        description: The number of milligrams of manganese.
+        type: number
+      phosphorus:
+        description: The number of milligrams of phosphorus.
+        type: number
+      potassium:
+        description: The number of milligrams of potassium.
+        type: number
+      protein:
+        description: The number of grams of protein.
+        example: 22
+        type: number
+      salt:
+        description: The number of grams of salt.
+        type: number
+      selenium:
+        description: The number of micrograms of selenium.
+        type: number
+      serving_size:
+        description: The serving size, in terms of the number of volume or mass.
+        example: 1 plate
+        type: string
+      sodium:
+        description: The number of milligrams of sodium.
+        example: 250
+        type: number
+      zinc:
+        description: The number of milligrams of zinc.
+        type: number
+    type: object
   domain.ShoppingItem:
     properties:
       amount:
@@ -620,8 +648,6 @@ definitions:
         type: string
       is_bought:
         type: boolean
-      shopping_list_id:
-        type: string
       text:
         description: raw user input
         type: string
@@ -632,8 +658,6 @@ definitions:
     type: object
   domain.ShoppingList:
     properties:
-      household_id:
-        type: string
       id:
         type: string
       is_default:
@@ -652,10 +676,6 @@ definitions:
       canonical_id:
         description: For merging/aliases
         type: string
-      foods:
-        items:
-          $ref: '#/definitions/domain.Food'
-        type: array
       id:
         type: string
       label:
@@ -664,19 +684,11 @@ definitions:
         $ref: '#/definitions/domain.Taxonomy'
       parent_id:
         type: string
-      recipes:
-        items:
-          $ref: '#/definitions/domain.Recipe'
-        type: array
       slug:
         type: string
       type:
         description: diet, category, cuisine, keyword
         type: string
-      units:
-        items:
-          $ref: '#/definitions/domain.Unit'
-        type: array
     type: object
   domain.Unit:
     properties:
@@ -706,17 +718,13 @@ definitions:
     type: object
   domain.User:
     properties:
-      created:
-        type: string
       email:
         type: string
-      household:
-        $ref: '#/definitions/domain.Household'
       household_id:
         type: string
       id:
         type: string
-      image:
+      image_url:
         type: string
       name:
         type: string
@@ -724,8 +732,6 @@ definitions:
         items:
           $ref: '#/definitions/domain.Recipe'
         type: array
-      updated:
-        type: string
     type: object
   domain.UserToken:
     properties:
@@ -737,7 +743,7 @@ definitions:
         type: string
       type:
         type: string
-      userID:
+      user_id:
         type: string
     type: object
   domain.Video:
@@ -776,6 +782,15 @@ definitions:
       data:
         items:
           $ref: '#/definitions/domain.Collection'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.ListResponse-domain_Equipment:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Equipment'
         type: array
       meta:
         $ref: '#/definitions/types.Meta'
@@ -857,8 +872,6 @@ definitions:
       limit:
         type: integer
       offset:
-        type: integer
-      page:
         type: integer
       total:
         type: integer
@@ -1118,15 +1131,11 @@ paths:
           in: query
           name: order
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -1311,15 +1320,11 @@ paths:
           in: query
           name: order
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -1412,6 +1417,41 @@ paths:
       summary: Add a recipe to a collection.
       tags:
         - collections
+  /api/v1/equipment:
+    get:
+      consumes:
+        - '*/*'
+      description: Search for equipment by name or slug.
+      parameters:
+        - description: Search query (matches name or slug)
+          in: query
+          name: q
+          type: string
+        - description: 'Number of records to skip (default: 0)'
+          in: query
+          name: offset
+          type: integer
+        - description: 'Maximum number of records to return (default: 10) (default:
+          20)'
+          in: query
+          name: limit
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_Equipment'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+        - ApiKeyAuth: []
+      summary: Search equipment.
+      tags:
+        - equipment
   /api/v1/feeds:
     get:
       consumes:
@@ -1435,15 +1475,11 @@ paths:
           in: query
           name: order
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -1549,15 +1585,11 @@ paths:
           in: query
           name: order
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -1753,15 +1785,11 @@ paths:
           name: id
           required: true
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -1875,15 +1903,11 @@ paths:
           in: query
           name: to
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -2039,15 +2063,11 @@ paths:
           in: query
           name: order
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -2082,8 +2102,9 @@ paths:
           in: query
           name: taxonomies
           type: string
-        - description: 'Comma-separated extras to include: publisher, feed, images,
-          ingredients, instructions, taxonomies, collections and saved'
+        - description: 'Comma-separated extras to include: publisher, author, feed,
+          images, ingredients, instructions, nutrition, taxonomies, collections and
+          saved'
           in: query
           name: preload
           type: string
@@ -2095,15 +2116,11 @@ paths:
           in: query
           name: order
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -2263,6 +2280,81 @@ paths:
       security:
         - ApiKeyAuth: []
       summary: Update a recipe.
+      tags:
+        - recipes
+  /api/v1/recipes/{id}/equipment/{equipmentId}:
+    delete:
+      consumes:
+        - '*/*'
+      description: Remove equipment association from a recipe.
+      parameters:
+        - description: Recipe ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Equipment ID
+          in: path
+          name: equipmentId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+        - ApiKeyAuth: []
+      summary: Remove equipment from a recipe.
+      tags:
+        - recipes
+    post:
+      consumes:
+        - '*/*'
+      description: Associate existing equipment with a recipe.
+      parameters:
+        - description: Recipe ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Equipment ID
+          in: path
+          name: equipmentId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+        - ApiKeyAuth: []
+      summary: Add equipment to a recipe.
       tags:
         - recipes
   /api/v1/recipes/{id}/favorite:
@@ -2614,15 +2706,11 @@ paths:
   /api/v1/shoppinglists:
     get:
       parameters:
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -2684,11 +2772,7 @@ paths:
           name: id
           required: true
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer
@@ -2794,15 +2878,11 @@ paths:
           in: query
           name: type
           type: string
-        - description: Page number
-          in: query
-          name: page
-          type: integer
-        - description: Offset for pagination (alternative to page)
+        - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: Items per page
+        - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
           type: integer

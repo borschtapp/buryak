@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../shared/constants.dart';
+import '../../shared/route_names.dart';
 import '../../shared/views/article_content.dart';
 
 class TermsOfUseScreen extends StatelessWidget {
@@ -9,7 +10,12 @@ class TermsOfUseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Terms of Use'),
+        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.profile)),
+      ),
+      body: SingleChildScrollView(
         child: ArticleContent(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +131,7 @@ class TermsOfUseScreen extends StatelessWidget {
               Builder(
                 builder: (context) => InkWell(
                   child: const Paragraph('Please read our Privacy Policy.'),
-                  onTap: () => GoRouter.of(context).goNamed('privacy'),
+                  onTap: () => GoRouter.of(context).goNamed(RouteNames.privacy),
                 ),
               ),
 
@@ -163,6 +169,8 @@ class TermsOfUseScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
     );
   }
 }
+

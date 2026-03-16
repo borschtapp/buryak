@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../shared/constants.dart';
+import '../../shared/route_names.dart';
 import '../../shared/views/article_content.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -8,7 +10,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Privacy Policy'),
+        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.profile)),
+      ),
+      body: const SingleChildScrollView(
         child: ArticleContent(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,6 +202,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
     );
   }
 }
+

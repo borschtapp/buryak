@@ -1,17 +1,29 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 
-import 'repository.dart';
+import 'package:http/http.dart' as http;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../models/uploaded_image.dart';
 import '../providers/user.dart';
+import 'repository.dart';
 
-class UploadRepository {
-  static const String _uploadUrl = '$baseUrl/api/v1/uploads';
+part 'upload_repository.g.dart';
 
-  static Future<UploadedImage> uploadImage(File file) async {
-    final request = http.MultipartRequest('POST', Uri.parse(_uploadUrl));
-    request.headers[HttpHeaders.authorizationHeader] = 'Bearer ${UserService.getAccessToken()}';
+@riverpod
+UploadRepository uploadRepository(Ref ref) => UploadRepository(ref: ref);
+
+class UploadRepository extends Repository {
+  static const String _uploadPath = '/api/v1/uploads';
+
+  const UploadRepository({required super.ref}) : super(module: _uploadPath);
+
+  Future<UploadedImage> uploadImage(File file) async {
+    final token = ref.read(authProvider)?.accessToken;
+    final request = http.MultipartRequest('POST', Uri.parse('$baseUrl$_uploadPath'));
+    if (token != null) {
+      request.headers[HttpHeaders.authorizationHeader] = 'Bearer $token';
+    }
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
 
     final streamedResponse = await request.send();

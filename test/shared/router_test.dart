@@ -1,0 +1,211 @@
+import 'package:buryak/shared/providers/user.dart';
+import 'package:buryak/shared/router.dart';
+import 'package:buryak/features/explore/screen_explore.dart';
+import 'package:buryak/features/profile/screen_profile.dart';
+import 'package:buryak/shared/repositories/feed_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
+import '../helpers/fake_user.dart';
+import 'package:buryak/shared/models/user.dart';
+import 'package:buryak/shared/models/paginated_list.dart';
+
+class MockFeedRepository extends Mock implements FeedRepository {}
+
+class MockAuthNotifier extends AuthNotifier {
+  final User? initialUser;
+  MockAuthNotifier(this.initialUser);
+
+  @override
+  User? build() => initialUser;
+}
+
+void main() {
+  late MockFeedRepository mockFeedRepository;
+
+  setUp(() {
+    mockFeedRepository = MockFeedRepository();
+    when(() => mockFeedRepository.stream(
+      preload: any(named: 'preload'),
+      offset: any(named: 'offset'),
+      limit: any(named: 'limit'),
+    )).thenAnswer((_) async => PaginatedList(data: [], meta: Meta(total: 0, limit: 20, offset: 0)));
+    FlutterSecureStorage.setMockInitialValues({});
+  });
+
+  group('Router Guards', () {
+    testWidgets('authGuard redirects to /login when not logged in', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith(() => MockAuthNotifier(null)), // Not logged in
+            feedRepositoryProvider.overrideWithValue(mockFeedRepository),
+          ],
+          child: Consumer(
+            builder: (context, ref, child) {
+              final router = ref.watch(routerProvider);
+              return MaterialApp.router(
+                routerConfig: router,
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Login to your account'), findsOneWidget);
+      expect(find.byType(ExploreScreen), findsNothing);
+    });
+
+    testWidgets('authGuard allows access to / when logged in', (tester) async {
+      final user = User.fromJson(fakeUserJson());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith(() => MockAuthNotifier(user)), // Logged in
+            feedRepositoryProvider.overrideWithValue(mockFeedRepository),
+          ],
+          child: Consumer(
+            builder: (context, ref, child) {
+              final router = ref.watch(routerProvider);
+              return MaterialApp.router(
+                routerConfig: router,
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ExploreScreen), findsOneWidget);
+      expect(find.text('Login to your account'), findsNothing);
+    });
+
+    testWidgets('loginGuard redirects to / when already logged in and navigating to /login', (tester) async {
+      final user = User.fromJson(fakeUserJson());
+      final container = ProviderContainer(
+        overrides: [
+          authProvider.overrideWith(() => MockAuthNotifier(user)),
+          feedRepositoryProvider.overrideWithValue(mockFeedRepository),
+        ],
+      );
+      final router = container.read(routerProvider);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Navigate to login
+      router.go('/login');
+      await tester.pumpAndSettle();
+
+      // Should still be on home (ExploreScreen)
+      expect(find.byType(ExploreScreen), findsOneWidget);
+      expect(find.text('Login to your account'), findsNothing);
+    });
+  });
+
+  group('Deep-link reload', () {
+    // These tests cover the regression where reloading at a non-root URL (e.g.
+    // /profile, /saved) always redirected to / because the old app.dart showed
+    // a bare MaterialApp(home:) while auth loaded — causing Flutter's Navigator
+    // to fail silently on the initial route and reset to /.
+    //
+    // The fix: main() now awaits auth.init() in a ProviderContainer before
+    // calling runApp(), so GoRouter always sees the correct auth state from
+    // the very first URL match.
+
+    testWidgets('router navigates to /profile when auth is pre-initialized', (tester) async {
+      // Simulate the browser URL being /profile on page reload.
+      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/profile';
+      addTearDown(tester.binding.platformDispatcher.clearDefaultRouteNameTestValue);
+
+      final user = User.fromJson(fakeUserJson());
+
+      // Mirrors what main() now does: auth is in the container BEFORE
+      // routerProvider (and therefore GoRouter) is created.
+      final container = ProviderContainer(
+        overrides: [authProvider.overrideWith(() => MockAuthNotifier(user))],
+      );
+      addTearDown(container.dispose);
+
+      // Reading routerProvider here causes GoRouter to read /profile as its
+      // initial location from platformDispatcher.defaultRouteName.
+      final goRouter = container.read(routerProvider);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(routerConfig: goRouter),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // ProfileScreen renders the logged-in user's email — confirm we landed
+      // on the right screen instead of being redirected to /login or /.
+      expect(find.text('test@example.com'), findsOneWidget);
+      expect(find.text('Login to your account'), findsNothing);
+      expect(find.byType(ExploreScreen), findsNothing);
+    });
+
+    testWidgets('authGuard redirects to /login on deep link when NOT logged in', (tester) async {
+      // Same reload scenario, but with no active session — must redirect to login.
+      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/profile';
+      addTearDown(tester.binding.platformDispatcher.clearDefaultRouteNameTestValue);
+
+      final container = ProviderContainer(
+        overrides: [authProvider.overrideWith(() => MockAuthNotifier(null))],
+      );
+      addTearDown(container.dispose);
+
+      final goRouter = container.read(routerProvider);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(routerConfig: goRouter),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Login to your account'), findsOneWidget);
+      expect(find.byType(ProfileScreen), findsNothing);
+    });
+
+    testWidgets('navigating to /profile deep link stays on profile when logged in', (tester) async {
+      final user = User.fromJson(fakeUserJson());
+      final container = ProviderContainer(
+        overrides: [
+          authProvider.overrideWith(() => MockAuthNotifier(user)),
+          feedRepositoryProvider.overrideWithValue(mockFeedRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final goRouter = container.read(routerProvider);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(routerConfig: goRouter),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Start at home (ExploreScreen), then navigate to /profile.
+      goRouter.go('/profile');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileScreen), findsOneWidget);
+      expect(find.text('Login to your account'), findsNothing);
+    });
+  });
+}

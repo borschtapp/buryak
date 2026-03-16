@@ -6,8 +6,6 @@ part 'collection.g.dart';
 @JsonSerializable()
 class Collection {
   final String id;
-  @JsonKey(name: 'household_id')
-  final String householdId;
   @JsonKey(name: 'user_id')
   final String userId;
   final String name;
@@ -20,7 +18,6 @@ class Collection {
 
   Collection({
     required this.id,
-    required this.householdId,
     required this.userId,
     required this.name,
     this.description,
@@ -30,4 +27,20 @@ class Collection {
 
   factory Collection.fromJson(Map<String, dynamic> json) => _$CollectionFromJson(json);
   Map<String, dynamic> toJson() => _$CollectionToJson(this);
+
+  Collection copyWith({
+    String? name,
+    String? description,
+    List<Recipe>? recipes,
+    int? totalRecipes,
+  }) {
+    return Collection(
+      id: id,
+      userId: userId,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      recipes: recipes ?? this.recipes,
+      totalRecipes: totalRecipes ?? this.totalRecipes,
+    );
+  }
 }

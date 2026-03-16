@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/user.dart';
 
@@ -19,61 +20,119 @@ typedef ResponseBody = dynamic;
 /// Api Header
 typedef ApiHeaderType = Map<String, String>;
 
-// Base class for API configuration, containing information such as path, method, authorization, and module.
-// The [module] attribute denotes the API's base path, specifying its category.
+// Base class for API repositories. [module] is the fixed base path for the resource.
 abstract class Repository {
-  RequestMethod method;
-  String module;
-  String path;
-  bool isAuth;
+  final Ref ref;
+  final String module;
+  final bool isAuth;
+  final http.Client? client;
+  final String? baseUrlOverride;
 
-  Repository({
-    required this.method,
+  const Repository({
+    required this.ref,
     required this.module,
-    required this.path,
     this.isAuth = true,
+    this.client,
+    this.baseUrlOverride,
   });
 
-  /// to generate full URL
-  String getUrlString({String? query}) {
-    return '$baseUrl$module$path${query ?? ""}';
+  String get effectiveBaseUrl => baseUrlOverride ?? baseUrl;
+
+  /// Builds the full URL for the given [path] and optional query params.
+  String getUrlString({String path = '', Map<String, dynamic>? queryParams}) {
+    final uri = Uri.parse('$effectiveBaseUrl$module$path');
+    if (queryParams == null || queryParams.isEmpty) return uri.toString();
+
+    final cleanParams = {
+      for (final MapEntry(:key, :value) in queryParams.entries)
+        if (value != null && value.toString() != 'null') key: value.toString(),
+    };
+
+    if (cleanParams.isEmpty) return uri.toString();
+
+    return uri.replace(queryParameters: cleanParams).toString();
   }
 
-  /// redirection
-  Future<ResponseBody> sendRequest({QueryParams? queryParams, RequestBody? body, ApiHeaderType? headersCustom}) {
-    String query = '';
-    if (queryParams != null && queryParams.isNotEmpty) {
-      queryParams.forEach((key, value) {
-        if (value != null) {
-          query += '${query.isEmpty ? '?' : '&'}$key=${Uri.encodeComponent(value.toString())}';
+  /// Sends an HTTP request. [method] and [path] are per-call overrides.
+  /// Pass [authOverride] to bypass the instance-level [isAuth] for a single call.
+  Future<ResponseBody> sendRequest({
+    required RequestMethod method,
+    String path = '',
+    bool? authOverride,
+    QueryParams? queryParams,
+    RequestBody? body,
+    ApiHeaderType? headersCustom,
+  }) async {
+    final bool effectiveAuth = authOverride ?? isAuth;
+
+    if (effectiveAuth) {
+      // Skip async refresh if the token is still valid
+      final currentUser = ref.read(authProvider);
+      if (currentUser == null || !currentUser.isValidAccessToken()) {
+        final success = await ref.read(authProvider.notifier).refreshLogin();
+        if (!success && isAuth) {
+          await ref.read(authProvider.notifier).logout();
+          throw GeneralApiException(message: 'Authentication session expired');
         }
-      });
+      }
     }
+
+    final String? token = effectiveAuth ? ref.read(authProvider)?.accessToken : null;
+
     return RequestHandler.call(
-      getUrlString(query: query),
+      getUrlString(path: path, queryParams: queryParams),
       method,
-      authorized: isAuth,
+      authorized: effectiveAuth,
+      accessToken: token,
       body: body,
       headersCustom: headersCustom,
+      client: client,
     );
   }
+
+  /// Ensures the [response] is a `Map<String, dynamic>`.
+  /// Throws [GeneralApiException] if the response is unexpected.
+  Map<String, dynamic> ensureMap(dynamic response) => ensureMapHelper(response);
+
+  /// Ensures the [response] is a `List<dynamic>`.
+  /// Throws [GeneralApiException] if the response is not a list.
+  List<dynamic> ensureList(dynamic response) {
+    if (response is List) return response;
+    throw GeneralApiException(message: 'Expected a list but got ${response.runtimeType}');
+  }
+}
+
+/// Helper function to safely cast a dynamic value to `Map<String, dynamic>`.
+Map<String, dynamic> ensureMapHelper(dynamic value) {
+  if (value is Map<String, dynamic>) return value;
+  if (value is Map) return value.cast<String, dynamic>();
+  return const {};
 }
 
 enum RequestMethod { get, post, put, delete, patch }
 
+const Duration _kRequestTimeout = Duration(seconds: 30);
+
 extension MethodManager on RequestMethod {
-  Future<http.Response> request(Uri url, {Map<String, String>? headers, Object? body}) async {
-    switch (this) {
-      case RequestMethod.get:
-        return await http.get(url, headers: headers);
-      case RequestMethod.post:
-        return await http.post(url, headers: headers, body: body);
-      case RequestMethod.put:
-        return await http.put(url, headers: headers, body: body);
-      case RequestMethod.delete:
-        return await http.delete(url, headers: headers, body: body);
-      case RequestMethod.patch:
-        return await http.patch(url, headers: headers, body: body);
+  Future<http.Response> request(Uri url, {Map<String, String>? headers, Object? body, http.Client? client}) async {
+    final effectiveClient = client ?? http.Client();
+    try {
+      switch (this) {
+        case .get:
+          return await effectiveClient.get(url, headers: headers).timeout(_kRequestTimeout);
+        case .post:
+          return await effectiveClient.post(url, headers: headers, body: body).timeout(_kRequestTimeout);
+        case .put:
+          return await effectiveClient.put(url, headers: headers, body: body).timeout(_kRequestTimeout);
+        case .delete:
+          return await effectiveClient.delete(url, headers: headers, body: body).timeout(_kRequestTimeout);
+        case .patch:
+          return await effectiveClient.patch(url, headers: headers, body: body).timeout(_kRequestTimeout);
+      }
+    } finally {
+      if (client == null) {
+        effectiveClient.close();
+      }
     }
   }
 }
@@ -89,67 +148,87 @@ class RequestHandler {
     String urlString,
     RequestMethod method, {
     bool authorized = true,
+    String? accessToken,
     RequestBody? body,
     ApiHeaderType? headersCustom,
+    http.Client? client,
   }) async {
-    try {
-      /// set the Headers
-      Map<String, String> headers =
-          headersCustom ??
-          {
-            HttpHeaders.acceptHeader: 'application/json',
-            HttpHeaders.contentTypeHeader: 'application/json',
-            if (authorized) HttpHeaders.authorizationHeader: 'Bearer ${UserService.getAccessToken()}',
-          };
+    Future<ResponseBody> doAttempt() async {
+      try {
+        final Map<String, String> headers =
+            headersCustom ??
+            {
+              HttpHeaders.acceptHeader: 'application/json',
+              HttpHeaders.contentTypeHeader: 'application/json',
+              if (authorized && accessToken != null) HttpHeaders.authorizationHeader: 'Bearer $accessToken',
+            };
 
-      /// Api call
-      final http.Response response = await method.request(
-        Uri.parse(urlString),
-        headers: headers,
-        body: body != null ? json.encode(body) : null,
-      );
+        final http.Response response = await method.request(
+          Uri.parse(urlString),
+          headers: headers,
+          body: body != null ? json.encode(body) : null,
+          client: client,
+        );
 
-      final statusType = (response.statusCode / 100).floor() * 100;
-      final responseData = response.bodyBytes.isNotEmpty ? utf8.decode(response.bodyBytes) : null;
+        final int statusType = response.statusCode ~/ 100 * 100;
+        final responseData = response.bodyBytes.isNotEmpty ? utf8.decode(response.bodyBytes) : null;
 
-      switch (statusType) {
-        case 200:
-          if (response.statusCode == 204 || responseData == null || responseData.isEmpty) {
-            return null;
-          }
-          try {
-            return json.decode(responseData);
-          } catch (e) {
-            return responseData; // Return as string if not JSON
-          }
-        case 400:
-          if (responseData == null || responseData.isEmpty) {
-            throw GeneralApiException(message: 'Request failed with status: ${response.statusCode}');
-          }
-          try {
-            final errorBody = json.decode(responseData);
-            throw handleFormErrors(errorBody as Map<String, dynamic>);
-          } catch (e) {
-            if (e is GeneralApiException) rethrow;
-            throw GeneralApiException(message: 'Error ${response.statusCode}: $responseData');
-          }
-        default:
-          throw GeneralApiException(
-            message: 'Server error: ${response.statusCode}${responseData != null ? ' - $responseData' : ''}',
-          );
+        switch (statusType) {
+          case 200:
+            if (response.statusCode == 204 || responseData == null || responseData.isEmpty) {
+              return null;
+            }
+            try {
+              return json.decode(responseData);
+            } catch (e) {
+              return responseData; // Return as string if not JSON
+            }
+          case 400:
+            if (responseData == null || responseData.isEmpty) {
+              throw GeneralApiException(message: 'Request failed with status: ${response.statusCode}');
+            }
+            try {
+              final errorBody = ensureMapHelper(json.decode(responseData));
+              throw handleFormErrors(errorBody, statusCode: response.statusCode);
+            } catch (e) {
+              if (e is GeneralApiException) rethrow;
+              throw GeneralApiException(
+                message: 'Error ${response.statusCode}: $responseData',
+                statusCode: response.statusCode,
+              );
+            }
+          default:
+            final message = response.statusCode >= 500
+                ? 'Server error: ${response.statusCode}. Please try again later.'
+                : 'Request failed with status: ${response.statusCode}';
+            throw GeneralApiException(message: message, statusCode: response.statusCode);
+        }
+      } on GeneralApiException {
+        rethrow;
+      } catch (e) {
+        throw GeneralApiException(message: e.toString());
       }
-    } on GeneralApiException {
+    }
+
+    try {
+      return await doAttempt();
+    } on GeneralApiException catch (e) {
+      // Retry idempotent GET requests once on transient network failures.
+      // statusCode == null means no HTTP response was received (e.g. timeout, socket error).
+      if (method == RequestMethod.get && e.statusCode == null) {
+        await Future<void>.delayed(const Duration(seconds: 1));
+        return await doAttempt();
+      }
       rethrow;
-    } catch (e) {
-      throw GeneralApiException(message: e.toString());
     }
   }
 }
 
 class GeneralApiException implements Exception {
   final String message;
+  final int? statusCode;
 
-  GeneralApiException({required this.message});
+  GeneralApiException({required this.message, this.statusCode});
 
   @override
   String toString() {
@@ -160,7 +239,7 @@ class GeneralApiException implements Exception {
 class FieldsApiException extends GeneralApiException {
   final Map<String, dynamic> fields;
 
-  FieldsApiException({required super.message, required this.fields});
+  FieldsApiException({required super.message, required this.fields, super.statusCode});
 
   @override
   String toString() {
@@ -169,14 +248,15 @@ class FieldsApiException extends GeneralApiException {
   }
 }
 
-Exception handleFormErrors(Map<String, dynamic> json) {
+Exception handleFormErrors(Map<String, dynamic> json, {int? statusCode}) {
   final message = json['message']?.toString() ?? 'An error occurred';
   if (json['fields'] != null && json['fields'] is Map) {
     return FieldsApiException(
       message: message,
-      fields: json['fields'] as Map<String, dynamic>,
+      fields: (json['fields'] as Map).cast<String, dynamic>(),
+      statusCode: statusCode,
     );
   } else {
-    return GeneralApiException(message: message);
+    return GeneralApiException(message: message, statusCode: statusCode);
   }
 }

@@ -1,73 +1,68 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'repository.dart';
 import '../models/feed.dart';
 import '../models/recipe.dart';
-import '../providers/feed_notifier.dart';
+import '../models/paginated_list.dart';
+
+part 'feed_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+FeedRepository feedRepository(Ref ref) => FeedRepository(ref: ref);
 
 class FeedRepository extends Repository {
-  FeedRepository({
-    required super.method,
-    super.path = '',
-    super.module = '/api/v1/feeds',
-    super.isAuth = true,
-  });
+  const FeedRepository({required super.ref}) : super(module: '/api/v1/feeds');
 
-  static Future<List<Feed>> findAll({
+  Future<PaginatedList<Feed>> findAll({
     String? preload,
     String? q,
     String? sort,
     String? order,
-    int? page,
     int? limit,
     int? offset,
   }) async {
-    ResponseBody response =
-        await FeedRepository(
-          method: RequestMethod.get,
-        ).sendRequest(
-          queryParams: {
-            'preload': ?preload,
-            'q': ?q,
-            'sort': ?sort,
-            'order': ?order,
-            'page': ?page,
-            'limit': ?limit,
-            'offset': ?offset,
-          },
-        );
-    return (response['data'] as List).map<Feed>((json) => Feed.fromJson(json as Map<String, dynamic>)).toList();
+    final response = await sendRequest(
+      method: .get,
+      queryParams: {
+        'preload': ?preload,
+        'q': ?q,
+        'sort': ?sort,
+        'order': ?order,
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return PaginatedList<Feed>.fromJson(
+      ensureMap(response),
+      (json) => Feed.fromJson(ensureMap(json)),
+    );
   }
 
-  static Future<Feed> subscribe(String url) async {
-    ResponseBody response =
-        await FeedRepository(
-          method: RequestMethod.post,
-        ).sendRequest(
-          body: {'url': url},
-        );
-    Feed feed = Feed.fromJson(response as Map<String, dynamic>);
-    FeedRefreshNotifier().notify(action: 'create', feedId: feed.id, data: feed);
-    return feed;
+  Future<Feed> subscribe(String url) async {
+    final response = await sendRequest(
+      method: .post,
+      body: {'url': url},
+    );
+    return Feed.fromJson(ensureMap(response));
   }
 
-  static Future<void> unsubscribe(String id) async {
-    await FeedRepository(
-      method: RequestMethod.delete,
-      path: '/$id',
-    ).sendRequest();
+  Future<void> unsubscribe(String id) async {
+    await sendRequest(method: .delete, path: '/$id');
   }
 
-  static Future<List<Recipe>> stream({String? preload, int? page, int? limit}) async {
-    ResponseBody response =
-        await FeedRepository(
-          method: RequestMethod.get,
-          path: '/stream',
-        ).sendRequest(
-          queryParams: {
-            'preload': ?preload,
-            'page': ?page,
-            'limit': ?limit,
-          },
-        );
-    return (response['data'] as List).map<Recipe>((json) => Recipe.fromJson(json as Map<String, dynamic>)).toList();
+  Future<PaginatedList<Recipe>> stream({String? preload, int? limit, int? offset}) async {
+    final response = await sendRequest(
+      method: .get,
+      path: '/stream',
+      queryParams: {
+        'preload': ?preload,
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return PaginatedList<Recipe>.fromJson(
+      ensureMap(response),
+      (json) => Recipe.fromJson(ensureMap(json)),
+    );
   }
 }

@@ -1,63 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
+import '../../shared/paged_notifier_mixin.dart';
 import '../../shared/repositories/collection_repository.dart';
-import '../../shared/views/async_loader.dart';
-import 'view_recipes_grid.dart';
+import '../../shared/widgets/error_view.dart';
+import '../../shared/widgets/recipes/view_recipes_grid.dart';
 
-class CollectionScreen extends StatefulWidget {
+part 'screen_collection.g.dart';
+
+@riverpod
+Future<Collection> collectionDetails(Ref ref, String id) {
+  return ref.read(collectionRepositoryProvider).findOne(id);
+}
+
+@riverpod
+class CollectionRecipes extends _$CollectionRecipes with PagedNotifierMixin<Recipe> {
+  @override
+  Future<List<Recipe>> build(String id) async {
+    resetPagination();
+    final result = await ref
+        .read(collectionRepositoryProvider)
+        .getRecipes(
+          id,
+          preload: 'images,saved,collections,publisher',
+          limit: pageSize,
+          offset: 0,
+        );
+    return result.data;
+  }
+
+  Future<void> loadMore() => loadNextPage(
+    (offset, limit) => ref
+        .read(collectionRepositoryProvider)
+        .getRecipes(
+          id,
+          preload: 'images,saved,collections,publisher',
+          offset: offset,
+          limit: limit,
+        ),
+  );
+}
+
+class CollectionScreen extends HookConsumerWidget {
   final String collectionId;
 
   const CollectionScreen({super.key, required this.collectionId});
 
   @override
-  State<CollectionScreen> createState() => _CollectionScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoadingMore = useState(false);
 
-class _CollectionScreenState extends State<CollectionScreen> {
-  late Future<Collection> _collectionFuture;
-  late Future<List<Recipe>> _recipesFuture;
+    final recipesAsync = ref.watch(collectionRecipesProvider(collectionId));
+    final notifier = ref.read(collectionRecipesProvider(collectionId).notifier);
 
-  @override
-  void initState() {
-    super.initState();
-    _collectionFuture = CollectionRepository.findOne(widget.collectionId);
-    _recipesFuture = CollectionRepository.getRecipes(
-      widget.collectionId,
-      preload: 'publisher,feed,images,ingredients,instructions,taxonomies,collections,saved',
-    );
-  }
+    Future<void> handleLoadMore() async {
+      if (isLoadingMore.value || !notifier.hasMore) return;
+      isLoadingMore.value = true;
+      try {
+        await notifier.loadMore();
+      } finally {
+        if (context.mounted) isLoadingMore.value = false;
+      }
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: AsyncLoader<Collection>(
-            future: _collectionFuture,
-            builder: (context, collection) {
-              return Text(
-                collection.name,
-                style: Theme.of(context).textTheme.headlineSmall,
-              );
-            },
-          ),
-        ),
-        Expanded(
-          child: AsyncLoader<List<Recipe>>(
-            future: _recipesFuture,
-            builder: (context, recipes) {
-              if (recipes.isEmpty) {
-                return const Center(child: Text('No recipes in this cookbook yet.'));
-              }
-              return RecipesGridView(recipes, isFavorite: false);
-            },
-          ),
-        ),
-      ],
+    return recipesAsync.when(
+      data: (recipes) {
+        if (recipes.isEmpty) {
+          return const Center(child: Text('No recipes in this cookbook yet.'));
+        }
+        return RecipesGridView(
+          recipes,
+          onLoadMore: handleLoadMore,
+          isLoadingMore: isLoadingMore.value,
+          hasMore: notifier.hasMore,
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => ErrorView(
+        message: err.toString(),
+        onRetry: () => ref.invalidate(collectionRecipesProvider(collectionId)),
+      ),
     );
   }
 }

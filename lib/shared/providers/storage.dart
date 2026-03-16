@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+// TODO: remove and use FlutterSecureStorage directly
 class LocalStorage {
   static const _storage = FlutterSecureStorage();
 

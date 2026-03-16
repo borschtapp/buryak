@@ -1,85 +1,74 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'repository.dart';
 import '../models/household.dart';
 import '../models/user.dart';
 import '../models/user_token.dart';
+import '../models/paginated_list.dart';
+
+part 'household_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+HouseholdRepository householdRepository(Ref ref) => HouseholdRepository(ref: ref);
 
 class HouseholdRepository extends Repository {
-  HouseholdRepository({
-    required super.method,
-    super.path = '',
-    super.module = '/api/v1/households',
-    super.isAuth = true,
-  });
+  const HouseholdRepository({required super.ref}) : super(module: '/api/v1/households');
 
-  static Future<Household> findOne(String id) async {
-    ResponseBody response = await HouseholdRepository(
-      method: RequestMethod.get,
+  Future<Household> findOne(String id) async {
+    final response = await sendRequest(method: .get, path: '/$id');
+    return Household.fromJson(ensureMap(response));
+  }
+
+  Future<Household> update(String id, String name) async {
+    final response = await sendRequest(
+      method: .patch,
       path: '/$id',
-    ).sendRequest();
-    return Household.fromJson(response as Map<String, dynamic>);
+      body: {'name': name},
+    );
+    return Household.fromJson(ensureMap(response));
   }
 
-  static Future<Household> update(String id, String name) async {
-    ResponseBody response =
-        await HouseholdRepository(
-          method: RequestMethod.patch,
-          path: '/$id',
-        ).sendRequest(
-          body: {'name': name},
-        );
-    return Household.fromJson(response as Map<String, dynamic>);
-  }
-
-  static Future<List<User>> findMembers(String id, {int? page, int? limit}) async {
-    ResponseBody response =
-        await HouseholdRepository(
-          method: RequestMethod.get,
-          path: '/$id/members',
-        ).sendRequest(
-          queryParams: {
-            'page': ?page,
-            'limit': ?limit,
-          },
-        );
-    return (response['data'] as List).map<User>((json) => User.fromJson(json as Map<String, dynamic>)).toList();
-  }
-
-  static Future<void> removeMember(String id, String userId) async {
-    await HouseholdRepository(
-      method: RequestMethod.delete,
-      path: '/$id/members/$userId',
-    ).sendRequest();
-  }
-
-  // Invite management
-
-  static Future<List<UserToken>> listInvites(String id) async {
-    ResponseBody response = await HouseholdRepository(
+  Future<List<UserToken>> listInvites(String id) async {
+    final response = await sendRequest(
       method: RequestMethod.get,
       path: '/$id/invites',
-    ).sendRequest();
-    return (response as List).map<UserToken>((json) => UserToken.fromJson(json as Map<String, dynamic>)).toList();
+    );
+    final list = ensureList(response);
+    return list.map((e) => UserToken.fromJson(ensureMap(e))).toList();
   }
 
-  static Future<UserToken> createInvite(String id) async {
-    ResponseBody response = await HouseholdRepository(
-      method: RequestMethod.post,
+  Future<UserToken> createInvite(String id) async {
+    final response = await sendRequest(
+      method: .post,
       path: '/$id/invites',
-    ).sendRequest();
-    return UserToken.fromJson(response as Map<String, dynamic>);
+    );
+    return UserToken.fromJson(ensureMap(response));
   }
 
-  static Future<void> deleteInvite(String id, String code) async {
-    await HouseholdRepository(
-      method: RequestMethod.delete,
-      path: '/$id/invites/$code',
-    ).sendRequest();
+  Future<void> revokeInvite(String id, String code) async {
+    await sendRequest(method: .delete, path: '/$id/invites/$code');
   }
 
-  static Future<void> joinHousehold(String code) async {
-    await HouseholdRepository(
-      method: RequestMethod.post,
+  Future<void> joinHousehold(String code) async {
+    await sendRequest(
+      method: .post,
       path: '/invites/join',
-    ).sendRequest(body: {'code': code});
+      body: {'code': code},
+    );
+  }
+
+  Future<PaginatedList<User>> findMembers(String householdId) async {
+    final response = await sendRequest(
+      method: RequestMethod.get,
+      path: '/$householdId/members',
+    );
+    return PaginatedList<User>.fromJson(
+      ensureMap(response),
+      (json) => User.fromJson(ensureMap(json)),
+    );
+  }
+
+  Future<void> removeMember(String id, String userId) async {
+    await sendRequest(method: .delete, path: '/$id/members/$userId');
   }
 }

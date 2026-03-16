@@ -7,8 +7,6 @@ part 'shopping_item.g.dart';
 @JsonSerializable()
 class ShoppingItem {
   final String id;
-  @JsonKey(name: 'shopping_list_id')
-  final String? shoppingListId;
   final String? text;
   final double? amount;
   @JsonKey(name: 'food_id')
@@ -24,7 +22,6 @@ class ShoppingItem {
 
   ShoppingItem({
     required this.id,
-    this.shoppingListId,
     this.text,
     this.amount,
     this.foodId,
@@ -36,4 +33,26 @@ class ShoppingItem {
 
   factory ShoppingItem.fromJson(Map<String, dynamic> json) => _$ShoppingItemFromJson(json);
   Map<String, dynamic> toJson() => _$ShoppingItemToJson(this);
+
+  ShoppingItem copyWith({
+    String? id,
+    bool? isBought,
+    String? text,
+    double? amount,
+    Food? food,
+    String? foodId,
+    Unit? unit,
+    String? unitId,
+  }) {
+    return ShoppingItem(
+      id: id ?? this.id,
+      isBought: isBought ?? this.isBought,
+      text: text ?? this.text,
+      amount: amount ?? this.amount,
+      food: food ?? this.food,
+      foodId: foodId ?? this.foodId,
+      unit: unit ?? this.unit,
+      unitId: unitId ?? this.unitId,
+    );
+  }
 }

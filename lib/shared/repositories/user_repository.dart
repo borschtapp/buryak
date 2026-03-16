@@ -1,113 +1,108 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'repository.dart';
 import '../models/user.dart';
 
+part 'user_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+UserRepository userRepository(Ref ref) => UserRepository(ref: ref);
+
+/// Auth and user-management repository.
+/// Uses [module] = '/api/v1' and includes the full sub-path in each call's [path].
 class UserRepository extends Repository {
-  UserRepository({
-    required super.method,
-    super.path = '',
-    super.module = '/api/v1/auth',
-    super.isAuth = true,
-  });
+  const UserRepository({required super.ref}) : super(module: '/api/v1');
 
-  static Future<User> login(String email, String password) async {
-    ResponseBody response =
-        await UserRepository(
-          method: RequestMethod.post,
-          path: '/login',
-          isAuth: false,
-        ).sendRequest(
-          body: {
-            'email': email,
-            'password': password,
-          },
-        );
-    return User.fromJson(response as Map<String, dynamic>);
+  Future<User> login(String email, String password) async {
+    final response = await sendRequest(
+      method: .post,
+      path: '/auth/login',
+      authOverride: false,
+      body: {
+        'email': email,
+        'password': password,
+      },
+    );
+    return User.fromJson(ensureMap(response));
   }
 
-  static Future<User> register(String name, String email, String password) async {
-    ResponseBody response =
-        await UserRepository(
-          method: RequestMethod.post,
-          path: '/register',
-          isAuth: false,
-        ).sendRequest(
-          body: {
-            'name': name,
-            'email': email,
-            'password': password,
-          },
-        );
-    return User.fromJson(response as Map<String, dynamic>);
+  Future<User> register(String name, String email, String password) async {
+    final response = await sendRequest(
+      method: .post,
+      path: '/auth/register',
+      authOverride: false,
+      body: {
+        'name': name,
+        'email': email,
+        'password': password,
+      },
+    );
+    return User.fromJson(ensureMap(response));
   }
 
-  static Future<User> refreshToken(User user) async {
-    ResponseBody response = await UserRepository(
-      method: RequestMethod.post,
-      path: '/refresh',
-      isAuth: false,
-    ).sendRequest(body: {'refresh_token': user.refreshToken});
-
-    final body = response as Map<String, dynamic>;
-    user.accessToken = body['access_token'] as String;
-    user.refreshToken = body['refresh_token'] as String;
-    return user;
+  Future<User> refreshToken(User user) async {
+    final response = await sendRequest(
+      method: .post,
+      path: '/auth/refresh',
+      authOverride: false,
+      body: {'refresh_token': user.refreshToken},
+    );
+    final data = ensureMap(response);
+    return user.copyWith(
+      accessToken: data['access_token']?.toString() ?? '',
+      refreshToken: data['refresh_token']?.toString() ?? '',
+    );
   }
 
-  static Future<void> logout(String refreshToken) async {
-    await UserRepository(
-      method: RequestMethod.post,
-      path: '/logout',
-      isAuth: false,
-    ).sendRequest(body: {'refresh_token': refreshToken});
+  Future<void> forgotPassword(String email) async {
+    await sendRequest(
+      method: .post,
+      path: '/auth/forgot-password',
+      authOverride: false,
+      body: {'email': email},
+    );
   }
 
-  static Future<void> forgotPassword(String email) async {
-    await UserRepository(
-      method: RequestMethod.post,
-      path: '/forgot-password',
-      isAuth: false,
-    ).sendRequest(body: {'email': email});
+  Future<void> logout(String refreshToken) async {
+    await sendRequest(
+      method: .post,
+      path: '/auth/logout',
+      body: {'refresh_token': refreshToken},
+    );
   }
 
-  static Future<void> resetPassword(String token, String newPassword) async {
-    await UserRepository(
-      method: RequestMethod.post,
-      path: '/reset-password',
-      isAuth: false,
-    ).sendRequest(body: {'token': token, 'new_password': newPassword});
+  Future<void> resetPassword(String token, String newPassword) async {
+    await sendRequest(
+      method: .post,
+      path: '/auth/reset-password',
+      authOverride: false,
+      body: {
+        'token': token,
+        'new_password': newPassword,
+      },
+    );
   }
 
-  static Future<User> findOne(String id) async {
-    ResponseBody response = await UserRepository(
-      method: RequestMethod.get,
-      path: '/$id',
-      module: '/api/v1/users',
-    ).sendRequest();
-    return User.fromJson(response as Map<String, dynamic>);
+  Future<User> findOne(String id) async {
+    final response = await sendRequest(method: .get, path: '/users/$id');
+    return User.fromJson(ensureMap(response));
   }
 
-  static Future<User> update(String id, {String? name, String? email, String? currentPassword, String? newPassword}) async {
-    ResponseBody response =
-        await UserRepository(
-          method: RequestMethod.patch,
-          path: '/$id',
-          module: '/api/v1/users',
-        ).sendRequest(
-          body: {
-            'name': ?name,
-            'email': ?email,
-            'current_password': ?currentPassword,
-            'new_password': ?newPassword,
-          },
-        );
-    return User.fromJson(response as Map<String, dynamic>);
+  Future<User> update(String id, {String? name, String? email, String? currentPassword, String? newPassword}) async {
+    final response = await sendRequest(
+      method: .patch,
+      path: '/users/$id',
+      body: {
+        'name': ?name,
+        'email': ?email,
+        'current_password': ?currentPassword,
+        'new_password': ?newPassword,
+      },
+    );
+    return User.fromJson(ensureMap(response));
   }
 
-  static Future<void> delete(String id) async {
-    await UserRepository(
-      method: RequestMethod.delete,
-      path: '/$id',
-      module: '/api/v1/users',
-    ).sendRequest();
+  Future<void> delete(String id) async {
+    await sendRequest(method: .delete, path: '/users/$id');
   }
 }

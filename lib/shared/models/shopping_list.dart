@@ -7,8 +7,6 @@ part 'shopping_list.g.dart';
 class ShoppingList {
   final String id;
   final String name;
-  @JsonKey(name: 'household_id')
-  final String? householdId;
   @JsonKey(name: 'is_default')
   final bool? isDefault;
 
@@ -18,11 +16,24 @@ class ShoppingList {
   ShoppingList({
     required this.id,
     required this.name,
-    this.householdId,
     this.isDefault,
     this.items,
   });
 
   factory ShoppingList.fromJson(Map<String, dynamic> json) => _$ShoppingListFromJson(json);
   Map<String, dynamic> toJson() => _$ShoppingListToJson(this);
+
+  ShoppingList copyWith({
+    String? id,
+    String? name,
+    bool? isDefault,
+    List<ShoppingItem>? items,
+  }) {
+    return ShoppingList(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      isDefault: isDefault ?? this.isDefault,
+      items: items ?? this.items,
+    );
+  }
 }

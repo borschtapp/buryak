@@ -1,232 +1,194 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/extensions.dart';
+import '../../shared/route_names.dart';
 import '../../shared/repositories/collection_repository.dart';
+import '../../shared/repositories/repository.dart';
+import '../../shared/widgets/empty_state_view.dart';
+import '../../shared/widgets/recipes/view_recipes_grid.dart';
+import 'notifier_saved.dart';
 
-class SavedRecipesTab extends StatelessWidget {
+class SavedRecipesTab extends ConsumerWidget {
   final List<Recipe> recipes;
+  final VoidCallback? onLoadMore;
+  final bool isLoadingMore;
+  final bool hasMore;
 
-  const SavedRecipesTab({super.key, required this.recipes});
+  const SavedRecipesTab({
+    super.key,
+    required this.recipes,
+    this.onLoadMore,
+    this.isLoadingMore = false,
+    this.hasMore = false,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (recipes.isEmpty) {
-      return const Center(
-        child: Text('No recipes yet.'),
+      return EmptyStateView(
+        icon: Icons.menu_book_outlined,
+        title: 'No recipes yet.',
+        action: TextButton.icon(
+          onPressed: () => ref.invalidate(savedRecipesProvider),
+          icon: const Icon(Icons.refresh),
+          label: const Text('Refresh'),
+        ),
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: GridView.builder(
-        padding: EdgeInsets.zero,
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 0.8,
-        ),
-        itemCount: recipes.length,
-        itemBuilder: (context, index) {
-          final recipe = recipes[index];
-          return Card(
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: () {
-                GoRouter.of(context).pushNamed(
-                  'recipe',
-                  pathParameters: {'rid': recipe.id},
-                );
-              },
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (recipe.images != null && recipe.images!.isNotEmpty)
-                    CachedNetworkImage(
-                      imageUrl: recipe.images!.first.url ?? '',
-                      fit: BoxFit.cover,
-                      errorWidget: (context, url, error) => Image.asset(
-                        'assets/images/recipe_placeholder.png',
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  else
-                    Image.asset('assets/images/recipe_placeholder.png', fit: BoxFit.cover),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [Colors.black87, Colors.transparent],
-                        ),
-                      ),
-                      child: Text(
-                        recipe.name,
-                        style: context.textTheme.titleSmall?.copyWith(color: Colors.white),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+    return RefreshIndicator(
+      onRefresh: () async => ref.invalidate(savedRecipesProvider),
+      child: RecipesGridView(
+        recipes,
+        onLoadMore: onLoadMore,
+        isLoadingMore: isLoadingMore,
+        hasMore: hasMore,
       ),
     );
   }
 }
 
-class SavedCookbooksTab extends StatelessWidget {
+class SavedCookbooksTab extends ConsumerWidget {
   final List<Collection> collections;
+  final VoidCallback onCreateCollection;
+  final VoidCallback? onLoadMore;
+  final bool isLoadingMore;
+  final bool hasMore;
 
-  const SavedCookbooksTab({super.key, required this.collections});
+  const SavedCookbooksTab({
+    super.key,
+    required this.collections,
+    required this.onCreateCollection,
+    this.onLoadMore,
+    this.isLoadingMore = false,
+    this.hasMore = false,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateCollectionDialog(context),
-        icon: const Icon(Icons.add),
-        label: const Text('New Cookbook'),
-      ),
-      body: Padding(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return RefreshIndicator(
+      onRefresh: () async => ref.invalidate(savedCollectionsProvider),
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: collections.isEmpty
-            ? const Center(child: Text('No cookbooks yet.'))
-            : GridView.builder(
-                padding: EdgeInsets.zero,
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 300,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 16 / 9,
+            ? EmptyStateView(
+                icon: Icons.collections_bookmark_outlined,
+                title: 'No cookbooks yet.',
+                action: TextButton.icon(
+                  onPressed: () => ref.invalidate(savedCollectionsProvider),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Refresh'),
                 ),
-                itemCount: collections.length,
-                itemBuilder: (context, index) {
-                  final collection = collections[index];
-                  return Card(
-                    clipBehavior: Clip.antiAlias,
-                    child: InkWell(
-                      onTap: () {
-                        GoRouter.of(context).pushNamed(
-                          'collection',
-                          pathParameters: {'cid': collection.id},
-                        );
+              )
+            : Column(
+                children: [
+                  Expanded(
+                    child: NotificationListener<ScrollEndNotification>(
+                      onNotification: (notification) {
+                        if (hasMore && !isLoadingMore && notification.metrics.extentAfter < 300) {
+                          onLoadMore?.call();
+                        }
+                        return false;
                       },
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: Container(
-                              color: Colors.grey.shade200,
-                              child: const Icon(Icons.collections, size: 48, color: Colors.grey),
-                            ),
-                          ),
-                          Positioned.fill(child: Container(color: Colors.black26)),
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  collection.name,
-                                  style: context.textTheme.titleMedium?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  '${collection.totalRecipes ?? 0} recipes',
-                                  style: context.textTheme.bodySmall?.copyWith(color: Colors.white70),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: PopupMenuButton<String>(
-                              icon: const Icon(Icons.more_horiz, color: Colors.white),
-                              onSelected: (value) {
-                                if (value == 'delete') {
-                                  _confirmDelete(context, collection);
-                                }
+                      child: GridView.builder(
+                        padding: EdgeInsets.zero,
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 300,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                          childAspectRatio: 16 / 9,
+                        ),
+                        itemCount: collections.length,
+                        itemBuilder: (context, index) {
+                          final collection = collections[index];
+                          return Card(
+                            clipBehavior: Clip.antiAlias,
+                            child: InkWell(
+                              onTap: () {
+                                context.goNamed(
+                                  RouteNames.collection,
+                                  pathParameters: {'cid': collection.id},
+                                );
                               },
-                              itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                  value: 'delete',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.delete_outline, color: Colors.red),
-                                      SizedBox(width: 8),
-                                      Text('Delete'),
-                                    ],
+                              child: Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: Container(
+                                      color: context.colors.surfaceContainerHighest,
+                                      child: Icon(Icons.collections, size: 48, color: context.colors.onSurfaceVariant),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  Positioned.fill(child: Container(color: context.colors.shadow.withValues(alpha: 0.1))),
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          collection.name,
+                                          style: context.textTheme.titleMedium?.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${collection.totalRecipes ?? 0} recipes',
+                                          style: context.textTheme.bodySmall?.copyWith(color: Colors.white70),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: PopupMenuButton<String>(
+                                      icon: const Icon(Icons.more_horiz, color: Colors.white),
+                                      tooltip: 'More options',
+                                      onSelected: (value) {
+                                        if (value == 'delete') {
+                                          _confirmDelete(context, ref, collection);
+                                        }
+                                      },
+                                      itemBuilder: (context) => [
+                                        const PopupMenuItem(
+                                          value: 'delete',
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.delete_outline, color: Colors.red),
+                                              SizedBox(width: 8),
+                                              Text('Delete'),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
-                  );
-                },
+                  ),
+                  if (isLoadingMore)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                ],
               ),
       ),
     );
   }
 
-  void _showCreateCollectionDialog(BuildContext context) {
-    final controller = TextEditingController();
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('New Cookbook'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Name',
-            hintText: 'My Favorite Recipes',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () async {
-              if (controller.text.isNotEmpty) {
-                try {
-                  await CollectionRepository.create(controller.text);
-                  if (context.mounted) Navigator.pop(context);
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text('Error: $e')));
-                  }
-                }
-              }
-            },
-            child: const Text('Create'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmDelete(BuildContext context, Collection collection) {
+  void _confirmDelete(BuildContext context, WidgetRef ref, Collection collection) {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
@@ -237,13 +199,15 @@ class SavedCookbooksTab extends StatelessWidget {
           TextButton(
             onPressed: () async {
               try {
-                await CollectionRepository.delete(collection.id);
+                await ref.read(collectionRepositoryProvider).delete(collection.id);
+                HapticFeedback.mediumImpact();
+                ref.invalidate(savedCollectionsProvider);
                 if (context.mounted) Navigator.pop(context);
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(
                     context,
-                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                  ).showSnackBar(SnackBar(content: Text('Failed to delete cookbook: ${e is GeneralApiException ? e.message : "Unexpected error"}')));
                 }
               }
             },

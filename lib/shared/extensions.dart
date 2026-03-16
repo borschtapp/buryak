@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'providers/theme.dart';
+import 'util/breakpoints.dart';
 
 extension TypographyUtils on BuildContext {
   ThemeData get theme => Theme.of(this);
@@ -15,8 +16,8 @@ extension TypographyUtils on BuildContext {
   BorderRadius get shapeExtraLarge => ThemeProvider.shapeExtraLarge;
 
   MediaQueryData get mediaQuery => MediaQuery.of(this);
-  bool get isTablet => mediaQuery.size.width > 730;
-  bool get isDesktop => mediaQuery.size.width > 1200;
+  bool get isTablet => mediaQuery.size.width > AppBreakpoints.tablet;
+  bool get isDesktop => mediaQuery.size.width > AppBreakpoints.desktop;
   bool get isMobile => !isTablet && !isDesktop;
 
   void popOrGo(String location) => GoRouter.of(this).canPop() ? pop() : go(location);
@@ -24,8 +25,8 @@ extension TypographyUtils on BuildContext {
 }
 
 extension BreakpointUtils on BoxConstraints {
-  bool get isTablet => maxWidth > 730;
-  bool get isDesktop => maxWidth > 1200;
+  bool get isTablet => maxWidth > AppBreakpoints.tablet;
+  bool get isDesktop => maxWidth > AppBreakpoints.desktop;
   bool get isMobile => !isTablet && !isDesktop;
 }
 

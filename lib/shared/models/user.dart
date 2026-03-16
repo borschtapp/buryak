@@ -1,47 +1,64 @@
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'household.dart';
 
 part 'user.g.dart';
 
 @JsonSerializable()
 class User {
   final String id;
-  String email;
-  String name;
-  String? image;
-  DateTime updated;
-  DateTime created;
-  @JsonKey(name: 'access_token')
-  String accessToken;
-  @JsonKey(name: 'refresh_token')
-  String refreshToken;
   @JsonKey(name: 'household_id')
-  String? householdId;
-
-  // Preload fields
-  Household? household;
+  final String householdId;
+  final String email;
+  final String name;
+  @JsonKey(name: 'image_url')
+  final String? imageUrl;
+  @JsonKey(name: 'access_token')
+  final String accessToken;
+  @JsonKey(name: 'refresh_token')
+  final String refreshToken;
 
   User({
     required this.id,
+    required this.householdId,
     required this.name,
     required this.email,
-    this.image,
-    required this.updated,
-    required this.created,
+    this.imageUrl,
     required this.accessToken,
     required this.refreshToken,
-    this.householdId,
-    this.household,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+
+  /// Standard [toJson] excludes tokens to prevent accidental exposure in logs/feeds.
+  Map<String, dynamic> toJson() => _$UserToJson(this)
+    ..remove('access_token')
+    ..remove('refresh_token');
+
+  /// Used for secure storage where tokens are required.
+  Map<String, dynamic> toFullJson() => _$UserToJson(this);
+
+  User copyWith({
+    String? name,
+    String? email,
+    String? imageUrl,
+    String? accessToken,
+    String? refreshToken,
+  }) {
+    return User(
+      id: id,
+      householdId: householdId,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      imageUrl: imageUrl ?? this.imageUrl,
+      accessToken: accessToken ?? this.accessToken,
+      refreshToken: refreshToken ?? this.refreshToken,
+    );
+  }
 
   bool isValidAccessToken() {
     try {
       final jwtData = JwtDecoder.decode(accessToken);
-      return (jwtData['exp'] as num) * 1000 > DateTime.now().millisecondsSinceEpoch;
+      return (jwtData['exp'] as int) * 1000 > DateTime.now().millisecondsSinceEpoch;
     } catch (_) {
       return false;
     }

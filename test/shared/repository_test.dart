@@ -1,23 +1,29 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:buryak/shared/repositories/repository.dart';
-import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/providers/storage.dart';
-
 import '../helpers/fake_user.dart';
+
+final dummyProvider = Provider<Ref>((ref) => ref);
+late Ref mockRef;
 
 // Minimal concrete Repository subclass for testing
 class _TestRepo extends Repository {
-  _TestRepo() : super(method: RequestMethod.get, module: '/api', path: '/test');
+  _TestRepo() : super(ref: mockRef, module: '/api', baseUrlOverride: 'http://localhost');
 }
 
 void main() {
+  setUpAll(() {
+    final container = ProviderContainer();
+    mockRef = container.read(dummyProvider);
+  });
+
   setUp(() async {
     FlutterSecureStorage.setMockInitialValues({
       LocalStorage.userKey: jsonEncode(fakeUserJson()),
     });
-    await UserService.init();
   });
 
   group('GeneralApiException', () {
@@ -90,14 +96,45 @@ void main() {
   group('Repository.getUrlString', () {
     test('builds correct URL without query string', () {
       final repo = _TestRepo();
-      expect(repo.getUrlString(), equals('https://smetana.borscht.app/api/test'));
+      expect(repo.getUrlString(path: '/test'), equals('http://localhost/api/test'));
     });
 
-    test('appends query string when provided', () {
+    test('appends query parameters when provided', () {
       final repo = _TestRepo();
       expect(
-        repo.getUrlString(query: '?q=borscht'),
-        equals('https://smetana.borscht.app/api/test?q=borscht'),
+        repo.getUrlString(path: '/test', queryParams: {'q': 'borscht'}),
+        equals('http://localhost/api/test?q=borscht'),
+      );
+    });
+
+    test('filters out null values', () {
+      final repo = _TestRepo();
+      expect(
+        repo.getUrlString(path: '/test', queryParams: {'q': null}),
+        equals('http://localhost/api/test'),
+      );
+    });
+
+    test('filters out "null" strings', () {
+      final repo = _TestRepo();
+      expect(
+        repo.getUrlString(path: '/test', queryParams: {'q': 'null'}),
+        equals('http://localhost/api/test'),
+      );
+    });
+
+    test('filters out mixed invalid values', () {
+      final repo = _TestRepo();
+      expect(
+        repo.getUrlString(
+          path: '/test',
+          queryParams: {
+            'q': 'borscht',
+            'filter': null,
+            'sort': 'null',
+          },
+        ),
+        equals('http://localhost/api/test?q=borscht'),
       );
     });
   });

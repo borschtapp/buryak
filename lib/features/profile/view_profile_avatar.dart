@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../shared/extensions.dart';
 
 class ProfileAvatar extends StatelessWidget {
   final String? image;
@@ -7,27 +9,45 @@ class ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (image != null && image!.isNotEmpty) {
+    if (image != null && image!.trim().isNotEmpty) {
       return Container(
         height: 140,
         width: 140,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 6),
-          image: DecorationImage(
+          border: Border.all(color: context.colors.surface, width: 6),
+        ),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: image!,
             fit: BoxFit.cover,
-            image: NetworkImage(image!),
+            placeholder: (context, url) => Center(
+              child: CircularProgressIndicator(
+                color: context.colors.primary,
+                strokeWidth: 2,
+              ),
+            ),
+            errorWidget: (context, url, error) => _buildPlaceholder(context),
           ),
         ),
       );
     }
 
+    return _buildPlaceholder(context);
+  }
+
+  Widget _buildPlaceholder(BuildContext context) {
+    final initials = name.trim().isEmpty ? '?' : name.trim().substring(0, 1).toUpperCase();
     return CircleAvatar(
       radius: 70,
-      backgroundColor: Colors.yellow.shade100,
+      backgroundColor: context.colors.primaryContainer,
       child: Text(
-        name.substring(0, 1),
-        style: TextStyle(fontSize: 90, color: Colors.grey.shade800),
+        initials,
+        style: TextStyle(
+          fontSize: 90,
+          color: context.colors.onPrimaryContainer,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

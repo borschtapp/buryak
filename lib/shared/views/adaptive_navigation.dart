@@ -16,6 +16,7 @@ class AdaptiveNavigation extends StatelessWidget {
     this.floatingActionButton,
     this.hideBottomNavigationBar = false,
     this.extendBodyBehindAppBar = false,
+    this.fallbackRoute = 'home',
   });
 
   final AppBar? appBar;
@@ -27,6 +28,7 @@ class AdaptiveNavigation extends StatelessWidget {
   final int selectedIndex;
   final void Function(int index) onDestinationSelected;
   final Widget child;
+  final String fallbackRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +68,7 @@ class AdaptiveNavigation extends StatelessWidget {
                           const SizedBox(height: 12),
                         ],
                       ),
-                labelType: dimens.isDesktop ? NavigationRailLabelType.none : NavigationRailLabelType.all,
+                labelType: dimens.isDesktop ? .none : .all,
                 extended: dimens.isDesktop,
                 minExtendedWidth: 200,
                 destinations: destinations
@@ -88,7 +90,7 @@ class AdaptiveNavigation extends StatelessWidget {
 
     if (appBarTitle != null) {
       return AppBar(
-        leading: BackButton(onPressed: () => context.popOrGoNamed('home')),
+        leading: BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute)),
         title: Text(appBarTitle!),
       );
     }
@@ -106,6 +108,7 @@ class TabletAppBar extends StatelessWidget {
   final AppBar? appBar;
   final String? appBarTitle;
   final bool scrollable;
+  final String fallbackRoute;
 
   const TabletAppBar({
     super.key,
@@ -114,22 +117,23 @@ class TabletAppBar extends StatelessWidget {
     this.appBar,
     this.appBarTitle,
     this.scrollable = true,
+    this.fallbackRoute = 'home',
   });
 
   @override
   Widget build(BuildContext context) {
     if (isMobile || (appBar == null && appBarTitle == null)) {
-      return Container(alignment: Alignment.topLeft, child: child);
+      return Container(alignment: .topLeft, child: child);
     }
 
     final content = ArticleContent(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: .start,
+        mainAxisAlignment: .start,
         children: [
           Row(
             children: [
-              appBar?.leading ?? BackButton(onPressed: () => context.popOrGoNamed('home')),
+              appBar?.leading ?? BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute)),
               const SizedBox(width: 6),
               if (appBarTitle != null) Text(appBarTitle!, style: Theme.of(context).textTheme.headlineSmall),
               const Expanded(child: SizedBox()),
@@ -144,7 +148,7 @@ class TabletAppBar extends StatelessWidget {
     );
 
     return Container(
-      alignment: Alignment.topLeft,
+      alignment: .topLeft,
       child: scrollable ? SingleChildScrollView(child: content) : content,
     );
   }

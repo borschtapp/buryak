@@ -1,37 +1,39 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'repository.dart';
 import '../models/publisher.dart';
+import '../models/paginated_list.dart';
+
+part 'publisher_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+PublisherRepository publisherRepository(Ref ref) => PublisherRepository(ref: ref);
 
 class PublisherRepository extends Repository {
-  PublisherRepository({
-    required super.method,
-    super.path = '',
-    super.module = '/api/v1/publishers',
-    super.isAuth = true,
-  });
+  const PublisherRepository({required super.ref}) : super(module: '/api/v1/publishers');
 
-  static Future<List<Publisher>> findAll({
+  Future<PaginatedList<Publisher>> findAll({
     String? preload,
     String? q,
     String? sort,
     String? order,
-    int? page,
     int? limit,
     int? offset,
   }) async {
-    ResponseBody response =
-        await PublisherRepository(
-          method: RequestMethod.get,
-        ).sendRequest(
-          queryParams: {
-            'preload': ?preload,
-            'q': ?q,
-            'sort': ?sort,
-            'order': ?order,
-            'page': ?page,
-            'limit': ?limit,
-            'offset': ?offset,
-          },
-        );
-    return (response['data'] as List).map<Publisher>((json) => Publisher.fromJson(json as Map<String, dynamic>)).toList();
+    final response = await sendRequest(
+      method: .get,
+      queryParams: {
+        'preload': ?preload,
+        'q': ?q,
+        'sort': ?sort,
+        'order': ?order,
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return PaginatedList<Publisher>.fromJson(
+      ensureMap(response),
+      (json) => Publisher.fromJson(ensureMap(json)),
+    );
   }
 }

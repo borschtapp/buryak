@@ -20,14 +20,15 @@ class ProfileDetails extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(top: 30, bottom: 20, left: 30, right: 30),
-            child: ProfileAvatar(image: image, name: name != null && name!.isNotEmpty ? name! : email!),
+            child: ProfileAvatar(image: image, name: name != null && name!.trim().isNotEmpty ? name! : email!),
           ),
-          if (name != null && name!.isNotEmpty)
+          if (name != null && name!.trim().isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Text(name!, style: Theme.of(context).textTheme.headlineMedium),
             ),
-          if (email != null && email!.isNotEmpty) Text(email!, style: const TextStyle(color: Colors.grey)),
+          if (email != null && email!.trim().isNotEmpty)
+            Text(email!, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ],
       ),
     );

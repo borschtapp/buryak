@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'image.dart';
+import 'feed.dart';
+import 'recipe.dart';
 
 part 'publisher.g.dart';
 
@@ -13,9 +14,10 @@ class Publisher {
   final String? imageUrl;
 
   // Preload fields
-  final List<Image>? images;
   @JsonKey(name: 'total_recipes')
   final int? totalRecipes;
+  final List<Feed>? feeds;
+  final List<Recipe>? recipes;
 
   Publisher({
     required this.id,
@@ -23,8 +25,9 @@ class Publisher {
     this.description,
     required this.url,
     this.imageUrl,
-    this.images,
     this.totalRecipes,
+    this.feeds,
+    this.recipes,
   });
 
   factory Publisher.fromJson(Map<String, dynamic> json) => _$PublisherFromJson(json);

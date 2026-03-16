@@ -26,6 +26,7 @@ class ThemeProvider {
       TargetPlatform.linux: NoAnimationPageTransitionsBuilder(),
       TargetPlatform.macOS: NoAnimationPageTransitionsBuilder(),
       TargetPlatform.windows: NoAnimationPageTransitionsBuilder(),
+      TargetPlatform.fuchsia: NoAnimationPageTransitionsBuilder(),
     },
   );
 
@@ -41,7 +42,7 @@ class ThemeProvider {
       height: kToolbarHeight + 20,
       colorFilter: ColorFilter.mode(
         context.colors.onPrimaryContainer,
-        BlendMode.srcIn,
+        .srcIn,
       ),
     );
   }
@@ -49,8 +50,8 @@ class ThemeProvider {
   static BoxDecoration gradient(Color color) {
     return BoxDecoration(
       gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
+        begin: .topCenter,
+        end: .bottomCenter,
         stops: const [0, 1],
         colors: [color, Colors.transparent],
       ),
@@ -61,7 +62,7 @@ class ThemeProvider {
     return CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: shapeMedium),
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: .antiAlias,
     );
   }
 
@@ -113,7 +114,41 @@ class ThemeProvider {
   }
 
   static NavigationRailThemeData navigationRailTheme(ColorScheme colors) {
-    return const NavigationRailThemeData();
+    return NavigationRailThemeData(
+      backgroundColor: colors.surface,
+      indicatorColor: colors.primaryContainer,
+      selectedIconTheme: IconThemeData(color: colors.onPrimaryContainer),
+      unselectedIconTheme: IconThemeData(color: colors.onSurfaceVariant),
+      selectedLabelTextStyle: TextStyle(color: colors.onPrimaryContainer, fontWeight: FontWeight.bold),
+      unselectedLabelTextStyle: TextStyle(color: colors.onSurfaceVariant),
+    );
+  }
+
+  static InputDecorationTheme inputDecorationTheme(ColorScheme colors) {
+    final border = OutlineInputBorder(
+      borderRadius: shapeMedium,
+      borderSide: BorderSide(
+        color: colors.outline.withValues(alpha: 0.2),
+        width: 1.5,
+      ),
+    );
+
+    final focusedBorder = border.copyWith(
+      borderSide: BorderSide(
+        color: colors.primary,
+        width: 2,
+      ),
+    );
+
+    return InputDecorationTheme(
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: border,
+      enabledBorder: border,
+      focusedBorder: focusedBorder,
+      labelStyle: TextStyle(color: colors.onSurfaceVariant),
+      hintStyle: TextStyle(color: colors.onSurfaceVariant.withValues(alpha: 0.6)),
+    );
   }
 
   static DrawerThemeData drawerTheme(ColorScheme colors) {
@@ -144,7 +179,8 @@ class ThemeProvider {
       onSurfaceVariant: const Color(0xFF443737),
       error: const Color(0xFF690005),
       onError: const Color(0xFFFFB4AB),
-      onErrorContainer: const Color(0xFF93000A),
+      errorContainer: const Color(0xFF690005),
+      onErrorContainer: const Color(0xFFFFB4AB),
     );
 
     return originalTheme.copyWith(
@@ -157,6 +193,7 @@ class ThemeProvider {
       navigationRailTheme: navigationRailTheme(colorScheme),
       tabBarTheme: tabBarTheme(colorScheme),
       drawerTheme: drawerTheme(colorScheme),
+      inputDecorationTheme: inputDecorationTheme(colorScheme),
       scaffoldBackgroundColor: colorScheme.surface,
     );
   }
@@ -183,7 +220,8 @@ class ThemeProvider {
       onSurfaceVariant: const Color(0xFFA29494),
       error: const Color(0xFFFFB4AB),
       onError: const Color(0xFF690005),
-      onErrorContainer: const Color(0xFF93000A),
+      errorContainer: const Color(0xFFFFB4AB),
+      onErrorContainer: const Color(0xFF690005),
     );
 
     return originalTheme.copyWith(
@@ -196,6 +234,7 @@ class ThemeProvider {
       navigationRailTheme: navigationRailTheme(colorScheme),
       tabBarTheme: tabBarTheme(colorScheme),
       drawerTheme: drawerTheme(colorScheme),
+      inputDecorationTheme: inputDecorationTheme(colorScheme),
       scaffoldBackgroundColor: colorScheme.surface,
     );
   }

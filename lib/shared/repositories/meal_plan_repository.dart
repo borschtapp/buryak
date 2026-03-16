@@ -1,84 +1,82 @@
+import 'package:intl/intl.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'repository.dart';
 import '../models/meal_plan.dart';
+import '../models/paginated_list.dart';
+
+part 'meal_plan_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+MealPlanRepository mealPlanRepository(Ref ref) => MealPlanRepository(ref: ref);
 
 class MealPlanRepository extends Repository {
-  MealPlanRepository({
-    required super.method,
-    super.path = '',
-    super.module = '/api/v1/mealplan',
-    super.isAuth = true,
-  });
+  const MealPlanRepository({required super.ref}) : super(module: '/api/v1/mealplan');
 
-  static Future<List<MealPlan>> findAll({
-    String? from,
-    String? to,
-    int? page,
+  Future<PaginatedList<MealPlan>> findAll({
+    DateTime? from,
+    DateTime? to,
     int? limit,
+    int? offset,
   }) async {
-    ResponseBody response =
-        await MealPlanRepository(
-          method: RequestMethod.get,
-        ).sendRequest(
-          queryParams: {
-            'from': ?from,
-            'to': ?to,
-            'page': ?page,
-            'limit': ?limit,
-          },
-        );
-    return (response['data'] as List).map<MealPlan>((json) => MealPlan.fromJson(json as Map<String, dynamic>)).toList();
+    final response = await sendRequest(
+      method: .get,
+      queryParams: {
+        if (from != null) 'from': DateFormat('yyyy-MM-dd').format(from),
+        if (to != null) 'to': DateFormat('yyyy-MM-dd').format(to),
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return PaginatedList<MealPlan>.fromJson(
+      ensureMap(response),
+      (json) => MealPlan.fromJson(ensureMap(json)),
+    );
   }
 
-  static Future<MealPlan> create(
-    String date,
-    String mealType, {
-    String? note,
+  Future<MealPlan> create(
+    DateTime date,
+    MealType mealType, {
+    String? description,
     int? servings,
     String? recipeId,
   }) async {
-    ResponseBody response =
-        await MealPlanRepository(
-          method: RequestMethod.post,
-        ).sendRequest(
-          body: {
-            'date': date,
-            'meal_type': mealType,
-            'description': ?note,
-            'servings': ?servings,
-            'recipe_id': ?recipeId,
-          },
-        );
-    return MealPlan.fromJson(response as Map<String, dynamic>);
+    final response = await sendRequest(
+      method: RequestMethod.post,
+      body: {
+        'date': DateFormat('yyyy-MM-dd').format(date),
+        'meal_type': mealType.name,
+        'description': description,
+        'servings': servings,
+        'recipe_id': recipeId,
+      },
+    );
+    return MealPlan.fromJson(ensureMap(response));
   }
 
-  static Future<MealPlan> update(
+  Future<MealPlan> update(
     String id, {
-    String? date,
-    String? mealType,
-    String? note,
+    DateTime? date,
+    MealType? mealType,
+    String? description,
     int? servings,
     String? recipeId,
   }) async {
-    ResponseBody response =
-        await MealPlanRepository(
-          method: RequestMethod.patch,
-          path: '/$id',
-        ).sendRequest(
-          body: {
-            'date': ?date,
-            'meal_type': ?mealType,
-            'description': ?note,
-            'servings': ?servings,
-            'recipe_id': ?recipeId,
-          },
-        );
-    return MealPlan.fromJson(response as Map<String, dynamic>);
+    final response = await sendRequest(
+      method: RequestMethod.patch,
+      path: '/$id',
+      body: {
+        if (date != null) 'date': DateFormat('yyyy-MM-dd').format(date),
+        'meal_type': mealType?.name,
+        'description': description,
+        'servings': servings,
+        'recipe_id': recipeId,
+      },
+    );
+    return MealPlan.fromJson(ensureMap(response));
   }
 
-  static Future<void> delete(String id) async {
-    await MealPlanRepository(
-      method: RequestMethod.delete,
-      path: '/$id',
-    ).sendRequest();
+  Future<void> delete(String id) async {
+    await sendRequest(method: .delete, path: '/$id');
   }
 }

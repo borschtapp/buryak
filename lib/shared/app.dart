@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'providers/theme.dart';
 import 'router.dart';
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final routerConfig = ref.watch(routerProvider);
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Borscht',
       theme: ThemeProvider.themeLight(),
       darkTheme: ThemeProvider.themeDark(),
       themeMode: ThemeMode.system,
-      routerConfig: router,
+      routerConfig: routerConfig,
     );
   }
 }

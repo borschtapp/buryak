@@ -1,7 +1,6 @@
 import 'package:buryak/shared/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:universal_platform/universal_platform.dart';
 
 import '../router.dart' as router;
 import 'adaptive_navigation.dart';
@@ -38,6 +37,12 @@ class RootLayout extends StatelessWidget {
           GoRouter.of(context).go(destination.route);
         }
 
+        final fallbackRoute = router.destinations[currentIndex].name;
+
+        // The same key is intentionally shared across all RootLayout instances so
+        // Flutter reuses the AdaptiveNavigation widget on every route transition,
+        // preserving NavigationRail scroll position and selected state without
+        // a rebuild. This works safely because AdaptiveNavigation is stateless.
         return AdaptiveNavigation(
           key: _navigationRailKey,
           appBar: appBar,
@@ -48,19 +53,18 @@ class RootLayout extends StatelessWidget {
           destinations: router.destinations.map((e) => NavigationDestination(icon: e.icon, label: e.label)).toList(),
           selectedIndex: currentIndex,
           onDestinationSelected: onSelected,
+          fallbackRoute: fallbackRoute,
           child: Column(
             children: [
               Expanded(
-                child: _Switcher(
-                  child: TabletAppBar(
-                    key: child.key ?? ValueKey(currentIndex),
-                    isMobile: dimens.isMobile,
-                    appBar: appBar,
-                    appBarTitle: appBarTitle,
-                    scrollable: contentScrollable,
-                    child: SelectionArea(
-                      child: child,
-                    ),
+                child: TabletAppBar(
+                  isMobile: dimens.isMobile,
+                  appBar: appBar,
+                  appBarTitle: appBarTitle,
+                  scrollable: contentScrollable,
+                  fallbackRoute: fallbackRoute,
+                  child: SelectionArea(
+                    child: child,
                   ),
                 ),
               ),
@@ -69,25 +73,5 @@ class RootLayout extends StatelessWidget {
         );
       },
     );
-  }
-}
-
-class _Switcher extends StatelessWidget {
-  final Widget child;
-
-  const _Switcher({
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return UniversalPlatform.isDesktop
-        ? child
-        : AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            switchInCurve: Curves.easeInOut,
-            switchOutCurve: Curves.easeInOut,
-            child: child,
-          );
   }
 }

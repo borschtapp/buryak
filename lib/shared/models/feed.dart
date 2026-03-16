@@ -10,18 +10,16 @@ class Feed {
   final bool active;
   final String url;
   final String name;
-  @JsonKey(name: 'error_count')
-  final int? errorCount;
   @JsonKey(name: 'last_sync_at')
   final String? lastSyncAt;
   @JsonKey(name: 'last_sync_success')
   final bool? lastSyncSuccess;
-  final String? updated;
-  final String? created;
 
   // Preload fields
   @JsonKey(name: 'total_recipes')
   final int? totalRecipes;
+  @JsonKey(name: 'publisher_id')
+  final String? publisherId;
   final Publisher? publisher;
   final List<Recipe>? recipes;
 
@@ -32,9 +30,7 @@ class Feed {
     required this.name,
     this.lastSyncAt,
     this.lastSyncSuccess,
-    this.errorCount,
-    this.updated,
-    this.created,
+    this.publisherId,
     this.publisher,
     this.recipes,
     this.totalRecipes,

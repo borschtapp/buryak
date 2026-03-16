@@ -38,6 +38,15 @@ class RecipeIngredient {
     this.unitId,
   });
 
+  String get displayName => name ?? food?.name ?? rawText ?? description ?? 'Unknown ingredient';
+
+  String get displayAmount {
+    return [
+      if (amount != null && amount != 0) amount.toString(),
+      if (unit?.name.trim().isNotEmpty == true) unit!.name,
+    ].where((s) => s.trim().isNotEmpty).join(' ');
+  }
+
   factory RecipeIngredient.fromJson(Map<String, dynamic> json) => _$RecipeIngredientFromJson(json);
   Map<String, dynamic> toJson() => _$RecipeIngredientToJson(this);
 }

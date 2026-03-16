@@ -1,4 +1,14 @@
-// test/helpers/fake_user.dart
+import 'dart:convert';
+
+String generateFakeJwt({Duration? expiresIn}) {
+  final exp = expiresIn != null
+      ? (DateTime.now().add(expiresIn).millisecondsSinceEpoch ~/ 1000)
+      : 9999999999;
+  
+  final header = base64Url.encode(utf8.encode(json.encode({'alg': 'HS256', 'typ': 'JWT'})));
+  final payload = base64Url.encode(utf8.encode(json.encode({'exp': exp})));
+  return '$header.$payload.fake_signature';
+}
 
 // JWT with exp=9999999999 (year 2286) — always valid in tests
 const String kFutureJwt =
@@ -14,6 +24,7 @@ const String kExpiredJwt =
 
 Map<String, dynamic> fakeUserJson({String? accessToken, String? refreshToken}) => {
   'id': 'user-1',
+  'householdId': 'household-1',
   'name': 'Test User',
   'email': 'test@example.com',
   'updated': '2024-01-01T00:00:00.000Z',

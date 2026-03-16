@@ -1,85 +1,111 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/models/user.dart';
-import '../../shared/providers/user.dart';
 import 'view_profile_details.dart';
+import '../../shared/providers/user.dart';
+import '../../shared/route_names.dart';
 
-class ProfileScreen extends StatelessWidget {
+import 'package:flutter_hooks/flutter_hooks.dart';
+
+class ProfileScreen extends HookConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    User profile;
-    try {
-      profile = UserService.getUserModel();
-    } catch (e) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userState = ref.watch(authProvider);
+    final isDeleting = useState(false);
+
+    if (userState == null) {
       return const Center(child: Text('User not found. Please log in again.'));
     }
+
+    final profile = userState;
+    final name = profile.name;
+    final email = profile.email;
+    final image = profile.imageUrl;
+    final errorColor = Theme.of(context).colorScheme.error;
 
     return SingleChildScrollView(
       child: Column(
         children: [
-          ProfileDetails(name: profile.name, email: profile.email, image: profile.image),
+          ProfileDetails(name: name, email: email, image: image),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.edit_document),
             title: const Text('Terms of Use'),
             trailing: const Icon(Icons.arrow_forward),
-            onTap: () => context.pushNamed('terms'),
+            onTap: () => context.pushNamed(RouteNames.terms),
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.privacy_tip),
             title: const Text('Privacy Policy'),
             trailing: const Icon(Icons.arrow_forward),
-            onTap: () => context.pushNamed('privacy'),
+            onTap: () => context.pushNamed(RouteNames.privacy),
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
-            onTap: () async {
-              await UserService.logout();
-              if (context.mounted) context.goNamed('login');
+            onTap: isDeleting.value ? null : () async {
+              await ref.read(authProvider.notifier).logout();
+              if (context.mounted) {
+                context.goNamed(RouteNames.login);
+              }
             },
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: const Text('Delete Account', style: TextStyle(color: Colors.red)),
-            onTap: () => _confirmDeleteAccount(context),
+            leading: isDeleting.value 
+              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+              : Icon(Icons.delete_forever, color: errorColor),
+            title: Text(
+              isDeleting.value ? 'Deleting Account...' : 'Delete Account', 
+              style: TextStyle(color: errorColor),
+            ),
+            onTap: isDeleting.value ? null : () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Delete Account'),
+                  content: const Text(
+                    'This will permanently delete your account and all associated data. '
+                    'This action cannot be undone.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                      style: TextButton.styleFrom(foregroundColor: errorColor),
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed == true && context.mounted) {
+                isDeleting.value = true;
+                try {
+                  await ref.read(authProvider.notifier).deleteAccount();
+                  if (context.mounted) {
+                    context.goNamed(RouteNames.login);
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to delete account: $e')),
+                    );
+                    isDeleting.value = false;
+                  }
+                }
+              }
+            },
           ),
         ],
       ),
     );
-  }
-
-  Future<void> _confirmDeleteAccount(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Account'),
-        content: const Text(
-          'Are you sure you want to permanently delete your account? This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true && context.mounted) {
-      await UserService.deleteAccount();
-      if (context.mounted) context.goNamed('login');
-    }
   }
 }

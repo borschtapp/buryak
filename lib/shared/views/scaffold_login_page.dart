@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../util/breakpoints.dart';
 
 class ScaffoldWithSimpleLayout extends StatelessWidget {
   final Widget child;
@@ -10,21 +11,21 @@ class ScaffoldWithSimpleLayout extends StatelessWidget {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 600) {
+          if (constraints.maxWidth <= AppBreakpoints.tablet) {
             return SafeArea(
-              top: false,
-              bottom: false,
               child: SingleChildScrollView(
-                child: SizedBox(
-                  // width: 300,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 30, right: 30, top: 100, bottom: 60),
-                    child: child,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: child,
+                    ),
                   ),
                 ),
               ),
             );
-          } else if (constraints.maxWidth > 600 && constraints.maxWidth < 900) {
+          } else if (constraints.maxWidth <= AppBreakpoints.desktop) {
             return Center(
               child: SingleChildScrollView(
                 child: SizedBox(
@@ -37,13 +38,22 @@ class ScaffoldWithSimpleLayout extends StatelessWidget {
             return Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(child: Image.asset('assets/images/login_bg.png', fit: BoxFit.cover)),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 210),
-                      child: child,
+                  flex: 3,
+                  child: Image.asset(
+                    'assets/images/login_bg.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 360),
+                        child: child,
+                      ),
                     ),
                   ),
                 ),
