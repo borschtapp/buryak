@@ -4,7 +4,7 @@ import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/collection_repository.dart';
 import '../../shared/views/async_loader.dart';
-import '../recipes/view_recipes_grid.dart';
+import 'view_recipes_grid.dart';
 
 class CollectionScreen extends StatefulWidget {
   final String collectionId;

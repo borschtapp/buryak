@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../shared/constants.dart';
 import '../../shared/views/article_content.dart';
@@ -9,12 +8,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Privacy Policy'),
-        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed('profile')),
-      ),
-      body: const SingleChildScrollView(
+    return const SingleChildScrollView(
         child: ArticleContent(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +195,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

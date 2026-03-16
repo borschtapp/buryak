@@ -9,12 +9,7 @@ class TermsOfUseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Terms of Use'),
-        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed('profile')),
-      ),
-      body: SingleChildScrollView(
+    return SingleChildScrollView(
         child: ArticleContent(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,7 +163,6 @@ class TermsOfUseScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

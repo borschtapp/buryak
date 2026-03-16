@@ -77,6 +77,12 @@ class UserService {
     await LocalStorage.remove(LocalStorage.userKey);
   }
 
+  static Future<void> deleteAccount() async {
+    if (_currentUser == null) throw Exception('User not logged in');
+    await UserRepository.delete(_currentUser!.id);
+    await logout();
+  }
+
   static Future<void> _persist(User user) async {
     _currentUser = user;
     await LocalStorage.setString(LocalStorage.userKey, jsonEncode(user.toJson()));

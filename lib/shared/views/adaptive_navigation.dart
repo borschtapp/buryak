@@ -49,10 +49,12 @@ class AdaptiveNavigation extends StatelessWidget {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: ThemeProvider.logo(context),
-          ),
+          appBar: (appBar == null && appBarTitle == null)
+              ? AppBar(
+                  automaticallyImplyLeading: false,
+                  title: ThemeProvider.logo(context),
+                )
+              : null,
           body: Row(
             children: [
               NavigationRail(

@@ -11,12 +11,11 @@ import '../features/explore/screen_explore.dart';
 import '../features/planner/screen_planner.dart';
 import '../features/profile/screen_login.dart';
 import '../features/profile/screen_profile.dart';
-import '../features/profile/screen_collection.dart';
+import '../features/recipes/screen_collection.dart';
 import '../features/profile/screen_register.dart';
 import '../features/recipes/screen_saved.dart';
 import '../features/recipes/screen_recipes_single.dart';
 import '../features/shopping/screen_shopping.dart';
-import '../features/profile/screen_settings.dart';
 
 const List<AppDestination> destinations = [
   AppDestination(label: 'Explore', route: '/', icon: Icon(Icons.explore)),
@@ -141,20 +140,11 @@ final router = GoRouter(
       redirect: _authGuard,
       pageBuilder: (context, state) => FadeTransitionPage<void>(
         key: state.pageKey,
-        child: RootLayout(
+        child: const RootLayout(
           currentIndex: 4,
-          appBar: AppBar(
-            title: const Text('Profile'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () => GoRouter.of(context).pushNamed('settings'),
-              ),
-              const SizedBox(width: 8),
-            ],
-          ),
+          appBarTitle: 'Profile',
           contentScrollable: false,
-          child: const ProfileScreen(),
+          child: ProfileScreen(),
         ),
       ),
     ),
@@ -193,20 +183,6 @@ final router = GoRouter(
           appBarTitle: 'Terms of Use',
           hideBottomNavigationBar: true,
           child: TermsOfUseScreen(),
-        ),
-      ),
-    ),
-    GoRoute(
-      name: 'settings',
-      path: '/settings',
-      pageBuilder: (context, state) => MaterialPage<void>(
-        key: state.pageKey,
-        child: const RootLayout(
-          currentIndex: 4,
-          appBarTitle: 'Settings',
-          hideBottomNavigationBar: true,
-          contentScrollable: false,
-          child: SettingsScreen(),
         ),
       ),
     ),
