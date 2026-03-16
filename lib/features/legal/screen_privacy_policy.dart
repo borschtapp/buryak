@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../shared/constants.dart';
 import '../../shared/views/article_content.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -7,89 +9,197 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      child: ArticleContent(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Paragraph(
-              'At Borscht Cookbook, accessible from https://borscht.app, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Borscht Cookbook and how we use it.',
-            ),
-            Paragraph(
-              'If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us via support@borascht.app',
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Privacy Policy'),
+        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed('profile')),
+      ),
+      body: const SingleChildScrollView(
+        child: ArticleContent(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Paragraph(
+                'This Privacy Policy explains how personal data is processed in connection with '
+                'the Borscht app. Borscht is an open-source project maintained by an individual '
+                'developer, not a company.',
+              ),
 
-            Header('General Data Protection Regulation (GDPR)'),
-            Paragraph('We are a Data Controller of your information.'),
-            Paragraph(
-              'Borscht Cookbook legal basis for collecting and using the personal information described in this Privacy Policy depends on the Personal Information we collect and the specific context in which we collect the information:',
-            ),
+              Header('1. Data Controller (Verantwortlicher)'),
+              Paragraph('The data controller within the meaning of the GDPR is:'),
+              SizedBox(height: 4),
+              Text(AppConstants.contactName),
+              Text(AppConstants.contactAddress),
+              Text(AppConstants.contactCity),
+              Text(AppConstants.contactEmail),
+              SizedBox(height: 4),
+              Paragraph(
+                'This data controller is only relevant if you use the public demo instance at '
+                'borscht.app. If you self-host the Smetana backend, the operator of that instance '
+                'is the data controller for all data stored there — not this developer.',
+              ),
 
-            SizedBox(height: 4),
-            Text(' ∙ Borscht Cookbook needs to perform a contract with you'),
-            Text(' ∙ You have given Borscht Cookbook permission to do so'),
-            Text(' ∙ Processing your personal information is in Borscht Cookbook legitimate interests'),
-            Text(' ∙ Borscht Cookbook needs to comply with the law'),
-            SizedBox(height: 6),
+              Header('2. How the App Works'),
+              Paragraph(
+                'Borscht requires a backend server (the Smetana project). You may either self-host '
+                'your own instance or use the public demo instance at borscht.app. All data — '
+                'recipes, meal plans, shopping lists, and your account — is stored on the backend '
+                'you choose to connect to.',
+              ),
 
-            Paragraph(
-              'Borscht Cookbook will retain your personal information only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use your information to the extent necessary to comply with our legal obligations, resolve disputes, and enforce our policies.',
-            ),
+              Header('3. Self-Hosted Backend'),
+              Paragraph(
+                'If you run your own Smetana instance, your data is stored exclusively on your '
+                'server. The developer of the app has no access to it and receives no information '
+                'about your usage. No data protection obligations under this policy apply in that '
+                'case.',
+              ),
 
-            Paragraph(
-              'If you are a resident of the European Economic Area (EEA), you have certain data protection rights. If you wish to be informed what Personal Information we hold about you and if you want it to be removed from our systems, please contact us.',
-            ),
-            Paragraph('In certain circumstances, you have the following data protection rights:'),
-            SizedBox(height: 4),
-            Text(' ∙ The right to access, update or to delete the information we have on you.'),
-            Text(' ∙ The right of rectification.'),
-            Text(' ∙ The right to object.'),
-            Text(' ∙ The right of restriction.'),
-            Text(' ∙ The right to data portability'),
-            Text(' ∙ The right to withdraw consent'),
+              Header('4. Demo Instance (borscht.app)'),
+              Paragraph(
+                'The demo instance is provided for evaluation purposes only. The following data '
+                'is processed when you use it:',
+              ),
+              SizedBox(height: 4),
+              Text(' ∙ Account data: email address, username, hashed password'),
+              Text(' ∙ User content: recipes, meal plans, shopping lists you create'),
+              Text(' ∙ Server logs: IP address, timestamps, HTTP request metadata'),
+              SizedBox(height: 6),
+              Paragraph(
+                'Legal basis: Account data and user content are processed on the basis of '
+                'Art. 6(1)(b) GDPR (performance of a contract). Server logs are processed on '
+                'the basis of Art. 6(1)(f) GDPR (legitimate interests in operating and securing '
+                'the service).',
+              ),
+              Paragraph(
+                'Retention: Account data and user content are retained until you delete your '
+                'account. Server logs are retained for a maximum of 30 days.',
+              ),
+              Paragraph(
+                'No data is sold, shared with third parties, or used for advertising. No '
+                'telemetry or analytics are collected.',
+              ),
+              Paragraph(
+                'The demo instance is hosted by HostUp AB (Sweden, EU/EEA), which acts as a '
+                'data processor under a data processing agreement, acting on instructions from '
+                'the developer. No data is transferred outside the EU/EEA.',
+              ),
 
-            Header('Log Files'),
-            Paragraph(
-              'Borscht Cookbook follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this and a part of hosting services\' analytics. The information collected by log files include internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable. The purpose of the information is for analyzing trends, administering the site, tracking users\' movement on the website, and gathering demographic information.',
-            ),
+              Header('5. Recipe Import'),
+              Paragraph(
+                'The app allows you to import recipes by providing a URL. These requests are '
+                'processed server-side by the Smetana backend, which fetches and parses the '
+                'remote page on your behalf. The developer does not store or analyse the content '
+                'of third-party websites beyond what is necessary to extract the recipe data. '
+                'The privacy policies of those third-party sites apply to the content they serve.',
+              ),
 
-            Header('Privacy Policies'),
-            Paragraph(
-              'You may consult this list to find the Privacy Policy for each of the advertising partners of Borscht Cookbook.',
-            ),
-            Paragraph(
-              'Third-party ad servers or ad networks uses technologies like cookies, JavaScript, or Web Beacons that are used in their respective advertisements and links that appear on Borscht Cookbook, which are sent directly to users\' browser. They automatically receive your IP address when this occurs. These technologies are used to measure the effectiveness of their advertising campaigns and/or to personalize the advertising content that you see on websites that you visit.',
-            ),
-            Paragraph(
-              'Note that Borscht Cookbook has no access to or control over these cookies that are used by third-party advertisers.',
-            ),
+              Header('6. No Analytics or Tracking'),
+              Paragraph(
+                'Borscht contains no analytics SDKs, crash reporters, ad networks, or tracking '
+                'libraries. The developer collects no usage data under any circumstances.',
+              ),
 
-            Header('Third Party Privacy Policies'),
-            Paragraph(
-              'Borscht Cookbook\'s Privacy Policy does not apply to other advertisers or websites. Thus, we are advising you to consult the respective Privacy Policies of these third-party ad servers for more detailed information. It may include their practices and instructions about how to opt-out of certain options.',
-            ),
-            Paragraph(
-              'You can choose to disable cookies through your individual browser options. To know more detailed information about cookie management with specific web browsers, it can be found at the browsers\' respective websites.',
-            ),
+              Header('7. Local Storage and Offline Cache'),
+              Paragraph(
+                'The app stores the following data locally on your device:',
+              ),
+              SizedBox(height: 4),
+              Text(' ∙ Authentication tokens (access token and refresh token) — encrypted secure storage'),
+              Text(' ∙ The backend server URL you have configured — encrypted secure storage'),
+              Text(' ∙ Your recipes, collections, meal plans, and shopping lists — local cache'),
+              SizedBox(height: 6),
+              Paragraph(
+                'Authentication credentials are stored in encrypted secure storage '
+                '(flutter_secure_storage) to maintain your session without requiring you to log '
+                'in on every use.',
+              ),
+              Paragraph(
+                'Your content (recipes, collections, meal plans, shopping lists) is cached '
+                'locally to allow the app to function while offline and to improve performance. '
+                'This cache reflects data already stored on the backend you are connected to and '
+                'is kept in sync when a connection is available. It is not shared with any third '
+                'party and is cleared when you log out or delete the app.',
+              ),
+              Paragraph(
+                'All local storage described above is strictly necessary for the service you '
+                'have explicitly requested and is processed on the basis of §25(2) No. 2 TTDSG '
+                'and Art. 6(1)(b) GDPR (performance of a contract).',
+              ),
 
-            Header('Children\'s Information'),
-            Paragraph(
-              'Another part of our priority is adding protection for children while using the internet. We encourage parents and guardians to observe, participate in, and/or monitor and guide their online activity.',
-            ),
-            Paragraph(
-              'Borscht Cookbook does not knowingly collect any Personal Identifiable Information from children under the age of 13. If you think that your child provided this kind of information on our website, we strongly encourage you to contact us immediately and we will do our best efforts to promptly remove such information from our records.',
-            ),
+              Header('8. Data Transfers'),
+              Paragraph(
+                'The demo instance is operated within the European Union. No personal data is '
+                'transferred to third countries outside the EU/EEA.',
+              ),
 
-            Header('Online Privacy Policy Only'),
-            Paragraph(
-              'Our Privacy Policy applies only to our online activities and is valid for visitors to our website with regards to the information that they shared and/or collect in Borscht Cookbook. This policy is not applicable to any information collected offline or via channels other than this website.',
-            ),
+              Header('9. Your Rights Under the GDPR'),
+              Paragraph(
+                'If you use the demo instance at borscht.app, you have the following rights '
+                'regarding your personal data:',
+              ),
+              SizedBox(height: 4),
+              Text(' ∙ Art. 15 — Right of access: obtain confirmation of what data is held'),
+              Text(' ∙ Art. 16 — Right to rectification: have inaccurate data corrected'),
+              Text(' ∙ Art. 17 — Right to erasure: request deletion of your data'),
+              Text(' ∙ Art. 18 — Right to restriction: limit how your data is processed'),
+              Text(' ∙ Art. 20 — Right to data portability: receive your data in a portable format'),
+              Text(' ∙ Art. 21 — Right to object: object to processing based on legitimate interests'),
+              SizedBox(height: 6),
+              Paragraph(
+                'To exercise any of these rights, contact ${AppConstants.contactEmail}. Requests will be '
+                'handled within one month as required by Art. 12 GDPR.',
+              ),
 
-            Header('Consent'),
-            Paragraph(
-              'By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.',
-            ),
-          ],
+              Header('10. Right to Lodge a Complaint'),
+              Paragraph(
+                'You have the right to lodge a complaint with a supervisory authority at any '
+                'time (Art. 77 GDPR). The competent supervisory authority for the data controller '
+                'in Lower Saxony is:',
+              ),
+              SizedBox(height: 4),
+              Text('Die Landesbeauftragte für den Datenschutz Niedersachsen (LfD Niedersachsen)'),
+              Text('Prinzenstraße 5, 30159 Hannover'),
+              Text('www.lfd.niedersachsen.de'),
+              SizedBox(height: 4),
+              Paragraph(
+                'You may also contact the supervisory authority of the EU member state where you '
+                'reside or work, or where the alleged infringement took place.',
+              ),
+
+              Header('11. No Automated Decision-Making'),
+              Paragraph(
+                'No automated decision-making or profiling within the meaning of Art. 22 GDPR '
+                'takes place.',
+              ),
+
+              Header('12. Open Source'),
+              Paragraph(
+                'Borscht is free and open-source software licensed under the GNU General Public '
+                'License v3. The full source code is available at ${AppConstants.repositoryUrl}, and you '
+                'are welcome to inspect it to verify the claims in this policy.',
+              ),
+
+              Header('13. Changes to This Policy'),
+              Paragraph(
+                'This policy may be updated over time. The current version is always available '
+                'within the app and in the source repository.',
+              ),
+
+              Header('14. Contact'),
+              Paragraph(
+                'For questions about this Privacy Policy or to exercise your rights, contact '
+                '${AppConstants.contactEmail} or open an issue at ${AppConstants.repositoryUrl}.',
+              ),
+
+              Header('15. Governing Law'),
+              Paragraph(
+                'This Privacy Policy is governed by the laws of the Federal Republic of Germany '
+                'and the applicable regulations of the European Union, in particular the General '
+                'Data Protection Regulation (GDPR / DSGVO).',
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../shared/constants.dart';
 import '../../shared/views/article_content.dart';
 
 class TermsOfUseScreen extends StatelessWidget {
@@ -8,69 +9,164 @@ class TermsOfUseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: ArticleContent(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Header('1. Terms'),
-            const Paragraph(
-              'By accessing this Website, accessible from https://borscht.app, you are agreeing to be bound by these Website Terms and Conditions of Use and agree that you are responsible for the agreement with any applicable local laws. If you disagree with any of these terms, you are prohibited from accessing this site. The materials contained in this Website are protected by copyright and trade mark law.',
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Terms of Use'),
+        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed('profile')),
+      ),
+      body: SingleChildScrollView(
+        child: ArticleContent(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Legal Notice — required by §5 DDG (Digitale-Dienste-Gesetz)
+              const Header('Legal Notice (Impressum)'),
+              const Paragraph('Information pursuant to §5 DDG:'),
+              const SizedBox(height: 4),
+              const Text(AppConstants.contactName),
+              const Text(AppConstants.contactAddress),
+              const Text(AppConstants.contactCity),
+              const Text(AppConstants.contactEmail),
+              const SizedBox(height: 8),
 
-            const Header('2. Use License'),
-            const Paragraph(
-              'Permission is granted to temporarily download one copy of the materials on Borscht Cookbook\'s Website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:',
-            ),
-            const SizedBox(height: 4),
-            const Text(' ∙ modify or copy the materials;'),
-            const Text(' ∙ use the materials for any commercial purpose or for any public display;'),
-            const Text(' ∙ attempt to reverse engineer any software contained on Borscht Cookbook\'s Website;'),
-            const Text(' ∙ remove any copyright or other proprietary notations from the materials; or'),
-            const Text(
-              ' ∙ transferring the materials to another person or "mirror" the materials on any other server.',
-            ),
-            const SizedBox(height: 2),
-            const Text(
-              'This will let Borscht Cookbook to terminate upon violations of any of these restrictions. Upon termination, your viewing right will also be terminated and you should destroy any downloaded materials in your possession whether it is printed or electronic format.',
-            ),
+              const Paragraph(
+                'By using the Borscht app, you agree to these Terms of Use. Borscht is developed '
+                'and maintained by an individual developer, not a company. The app is free and '
+                'open-source software released under the GNU General Public License v3.',
+              ),
 
-            const Header('3. Disclaimer'),
-            const Paragraph(
-              'All the materials on Borscht Cookbook’s Website are provided "as is". Borscht Cookbook makes no warranties, may it be expressed or implied, therefore negates all other warranties. Furthermore, Borscht Cookbook does not make any representations concerning the accuracy or reliability of the use of the materials on its Website or otherwise relating to such materials or any sites linked to this Website.',
-            ),
+              const Header('1. Scope of Service'),
+              const Paragraph(
+                'Borscht is a recipe management application that requires a backend server '
+                '(Smetana) to function. Users may self-host the backend or use the public demo '
+                'instance at borscht.app. The app allows managing recipes, meal plans, and '
+                'shopping lists, and includes a recipe import feature for fetching content from '
+                'third-party URLs.',
+              ),
 
-            const Header('4. Limitations'),
-            const Paragraph(
-              'Borscht Cookbook or its suppliers will not be hold accountable for any damages that will arise with the use or inability to use the materials on Borscht Cookbook’s Website, even if Borscht Cookbook or an authorize representative of this Website has been notified, orally or written, of the possibility of such damage. Some jurisdiction does not allow limitations on implied warranties or limitations of liability for incidental damages, these limitations may not apply to you.',
-            ),
+              const Header('2. No Warranty'),
+              const Paragraph(
+                'Borscht is provided "as is", without warranty of any kind, express or implied. '
+                'The developer makes no representations or guarantees regarding the accuracy, '
+                'reliability, availability, or fitness of the app for any particular purpose. '
+                'This disclaimer applies to the maximum extent permitted by applicable law.',
+              ),
 
-            const Header('5. Revisions and Errata'),
-            const Paragraph(
-              'The materials appearing on Borscht Cookbook’s Website may include technical, typographical, or photographic errors. Borscht Cookbook will not promise that any of the materials in this Website are accurate, complete, or current. Borscht Cookbook may change the materials contained on its Website at any time without notice. Borscht Cookbook does not make any commitment to update the materials.',
-            ),
+              const Header('3. Limitation of Liability'),
+              const Paragraph(
+                'To the fullest extent permitted by applicable law, the developer shall not be '
+                'liable for any direct, indirect, incidental, consequential, or special damages '
+                'arising out of or in connection with your use of the app or inability to use it, '
+                'including but not limited to loss of data, loss of profits, or business '
+                'interruption.',
+              ),
+              const Paragraph(
+                'Nothing in these terms excludes or limits liability for death or personal injury '
+                'caused by negligence, for intentional misconduct (Vorsatz), for gross negligence '
+                '(grobe Fahrlässigkeit), for fraud, or for any other liability that cannot be '
+                'excluded under applicable German law.',
+              ),
 
-            const Header('6. Links'),
-            const Paragraph(
-              'Borscht Cookbook has not reviewed all of the sites linked to its Website and is not responsible for the contents of any such linked site. The presence of any link does not imply endorsement by Borscht Cookbook of the site. The use of any linked website is at the user’s own risk.',
-            ),
+              const Header('4. Demo Instance (borscht.app)'),
+              const Paragraph(
+                'A public demo instance of the Borscht backend is available at borscht.app. It is '
+                'provided solely for evaluation and demonstration purposes, free of charge, with '
+                'no service level agreement. The developer makes no guarantees regarding uptime, '
+                'data retention, or continued availability.',
+              ),
+              const Paragraph(
+                'The demo instance may be modified, restricted, or taken offline at any time '
+                'without notice. The developer accepts no responsibility for loss of data stored '
+                'on the demo instance. You are strongly encouraged to self-host your own backend '
+                'for any serious or long-term use.',
+              ),
 
-            const Header('7. Site Terms of Use Modifications'),
-            const Paragraph(
-              'Borscht Cookbook may revise these Terms of Use for its Website at any time without prior notice. By using this Website, you are agreeing to be bound by the current version of these Terms and Conditions of Use.',
-            ),
+              const Header('5. Third-Party Content & Copyright'),
+              const Paragraph(
+                'Borscht includes a recipe import feature that fetches and parses content from '
+                'URLs that you provide. The developer does not endorse, curate, or control any '
+                'content you choose to import.',
+              ),
+              const Paragraph(
+                'Recipe content fetched from third-party websites may be protected by copyright '
+                'or subject to the terms of service of the originating website. You are solely '
+                'responsible for ensuring that your use of any imported content complies with '
+                'applicable intellectual property laws and the terms of the source website. '
+                'The developer accepts no liability for any copyright infringement or terms of '
+                'service violations arising from your use of the import feature.',
+              ),
+              const Paragraph(
+                'Copyright holders who believe that content stored on the demo instance '
+                '(borscht.app) infringes their rights may submit a takedown request by email to '
+                '${AppConstants.contactEmail}.app. Please include: a description of the copyrighted work, '
+                'a link to the infringing content, your contact information, and a statement that '
+                'you are the rights holder or authorised to act on their behalf. Valid requests '
+                'will be acted upon promptly.',
+              ),
 
-            const Header('8. Your Privacy'),
-            InkWell(
-              child: const Paragraph('Please read our Privacy Policy.'),
-              onTap: () => GoRouter.of(context).goNamed('privacy'),
-            ),
+              const Header('6. Self-Hosted Backend'),
+              const Paragraph(
+                'If you choose to self-host the Smetana backend, you are solely responsible for '
+                'the security, maintenance, availability, and legal compliance of your instance, '
+                'including GDPR obligations for any personal data stored on it.',
+              ),
 
-            const Header('9. Governing Law'),
-            const Paragraph(
-              'Any claim related to Borscht Cookbook\'s Website shall be governed by the laws of de without regards to its conflict of law provisions.',
-            ),
-          ],
+              const Header('7. External Links'),
+              const Paragraph(
+                'The app may display or interact with content from third-party websites. The '
+                'developer is not responsible for the content, availability, privacy practices, '
+                'or terms of those sites. Use of any external website is at your own risk.',
+              ),
+
+              const Header('8. Modifications'),
+              const Paragraph(
+                'These Terms of Use may be updated from time to time. Material changes will be '
+                'announced within the app or via the source repository at ${AppConstants.repositoryUrl} '
+                'with reasonable advance notice before they take effect. The current version is always available within the app and in the source '
+                'repository. If you do not accept updated terms, you may discontinue use of the app.',
+              ),
+
+              const Header('9. Privacy'),
+              Builder(
+                builder: (context) => InkWell(
+                  child: const Paragraph('Please read our Privacy Policy.'),
+                  onTap: () => GoRouter.of(context).goNamed('privacy'),
+                ),
+              ),
+
+              const Header('10. Open Source License'),
+              const Paragraph(
+                'Borscht is licensed under the GNU General Public License v3. The full source '
+                'code is available at ${AppConstants.repositoryUrl}. You are free to use, modify, and '
+                'distribute it in accordance with the terms of that license.',
+              ),
+
+              const Header('11. EU Dispute Resolution'),
+              const Paragraph(
+                'The European Commission provides an online dispute resolution (ODR) platform: '
+                'https://ec.europa.eu/consumers/odr',
+              ),
+              const Paragraph(
+                'The developer is not obligated to participate in dispute resolution proceedings '
+                'before a consumer arbitration board and does not voluntarily do so.',
+              ),
+
+              const Header('12. Contact'),
+              const Paragraph(
+                'For questions, bug reports, or legal concerns, contact '
+                '${AppConstants.contactEmail} or open an issue at ${AppConstants.repositoryUrl}.',
+              ),
+
+              const Header('13. Governing Law & Jurisdiction'),
+              const Paragraph(
+                'These Terms of Use are governed by and construed in accordance with the laws of '
+                'the Federal Republic of Germany. For users who are consumers within the EU, '
+                'mandatory consumer protection provisions of the country of residence remain '
+                'unaffected. Place of jurisdiction for disputes with non-consumers is the '
+                'developer\'s place of residence.',
+              ),
+            ],
+          ),
         ),
       ),
     );
