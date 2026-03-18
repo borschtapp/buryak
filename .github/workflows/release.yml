@@ -32,14 +32,18 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
       - name: Build Web
-        run: flutter build web --release
+        run: flutter build web --release --build-name=${{ steps.version.outputs.VERSION }} --build-number=${{ github.run_number }}
 
       - name: Archive Web build
         run: cd build/web && zip -r web-release.zip .
 
       - name: Build Android APK
-        run: flutter build apk --release
+        run: flutter build apk --release --build-name=${{ steps.version.outputs.VERSION }} --build-number=${{ github.run_number }}
 
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2

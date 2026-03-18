@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'view_profile_details.dart';
+import '../../shared/providers/update.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/route_names.dart';
 
@@ -15,6 +18,8 @@ class ProfileScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(authProvider);
     final isDeleting = useState(false);
+    final version = useMemoized(() => PackageInfo.fromPlatform());
+    final updateState = ref.watch(availableUpdateProvider);
 
     if (userState == null) {
       return const Center(child: Text('User not found. Please log in again.'));
@@ -30,6 +35,7 @@ class ProfileScreen extends HookConsumerWidget {
       child: Column(
         children: [
           ProfileDetails(name: name, email: email, image: image),
+          const SizedBox(height: 16),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.edit_document),
@@ -57,11 +63,11 @@ class ProfileScreen extends HookConsumerWidget {
           ),
           const Divider(),
           ListTile(
-            leading: isDeleting.value 
+            leading: isDeleting.value
               ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
               : Icon(Icons.delete_forever, color: errorColor),
             title: Text(
-              isDeleting.value ? 'Deleting Account...' : 'Delete Account', 
+              isDeleting.value ? 'Deleting Account...' : 'Delete Account',
               style: TextStyle(color: errorColor),
             ),
             onTap: isDeleting.value ? null : () async {
@@ -102,6 +108,36 @@ class ProfileScreen extends HookConsumerWidget {
                   }
                 }
               }
+            },
+          ),
+          if (updateState.asData?.value != null)
+            MaterialBanner(
+              content: Text('Version ${updateState.asData!.value} is available'),
+              leading: const Icon(Icons.system_update),
+              actions: [
+                TextButton(
+                  onPressed: () => launchUrl(
+                    Uri.parse('https://github.com/borschtapp/buryak/releases/latest'),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  child: const Text('Update'),
+                ),
+              ],
+            ),
+          FutureBuilder(
+            future: version,
+            builder: (context, snapshot) {
+              final v = snapshot.data;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  v != null ? 'Version ${v.version}' : '',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              );
             },
           ),
         ],
