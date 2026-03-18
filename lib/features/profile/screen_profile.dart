@@ -18,7 +18,7 @@ class ProfileScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(authProvider);
     final isDeleting = useState(false);
-    final version = useMemoized(() => PackageInfo.fromPlatform());
+    final version = useMemoized(PackageInfo.fromPlatform);
     final updateState = ref.watch(availableUpdateProvider);
 
     if (userState == null) {
