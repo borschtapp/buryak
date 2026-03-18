@@ -9,7 +9,7 @@ class Nutrition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isNutritionAvailable(nutrition)) {
+    if (nutrition?.hasData != true) {
       return const SizedBox.shrink();
     }
 
@@ -132,19 +132,6 @@ class Nutrition extends StatelessWidget {
     }
 
     return items;
-  }
-
-  static bool _isNutritionAvailable(RecipeNutrition? nutrition) {
-    if (nutrition == null) return false;
-
-    return nutrition.calories != null ||
-        nutrition.protein != null ||
-        nutrition.fat != null ||
-        nutrition.carbs != null ||
-        nutrition.fatSaturated != null ||
-        nutrition.carbsFiber != null ||
-        nutrition.carbsSugar != null ||
-        nutrition.sodium != null;
   }
 }
 

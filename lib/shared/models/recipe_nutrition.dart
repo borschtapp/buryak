@@ -55,6 +55,16 @@ class RecipeNutrition {
     this.zinc,
   });
 
+  bool get hasData =>
+      calories != null ||
+      protein != null ||
+      fat != null ||
+      carbs != null ||
+      fatSaturated != null ||
+      carbsFiber != null ||
+      carbsSugar != null ||
+      sodium != null;
+
   factory RecipeNutrition.fromJson(Map<String, dynamic> json) => _$RecipeNutritionFromJson(json);
   Map<String, dynamic> toJson() => _$RecipeNutritionToJson(this);
 
