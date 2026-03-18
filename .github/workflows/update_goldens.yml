@@ -1,0 +1,41 @@
+name: Update Goldens
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to update goldens on'
+        required: false
+        default: 'main'
+
+jobs:
+  update-goldens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: flutter test --update-goldens
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: chore/update-goldens
+          commit-message: 'test: update golden files [skip ci]'
+          title: 'test: update golden files'
+          body: |
+            Automated golden file update generated on `ubuntu-latest`.
+
+            Triggered manually via the **Update Goldens** workflow.
+          labels: test
+          delete-branch: true
