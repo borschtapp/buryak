@@ -90,7 +90,7 @@ void main() {
 
     test('create returns the created shopping list', () async {
       final listJson = {'id': '2', 'name': 'New List', 'is_default': false};
-      final responseBody = jsonEncode({'data': listJson});
+      final responseBody = jsonEncode(listJson);
 
       when(() => mockClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')))
           .thenAnswer((_) async => http.Response(responseBody, 201));

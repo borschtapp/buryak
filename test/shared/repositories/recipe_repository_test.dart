@@ -74,7 +74,7 @@ void main() {
 
     test('findOne returns a single recipe', () async {
       final recipeJson = fakeRecipeJson(id: '123');
-      final responseBody = jsonEncode({'data': recipeJson});
+      final responseBody = jsonEncode(recipeJson);
 
       when(() => mockClient.get(any(), headers: any(named: 'headers')))
           .thenAnswer((_) async => http.Response(responseBody, 200));
@@ -87,7 +87,7 @@ void main() {
 
     test('create returns the created recipe', () async {
       final recipeJson = fakeRecipeJson(id: 'new-id');
-      final responseBody = jsonEncode({'data': recipeJson});
+      final responseBody = jsonEncode(recipeJson);
 
       when(() => mockClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')))
           .thenAnswer((_) async => http.Response(responseBody, 201));
@@ -99,7 +99,7 @@ void main() {
 
     test('import returns the imported recipe', () async {
       final recipeJson = fakeRecipeJson(id: 'imported-id');
-      final responseBody = jsonEncode({'data': recipeJson});
+      final responseBody = jsonEncode(recipeJson);
 
       when(() => mockClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')))
           .thenAnswer((_) async => http.Response(responseBody, 201));

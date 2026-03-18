@@ -76,6 +76,7 @@ class _RouteConfig {
   final bool contentScrollable;
   final bool extendBodyBehindAppBar;
   const _RouteConfig({
+    // ignore: unused_element_parameter
     this.appBarTitle,
     this.hideBottomNav = false,
     this.contentScrollable = true,

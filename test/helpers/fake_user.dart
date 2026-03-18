@@ -24,7 +24,7 @@ const String kExpiredJwt =
 
 Map<String, dynamic> fakeUserJson({String? accessToken, String? refreshToken}) => {
   'id': 'user-1',
-  'householdId': 'household-1',
+  'household_id': 'household-1',
   'name': 'Test User',
   'email': 'test@example.com',
   'updated': '2024-01-01T00:00:00.000Z',
