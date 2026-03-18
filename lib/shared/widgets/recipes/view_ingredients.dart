@@ -22,6 +22,8 @@ class Ingredients extends StatelessWidget {
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: headerCount + ingredients.length,
       itemBuilder: (context, index) {
         if (hasEquipment) {

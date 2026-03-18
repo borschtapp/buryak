@@ -41,8 +41,10 @@ class RecipeIngredient {
   String get displayName => name ?? food?.name ?? rawText ?? description ?? 'Unknown ingredient';
 
   String get displayAmount {
+    final hasMax = maxAmount != null && maxAmount != 0;
     return [
-      if (amount != null && amount != 0) amount.toString(),
+      if (amount != null && amount != 0)
+        hasMax ? '$amount-$maxAmount' : amount.toString(),
       if (unit?.name.trim().isNotEmpty == true) unit!.name,
     ].where((s) => s.trim().isNotEmpty).join(' ');
   }

@@ -15,6 +15,8 @@ class Instructions extends StatelessWidget {
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: sortedItems.length,
       itemBuilder: (context, index) {
         final step = sortedItems[index];

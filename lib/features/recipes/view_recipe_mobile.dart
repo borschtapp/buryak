@@ -10,71 +10,152 @@ import '../../shared/widgets/recipe_placeholder.dart';
 import '../../shared/ui_constants.dart';
 import '../../shared/widgets/recipes/view_ingredients.dart';
 import '../../shared/widgets/recipes/view_instructions.dart';
+import '../../shared/widgets/recipes/view_nutrition.dart';
 
-class RecipeMobileView extends StatelessWidget {
+class RecipeMobileView extends StatefulWidget {
   final Recipe recipe;
 
   const RecipeMobileView({super.key, required this.recipe});
 
   @override
+  State<RecipeMobileView> createState() => _RecipeMobileViewState();
+}
+
+class _RecipeMobileViewState extends State<RecipeMobileView> with TickerProviderStateMixin {
+  late TabController _tabController;
+  late bool _hasNutrition;
+
+  @override
+  void initState() {
+    super.initState();
+    _hasNutrition = _isNutritionAvailable(widget.recipe.nutrition);
+    _tabController = TabController(length: _hasNutrition ? 3 : 2, vsync: this);
+    _tabController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void didUpdateWidget(RecipeMobileView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final hasNutrition = _isNutritionAvailable(widget.recipe.nutrition);
+    if (hasNutrition != _hasNutrition) {
+      final previousIndex = _tabController.index;
+      _tabController.dispose();
+      _hasNutrition = hasNutrition;
+      _tabController = TabController(
+        length: _hasNutrition ? 3 : 2,
+        vsync: this,
+        initialIndex: previousIndex.clamp(0, _hasNutrition ? 2 : 1),
+      );
+      _tabController.addListener(() => setState(() {}));
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _RecipeHero(recipe: recipe),
-                _RecipeTitle(recipe: recipe),
-              ],
-            ),
+    final tabs = _buildTabs(_hasNutrition);
+
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _RecipeHero(recipe: widget.recipe),
+              _RecipeTitle(recipe: widget.recipe),
+            ],
           ),
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _SliverAppBarDelegate(
-              TabBar(
-                isScrollable: false,
-                indicatorColor: context.colors.primary,
-                labelColor: context.colors.primary,
-                unselectedLabelColor: context.colors.onSurfaceVariant,
-                labelStyle: context.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
-                tabs: [
-                  Tab(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('${recipe.ingredients?.length ?? 0}', style: const TextStyle(fontSize: 16)),
-                        const Text('Ingredients', style: TextStyle(fontSize: 10)),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(recipe.totalTime.toFormattedDuration(), style: const TextStyle(fontSize: 16)),
-                        const Text('Instructions', style: TextStyle(fontSize: 10)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              context.colors.surface,
+        ),
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _SliverAppBarDelegate(
+            TabBar(
+              controller: _tabController,
+              isScrollable: false,
+              indicatorColor: context.colors.primary,
+              labelColor: context.colors.primary,
+              unselectedLabelColor: context.colors.onSurfaceVariant,
+              labelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+              tabs: tabs,
             ),
+            Theme.of(context).colorScheme.surface,
           ),
-          SliverFillRemaining(
-            child: TabBarView(
-              children: [
-                Ingredients(recipe.ingredients ?? [], equipment: recipe.equipment),
-                Instructions(recipe.instructions ?? []),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+        SliverToBoxAdapter(
+          child: _buildActiveView(),
+        ),
+      ],
     );
+  }
+
+  Widget _buildActiveView() {
+    switch (_tabController.index) {
+      case 0:
+        return Ingredients(widget.recipe.ingredients ?? [], equipment: widget.recipe.equipment);
+      case 1:
+        return Instructions(widget.recipe.instructions ?? []);
+      case 2:
+        return Nutrition(widget.recipe.nutrition);
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  List<Tab> _buildTabs(bool hasNutrition) {
+    final tabs = <Tab>[
+      Tab(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('${widget.recipe.ingredients?.length ?? 0}', style: const TextStyle(fontSize: 16)),
+            const Text('Ingredients', style: TextStyle(fontSize: 10)),
+          ],
+        ),
+      ),
+      Tab(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(widget.recipe.totalTime.toFormattedDuration(), style: const TextStyle(fontSize: 16)),
+            const Text('Instructions', style: TextStyle(fontSize: 10)),
+          ],
+        ),
+      ),
+    ];
+
+    if (hasNutrition) {
+      tabs.add(
+        const Tab(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.restaurant_menu, size: 16),
+              Text('Facts', style: TextStyle(fontSize: 10)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return tabs;
+  }
+
+  bool _isNutritionAvailable(dynamic nutrition) {
+    if (nutrition == null) return false;
+
+    return nutrition.calories != null ||
+        nutrition.protein != null ||
+        nutrition.fat != null ||
+        nutrition.carbs != null ||
+        nutrition.fatSaturated != null ||
+        nutrition.carbsFiber != null ||
+        nutrition.carbsSugar != null ||
+        nutrition.sodium != null;
   }
 }
 
@@ -202,5 +283,6 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => oldDelegate.backgroundColor != backgroundColor;
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) =>
+      oldDelegate.backgroundColor != backgroundColor || oldDelegate._tabBar != _tabBar;
 }
