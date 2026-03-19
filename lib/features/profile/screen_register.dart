@@ -24,12 +24,20 @@ class RegisterScreen extends HookConsumerWidget {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
 
-    final termsRecognizer = useMemoized(() => TapGestureRecognizer()..onTap = () => context.pushNamed(RouteNames.terms));
-    final privacyRecognizer = useMemoized(() => TapGestureRecognizer()..onTap = () => context.pushNamed(RouteNames.privacy));
-    useEffect(() => () {
-      termsRecognizer.dispose();
-      privacyRecognizer.dispose();
-    }, [termsRecognizer, privacyRecognizer]);
+    final termsRecognizer = useMemoized(
+      () => TapGestureRecognizer()..onTap = () => context.pushNamed(RouteNames.terms),
+    );
+    final privacyRecognizer = useMemoized(
+      () => TapGestureRecognizer()..onTap = () => context.pushNamed(RouteNames.privacy),
+    );
+
+    useEffect(
+      () => () {
+        termsRecognizer.dispose();
+        privacyRecognizer.dispose();
+      },
+      [termsRecognizer, privacyRecognizer],
+    );
 
     Future<void> register() async {
       if (isLoading.value) return;
@@ -43,7 +51,9 @@ class RegisterScreen extends HookConsumerWidget {
       if (formKey.currentState?.validate() ?? false) {
         isLoading.value = true;
         try {
-          await ref.read(authProvider.notifier).registerUser(
+          await ref
+              .read(authProvider.notifier)
+              .registerUser(
                 nameController.text,
                 emailController.text,
                 passwordController.text,
@@ -74,102 +84,108 @@ class RegisterScreen extends HookConsumerWidget {
     final textTheme = context.textTheme;
 
     return ScaffoldWithSimpleLayout(
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisAlignment: .center,
-          crossAxisAlignment: .stretch,
-          children: [
-            Text('Register an account', style: textTheme.titleLarge),
-            const SizedBox(height: 35),
-            TextFormField(
-              controller: nameController,
-              onFieldSubmitted: (_) => register(),
-              validator: (value) {
-                return Validator.validateName(value ?? '');
-              },
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                hintText: 'Chef',
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: emailController,
-              onFieldSubmitted: (_) => register(),
-              validator: (value) {
-                return Validator.validateEmail(value ?? '');
-              },
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'abc@example.com',
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              obscureText: !showPassword.value,
-              onFieldSubmitted: (_) => register(),
-              controller: passwordController,
-              validator: (value) {
-                return Validator.validatePassword(value ?? '');
-              },
-              decoration: InputDecoration(
-                labelText: 'Password',
-                hintText: '********',
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    showPassword.value = !showPassword.value;
-                  },
-                  child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
+      child: AutofillGroup(
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .stretch,
+            children: [
+              Text('Register an account', style: textTheme.titleLarge),
+              const SizedBox(height: 35),
+              TextFormField(
+                controller: nameController,
+                onFieldSubmitted: (_) => register(),
+                autofillHints: const [AutofillHints.name],
+                validator: (value) {
+                  return Validator.validateName(value ?? '');
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  hintText: 'Chef',
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Checkbox(
-                  value: termsAccepted.value,
-                  onChanged: (v) => termsAccepted.value = v ?? false,
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: emailController,
+                onFieldSubmitted: (_) => register(),
+                autofillHints: const [AutofillHints.email],
+                keyboardType: .emailAddress,
+                validator: (value) {
+                  return Validator.validateEmail(value ?? '');
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'abc@example.com',
                 ),
-                Expanded(
-                  child: RichText(
-                    text: TextSpan(
-                      style: textTheme.bodyMedium,
-                      children: [
-                        const TextSpan(text: 'I have read and accept the '),
-                        TextSpan(
-                          text: 'Terms of Use',
-                          style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
-                          recognizer: termsRecognizer,
-                        ),
-                        const TextSpan(text: ' and '),
-                        TextSpan(
-                          text: 'Privacy Policy',
-                          style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
-                          recognizer: privacyRecognizer,
-                        ),
-                        const TextSpan(text: '.'),
-                      ],
-                    ),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                obscureText: !showPassword.value,
+                onFieldSubmitted: (_) => register(),
+                controller: passwordController,
+                autofillHints: const [AutofillHints.newPassword],
+                validator: (value) {
+                  return Validator.validatePassword(value ?? '');
+                },
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  hintText: '********',
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      showPassword.value = !showPassword.value;
+                    },
+                    child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            ElevatedButton(
-              onPressed: isLoading.value ? null : register,
-              child: isLoading.value
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Register'),
-            ),
-            const SizedBox(height: 15),
-            TextButton(onPressed: () => context.goNamed(RouteNames.login), child: const Text('Login')),
-          ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Checkbox(
+                    value: termsAccepted.value,
+                    onChanged: (v) => termsAccepted.value = v ?? false,
+                  ),
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        style: textTheme.bodyMedium,
+                        children: [
+                          const TextSpan(text: 'I have read and accept the '),
+                          TextSpan(
+                            text: 'Terms of Use',
+                            style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
+                            recognizer: termsRecognizer,
+                          ),
+                          const TextSpan(text: ' and '),
+                          TextSpan(
+                            text: 'Privacy Policy',
+                            style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
+                            recognizer: privacyRecognizer,
+                          ),
+                          const TextSpan(text: '.'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              ElevatedButton(
+                onPressed: isLoading.value ? null : register,
+                child: isLoading.value
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Register'),
+              ),
+              const SizedBox(height: 15),
+              TextButton(onPressed: () => context.goNamed(RouteNames.login), child: const Text('Login')),
+            ],
+          ),
         ),
       ),
     );

@@ -93,4 +93,21 @@ void main() {
     expect(find.byType(SnackBar), findsOneWidget);
     expect(find.text('Invalid credentials'), findsOneWidget);
   });
+
+  testWidgets('has correct autofill hints', (tester) async {
+    await tester.pumpWidget(createLoginScreen());
+
+    expect(find.byType(AutofillGroup), findsOneWidget);
+
+    final emailField = tester.widget<TextField>(
+      find.descendant(of: find.widgetWithText(TextFormField, 'Email'), matching: find.byType(TextField)),
+    );
+    expect(emailField.autofillHints, contains(AutofillHints.email));
+    expect(emailField.keyboardType, TextInputType.emailAddress);
+
+    final passwordField = tester.widget<TextField>(
+      find.descendant(of: find.widgetWithText(TextFormField, 'Password'), matching: find.byType(TextField)),
+    );
+    expect(passwordField.autofillHints, contains(AutofillHints.password));
+  });
 }

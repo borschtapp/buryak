@@ -54,47 +54,51 @@ class ForgotPasswordScreen extends HookConsumerWidget {
     final textTheme = context.textTheme;
 
     return ScaffoldWithSimpleLayout(
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisAlignment: .center,
-          crossAxisAlignment: .stretch,
-          children: [
-            Text('Forgot Password', style: textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Text(
-              'Enter your email address to receive a password reset link.',
-              style: textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: emailController,
-              onFieldSubmitted: (_) => submit(),
-              validator: (value) {
-                return Validator.validateEmail(value ?? '');
-              },
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'abc@example.com',
+      child: AutofillGroup(
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .stretch,
+            children: [
+              Text('Forgot Password', style: textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(
+                'Enter your email address to receive a password reset link.',
+                style: textTheme.bodyMedium,
               ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: isLoading.value ? null : submit,
-              child: isLoading.value
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Send Reset Link'),
-            ),
-            const SizedBox(height: 15),
-            TextButton(
-              onPressed: () => context.goNamed(RouteNames.login),
-              child: const Text('Back to Login'),
-            ),
-          ],
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: emailController,
+                onFieldSubmitted: (_) => submit(),
+                autofillHints: const [AutofillHints.email],
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  return Validator.validateEmail(value ?? '');
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'abc@example.com',
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: isLoading.value ? null : submit,
+                child: isLoading.value
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Send Reset Link'),
+              ),
+              const SizedBox(height: 15),
+              TextButton(
+                onPressed: () => context.goNamed(RouteNames.login),
+                child: const Text('Back to Login'),
+              ),
+            ],
+          ),
         ),
       ),
     );

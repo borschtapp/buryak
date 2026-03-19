@@ -57,54 +57,57 @@ class ResetPasswordScreen extends HookConsumerWidget {
     final textTheme = context.textTheme;
 
     return ScaffoldWithSimpleLayout(
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisAlignment: .center,
-          crossAxisAlignment: .stretch,
-          children: [
-            Text('Reset Password', style: textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Text(
-              'Enter your new password below.',
-              style: textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            TextFormField(
-              obscureText: !showPassword.value,
-              onFieldSubmitted: (_) => submit(),
-              controller: passwordController,
-              validator: (value) {
-                return Validator.validatePassword(value ?? '');
-              },
-              decoration: InputDecoration(
-                labelText: 'New Password',
-                hintText: '********',
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    showPassword.value = !showPassword.value;
-                  },
-                  child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
+      child: AutofillGroup(
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .stretch,
+            children: [
+              Text('Reset Password', style: textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(
+                'Enter your new password below.',
+                style: textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 24),
+              TextFormField(
+                obscureText: !showPassword.value,
+                onFieldSubmitted: (_) => submit(),
+                controller: passwordController,
+                autofillHints: const [AutofillHints.newPassword],
+                validator: (value) {
+                  return Validator.validatePassword(value ?? '');
+                },
+                decoration: InputDecoration(
+                  labelText: 'New Password',
+                  hintText: '********',
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      showPassword.value = !showPassword.value;
+                    },
+                    child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: isLoading.value ? null : submit,
-              child: isLoading.value
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Reset Password'),
-            ),
-            const SizedBox(height: 15),
-            TextButton(
-              onPressed: () => context.goNamed(RouteNames.login),
-              child: const Text('Back to Login'),
-            ),
-          ],
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: isLoading.value ? null : submit,
+                child: isLoading.value
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Reset Password'),
+              ),
+              const SizedBox(height: 15),
+              TextButton(
+                onPressed: () => context.goNamed(RouteNames.login),
+                child: const Text('Back to Login'),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -56,98 +56,103 @@ class LoginScreen extends HookConsumerWidget {
     final serverUrl = ref.watch(serverUrlProvider);
 
     return ScaffoldWithSimpleLayout(
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisAlignment: .center,
-          crossAxisAlignment: .stretch,
-          children: [
-            Text('Welcome back', style: textTheme.titleSmall),
-            const SizedBox(height: 8),
-            Text('Login to your account', style: textTheme.titleLarge),
-            const SizedBox(height: 16),
-            InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (context) => const ServerUrlDialog(),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                child: Row(
-                  children: [
-                    Icon(Icons.link, size: 16, color: context.colors.primary),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        serverUrl,
-                        style: textTheme.bodySmall?.copyWith(color: context.colors.primary),
-                        overflow: TextOverflow.ellipsis,
+      child: AutofillGroup(
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .stretch,
+            children: [
+              Text('Welcome back', style: textTheme.titleSmall),
+              const SizedBox(height: 8),
+              Text('Login to your account', style: textTheme.titleLarge),
+              const SizedBox(height: 16),
+              InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  showDialog<void>(
+                    context: context,
+                    builder: (context) => const ServerUrlDialog(),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.link, size: 16, color: context.colors.primary),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          serverUrl,
+                          style: textTheme.bodySmall?.copyWith(color: context.colors.primary),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    Icon(Icons.edit, size: 16, color: context.colors.primary),
-                  ],
+                      Icon(Icons.edit, size: 16, color: context.colors.primary),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: emailController,
-              onFieldSubmitted: (_) => login(),
-              validator: (value) {
-                return Validator.validateEmail(value ?? '');
-              },
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'abc@example.com',
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              obscureText: !showPassword.value,
-              onFieldSubmitted: (_) => login(),
-              controller: passwordController,
-              validator: (value) {
-                return Validator.validatePassword(value ?? '');
-              },
-              decoration: InputDecoration(
-                labelText: 'Password',
-                hintText: '********',
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    showPassword.value = !showPassword.value;
-                  },
-                  child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: emailController,
+                onFieldSubmitted: (_) => login(),
+                autofillHints: const [AutofillHints.email],
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  return Validator.validateEmail(value ?? '');
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'abc@example.com',
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () => context.goNamed(RouteNames.forgotPassword),
-                child: const Text('Forgot password?'),
+              const SizedBox(height: 20),
+              TextFormField(
+                obscureText: !showPassword.value,
+                onFieldSubmitted: (_) => login(),
+                controller: passwordController,
+                autofillHints: const [AutofillHints.password],
+                validator: (value) {
+                  return Validator.validatePassword(value ?? '');
+                },
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  hintText: '********',
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      showPassword.value = !showPassword.value;
+                    },
+                    child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: isLoading.value ? null : login,
-              child: isLoading.value
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Login now'),
-            ),
-            const SizedBox(height: 15),
-            TextButton(
-              onPressed: () => context.goNamed(RouteNames.register),
-              child: const Text('Register'),
-            ),
-          ],
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => context.goNamed(RouteNames.forgotPassword),
+                  child: const Text('Forgot password?'),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: isLoading.value ? null : login,
+                child: isLoading.value
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Login now'),
+              ),
+              const SizedBox(height: 15),
+              TextButton(
+                onPressed: () => context.goNamed(RouteNames.register),
+                child: const Text('Register'),
+              ),
+            ],
+          ),
         ),
       ),
     );
