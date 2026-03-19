@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'shared/app.dart';
+import 'shared/providers/server_url.dart';
 import 'shared/providers/user.dart';
 
 void main() async {
@@ -17,6 +18,7 @@ void main() async {
   // (e.g. /saved, /recipe/:id) before GoRouter takes over.
   final container = ProviderContainer();
   try {
+    await container.read(serverUrlProvider.notifier).init();
     await container.read(authProvider.notifier).init();
   } catch (e) {
     debugPrint('Auth initialization failed: $e');

@@ -20,7 +20,7 @@ class UploadRepository extends Repository {
 
   Future<UploadedImage> uploadImage(File file) async {
     final token = ref.read(authProvider)?.accessToken;
-    final request = http.MultipartRequest('POST', Uri.parse('$baseUrl$_uploadPath'));
+    final request = http.MultipartRequest('POST', Uri.parse('$effectiveBaseUrl$_uploadPath'));
     if (token != null) {
       request.headers[HttpHeaders.authorizationHeader] = 'Bearer $token';
     }

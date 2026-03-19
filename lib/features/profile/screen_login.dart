@@ -8,7 +8,9 @@ import '../../shared/providers/user.dart';
 import '../../shared/validator.dart';
 import '../../shared/route_names.dart';
 import '../../shared/repositories/repository.dart';
+import '../../shared/providers/server_url.dart';
 import '../../shared/views/scaffold_login_page.dart';
+import 'dialog_server_url.dart';
 
 class LoginScreen extends HookConsumerWidget {
   const LoginScreen({super.key});
@@ -51,6 +53,7 @@ class LoginScreen extends HookConsumerWidget {
     }
 
     final textTheme = context.textTheme;
+    final serverUrl = ref.watch(serverUrlProvider);
 
     return ScaffoldWithSimpleLayout(
       child: Form(
@@ -62,7 +65,34 @@ class LoginScreen extends HookConsumerWidget {
             Text('Welcome back', style: textTheme.titleSmall),
             const SizedBox(height: 8),
             Text('Login to your account', style: textTheme.titleLarge),
-            const SizedBox(height: 35),
+            const SizedBox(height: 16),
+            InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (context) => const ServerUrlDialog(),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.link, size: 16, color: context.colors.primary),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        serverUrl,
+                        style: textTheme.bodySmall?.copyWith(color: context.colors.primary),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Icon(Icons.edit, size: 16, color: context.colors.primary),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
             TextFormField(
               controller: emailController,
               onFieldSubmitted: (_) => login(),

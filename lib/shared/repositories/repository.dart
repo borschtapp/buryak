@@ -5,10 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/server_url.dart';
 import '../providers/user.dart';
-
-/// Base URL config
-const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'https://smetana.borscht.app');
 
 /// Request Query Params
 typedef QueryParams = Map<String, dynamic>;
@@ -38,7 +36,7 @@ abstract class Repository {
     this.baseUrlOverride,
   });
 
-  String get effectiveBaseUrl => baseUrlOverride ?? baseUrl;
+  String get effectiveBaseUrl => baseUrlOverride ?? ref.read(serverUrlProvider);
 
   /// Builds the full URL for the given [path] and optional query params.
   String getUrlString({String path = '', Map<String, dynamic>? queryParams}) {
