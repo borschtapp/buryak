@@ -3,7 +3,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:buryak/shared/repositories/repository.dart';
-import 'package:buryak/shared/providers/storage.dart';
 import '../helpers/fake_user.dart';
 
 final dummyProvider = Provider<Ref>((ref) => ref);
@@ -22,7 +21,7 @@ void main() {
 
   setUp(() async {
     FlutterSecureStorage.setMockInitialValues({
-      LocalStorage.userKey: jsonEncode(fakeUserJson()),
+      'user': jsonEncode(fakeUserJson()),
     });
   });
 

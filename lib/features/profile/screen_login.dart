@@ -127,11 +127,7 @@ class LoginScreen extends HookConsumerWidget {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Password reset is not yet available.')),
-                  );
-                },
+                onPressed: () => context.goNamed(RouteNames.forgotPassword),
                 child: const Text('Forgot password?'),
               ),
             ),

@@ -1,19 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:buryak/shared/repositories/user_repository.dart';
-import 'package:buryak/shared/repositories/repository.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/user.dart';
-import 'storage.dart';
 import '../util/logger.dart';
+import 'package:buryak/shared/repositories/user_repository.dart';
+import 'package:buryak/shared/repositories/repository.dart';
 
 part 'user.g.dart';
 
 @Riverpod(keepAlive: true)
 class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
+  static const _storage = FlutterSecureStorage();
+  static const String _userKey = 'user';
+
   Timer? _refreshTimer;
   bool _isRefreshing = false;
   bool _observerAdded = false;
@@ -52,7 +55,7 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
   Future<void> init() async {
     _cancelTokenRefresh();
     try {
-      final json = await LocalStorage.getString(LocalStorage.userKey);
+      final json = await _storage.read(key: _userKey);
       if (json != null) {
         final user = User.fromJson(jsonDecode(json) as Map<String, dynamic>);
         state = user;
@@ -114,7 +117,7 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
   Future<void> logout() async {
     _cancelTokenRefresh();
     state = null;
-    await LocalStorage.remove(LocalStorage.userKey);
+    await _storage.delete(key: _userKey);
   }
 
   Future<void> deleteAccount() async {
@@ -128,7 +131,7 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
     state = user;
     // Strip access token before persisting to storage
     final userToStore = user.copyWith(accessToken: '');
-    await LocalStorage.setString(LocalStorage.userKey, jsonEncode(userToStore.toFullJson()));
+    await _storage.write(key: _userKey, value: jsonEncode(userToStore.toFullJson()));
     _scheduleTokenRefresh(user);
   }
 

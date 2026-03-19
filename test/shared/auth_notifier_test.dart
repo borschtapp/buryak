@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:buryak/shared/models/user.dart';
-import 'package:buryak/shared/providers/storage.dart';
 import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/repositories/repository.dart';
 import 'package:buryak/shared/repositories/user_repository.dart';
@@ -16,6 +15,7 @@ class MockUserRepository extends Mock implements UserRepository {}
 void main() {
   late MockUserRepository mockUserRepository;
   late ProviderContainer container;
+  const storage = FlutterSecureStorage();
 
   setUpAll(() {
     registerFallbackValue(User(
@@ -46,7 +46,7 @@ void main() {
     test('init loads user from storage', () async {
       final userJson = fakeUserJson();
       FlutterSecureStorage.setMockInitialValues({
-        LocalStorage.userKey: jsonEncode(userJson),
+        'user': jsonEncode(userJson),
       });
 
       await container.read(authProvider.notifier).init();
@@ -64,7 +64,7 @@ void main() {
       await container.read(authProvider.notifier).login('test@example.com', 'password');
 
       expect(container.read(authProvider), equals(user));
-      final storedData = await LocalStorage.getString(LocalStorage.userKey);
+      final storedData = await storage.read(key: 'user');
       expect(storedData, isNotNull);
       final storedUser = jsonDecode(storedData!);
       expect(storedUser['email'], equals(user.email));
@@ -76,14 +76,14 @@ void main() {
       // Seed state
       final user = User.fromJson(fakeUserJson());
       FlutterSecureStorage.setMockInitialValues({
-        LocalStorage.userKey: jsonEncode(user.toFullJson()),
+        'user': jsonEncode(user.toFullJson()),
       });
       await container.read(authProvider.notifier).init();
 
       await container.read(authProvider.notifier).logout();
 
       expect(container.read(authProvider), isNull);
-      final storedData = await LocalStorage.getString(LocalStorage.userKey);
+      final storedData = await storage.read(key: 'user');
       expect(storedData, isNull);
     });
 
@@ -95,7 +95,7 @@ void main() {
 
       // Seed state
       FlutterSecureStorage.setMockInitialValues({
-        LocalStorage.userKey: jsonEncode(oldUser.toFullJson()),
+        'user': jsonEncode(oldUser.toFullJson()),
       });
       await container.read(authProvider.notifier).init();
 
@@ -116,7 +116,7 @@ void main() {
 
       // Seed state
       FlutterSecureStorage.setMockInitialValues({
-        LocalStorage.userKey: jsonEncode(oldUser.toFullJson()),
+        'user': jsonEncode(oldUser.toFullJson()),
       });
       await container.read(authProvider.notifier).init();
 

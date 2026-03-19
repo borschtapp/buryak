@@ -15,10 +15,12 @@ import 'widgets/recipes/view_recipe_actions.dart';
 import '../features/legal/screen_terms_of_use.dart';
 import '../features/explore/screen_explore.dart';
 import '../features/planner/screen_planner.dart';
+import '../features/profile/screen_forgot_password.dart';
 import '../features/profile/screen_login.dart';
 import '../features/profile/screen_profile.dart';
 import '../features/recipes/screen_collection.dart';
 import '../features/profile/screen_register.dart';
+import '../features/profile/screen_reset_password.dart';
 import '../features/recipes/screen_saved.dart';
 import '../features/recipes/screen_recipes_single.dart';
 import '../features/shopping/screen_shopping.dart';
@@ -67,6 +69,8 @@ const Map<String, int> _tabIndex = {
   RouteNames.terms: 4,
   RouteNames.login: 4,
   RouteNames.register: 4,
+  RouteNames.forgotPassword: 4,
+  RouteNames.resetPassword: 4,
 };
 
 /// Per-route shell configuration for routes that deviate from defaults.
@@ -243,6 +247,22 @@ GoRouter router(Ref ref) {
         name: RouteNames.register,
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
+        redirect: _loginGuard(ref),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        name: RouteNames.forgotPassword,
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
+        redirect: _loginGuard(ref),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        name: RouteNames.resetPassword,
+        path: '/reset-password',
+        builder: (context, state) => ResetPasswordScreen(
+          token: state.uri.queryParameters['token'] ?? '',
+        ),
         redirect: _loginGuard(ref),
       ),
     ],
