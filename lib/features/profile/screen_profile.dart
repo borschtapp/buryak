@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import 'view_profile_details.dart';
-import '../../shared/providers/update.dart';
+import '../../shared/widgets/app_version.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/route_names.dart';
 
@@ -18,9 +15,6 @@ class ProfileScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(authProvider);
     final isDeleting = useState(false);
-    final version = useMemoized(PackageInfo.fromPlatform);
-    final updateState = ref.watch(availableUpdateProvider);
-
     if (userState == null) {
       return const Center(child: Text('User not found. Please log in again.'));
     }
@@ -110,36 +104,7 @@ class ProfileScreen extends HookConsumerWidget {
               }
             },
           ),
-          if (updateState.asData?.value != null)
-            MaterialBanner(
-              content: Text('Version ${updateState.asData!.value} is available'),
-              leading: const Icon(Icons.system_update),
-              actions: [
-                TextButton(
-                  onPressed: () => launchUrl(
-                    Uri.parse('https://github.com/borschtapp/buryak/releases/latest'),
-                    mode: LaunchMode.externalApplication,
-                  ),
-                  child: const Text('Update'),
-                ),
-              ],
-            ),
-          FutureBuilder(
-            future: version,
-            builder: (context, snapshot) {
-              final v = snapshot.data;
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  v != null ? 'Version ${v.version}' : '',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              );
-            },
-          ),
+          const AppVersionSection(),
         ],
       ),
     );

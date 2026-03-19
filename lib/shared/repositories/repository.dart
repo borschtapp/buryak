@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -163,12 +165,20 @@ class RequestHandler {
               if (authorized && accessToken != null) HttpHeaders.authorizationHeader: 'Bearer $accessToken',
             };
 
+        if (kDebugMode) {
+          dev.log('→ ${method.name.toUpperCase()} $urlString${body != null ? '\n  body: ${json.encode(body)}' : ''}', name: 'http');
+        }
+
         final http.Response response = await method.request(
           Uri.parse(urlString),
           headers: headers,
           body: body != null ? json.encode(body) : null,
           client: client,
         );
+
+        if (kDebugMode) {
+          dev.log('← ${response.statusCode} $urlString', name: 'http');
+        }
 
         final int statusType = response.statusCode ~/ 100 * 100;
         final responseData = response.bodyBytes.isNotEmpty ? utf8.decode(response.bodyBytes) : null;
