@@ -1,4 +1,5 @@
 class AppConstants {
+  static const String baseUrl = 'https://borscht.app';
   static const String serverUrl = 'https://smetana.borscht.app';
 
   static const String repositoryUrl = 'https://github.com/borschtapp/borscht';

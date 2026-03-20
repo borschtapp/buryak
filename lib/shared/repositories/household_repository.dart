@@ -5,6 +5,7 @@ import '../models/household.dart';
 import '../models/user.dart';
 import '../models/user_token.dart';
 import '../models/paginated_list.dart';
+import '../models/invite_info.dart';
 
 part 'household_repository.g.dart';
 
@@ -14,8 +15,14 @@ HouseholdRepository householdRepository(Ref ref) => HouseholdRepository(ref: ref
 class HouseholdRepository extends Repository {
   const HouseholdRepository({required super.ref}) : super(module: '/api/v1/households');
 
-  Future<Household> findOne(String id) async {
-    final response = await sendRequest(method: .get, path: '/$id');
+  Future<Household> findOne(String id, {List<String>? preload}) async {
+    final response = await sendRequest(
+      method: .get,
+      path: '/$id',
+      queryParams: {
+        'preload': preload?.join(','),
+      },
+    );
     return Household.fromJson(ensureMap(response));
   }
 
@@ -37,24 +44,25 @@ class HouseholdRepository extends Repository {
     return list.map((e) => UserToken.fromJson(ensureMap(e))).toList();
   }
 
-  Future<UserToken> createInvite(String id) async {
+  Future<UserToken> createInvite(String id, {String? email}) async {
     final response = await sendRequest(
       method: .post,
       path: '/$id/invites',
+      body: email != null ? {'email': email} : null,
     );
     return UserToken.fromJson(ensureMap(response));
   }
 
-  Future<void> revokeInvite(String id, String code) async {
-    await sendRequest(method: .delete, path: '/$id/invites/$code');
+  Future<void> revokeInvite(String code) async {
+    await sendRequest(method: .delete, path: '/invites/$code');
   }
 
-  Future<void> joinHousehold(String code) async {
-    await sendRequest(
+  Future<Map<String, dynamic>> joinHousehold(String code) async {
+    final response = await sendRequest(
       method: .post,
-      path: '/invites/join',
-      body: {'code': code},
+      path: '/invites/$code/join',
     );
+    return ensureMap(response);
   }
 
   Future<PaginatedList<User>> findMembers(String householdId) async {
@@ -70,5 +78,22 @@ class HouseholdRepository extends Repository {
 
   Future<void> removeMember(String id, String userId) async {
     await sendRequest(method: .delete, path: '/$id/members/$userId');
+  }
+
+  Future<Map<String, dynamic>> leaveHousehold() async {
+    final response = await sendRequest(
+      method: .post,
+      path: '/leave',
+    );
+    return ensureMap(response);
+  }
+
+  Future<InviteInfo> getInviteInfo(String code) async {
+    final response = await sendRequest(
+      method: .get,
+      path: '/invites/$code/info',
+      authOverride: false,
+    );
+    return InviteInfo.fromJson(ensureMap(response));
   }
 }

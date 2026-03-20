@@ -5,14 +5,26 @@ import 'view_profile_details.dart';
 import '../../shared/widgets/app_version.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/route_names.dart';
+import 'view_household_details.dart';
+import 'dialog_join_household.dart';
 
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class ProfileScreen extends HookConsumerWidget {
-  const ProfileScreen({super.key});
+  final String? joinCode;
+  const ProfileScreen({super.key, this.joinCode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    useEffect(() {
+      if (joinCode != null && joinCode!.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showJoinHouseholdDialog(context, initialCode: joinCode);
+        });
+      }
+      return null;
+    }, [joinCode]);
+
     final userState = ref.watch(authProvider);
     final isDeleting = useState(false);
     if (userState == null) {
@@ -29,6 +41,8 @@ class ProfileScreen extends HookConsumerWidget {
       child: Column(
         children: [
           ProfileDetails(name: name, email: email, image: image),
+          const SizedBox(height: 16),
+          const ViewHouseholdDetails(),
           const SizedBox(height: 16),
           const Divider(),
           ListTile(

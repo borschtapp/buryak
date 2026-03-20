@@ -177,7 +177,7 @@ GoRouter router(Ref ref) {
             redirect: _authGuard(ref),
             pageBuilder: (context, state) => NoTransitionPage<void>(
               key: state.pageKey,
-              child: const ProfileScreen(),
+              child: ProfileScreen(joinCode: state.uri.queryParameters['joinCode']),
             ),
           ),
           // ── Detail routes (rendered inside the shell) ────────────────────
@@ -239,14 +239,18 @@ GoRouter router(Ref ref) {
         parentNavigatorKey: _rootKey,
         name: RouteNames.login,
         path: '/login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) => LoginScreen(
+          inviteCode: state.uri.queryParameters['code'],
+        ),
         redirect: _loginGuard(ref),
       ),
       GoRoute(
         parentNavigatorKey: _rootKey,
         name: RouteNames.register,
         path: '/register',
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) => RegisterScreen(
+          inviteCode: state.uri.queryParameters['code'],
+        ),
         redirect: _loginGuard(ref),
       ),
       GoRoute(
@@ -264,6 +268,20 @@ GoRouter router(Ref ref) {
           token: state.uri.queryParameters['token'] ?? '',
         ),
         redirect: _loginGuard(ref),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        name: 'join',
+        path: '/join',
+        redirect: (context, state) {
+          final code = state.uri.queryParameters['code'];
+          if (code == null || code.isEmpty) return '/';
+          if (ref.read(authProvider).isLoggedIn) {
+            return '/profile?joinCode=$code';
+          } else {
+            return '/register?code=$code';
+          }
+        },
       ),
     ],
   );

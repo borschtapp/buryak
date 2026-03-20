@@ -13,9 +13,9 @@ class User {
   @JsonKey(name: 'image_url')
   final String? imageUrl;
   @JsonKey(name: 'access_token')
-  final String accessToken;
+  final String? accessToken;
   @JsonKey(name: 'refresh_token')
-  final String refreshToken;
+  final String? refreshToken;
 
   User({
     required this.id,
@@ -23,8 +23,8 @@ class User {
     required this.name,
     required this.email,
     this.imageUrl,
-    required this.accessToken,
-    required this.refreshToken,
+    this.accessToken,
+    this.refreshToken,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -43,10 +43,11 @@ class User {
     String? imageUrl,
     String? accessToken,
     String? refreshToken,
+    String? householdId,
   }) {
     return User(
       id: id,
-      householdId: householdId,
+      householdId: householdId ?? this.householdId,
       name: name ?? this.name,
       email: email ?? this.email,
       imageUrl: imageUrl ?? this.imageUrl,
@@ -56,8 +57,10 @@ class User {
   }
 
   bool isValidAccessToken() {
+    final token = accessToken;
+    if (token == null || token.isEmpty) return false;
     try {
-      final jwtData = JwtDecoder.decode(accessToken);
+      final jwtData = JwtDecoder.decode(token);
       return (jwtData['exp'] as int) * 1000 > DateTime.now().millisecondsSinceEpoch;
     } catch (_) {
       return false;

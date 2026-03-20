@@ -13,7 +13,8 @@ import '../../shared/views/scaffold_login_page.dart';
 import 'dialog_server_url.dart';
 
 class LoginScreen extends HookConsumerWidget {
-  const LoginScreen({super.key});
+  final String? inviteCode;
+  const LoginScreen({super.key, this.inviteCode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +33,11 @@ class LoginScreen extends HookConsumerWidget {
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            context.goNamed(RouteNames.home);
+            if (inviteCode != null && inviteCode!.isNotEmpty) {
+              context.goNamed(RouteNames.profile, queryParameters: {'joinCode': inviteCode});
+            } else {
+              context.goNamed(RouteNames.home);
+            }
           }
         } catch (e) {
           if (context.mounted) {
@@ -148,7 +153,10 @@ class LoginScreen extends HookConsumerWidget {
               ),
               const SizedBox(height: 15),
               TextButton(
-                onPressed: () => context.goNamed(RouteNames.register),
+                onPressed: () => context.goNamed(
+                  RouteNames.register,
+                  queryParameters: inviteCode != null ? {'code': inviteCode!} : const {},
+                ),
                 child: const Text('Register'),
               ),
             ],

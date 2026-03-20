@@ -61,7 +61,7 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
         state = user;
         // If we don't have an access token (which is expected after restart),
         // we need to refresh it.
-        if (user.accessToken.isEmpty) {
+        if (user.accessToken == null || user.accessToken!.isEmpty) {
           await refreshLogin(force: true);
         } else {
           _scheduleTokenRefresh(user);
@@ -102,8 +102,8 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
     }
   }
 
-  Future<User> registerUser(String name, String email, String password) async {
-    final user = await ref.read(userRepositoryProvider).register(name, email, password);
+  Future<User> registerUser(String name, String email, String password, {String? inviteCode}) async {
+    final user = await ref.read(userRepositoryProvider).register(name, email, password, inviteCode: inviteCode);
     await _persist(user);
     return user;
   }
@@ -112,6 +112,19 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
     final user = await ref.read(userRepositoryProvider).login(email, password);
     await _persist(user);
     return user;
+  }
+
+  Future<void> updateFromAuthResponse(Map<String, dynamic> data) async {
+    final current = state;
+    if (current != null) {
+      if (data['refresh_token'] == null || (data['refresh_token'] as String).isEmpty) {
+        data['refresh_token'] = current.refreshToken;
+      }
+    }
+
+    final user = User.fromJson(data);
+    logger.d('AuthNotifier: updated user householdId: ${user.householdId}');
+    await _persist(user);
   }
 
   Future<void> logout() async {
@@ -138,7 +151,7 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
   void _scheduleTokenRefresh(User user) {
     _cancelTokenRefresh();
     try {
-      final jwtData = JwtDecoder.decode(user.accessToken);
+      final jwtData = JwtDecoder.decode(user.accessToken!);
       final exp = (jwtData['exp'] as int) * 1000;
       final now = DateTime.now().millisecondsSinceEpoch;
 

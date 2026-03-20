@@ -3,6 +3,7 @@ import 'collection.dart';
 import 'feed.dart';
 import 'shopping_list.dart';
 import 'user.dart';
+import 'user_token.dart';
 
 part 'household.g.dart';
 
@@ -19,6 +20,7 @@ class Household {
   final List<Collection>? collections;
   @JsonKey(name: 'shopping_lists')
   final List<ShoppingList>? shoppingLists;
+  final List<UserToken>? invites;
 
   Household({
     required this.id,
@@ -28,8 +30,29 @@ class Household {
     this.feeds,
     this.collections,
     this.shoppingLists,
+    this.invites,
   });
 
   factory Household.fromJson(Map<String, dynamic> json) => _$HouseholdFromJson(json);
   Map<String, dynamic> toJson() => _$HouseholdToJson(this);
+
+  Household copyWith({
+    String? name,
+    List<User>? members,
+    List<Feed>? feeds,
+    List<Collection>? collections,
+    List<ShoppingList>? shoppingLists,
+    List<UserToken>? invites,
+  }) {
+    return Household(
+      id: id,
+      ownerId: ownerId,
+      name: name ?? this.name,
+      members: members ?? this.members,
+      feeds: feeds ?? this.feeds,
+      collections: collections ?? this.collections,
+      shoppingLists: shoppingLists ?? this.shoppingLists,
+      invites: invites ?? this.invites,
+    );
+  }
 }

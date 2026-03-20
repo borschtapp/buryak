@@ -12,7 +12,9 @@ import '../../shared/repositories/repository.dart';
 import '../../shared/views/scaffold_login_page.dart';
 
 class RegisterScreen extends HookConsumerWidget {
-  const RegisterScreen({super.key});
+  final String? inviteCode;
+
+  const RegisterScreen({super.key, this.inviteCode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,6 +59,7 @@ class RegisterScreen extends HookConsumerWidget {
                 nameController.text,
                 emailController.text,
                 passwordController.text,
+                inviteCode: inviteCode,
               );
 
           if (context.mounted) {
@@ -183,7 +186,13 @@ class RegisterScreen extends HookConsumerWidget {
                     : const Text('Register'),
               ),
               const SizedBox(height: 15),
-              TextButton(onPressed: () => context.goNamed(RouteNames.login), child: const Text('Login')),
+              TextButton(
+                onPressed: () => context.goNamed(
+                  RouteNames.login,
+                  queryParameters: {'code': inviteCode ?? ''},
+                ),
+                child: const Text('Login'),
+              ),
             ],
           ),
         ),

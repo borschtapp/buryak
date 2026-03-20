@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:buryak/shared/models/user.dart';
 import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/repositories/repository.dart';
+import 'package:buryak/shared/repositories/household_repository.dart';
 import 'package:buryak/shared/repositories/user_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +12,7 @@ import 'package:mocktail/mocktail.dart';
 import '../helpers/fake_user.dart';
 
 class MockUserRepository extends Mock implements UserRepository {}
+class MockHouseholdRepository extends Mock implements HouseholdRepository {}
 
 void main() {
   late MockUserRepository mockUserRepository;
@@ -33,6 +35,7 @@ void main() {
     container = ProviderContainer(
       overrides: [
         userRepositoryProvider.overrideWithValue(mockUserRepository),
+        householdRepositoryProvider.overrideWithValue(MockHouseholdRepository()),
       ],
     );
     FlutterSecureStorage.setMockInitialValues({});

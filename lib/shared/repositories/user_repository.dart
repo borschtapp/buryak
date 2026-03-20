@@ -26,7 +26,7 @@ class UserRepository extends Repository {
     return User.fromJson(ensureMap(response));
   }
 
-  Future<User> register(String name, String email, String password) async {
+  Future<User> register(String name, String email, String password, {String? inviteCode}) async {
     final response = await sendRequest(
       method: .post,
       path: '/auth/register',
@@ -35,22 +35,27 @@ class UserRepository extends Repository {
         'name': name,
         'email': email,
         'password': password,
+        'invite_code': ?inviteCode,
       },
     );
     return User.fromJson(ensureMap(response));
   }
 
   Future<User> refreshToken(User user) async {
+    final token = user.refreshToken;
+    if (token == null || token.isEmpty) throw StateError('No refresh token available');
+
     final response = await sendRequest(
       method: .post,
       path: '/auth/refresh',
       authOverride: false,
-      body: {'refresh_token': user.refreshToken},
+      body: {'refresh_token': token},
     );
     final data = ensureMap(response);
     return user.copyWith(
       accessToken: data['access_token']?.toString() ?? '',
       refreshToken: data['refresh_token']?.toString() ?? '',
+      householdId: data['household_id']?.toString(),
     );
   }
 
