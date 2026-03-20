@@ -283,6 +283,12 @@ GoRouter router(Ref ref) {
           }
         },
       ),
+      // Catch-all for undefined deep links
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: '/:route(.*)',
+        redirect: (context, state) => '/',
+      ),
     ],
   );
 }
