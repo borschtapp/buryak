@@ -29,6 +29,17 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/src/main/keystore.jks
+
+      - name: Create key.properties
+        run: |
+          cat > android/key.properties << EOF
+          storeFile=src/main/keystore.jks
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          EOF
+
       - name: Install dependencies
         run: flutter pub get
 
