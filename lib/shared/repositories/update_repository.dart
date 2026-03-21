@@ -6,10 +6,10 @@ import 'repository.dart';
 part 'update_repository.g.dart';
 
 @Riverpod(keepAlive: true)
-UpdateRepository updateRepository(Ref ref) => UpdateRepository(ref: ref);
+UpdateRepository updateRepository(Ref ref) => UpdateRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class UpdateRepository extends Repository {
-  const UpdateRepository({required super.ref})
+  const UpdateRepository({required super.ref, super.client})
     : super(
         module: '/repos/${AppConstants.releasesGithubRepo}/releases',
         // list endpoint, works with prereleases

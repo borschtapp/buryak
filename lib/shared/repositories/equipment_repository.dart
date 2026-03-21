@@ -7,10 +7,10 @@ import 'repository.dart';
 part 'equipment_repository.g.dart';
 
 @Riverpod(keepAlive: true)
-EquipmentRepository equipmentRepository(Ref ref) => EquipmentRepository(ref: ref);
+EquipmentRepository equipmentRepository(Ref ref) => EquipmentRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class EquipmentRepository extends Repository {
-  const EquipmentRepository({required super.ref}) : super(module: '/api/v1/equipment');
+  const EquipmentRepository({required super.ref, super.client}) : super(module: '/api/v1/equipment');
 
   Future<PaginatedList<Equipment>> search({
     String? q,

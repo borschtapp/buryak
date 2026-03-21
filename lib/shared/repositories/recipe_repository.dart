@@ -9,14 +9,16 @@ import 'repository.dart';
 
 part 'recipe_repository.g.dart';
 
+enum RecipePreload { images, author, publisher, collections, saved }
+
 @Riverpod(keepAlive: true)
-RecipeRepository recipeRepository(Ref ref) => RecipeRepository(ref: ref);
+RecipeRepository recipeRepository(Ref ref) => RecipeRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class RecipeRepository extends Repository {
   const RecipeRepository({required super.ref, super.client}) : super(module: '/api/v1/recipes');
 
   Future<PaginatedList<Recipe>> findAll({
-    String? preload,
+    List<RecipePreload>? preload,
     RecipeFilter? filter,
     int? limit,
     int? offset,
@@ -32,7 +34,7 @@ class RecipeRepository extends Repository {
         'equipment': ?f.equipmentParam,
         'cook_time_max': ?f.cookTimeMax,
         'total_time_max': ?f.totalTimeMax,
-        'preload': ?preload,
+        'preload': preload?.map((e) => e.name).join(','),
         'sort': f.sort,
         'order': f.order,
         'offset': ?offset,

@@ -19,7 +19,7 @@ class SavedRecipesFilter extends _$SavedRecipesFilter {
 
 @Riverpod(keepAlive: true)
 class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
-  static const _preload = 'images,collections,saved,publisher';
+  static const List<RecipePreload> _preload = [.images, .collections, .saved, .publisher];
 
   @override
   Future<List<Recipe>> build() async {
@@ -56,13 +56,15 @@ class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
 
 @Riverpod(keepAlive: true)
 class SavedCollections extends _$SavedCollections with PagedNotifierMixin<Collection> {
+  static const List<CollectionPreload> _preload = [.total_recipes, .last3_recipes];
+
   @override
   Future<List<Collection>> build() async {
     resetPagination();
     final result = await ref
         .read(collectionRepositoryProvider)
         .findAll(
-          preload: 'recipes:5,recipes.images,total_recipes',
+          preload: _preload,
           limit: pageSize,
           offset: 0,
         );
@@ -73,7 +75,7 @@ class SavedCollections extends _$SavedCollections with PagedNotifierMixin<Collec
     (offset, limit) => ref
         .read(collectionRepositoryProvider)
         .findAll(
-          preload: 'recipes:5,recipes.images,total_recipes',
+          preload: _preload,
           offset: offset,
           limit: limit,
         ),

@@ -1,30 +1,31 @@
 // ignore_for_file: scoped_providers_should_specify_dependencies
 
 import 'package:buryak/features/profile/screen_login.dart';
-import 'package:buryak/shared/repositories/user_repository.dart';
+import 'package:buryak/shared/models/user.dart';
+import 'package:buryak/shared/repositories/auth_repository.dart';
 import 'package:buryak/shared/repositories/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-import '../../helpers/fake_user.dart';
-import 'package:buryak/shared/models/user.dart';
 
-class MockUserRepository extends Mock implements UserRepository {}
+import '../../helpers/fake_user.dart';
+
+class MockAuthRepository extends Mock implements AuthRepository {}
 
 void main() {
-  late MockUserRepository mockUserRepository;
+  late MockAuthRepository mockAuthRepository;
 
   setUp(() {
-    mockUserRepository = MockUserRepository();
+    mockAuthRepository = MockAuthRepository();
     FlutterSecureStorage.setMockInitialValues({});
   });
 
   Widget createLoginScreen() {
     return ProviderScope(
       overrides: [
-        userRepositoryProvider.overrideWithValue(mockUserRepository),
+        authRepositoryProvider.overrideWithValue(mockAuthRepository),
       ],
       child: const MaterialApp(
         home: LoginScreen(),
@@ -68,7 +69,7 @@ void main() {
 
   testWidgets('successful login calls repository', (tester) async {
     final user = User.fromJson(fakeUserJson());
-    when(() => mockUserRepository.login(any(), any())).thenAnswer((_) async => user);
+    when(() => mockAuthRepository.login(any(), any())).thenAnswer((_) async => user);
 
     await tester.pumpWidget(createLoginScreen());
 
@@ -77,11 +78,11 @@ void main() {
     await tester.tap(find.text('Login now'));
     await tester.pump();
 
-    verify(() => mockUserRepository.login('test@example.com', 'password123')).called(1);
+    verify(() => mockAuthRepository.login('test@example.com', 'password123')).called(1);
   });
 
   testWidgets('failed login shows snackbar', (tester) async {
-    when(() => mockUserRepository.login(any(), any())).thenThrow(GeneralApiException(message: 'Invalid credentials'));
+    when(() => mockAuthRepository.login(any(), any())).thenThrow(GeneralApiException(message: 'Invalid credentials'));
 
     await tester.pumpWidget(createLoginScreen());
 

@@ -8,7 +8,7 @@ import 'repository.dart';
 part 'shopping_list_repository.g.dart';
 
 @Riverpod(keepAlive: true)
-ShoppingListRepository shoppingListRepository(Ref ref) => ShoppingListRepository(ref: ref);
+ShoppingListRepository shoppingListRepository(Ref ref) => ShoppingListRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class ShoppingListRepository extends Repository {
   const ShoppingListRepository({required super.ref, super.client}) : super(module: '/api/v1/shoppinglists');

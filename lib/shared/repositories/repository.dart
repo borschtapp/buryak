@@ -3,11 +3,26 @@ import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../providers/server_url.dart';
 import '../providers/user.dart';
+
+part 'repository.g.dart';
+
+@Riverpod(keepAlive: true)
+http.Client httpClient(Ref ref) {
+  final client = http.Client();
+  ref.onDispose(client.close);
+  return client;
+}
+
+/// Determines whether a failed request should be retried.
+/// [method] is the HTTP method, [statusCode] is null when no HTTP response was received.
+typedef RetryPolicy = bool Function(RequestMethod method, int? statusCode);
+
+bool _defaultRetryPolicy(RequestMethod method, int? statusCode) => method == RequestMethod.get && statusCode == null;
 
 /// Request Query Params
 typedef QueryParams = Map<String, dynamic>;
@@ -28,6 +43,7 @@ abstract class Repository {
   final bool isAuth;
   final http.Client? client;
   final String? baseUrlOverride;
+  final RetryPolicy? retryPolicy;
 
   const Repository({
     required this.ref,
@@ -35,6 +51,7 @@ abstract class Repository {
     this.isAuth = true,
     this.client,
     this.baseUrlOverride,
+    this.retryPolicy,
   });
 
   String get effectiveBaseUrl => baseUrlOverride ?? ref.read(serverUrlProvider);
@@ -46,7 +63,7 @@ abstract class Repository {
 
     final cleanParams = {
       for (final MapEntry(:key, :value) in queryParams.entries)
-        if (value != null && value.toString() != 'null') key: value.toString(),
+        if (value != null && value.toString().isNotEmpty && value.toString() != 'null') key: value.toString(),
     };
 
     if (cleanParams.isEmpty) return uri.toString();
@@ -88,6 +105,7 @@ abstract class Repository {
       body: body,
       headersCustom: headersCustom,
       client: client,
+      retryPolicy: retryPolicy,
     );
   }
 
@@ -107,7 +125,7 @@ abstract class Repository {
 Map<String, dynamic> ensureMapHelper(dynamic value) {
   if (value is Map<String, dynamic>) return value;
   if (value is Map) return value.cast<String, dynamic>();
-  return const {};
+  throw GeneralApiException(message: 'Expected a Map but got ${value.runtimeType}: $value');
 }
 
 enum RequestMethod { get, post, put, delete, patch }
@@ -116,24 +134,21 @@ const Duration _kRequestTimeout = Duration(seconds: 30);
 
 extension MethodManager on RequestMethod {
   Future<http.Response> request(Uri url, {Map<String, String>? headers, Object? body, http.Client? client}) async {
-    final effectiveClient = client ?? http.Client();
-    try {
-      switch (this) {
-        case .get:
-          return await effectiveClient.get(url, headers: headers).timeout(_kRequestTimeout);
-        case .post:
-          return await effectiveClient.post(url, headers: headers, body: body).timeout(_kRequestTimeout);
-        case .put:
-          return await effectiveClient.put(url, headers: headers, body: body).timeout(_kRequestTimeout);
-        case .delete:
-          return await effectiveClient.delete(url, headers: headers, body: body).timeout(_kRequestTimeout);
-        case .patch:
-          return await effectiveClient.patch(url, headers: headers, body: body).timeout(_kRequestTimeout);
-      }
-    } finally {
-      if (client == null) {
-        effectiveClient.close();
-      }
+    if (client == null) {
+      throw ArgumentError('A shared http.Client must be provided via httpClientProvider');
+    }
+
+    switch (this) {
+      case .get:
+        return await client.get(url, headers: headers).timeout(_kRequestTimeout);
+      case .post:
+        return await client.post(url, headers: headers, body: body).timeout(_kRequestTimeout);
+      case .put:
+        return await client.put(url, headers: headers, body: body).timeout(_kRequestTimeout);
+      case .delete:
+        return await client.delete(url, headers: headers, body: body).timeout(_kRequestTimeout);
+      case .patch:
+        return await client.patch(url, headers: headers, body: body).timeout(_kRequestTimeout);
     }
   }
 }
@@ -153,7 +168,9 @@ class RequestHandler {
     RequestBody? body,
     ApiHeaderType? headersCustom,
     http.Client? client,
+    RetryPolicy? retryPolicy,
   }) async {
+    final shouldRetry = retryPolicy ?? _defaultRetryPolicy;
     Future<ResponseBody> doAttempt() async {
       try {
         final Map<String, String> headers =
@@ -222,9 +239,9 @@ class RequestHandler {
     try {
       return await doAttempt();
     } on GeneralApiException catch (e) {
-      // Retry idempotent GET requests once on transient network failures.
-      // statusCode == null means no HTTP response was received (e.g. timeout, socket error).
-      if (method == RequestMethod.get && e.statusCode == null) {
+      // Retry once on transient failures according to the retry policy.
+      // By default: GET requests with no HTTP response (timeout, socket error).
+      if (shouldRetry(method, e.statusCode)) {
         await Future<void>.delayed(const Duration(seconds: 1));
         return await doAttempt();
       }

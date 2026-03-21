@@ -6,14 +6,17 @@ import 'repository.dart';
 
 part 'publisher_repository.g.dart';
 
+// ignore: constant_identifier_names
+enum PublisherPreload { feeds, images, last3_recipes, total_recipes }
+
 @Riverpod(keepAlive: true)
-PublisherRepository publisherRepository(Ref ref) => PublisherRepository(ref: ref);
+PublisherRepository publisherRepository(Ref ref) => PublisherRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class PublisherRepository extends Repository {
-  const PublisherRepository({required super.ref}) : super(module: '/api/v1/publishers');
+  const PublisherRepository({required super.ref, super.client}) : super(module: '/api/v1/publishers');
 
   Future<PaginatedList<Publisher>> findAll({
-    String? preload,
+    List<PublisherPreload>? preload,
     String? q,
     String? sort,
     String? order,
@@ -23,7 +26,7 @@ class PublisherRepository extends Repository {
     final response = await sendRequest(
       method: .get,
       queryParams: {
-        'preload': ?preload,
+        'preload': preload?.map((e) => e.name).join(','),
         'q': ?q,
         'sort': ?sort,
         'order': ?order,

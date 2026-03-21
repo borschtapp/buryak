@@ -9,6 +9,7 @@ import '../../shared/models/recipe_filter.dart';
 import '../../shared/paged_notifier_mixin.dart';
 import '../../shared/providers/shell.dart';
 import '../../shared/repositories/feed_repository.dart';
+import '../../shared/repositories/recipe_repository.dart';
 import '../../shared/widgets/empty_state_view.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/recipe_search_bar.dart';
@@ -27,7 +28,7 @@ class ExploreFilter extends _$ExploreFilter {
 
 @Riverpod(keepAlive: true)
 class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
-  static const _preload = 'images,author,publisher,collections,saved';
+  static const List<RecipePreload> _preload = [.images, .author, .publisher, .collections, .saved];
 
   @override
   Future<List<Recipe>> build() async {

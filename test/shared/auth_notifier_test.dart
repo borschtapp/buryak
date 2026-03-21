@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:buryak/shared/models/user.dart';
 import 'package:buryak/shared/providers/user.dart';
+import 'package:buryak/shared/repositories/auth_repository.dart';
 import 'package:buryak/shared/repositories/household_repository.dart';
 import 'package:buryak/shared/repositories/repository.dart';
-import 'package:buryak/shared/repositories/user_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,12 +12,12 @@ import 'package:mocktail/mocktail.dart';
 
 import '../helpers/fake_user.dart';
 
-class MockUserRepository extends Mock implements UserRepository {}
+class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockHouseholdRepository extends Mock implements HouseholdRepository {}
 
 void main() {
-  late MockUserRepository mockUserRepository;
+  late MockAuthRepository mockAuthRepository;
   late ProviderContainer container;
   const storage = FlutterSecureStorage();
 
@@ -35,10 +35,10 @@ void main() {
   });
 
   setUp(() {
-    mockUserRepository = MockUserRepository();
+    mockAuthRepository = MockAuthRepository();
     container = ProviderContainer(
       overrides: [
-        userRepositoryProvider.overrideWithValue(mockUserRepository),
+        authRepositoryProvider.overrideWithValue(mockAuthRepository),
         householdRepositoryProvider.overrideWithValue(MockHouseholdRepository()),
       ],
     );
@@ -66,7 +66,7 @@ void main() {
     test('login persists user and updates state', () async {
       final userJson = fakeUserJson();
       final user = User.fromJson(userJson);
-      when(() => mockUserRepository.login(any(), any())).thenAnswer((_) async => user);
+      when(() => mockAuthRepository.login(any(), any())).thenAnswer((_) async => user);
 
       await container.read(authProvider.notifier).login('test@example.com', 'password');
 
@@ -98,7 +98,7 @@ void main() {
       final oldUser = User.fromJson(fakeUserJson(accessToken: kExpiredJwt));
       final newUser = oldUser.copyWith(accessToken: kFutureJwt);
 
-      when(() => mockUserRepository.refreshToken(any())).thenAnswer((_) async => newUser);
+      when(() => mockAuthRepository.refreshToken(any())).thenAnswer((_) async => newUser);
 
       // Seed state
       FlutterSecureStorage.setMockInitialValues({
@@ -117,7 +117,7 @@ void main() {
     test('refreshLogin logs out on 401 error', () async {
       final oldUser = User.fromJson(fakeUserJson(accessToken: kExpiredJwt));
 
-      when(() => mockUserRepository.refreshToken(any())).thenThrow(
+      when(() => mockAuthRepository.refreshToken(any())).thenThrow(
         GeneralApiException(message: 'Unauthorized', statusCode: 401),
       );
 

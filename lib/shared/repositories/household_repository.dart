@@ -9,18 +9,20 @@ import 'repository.dart';
 
 part 'household_repository.g.dart';
 
+enum HouseholdPreload { members, invites }
+
 @Riverpod(keepAlive: true)
-HouseholdRepository householdRepository(Ref ref) => HouseholdRepository(ref: ref);
+HouseholdRepository householdRepository(Ref ref) => HouseholdRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class HouseholdRepository extends Repository {
-  const HouseholdRepository({required super.ref}) : super(module: '/api/v1/households');
+  const HouseholdRepository({required super.ref, super.client}) : super(module: '/api/v1/households');
 
-  Future<Household> findOne(String id, {List<String>? preload}) async {
+  Future<Household> findOne(String id, {List<HouseholdPreload>? preload}) async {
     final response = await sendRequest(
       method: .get,
       path: '/$id',
       queryParams: {
-        'preload': preload?.join(','),
+        'preload': preload?.map((e) => e.name).join(','),
       },
     );
     return Household.fromJson(ensureMap(response));
@@ -37,7 +39,7 @@ class HouseholdRepository extends Repository {
 
   Future<List<UserToken>> listInvites(String id) async {
     final response = await sendRequest(
-      method: RequestMethod.get,
+      method: .get,
       path: '/$id/invites',
     );
     final list = ensureList(response);
@@ -57,17 +59,17 @@ class HouseholdRepository extends Repository {
     await sendRequest(method: .delete, path: '/invites/$code');
   }
 
-  Future<Map<String, dynamic>> joinHousehold(String code) async {
+  Future<User> joinHousehold(String code) async {
     final response = await sendRequest(
       method: .post,
       path: '/invites/$code/join',
     );
-    return ensureMap(response);
+    return User.fromJson(ensureMap(response));
   }
 
   Future<PaginatedList<User>> findMembers(String householdId) async {
     final response = await sendRequest(
-      method: RequestMethod.get,
+      method: .get,
       path: '/$householdId/members',
     );
     return PaginatedList<User>.fromJson(
@@ -80,12 +82,12 @@ class HouseholdRepository extends Repository {
     await sendRequest(method: .delete, path: '/$id/members/$userId');
   }
 
-  Future<Map<String, dynamic>> leaveHousehold() async {
+  Future<User> leaveHousehold() async {
     final response = await sendRequest(
       method: .post,
       path: '/leave',
     );
-    return ensureMap(response);
+    return User.fromJson(ensureMap(response));
   }
 
   Future<InviteInfo> getInviteInfo(String code) async {

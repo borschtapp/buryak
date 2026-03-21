@@ -39,11 +39,9 @@ void main() {
     when(
       () => mockFeedRepository.stream(
         preload: any(named: 'preload'),
-        q: any(named: 'q'),
-        sort: any(named: 'sort'),
-        order: any(named: 'order'),
-        offset: any(named: 'offset'),
+        filter: any(named: 'filter'),
         limit: any(named: 'limit'),
+        offset: any(named: 'offset'),
       ),
     ).thenAnswer(
       (_) async => PaginatedList(
@@ -62,11 +60,9 @@ void main() {
     when(
       () => mockFeedRepository.stream(
         preload: any(named: 'preload'),
-        q: any(named: 'q'),
-        sort: any(named: 'sort'),
-        order: any(named: 'order'),
-        offset: any(named: 'offset'),
+        filter: any(named: 'filter'),
         limit: any(named: 'limit'),
+        offset: any(named: 'offset'),
       ),
     ).thenThrow(Exception('Failed to load recipes'));
 

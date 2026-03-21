@@ -8,10 +8,10 @@ import 'repository.dart';
 part 'meal_plan_repository.g.dart';
 
 @Riverpod(keepAlive: true)
-MealPlanRepository mealPlanRepository(Ref ref) => MealPlanRepository(ref: ref);
+MealPlanRepository mealPlanRepository(Ref ref) => MealPlanRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class MealPlanRepository extends Repository {
-  const MealPlanRepository({required super.ref}) : super(module: '/api/v1/mealplan');
+  const MealPlanRepository({required super.ref, super.client}) : super(module: '/api/v1/mealplan');
 
   Future<PaginatedList<MealPlan>> findAll({
     DateTime? from,
@@ -42,13 +42,13 @@ class MealPlanRepository extends Repository {
     String? recipeId,
   }) async {
     final response = await sendRequest(
-      method: RequestMethod.post,
+      method: .post,
       body: {
         'date': DateFormat('yyyy-MM-dd').format(date),
         'meal_type': mealType.name,
-        'description': description,
-        'servings': servings,
-        'recipe_id': recipeId,
+        'description': ?description,
+        'servings': ?servings,
+        'recipe_id': ?recipeId,
       },
     );
     return MealPlan.fromJson(ensureMap(response));
@@ -63,14 +63,14 @@ class MealPlanRepository extends Repository {
     String? recipeId,
   }) async {
     final response = await sendRequest(
-      method: RequestMethod.patch,
+      method: .patch,
       path: '/$id',
       body: {
         if (date != null) 'date': DateFormat('yyyy-MM-dd').format(date),
-        'meal_type': mealType?.name,
-        'description': description,
-        'servings': servings,
-        'recipe_id': recipeId,
+        'meal_type': ?mealType?.name,
+        'description': ?description,
+        'servings': ?servings,
+        'recipe_id': ?recipeId,
       },
     );
     return MealPlan.fromJson(ensureMap(response));

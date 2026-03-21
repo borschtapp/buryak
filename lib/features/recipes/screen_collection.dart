@@ -26,7 +26,7 @@ class CollectionRecipes extends _$CollectionRecipes with PagedNotifierMixin<Reci
         .read(collectionRepositoryProvider)
         .getRecipes(
           id,
-          preload: 'images,saved,collections,publisher',
+          preload: [.images, .saved, .collections, .publisher],
           limit: pageSize,
           offset: 0,
         );
@@ -38,7 +38,7 @@ class CollectionRecipes extends _$CollectionRecipes with PagedNotifierMixin<Reci
         .read(collectionRepositoryProvider)
         .getRecipes(
           id,
-          preload: 'images,saved,collections,publisher',
+          preload: [.images, .saved, .collections, .publisher],
           offset: offset,
           limit: limit,
         ),

@@ -7,6 +7,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/user.dart';
+import '../repositories/auth_repository.dart';
 import '../repositories/repository.dart';
 import '../repositories/user_repository.dart';
 import '../util/logger.dart';
@@ -86,7 +87,7 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
 
     _isRefreshing = true;
     try {
-      final refreshed = await ref.read(userRepositoryProvider).refreshToken(state!);
+      final refreshed = await ref.read(authRepositoryProvider).refreshToken(state!);
       await _persist(refreshed);
       return true;
     } catch (e, s) {
@@ -104,13 +105,13 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
   }
 
   Future<User> registerUser(String name, String email, String password, {String? inviteCode}) async {
-    final user = await ref.read(userRepositoryProvider).register(name, email, password, inviteCode: inviteCode);
+    final user = await ref.read(authRepositoryProvider).register(name, email, password, inviteCode: inviteCode);
     await _persist(user);
     return user;
   }
 
   Future<User> login(String email, String password) async {
-    final user = await ref.read(userRepositoryProvider).login(email, password);
+    final user = await ref.read(authRepositoryProvider).login(email, password);
     await _persist(user);
     return user;
   }
@@ -126,6 +127,15 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
     final user = User.fromJson(data);
     logger.d('AuthNotifier: updated user householdId: ${user.householdId}');
     await _persist(user);
+  }
+
+  Future<void> updateUser(User user) async {
+    final current = state;
+    final persisted = current != null && (user.refreshToken == null || user.refreshToken!.isEmpty)
+        ? user.copyWith(refreshToken: current.refreshToken)
+        : user;
+    logger.d('AuthNotifier: updated user householdId: ${persisted.householdId}');
+    await _persist(persisted);
   }
 
   Future<void> logout() async {

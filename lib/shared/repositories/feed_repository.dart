@@ -4,18 +4,22 @@ import '../models/feed.dart';
 import '../models/paginated_list.dart';
 import '../models/recipe.dart';
 import '../models/recipe_filter.dart';
+import 'recipe_repository.dart';
 import 'repository.dart';
 
 part 'feed_repository.g.dart';
 
+// ignore: constant_identifier_names
+enum FeedPreload { publisher, total_recipes, last3_recipes }
+
 @Riverpod(keepAlive: true)
-FeedRepository feedRepository(Ref ref) => FeedRepository(ref: ref);
+FeedRepository feedRepository(Ref ref) => FeedRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class FeedRepository extends Repository {
-  const FeedRepository({required super.ref}) : super(module: '/api/v1/feeds');
+  const FeedRepository({required super.ref, super.client}) : super(module: '/api/v1/feeds');
 
   Future<PaginatedList<Feed>> findAll({
-    String? preload,
+    List<FeedPreload>? preload,
     String? q,
     String? sort,
     String? order,
@@ -25,7 +29,7 @@ class FeedRepository extends Repository {
     final response = await sendRequest(
       method: .get,
       queryParams: {
-        'preload': ?preload,
+        'preload': preload?.map((e) => e.name).join(','),
         'q': ?q,
         'sort': ?sort,
         'order': ?order,
@@ -52,7 +56,7 @@ class FeedRepository extends Repository {
   }
 
   Future<PaginatedList<Recipe>> stream({
-    String? preload,
+    List<RecipePreload>? preload,
     RecipeFilter? filter,
     int? limit,
     int? offset,
@@ -69,7 +73,7 @@ class FeedRepository extends Repository {
         'equipment': ?f.equipmentParam,
         'cook_time_max': ?f.cookTimeMax,
         'total_time_max': ?f.totalTimeMax,
-        'preload': ?preload,
+        'preload': preload?.map((e) => e.name).join(','),
         'sort': f.sort,
         'order': f.order,
         'limit': ?limit,

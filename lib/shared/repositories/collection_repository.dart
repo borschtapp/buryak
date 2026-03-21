@@ -1,3 +1,4 @@
+import 'package:buryak/shared/repositories/recipe_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/collection.dart';
@@ -7,14 +8,17 @@ import 'repository.dart';
 
 part 'collection_repository.g.dart';
 
+// ignore: constant_identifier_names
+enum CollectionPreload { total_recipes, last3_recipes }
+
 @Riverpod(keepAlive: true)
-CollectionRepository collectionRepository(Ref ref) => CollectionRepository(ref: ref);
+CollectionRepository collectionRepository(Ref ref) => CollectionRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class CollectionRepository extends Repository {
-  const CollectionRepository({required super.ref}) : super(module: '/api/v1/collections');
+  const CollectionRepository({required super.ref, super.client}) : super(module: '/api/v1/collections');
 
   Future<PaginatedList<Collection>> findAll({
-    String? preload,
+    List<CollectionPreload>? preload,
     String? q,
     String? sort,
     String? order,
@@ -24,7 +28,7 @@ class CollectionRepository extends Repository {
     final response = await sendRequest(
       method: .get,
       queryParams: {
-        'preload': ?preload,
+        'preload': preload?.map((e) => e.name).join(','),
         'q': ?q,
         'sort': ?sort,
         'order': ?order,
@@ -86,7 +90,7 @@ class CollectionRepository extends Repository {
 
   Future<PaginatedList<Recipe>> getRecipes(
     String collectionId, {
-    String? preload,
+    List<RecipePreload>? preload,
     String? q,
     String? sort,
     String? order,
@@ -97,7 +101,7 @@ class CollectionRepository extends Repository {
       method: .get,
       path: '/$collectionId/recipes',
       queryParams: {
-        'preload': ?preload,
+        'preload': preload?.map((e) => e.name).join(','),
         'q': ?q,
         'sort': ?sort,
         'order': ?order,

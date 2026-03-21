@@ -26,7 +26,7 @@ class HouseholdNotifier extends _$HouseholdNotifier {
     try {
       final household = await repo.findOne(
         user.householdId,
-        preload: ['members', 'invites'],
+        preload: [.members, .invites],
       );
 
       return household;
@@ -37,8 +37,8 @@ class HouseholdNotifier extends _$HouseholdNotifier {
   }
 
   Future<void> reload() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async => await build());
+    ref.invalidateSelf();
+    await future;
   }
 
   Future<void> rename(String newName) async {
@@ -109,7 +109,7 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       final response = await repo.joinHousehold(code);
 
       // Refresh the access token and household data
-      await ref.read(authProvider.notifier).updateFromAuthResponse(response);
+      await ref.read(authProvider.notifier).updateUser(response);
 
       await reload();
     } catch (e, st) {
@@ -122,6 +122,6 @@ class HouseholdNotifier extends _$HouseholdNotifier {
     final response = await repo.leaveHousehold();
 
     final auth = ref.read(authProvider.notifier);
-    await auth.updateFromAuthResponse(response);
+    await auth.updateUser(response);
   }
 }
