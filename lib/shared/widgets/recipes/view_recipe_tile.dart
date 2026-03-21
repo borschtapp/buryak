@@ -104,7 +104,7 @@ class RecipeTile extends HookConsumerWidget {
           ),
           const SizedBox(height: 15),
           SizedBox(
-            height: 68,
+            height: 72,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

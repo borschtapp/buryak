@@ -703,8 +703,17 @@ definitions:
     type: object
   domain.Unit:
     properties:
+      base_factor:
+        description: BaseFactor is the multiplier to convert amounts to the base unit.
+        type: number
+      base_unit:
+        $ref: '#/definitions/domain.Unit'
+      base_unit_id:
+        type: string
       id:
         type: string
+      imperial:
+        type: boolean
       name:
         type: string
       slug:
@@ -865,6 +874,15 @@ definitions:
       data:
         items:
           $ref: '#/definitions/domain.Taxonomy'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
+    type: object
+  types.ListResponse-domain_Unit:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Unit'
         type: array
       meta:
         $ref: '#/definitions/types.Meta'
@@ -1585,8 +1603,33 @@ paths:
         in: query
         name: q
         type: string
-      - description: 'Comma-separated extras to include: publisher, feed, images,
-          ingredients, instructions, taxonomies, collections and saved'
+      - description: Comma-separated taxonomy IDs to filter by (using OR logic)
+        in: query
+        name: taxonomies
+        type: string
+      - description: Comma-separated publisher IDs to filter by
+        in: query
+        name: publishers
+        type: string
+      - description: Comma-separated author IDs to filter by
+        in: query
+        name: authors
+        type: string
+      - description: Comma-separated equipment IDs to filter by
+        in: query
+        name: equipment
+        type: string
+      - description: Max cook time in seconds (e.g. 1800 = 30 min)
+        in: query
+        name: cook_time_max
+        type: integer
+      - description: Max total time in seconds (e.g. 3600 = 1 hour)
+        in: query
+        name: total_time_max
+        type: integer
+      - description: 'Comma-separated extras to include: publisher, author, feed,
+          images, ingredients, equipment, instructions, nutrition, taxonomies, collections
+          and saved'
         in: query
         name: preload
         type: string
@@ -2167,6 +2210,26 @@ paths:
         in: query
         name: taxonomies
         type: string
+      - description: Comma-separated publisher IDs to filter by
+        in: query
+        name: publishers
+        type: string
+      - description: Comma-separated author IDs to filter by
+        in: query
+        name: authors
+        type: string
+      - description: Comma-separated equipment IDs to filter by
+        in: query
+        name: equipment
+        type: string
+      - description: Max cook time in seconds (e.g. 1800 = 30 min)
+        in: query
+        name: cook_time_max
+        type: integer
+      - description: Max total time in seconds (e.g. 3600 = 1 hour)
+        in: query
+        name: total_time_max
+        type: integer
       - description: 'Comma-separated extras to include: publisher, author, feed,
           images, ingredients, instructions, nutrition, taxonomies, collections and
           saved'
@@ -2967,6 +3030,45 @@ paths:
       summary: List all taxonomies.
       tags:
       - taxonomies
+  /api/v1/units:
+    get:
+      consumes:
+      - '*/*'
+      description: Search for units by name or slug, optionally filtered by measurement
+        system.
+      parameters:
+      - description: Search query (matches name or slug)
+        in: query
+        name: q
+        type: string
+      - description: 'Filter by system: true=imperial, false=metric'
+        in: query
+        name: imperial
+        type: boolean
+      - description: 'Number of records to skip (default: 0)'
+        in: query
+        name: offset
+        type: integer
+      - description: 'Maximum number of records to return (default: 20)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_Unit'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Search units.
+      tags:
+      - units
   /api/v1/uploads:
     post:
       consumes:

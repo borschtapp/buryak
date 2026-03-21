@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
+import '../../shared/models/recipe_filter.dart';
 import '../../shared/extensions.dart';
 import '../../shared/route_names.dart';
 import '../../shared/repositories/collection_repository.dart';
@@ -15,6 +16,7 @@ import 'notifier_saved.dart';
 
 class SavedRecipesTab extends ConsumerWidget {
   final List<Recipe> recipes;
+  final RecipeFilter? filter;
   final VoidCallback? onLoadMore;
   final bool isLoadingMore;
   final bool hasMore;
@@ -22,6 +24,7 @@ class SavedRecipesTab extends ConsumerWidget {
   const SavedRecipesTab({
     super.key,
     required this.recipes,
+    this.filter,
     this.onLoadMore,
     this.isLoadingMore = false,
     this.hasMore = false,
@@ -30,14 +33,25 @@ class SavedRecipesTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (recipes.isEmpty) {
+      final isEmpty = filter?.isEmpty ?? true;
       return EmptyStateView(
         icon: Icons.menu_book_outlined,
-        title: 'No recipes yet.',
-        action: TextButton.icon(
-          onPressed: () => ref.invalidate(savedRecipesProvider),
-          icon: const Icon(Icons.refresh),
-          label: const Text('Refresh'),
-        ),
+        title: isEmpty ? 'No recipes yet.' : 'No results',
+        subtitle: isEmpty ? null : 'Try adjusting your search or filters.',
+        action: isEmpty
+            ? TextButton.icon(
+                onPressed: () => ref.invalidate(savedRecipesProvider),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Refresh'),
+              )
+            : TextButton.icon(
+                onPressed: () {
+                  ref.read(savedRecipesFilterProvider.notifier).update(const RecipeFilter());
+                  ref.invalidate(savedRecipesProvider);
+                },
+                icon: const Icon(Icons.filter_alt_off),
+                label: const Text('Clear filters'),
+              ),
       );
     }
 

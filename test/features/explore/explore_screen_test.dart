@@ -38,6 +38,9 @@ void main() {
     when(
       () => mockFeedRepository.stream(
         preload: any(named: 'preload'),
+        q: any(named: 'q'),
+        sort: any(named: 'sort'),
+        order: any(named: 'order'),
         offset: any(named: 'offset'),
         limit: any(named: 'limit'),
       ),
@@ -53,6 +56,9 @@ void main() {
     when(
       () => mockFeedRepository.stream(
         preload: any(named: 'preload'),
+        q: any(named: 'q'),
+        sort: any(named: 'sort'),
+        order: any(named: 'order'),
         offset: any(named: 'offset'),
         limit: any(named: 'limit'),
       ),

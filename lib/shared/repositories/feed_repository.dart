@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'repository.dart';
 import '../models/feed.dart';
 import '../models/recipe.dart';
+import '../models/recipe_filter.dart';
 import '../models/paginated_list.dart';
 
 part 'feed_repository.g.dart';
@@ -50,12 +51,27 @@ class FeedRepository extends Repository {
     await sendRequest(method: .delete, path: '/$id');
   }
 
-  Future<PaginatedList<Recipe>> stream({String? preload, int? limit, int? offset}) async {
+  Future<PaginatedList<Recipe>> stream({
+    String? preload,
+    RecipeFilter? filter,
+    int? limit,
+    int? offset,
+  }) async {
+    final f = filter ?? const RecipeFilter();
     final response = await sendRequest(
       method: .get,
       path: '/stream',
       queryParams: {
+        'q': ?f.q,
+        'taxonomies': ?f.taxonomiesParam,
+        'publishers': ?f.publishersParam,
+        'authors': ?f.authorsParam,
+        'equipment': ?f.equipmentParam,
+        'cook_time_max': ?f.cookTimeMax,
+        'total_time_max': ?f.totalTimeMax,
         'preload': ?preload,
+        'sort': f.sort,
+        'order': f.order,
         'limit': ?limit,
         'offset': ?offset,
       },

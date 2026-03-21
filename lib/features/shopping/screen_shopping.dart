@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -6,29 +8,47 @@ import '../../shared/extensions.dart';
 import '../../shared/hooks.dart';
 import '../../shared/models/shopping_item.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
-import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/empty_state_view.dart';
+import '../../shared/widgets/error_view.dart';
 import 'view_add_item_dialog.dart';
-import 'package:flutter/semantics.dart';
 
 part 'screen_shopping.g.dart';
+
+const int _pageSize = 20;
 
 @Riverpod(keepAlive: true)
 class ShoppingItems extends _$ShoppingItems {
   late String _primaryListId;
+  late int _totalItems;
 
   @override
-  FutureOr<List<ShoppingItem>> build() async {
+  FutureOr<ShoppingItemsState> build() async {
     var listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
     var lists = listsResponse.data;
 
-    if (lists.isEmpty) return [];
+    if (lists.isEmpty) {
+      return ShoppingItemsState(items: [], hasMore: false, isLoading: false);
+    }
 
     final primaryList = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
     _primaryListId = primaryList.id;
-    final itemsResponse = await ref.read(shoppingListRepositoryProvider).findItems(primaryList.id);
-    final items = itemsResponse.data;
-    return _sortItems(items);
+
+    final itemsResponse = await ref
+        .read(shoppingListRepositoryProvider)
+        .findItems(
+          primaryList.id,
+          limit: _pageSize,
+          offset: 0,
+        );
+
+    _totalItems = itemsResponse.meta.total;
+    final hasMore = itemsResponse.data.length < _totalItems;
+
+    return ShoppingItemsState(
+      items: _sortItems(itemsResponse.data),
+      hasMore: hasMore,
+      isLoading: false,
+    );
   }
 
   List<ShoppingItem> _sortItems(List<ShoppingItem> items) {
@@ -39,17 +59,51 @@ class ShoppingItems extends _$ShoppingItems {
       });
   }
 
+  Future<void> loadMore() async {
+    final currentState = state.value;
+    if (currentState == null || !currentState.hasMore || currentState.isLoading) {
+      return;
+    }
+
+    state = AsyncData(currentState.copyWith(isLoading: true));
+
+    try {
+      final offset = currentState.items.length;
+      final itemsResponse = await ref
+          .read(shoppingListRepositoryProvider)
+          .findItems(
+            _primaryListId,
+            limit: _pageSize,
+            offset: offset,
+          );
+
+      final newItems = [...currentState.items, ...itemsResponse.data];
+      final hasMore = newItems.length < _totalItems;
+
+      state = AsyncData(
+        currentState.copyWith(
+          items: _sortItems(newItems),
+          hasMore: hasMore,
+          isLoading: false,
+        ),
+      );
+    } catch (e) {
+      state = AsyncData(currentState.copyWith(isLoading: false));
+      rethrow;
+    }
+  }
+
   Future<void> toggleItem(ShoppingItem item) async {
     final newValue = !(item.isBought ?? false);
 
     // Optimistic Update
     final previousState = state;
     if (state.value != null) {
-      final items = [...state.value!];
+      final items = [...state.value!.items];
       final index = items.indexWhere((i) => i.id == item.id);
       if (index != -1) {
         items[index] = item.copyWith(isBought: newValue);
-        state = AsyncData(_sortItems(items));
+        state = AsyncData(state.value!.copyWith(items: _sortItems(items)));
       }
     }
 
@@ -70,7 +124,7 @@ class ShoppingItems extends _$ShoppingItems {
 
     // Optimistic update: remove item from the current state list
     state = state.whenData(
-      (items) => items.where((i) => i.id != id).toList(),
+      (s) => s.copyWith(items: s.items.where((i) => i.id != id).toList()),
     );
 
     try {
@@ -96,12 +150,38 @@ class ShoppingItems extends _$ShoppingItems {
     final newItem = await ref.read(shoppingListRepositoryProvider).createItem(_primaryListId, name);
 
     if (state.value != null) {
-      final items = [...state.value!];
+      final items = [...state.value!.items];
       items.insert(0, newItem);
-      state = AsyncData(_sortItems(items));
+      _totalItems++;
+      state = AsyncData(state.value!.copyWith(items: _sortItems(items)));
     } else {
-      state = AsyncData([newItem]);
+      _totalItems = 1;
+      state = AsyncData(ShoppingItemsState(items: [newItem], hasMore: false, isLoading: false));
     }
+  }
+}
+
+class ShoppingItemsState {
+  final List<ShoppingItem> items;
+  final bool hasMore;
+  final bool isLoading;
+
+  ShoppingItemsState({
+    required this.items,
+    required this.hasMore,
+    required this.isLoading,
+  });
+
+  ShoppingItemsState copyWith({
+    List<ShoppingItem>? items,
+    bool? hasMore,
+    bool? isLoading,
+  }) {
+    return ShoppingItemsState(
+      items: items ?? this.items,
+      hasMore: hasMore ?? this.hasMore,
+      isLoading: isLoading ?? this.isLoading,
+    );
   }
 }
 
@@ -111,18 +191,36 @@ class ShoppingScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    useFab(ref,
+    final scrollController = useScrollController();
+
+    useFab(
+      ref,
       FloatingActionButton(
         heroTag: 'shopping_add_fab',
         onPressed: () => showAddItemDialog(context, ref),
         child: const Icon(Icons.add),
       ),
     );
+
+    useEffect(
+      () {
+        void onScroll() {
+          if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 500) {
+            ref.read(shoppingItemsProvider.notifier).loadMore();
+          }
+        }
+
+        scrollController.addListener(onScroll);
+        return () => scrollController.removeListener(onScroll);
+      },
+      [scrollController, ref],
+    );
+
     final itemsAsync = ref.watch(shoppingItemsProvider);
 
     return itemsAsync.when(
-      data: (items) {
-        if (items.isEmpty) {
+      data: (state) {
+        if (state.items.isEmpty) {
           return EmptyStateView(
             icon: Icons.shopping_basket_outlined,
             title: 'Your shopping list is empty',
@@ -137,11 +235,23 @@ class ShoppingScreen extends HookConsumerWidget {
         return RefreshIndicator(
           onRefresh: () async => ref.invalidate(shoppingItemsProvider),
           child: ListView.separated(
+            controller: scrollController,
             padding: const EdgeInsets.all(16),
-            itemCount: items.length,
-            separatorBuilder: (context, _) => const Divider(height: 1),
+            itemCount: state.items.length + (state.hasMore ? 1 : 0),
+            separatorBuilder: (context, index) {
+              if (index == state.items.length) return const SizedBox.shrink();
+              return const Divider(height: 1);
+            },
             itemBuilder: (context, index) {
-              final item = items[index];
+              // Loading indicator at the end
+              if (index == state.items.length) {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: state.isLoading ? const CircularProgressIndicator() : const SizedBox.shrink(),
+                );
+              }
+
+              final item = state.items[index];
               return Dismissible(
                 key: ValueKey(item.id),
                 background: Container(

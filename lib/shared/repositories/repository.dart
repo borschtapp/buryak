@@ -11,8 +11,8 @@ import '../providers/user.dart';
 /// Request Query Params
 typedef QueryParams = Map<String, dynamic>;
 
-/// Request Body
-typedef RequestBody = Map<String, dynamic>;
+/// Request Body (can be Map or List for batch operations)
+typedef RequestBody = dynamic;
 
 /// Response Body
 typedef ResponseBody = dynamic;

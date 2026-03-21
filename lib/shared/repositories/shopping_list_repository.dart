@@ -83,6 +83,16 @@ class ShoppingListRepository extends Repository {
     return ShoppingItem.fromJson(ensureMap(response));
   }
 
+  Future<List<ShoppingItem>> createItems(String listId, List<Map<String, dynamic>> items) async {
+    final response = await sendRequest(
+      method: .post,
+      path: '/$listId/items',
+      body: items,
+    );
+    final list = response as List;
+    return list.map((item) => ShoppingItem.fromJson(ensureMap(item))).toList();
+  }
+
   Future<ShoppingItem> updateItem(String listId, String itemId, {String? text, double? amount, bool? isBought}) async {
     final response = await sendRequest(
       method: .patch,

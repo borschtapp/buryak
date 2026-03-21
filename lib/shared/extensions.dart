@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'providers/theme.dart';
 import 'util/breakpoints.dart';
 
+/// Provides convenient access to theme, typography, breakpoints, and navigation.
+/// Breakpoint checks (isTablet, isDesktop, isMobile) are based on device width.
 extension TypographyUtils on BuildContext {
   ThemeData get theme => Theme.of(this);
   TextTheme get textTheme => theme.textTheme;
@@ -24,6 +26,8 @@ extension TypographyUtils on BuildContext {
   void popOrGoNamed(String route) => GoRouter.of(this).canPop() ? pop() : goNamed(route);
 }
 
+/// Provides responsive breakpoints based on available widget space.
+/// Breakpoint checks are based on the widget's allocated width, not device width.
 extension BreakpointUtils on BoxConstraints {
   bool get isTablet => maxWidth > AppBreakpoints.tablet;
   bool get isDesktop => maxWidth > AppBreakpoints.desktop;
@@ -90,5 +94,18 @@ extension SecondsToDuration on int? {
       return '${hours}h';
     }
     return '${minutes}m';
+  }
+}
+
+extension ListToggle<T> on List<T> {
+  /// Toggles an item in the list: removes if present, adds if absent.
+  List<T> toggled(T item) {
+    final list = List<T>.from(this);
+    if (list.contains(item)) {
+      list.remove(item);
+    } else {
+      list.add(item);
+    }
+    return list;
   }
 }

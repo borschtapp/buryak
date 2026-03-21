@@ -3,7 +3,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/hooks.dart';
+import '../../shared/providers/shell.dart';
 import '../../shared/widgets/error_view.dart';
+import '../../shared/widgets/recipe_search_bar.dart';
 import 'notifier_saved.dart';
 import 'dialog_create_collection.dart';
 import 'view_saved_tabs.dart';
@@ -20,7 +22,12 @@ class SavedScreen extends HookConsumerWidget {
     final isLoadingMoreRecipes = useState(false);
     final isLoadingMoreCollections = useState(false);
 
-    useFab(ref, _buildFab(context, ref, tabController.index));
+    final fab = useMemoized(
+      () => _buildFab(context, ref, tabController.index),
+      [tabController.index],
+    );
+
+    useFab(ref, fab);
 
     final recipesAsync = ref.watch(savedRecipesProvider);
     final collectionsAsync = ref.watch(savedCollectionsProvider);
@@ -47,6 +54,8 @@ class SavedScreen extends HookConsumerWidget {
       }
     }
 
+    final filter = ref.read(savedRecipesFilterProvider);
+
     return Column(
       children: [
         TabBar(
@@ -57,6 +66,24 @@ class SavedScreen extends HookConsumerWidget {
             Tab(text: 'Cookbooks'),
           ],
         ),
+        if (tabController.index == 0)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+            child: RecipeSearchBar(
+              filter: filter,
+              onChanged: (f) {
+                ref.read(savedRecipesFilterProvider.notifier).update(f);
+                ref.invalidate(savedRecipesProvider);
+              },
+              onFiltersOpenChanged: (isOpen) {
+                if (isOpen) {
+                  ref.read(shellFabProvider.notifier).update(null);
+                } else {
+                  ref.read(shellFabProvider.notifier).update(fab);
+                }
+              },
+            ),
+          ),
         Expanded(
           child: TabBarView(
             controller: tabController,
@@ -64,6 +91,7 @@ class SavedScreen extends HookConsumerWidget {
               recipesAsync.when(
                 data: (recipes) => SavedRecipesTab(
                   recipes: recipes,
+                  filter: filter,
                   onLoadMore: handleLoadMoreRecipes,
                   isLoadingMore: isLoadingMoreRecipes.value,
                   hasMore: recipesNotifier.hasMore,

@@ -36,24 +36,18 @@ class AddToShoppingBottomSheet extends HookConsumerWidget {
           final primaryList = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
 
           final repo = ref.read(shoppingListRepositoryProvider);
-          final results = await Future.wait(
-            // TODO: use batch insert
-            selectedIngredients.map((ingredient) async {
-              try {
-                await repo.createItem(
-                  primaryList.id,
-                  ingredient.displayName,
-                  amount: ingredient.amount,
-                  unitId: ingredient.unitId,
-                );
-                return true;
-              } catch (e) {
-                debugPrint('Failed to add ${ingredient.displayName}: $e');
-                return false;
-              }
-            }),
-          );
-          final successCount = results.where((r) => r).length;
+          final itemsToCreate = selectedIngredients
+              .map(
+                (ingredient) => {
+                  'text': ingredient.displayName,
+                  'amount': ingredient.amount,
+                  'unit_id': ingredient.unitId,
+                },
+              )
+              .toList();
+
+          await repo.createItems(primaryList.id, itemsToCreate);
+          final successCount = selectedIngredients.length;
 
           ref.invalidate(shoppingItemsProvider);
 
@@ -78,7 +72,7 @@ class AddToShoppingBottomSheet extends HookConsumerWidget {
       }
     }
 
-    final ingredients = recipe.ingredients ?? [];
+    final ingredients = (recipe.ingredients ?? []).where((i) => i.food?.pantry != true).toList();
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),

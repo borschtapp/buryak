@@ -14,6 +14,7 @@ class Food {
   final String? imageUrl;
   @JsonKey(name: 'default_unit_id')
   final String? defaultUnitId;
+  final bool? pantry;
 
   // Preload fields
   final List<Taxonomy>? taxonomies;
@@ -28,6 +29,7 @@ class Food {
     this.imageUrl,
     this.defaultUnit,
     this.defaultUnitId,
+    this.pantry,
     this.taxonomies,
   });
 

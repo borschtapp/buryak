@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'repository.dart';
 import '../models/recipe.dart';
+import '../models/recipe_filter.dart';
 import '../models/recipe_ingredient.dart';
 import '../models/recipe_instruction.dart';
 import '../models/paginated_list.dart';
@@ -16,23 +17,24 @@ class RecipeRepository extends Repository {
 
   Future<PaginatedList<Recipe>> findAll({
     String? preload,
+    RecipeFilter? filter,
     int? limit,
-    String? q,
-    String? taxonomies,
-    String? cuisine,
-    String? sort,
-    String? order,
     int? offset,
   }) async {
+    final f = filter ?? const RecipeFilter();
     final response = await sendRequest(
       method: .get,
       queryParams: {
-        'q': ?q,
-        'taxonomies': ?taxonomies,
-        'cuisine': ?cuisine,
+        'q': ?f.q,
+        'taxonomies': ?f.taxonomiesParam,
+        'publishers': ?f.publishersParam,
+        'authors': ?f.authorsParam,
+        'equipment': ?f.equipmentParam,
+        'cook_time_max': ?f.cookTimeMax,
+        'total_time_max': ?f.totalTimeMax,
         'preload': ?preload,
-        'sort': ?sort,
-        'order': ?order,
+        'sort': f.sort,
+        'order': f.order,
         'offset': ?offset,
         'limit': ?limit,
       },
