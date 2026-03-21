@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../../models/recipe_instruction.dart';
+
 import '../../extensions.dart';
+import '../../models/recipe_instruction.dart';
 
 class Instructions extends StatelessWidget {
   final List<RecipeInstruction> instructions;
+
   const Instructions(this.instructions, {super.key});
 
   @override

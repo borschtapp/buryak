@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/extensions.dart';
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
-import '../../shared/extensions.dart';
-import '../../shared/route_names.dart';
 import '../../shared/repositories/collection_repository.dart';
 import '../../shared/repositories/repository.dart';
+import '../../shared/route_names.dart';
 import '../../shared/widgets/empty_state_view.dart';
 import '../../shared/widgets/recipes/view_recipes_grid.dart';
 import 'notifier_saved.dart';
@@ -137,7 +137,9 @@ class SavedCookbooksTab extends ConsumerWidget {
                                       child: Icon(Icons.collections, size: 48, color: context.colors.onSurfaceVariant),
                                     ),
                                   ),
-                                  Positioned.fill(child: Container(color: context.colors.shadow.withValues(alpha: 0.1))),
+                                  Positioned.fill(
+                                    child: Container(color: context.colors.shadow.withValues(alpha: 0.1)),
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.all(12.0),
                                     child: Column(
@@ -221,7 +223,13 @@ class SavedCookbooksTab extends ConsumerWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(
                     context,
-                  ).showSnackBar(SnackBar(content: Text('Failed to delete cookbook: ${e is GeneralApiException ? e.message : "Unexpected error"}')));
+                  ).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Failed to delete cookbook: ${e is GeneralApiException ? e.message : "Unexpected error"}',
+                      ),
+                    ),
+                  );
                 }
               }
             },

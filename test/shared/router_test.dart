@@ -1,20 +1,22 @@
-import 'package:buryak/shared/providers/user.dart';
-import 'package:buryak/shared/router.dart';
 import 'package:buryak/features/explore/screen_explore.dart';
 import 'package:buryak/features/profile/screen_profile.dart';
+import 'package:buryak/shared/models/household.dart';
+import 'package:buryak/shared/models/paginated_list.dart';
+import 'package:buryak/shared/models/user.dart';
+import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/repositories/feed_repository.dart';
 import 'package:buryak/shared/repositories/household_repository.dart';
+import 'package:buryak/shared/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+
 import '../helpers/fake_user.dart';
-import 'package:buryak/shared/models/user.dart';
-import 'package:buryak/shared/models/household.dart';
-import 'package:buryak/shared/models/paginated_list.dart';
 
 class MockFeedRepository extends Mock implements FeedRepository {}
+
 class MockHouseholdRepository extends Mock implements HouseholdRepository {}
 
 class MockAuthNotifier extends AuthNotifier {
@@ -32,23 +34,31 @@ void main() {
   setUp(() {
     mockFeedRepository = MockFeedRepository();
     mockHouseholdRepository = MockHouseholdRepository();
-    when(() => mockFeedRepository.stream(
-      preload: any(named: 'preload'),
-      offset: any(named: 'offset'),
-      limit: any(named: 'limit'),
-    )).thenAnswer((_) async => PaginatedList(data: [], meta: Meta(total: 0, limit: 20, offset: 0)));
-    when(() => mockHouseholdRepository.findOne(
-      any(),
-      preload: any(named: 'preload'),
-    )).thenAnswer((_) async => Household(
-          id: 'household-1',
-          ownerId: 'user-1',
-          name: 'Test Household',
-        ));
-    when(() => mockHouseholdRepository.findMembers(any())).thenAnswer((_) async => PaginatedList(
-          data: [User.fromJson(fakeUserJson())],
-          meta: Meta(total: 1, limit: 10, offset: 0),
-        ));
+    when(
+      () => mockFeedRepository.stream(
+        preload: any(named: 'preload'),
+        offset: any(named: 'offset'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => PaginatedList(data: [], meta: Meta(total: 0, limit: 20, offset: 0)));
+    when(
+      () => mockHouseholdRepository.findOne(
+        any(),
+        preload: any(named: 'preload'),
+      ),
+    ).thenAnswer(
+      (_) async => Household(
+        id: 'household-1',
+        ownerId: 'user-1',
+        name: 'Test Household',
+      ),
+    );
+    when(() => mockHouseholdRepository.findMembers(any())).thenAnswer(
+      (_) async => PaginatedList(
+        data: [User.fromJson(fakeUserJson())],
+        meta: Meta(total: 1, limit: 10, offset: 0),
+      ),
+    );
     FlutterSecureStorage.setMockInitialValues({});
   });
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../extensions.dart';
 
 class EmptyStateView extends StatelessWidget {
@@ -26,7 +27,7 @@ class EmptyStateView extends StatelessWidget {
             Icon(
               icon,
               size: 80,
-              color: context.colors.primary.withAlpha(100),
+              color: context.colors.primary.withValues(alpha: 100 / 255),
             ),
             const SizedBox(height: 24),
             Text(

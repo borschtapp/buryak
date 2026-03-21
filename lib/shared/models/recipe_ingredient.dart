@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import 'food.dart';
 import 'unit.dart';
 
@@ -43,12 +44,12 @@ class RecipeIngredient {
   String get displayAmount {
     final hasMax = maxAmount != null && maxAmount != 0;
     return [
-      if (amount != null && amount != 0)
-        hasMax ? '$amount-$maxAmount' : amount.toString(),
+      if (amount != null && amount != 0) hasMax ? '$amount-$maxAmount' : amount.toString(),
       if (unit?.name.trim().isNotEmpty == true) unit!.name,
     ].where((s) => s.trim().isNotEmpty).join(' ');
   }
 
   factory RecipeIngredient.fromJson(Map<String, dynamic> json) => _$RecipeIngredientFromJson(json);
+
   Map<String, dynamic> toJson() => _$RecipeIngredientToJson(this);
 }

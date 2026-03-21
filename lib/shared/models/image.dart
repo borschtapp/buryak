@@ -26,5 +26,6 @@ class Image {
   });
 
   factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
+
   Map<String, dynamic> toJson() => _$ImageToJson(this);
 }

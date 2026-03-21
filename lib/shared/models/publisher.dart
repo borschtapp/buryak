@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import 'feed.dart';
 import 'recipe.dart';
 
@@ -31,5 +32,6 @@ class Publisher {
   });
 
   factory Publisher.fromJson(Map<String, dynamic> json) => _$PublisherFromJson(json);
+
   Map<String, dynamic> toJson() => _$PublisherToJson(this);
 }

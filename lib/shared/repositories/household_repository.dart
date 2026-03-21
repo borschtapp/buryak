@@ -1,11 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'repository.dart';
 import '../models/household.dart';
+import '../models/invite_info.dart';
+import '../models/paginated_list.dart';
 import '../models/user.dart';
 import '../models/user_token.dart';
-import '../models/paginated_list.dart';
-import '../models/invite_info.dart';
+import 'repository.dart';
 
 part 'household_repository.g.dart';
 

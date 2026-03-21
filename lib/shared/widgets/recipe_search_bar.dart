@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+import '../../features/recipes/screen_recipe_filters.dart';
 import '../extensions.dart';
 import '../models/recipe_filter.dart';
-import '../../features/recipes/screen_recipe_filters.dart';
 
 /// A search bar row with a debounced text field and a filter button.
 ///
@@ -147,9 +147,9 @@ class RecipeSearchBar extends HookWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Badge(
+        Badge.count(
+          count: nonSearchActiveCount,
           isLabelVisible: nonSearchActiveCount > 0,
-          label: Text('$nonSearchActiveCount'),
           child: IconButton.filledTonal(
             icon: const Icon(Icons.tune),
             tooltip: 'Filters',

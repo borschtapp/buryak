@@ -7,13 +7,13 @@ import '../../shared/hooks.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
 import '../../shared/paged_notifier_mixin.dart';
-import '../../shared/repositories/feed_repository.dart';
 import '../../shared/providers/shell.dart';
-import '../../shared/widgets/recipes/view_recipes_grid.dart';
-import '../../shared/widgets/error_view.dart';
+import '../../shared/repositories/feed_repository.dart';
 import '../../shared/widgets/empty_state_view.dart';
-import '../../shared/widgets/text_input_dialog.dart';
+import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/recipe_search_bar.dart';
+import '../../shared/widgets/recipes/view_recipes_grid.dart';
+import '../../shared/widgets/text_input_dialog.dart';
 
 part 'screen_explore.g.dart';
 
@@ -33,23 +33,27 @@ class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
   Future<List<Recipe>> build() async {
     resetPagination();
     final filter = ref.read(exploreFilterProvider);
-    final result = await ref.read(feedRepositoryProvider).stream(
-      preload: _preload,
-      filter: filter,
-      limit: pageSize,
-      offset: 0,
-    );
+    final result = await ref
+        .read(feedRepositoryProvider)
+        .stream(
+          preload: _preload,
+          filter: filter,
+          limit: pageSize,
+          offset: 0,
+        );
     return result.data;
   }
 
   Future<void> loadMore() => loadNextPage((offset, limit) {
     final filter = ref.read(exploreFilterProvider);
-    return ref.read(feedRepositoryProvider).stream(
-      preload: _preload,
-      filter: filter,
-      offset: offset,
-      limit: limit,
-    );
+    return ref
+        .read(feedRepositoryProvider)
+        .stream(
+          preload: _preload,
+          filter: filter,
+          offset: offset,
+          limit: limit,
+        );
   });
 }
 

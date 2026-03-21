@@ -4,16 +4,17 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/extensions.dart';
-import '../../shared/providers/user.dart';
-import '../../shared/validator.dart';
-import '../../shared/route_names.dart';
-import '../../shared/repositories/repository.dart';
 import '../../shared/providers/server_url.dart';
+import '../../shared/providers/user.dart';
+import '../../shared/repositories/repository.dart';
+import '../../shared/route_names.dart';
+import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
 import 'dialog_server_url.dart';
 
 class LoginScreen extends HookConsumerWidget {
   final String? inviteCode;
+
   const LoginScreen({super.key, this.inviteCode});
 
   @override

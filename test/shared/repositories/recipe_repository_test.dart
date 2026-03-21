@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:buryak/shared/repositories/recipe_repository.dart';
-import 'package:buryak/shared/providers/user.dart';
-import 'package:buryak/shared/models/user.dart';
+
 import 'package:buryak/shared/models/recipe.dart';
+import 'package:buryak/shared/models/user.dart';
+import 'package:buryak/shared/providers/user.dart';
+import 'package:buryak/shared/repositories/recipe_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -25,7 +26,6 @@ class FakeAuthNotifier extends AuthNotifier {
 
   @override
   Future<bool> refreshLogin({bool force = false}) async => true;
-
 }
 
 void main() {
@@ -64,8 +64,9 @@ void main() {
         'meta': {'page': 1, 'total': 2, 'limit': 20, 'offset': 0},
       });
 
-      when(() => mockClient.get(any(), headers: any(named: 'headers')))
-          .thenAnswer((_) async => http.Response(responseBody, 200));
+      when(
+        () => mockClient.get(any(), headers: any(named: 'headers')),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await repository.findAll();
       expect(result.data[0].name, 'Test Recipe');
@@ -76,8 +77,9 @@ void main() {
       final recipeJson = fakeRecipeJson(id: '123');
       final responseBody = jsonEncode(recipeJson);
 
-      when(() => mockClient.get(any(), headers: any(named: 'headers')))
-          .thenAnswer((_) async => http.Response(responseBody, 200));
+      when(
+        () => mockClient.get(any(), headers: any(named: 'headers')),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await repository.findOne('123');
 
@@ -89,8 +91,13 @@ void main() {
       final recipeJson = fakeRecipeJson(id: 'new-id');
       final responseBody = jsonEncode(recipeJson);
 
-      when(() => mockClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')))
-          .thenAnswer((_) async => http.Response(responseBody, 201));
+      when(
+        () => mockClient.post(
+          any(),
+          headers: any(named: 'headers'),
+          body: any(named: 'body'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 201));
 
       final result = await repository.create(Recipe.fromJson(fakeRecipeJson()));
 
@@ -101,8 +108,13 @@ void main() {
       final recipeJson = fakeRecipeJson(id: 'imported-id');
       final responseBody = jsonEncode(recipeJson);
 
-      when(() => mockClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')))
-          .thenAnswer((_) async => http.Response(responseBody, 201));
+      when(
+        () => mockClient.post(
+          any(),
+          headers: any(named: 'headers'),
+          body: any(named: 'body'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 201));
 
       final result = await repository.import('https://example.com/recipe');
 
@@ -110,8 +122,9 @@ void main() {
     });
 
     test('throws exception on error', () async {
-      when(() => mockClient.get(any(), headers: any(named: 'headers')))
-          .thenAnswer((_) async => http.Response('Error', 500));
+      when(
+        () => mockClient.get(any(), headers: any(named: 'headers')),
+      ).thenAnswer((_) async => http.Response('Error', 500));
 
       expect(() => repository.findAll(), throwsA(isA<Exception>()));
     });

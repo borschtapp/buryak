@@ -1,13 +1,14 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../../shared/models/recipe.dart';
 import '../../shared/extensions.dart';
+import '../../shared/models/recipe.dart';
 import '../../shared/ui_constants.dart';
 import '../../shared/widgets/recipes/recipe_hero_image.dart';
-import '../../shared/widgets/recipes/recipe_title_section.dart';
 import '../../shared/widgets/recipes/recipe_meta_row.dart';
+import '../../shared/widgets/recipes/recipe_title_section.dart';
 import '../../shared/widgets/recipes/sticky_tab_bar_delegate.dart';
 import '../../shared/widgets/recipes/view_ingredients.dart';
 import '../../shared/widgets/recipes/view_instructions.dart';
@@ -37,9 +38,7 @@ class RecipeMobileView extends HookWidget {
               RecipeHeroImage(
                 recipe: recipe,
                 height: heroHeight,
-                overlay: recipe.rating?.value != null && recipe.rating!.value! > 0
-                    ? _RatingBadge(rating: recipe.rating!.value!)
-                    : null,
+                overlay: recipe.rating?.value != null && recipe.rating!.value! > 0 ? _RatingBadge(rating: recipe.rating!.value!) : null,
               ),
               RecipeTitleSection(
                 recipe: recipe,

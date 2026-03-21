@@ -6,10 +6,10 @@ import '../../shared/hooks.dart';
 import '../../shared/providers/shell.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/recipe_search_bar.dart';
-import 'notifier_saved.dart';
 import 'dialog_create_collection.dart';
-import 'view_saved_tabs.dart';
 import 'dialog_import_recipe.dart';
+import 'notifier_saved.dart';
+import 'view_saved_tabs.dart';
 
 class SavedScreen extends HookConsumerWidget {
   const SavedScreen({super.key});

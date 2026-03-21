@@ -1,9 +1,9 @@
 import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'repository.dart';
 import '../models/meal_plan.dart';
 import '../models/paginated_list.dart';
+import 'repository.dart';
 
 part 'meal_plan_repository.g.dart';
 

@@ -66,6 +66,7 @@ class RecipeNutrition {
       sodium != null;
 
   factory RecipeNutrition.fromJson(Map<String, dynamic> json) => _$RecipeNutritionFromJson(json);
+
   Map<String, dynamic> toJson() => _$RecipeNutritionToJson(this);
 
   RecipeNutrition copyWith({

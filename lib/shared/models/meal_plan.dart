@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import 'recipe.dart';
 
 part 'meal_plan.g.dart';
@@ -40,6 +41,7 @@ class MealPlan {
   });
 
   factory MealPlan.fromJson(Map<String, dynamic> json) => _$MealPlanFromJson(json);
+
   Map<String, dynamic> toJson() => _$MealPlanToJson(this);
 
   MealPlan copyWith({

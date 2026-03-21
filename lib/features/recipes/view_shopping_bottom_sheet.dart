@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../../features/shopping/screen_shopping.dart';
+import '../../shared/extensions.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
-import '../../shared/extensions.dart';
-import '../../features/shopping/screen_shopping.dart';
 
 class AddToShoppingBottomSheet extends HookConsumerWidget {
   final Recipe recipe;
@@ -22,9 +23,7 @@ class AddToShoppingBottomSheet extends HookConsumerWidget {
     Future<void> save() async {
       isSaving.value = true;
       try {
-        final selectedIngredients = recipe.ingredients
-            ?.where((i) => selectedIngredientIds.value.contains(i.id))
-            .toList();
+        final selectedIngredients = recipe.ingredients?.where((i) => selectedIngredientIds.value.contains(i.id)).toList();
 
         if (selectedIngredients != null) {
           var listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();

@@ -1,5 +1,5 @@
-import 'package:buryak/shared/paged_notifier_mixin.dart';
 import 'package:buryak/shared/models/paginated_list.dart';
+import 'package:buryak/shared/paged_notifier_mixin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -23,7 +23,7 @@ void main() {
     test('initial state and resetPagination', () async {
       final container = ProviderContainer();
       final provider = AsyncNotifierProvider<TestPagedNotifier, List<int>>(TestPagedNotifier.new);
-      
+
       await container.read(provider.future);
       final notifier = container.read(provider.notifier);
 
@@ -34,7 +34,7 @@ void main() {
     test('loadNextPage appends data and updates hasMore', () async {
       final container = ProviderContainer();
       final provider = AsyncNotifierProvider<TestPagedNotifier, List<int>>(TestPagedNotifier.new);
-      
+
       await container.read(provider.future);
       final notifier = container.read(provider.notifier);
 
@@ -64,16 +64,18 @@ void main() {
     });
 
     test('loadNextPage handles empty initial state gracefully', () async {
-       // This test might be tricky because PagedNotifierMixin assumes state.asData?.value is not null
-       // In build() we usually return initial data.
+      // This test might be tricky because PagedNotifierMixin assumes state.asData?.value is not null
+      // In build() we usually return initial data.
     });
 
     test('resetPagination must be called', () {
       final notifier = TestPagedNotifier();
-      // We don't call resetPagination here for the sake of the test, 
+      // We don't call resetPagination here for the sake of the test,
       // but the mixin's loadNextPage asserts _isInitialized.
       expect(
-        () => notifier.loadMore((offset, limit) async => PaginatedList(data: [], meta: Meta(total: 0, limit: 20, offset: 0))),
+        () => notifier.loadMore(
+          (offset, limit) async => PaginatedList(data: [], meta: Meta(total: 0, limit: 20, offset: 0)),
+        ),
         throwsA(isA<AssertionError>()),
       );
     });

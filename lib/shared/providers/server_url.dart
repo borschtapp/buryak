@@ -1,6 +1,7 @@
-import 'package:buryak/shared/constants.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../constants.dart';
 
 part 'server_url.g.dart';
 

@@ -72,7 +72,9 @@ class AdaptiveNavigation extends StatelessWidget {
                 extended: dimens.isDesktop,
                 minExtendedWidth: 200,
                 destinations: destinations
-                    .map((e) => NavigationRailDestination(icon: e.icon, label: Text(e.label)))
+                    .map(
+                      (e) => NavigationRailDestination(icon: e.icon, selectedIcon: e.selectedIcon, label: Text(e.label)),
+                    )
                     .toList(),
                 selectedIndex: selectedIndex,
                 onDestinationSelected: onDestinationSelected,
@@ -104,7 +106,6 @@ class AdaptiveNavigation extends StatelessWidget {
 
 class TabletAppBar extends StatelessWidget {
   final Widget child;
-  final bool isMobile;
   final AppBar? appBar;
   final String? appBarTitle;
   final bool scrollable;
@@ -112,7 +113,6 @@ class TabletAppBar extends StatelessWidget {
 
   const TabletAppBar({
     super.key,
-    required this.isMobile,
     required this.child,
     this.appBar,
     this.appBarTitle,
@@ -122,7 +122,7 @@ class TabletAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isMobile || (appBar == null && appBarTitle == null)) {
+    if (context.isMobile || (appBar == null && appBarTitle == null)) {
       return Container(alignment: .topLeft, child: child);
     }
 
@@ -135,7 +135,7 @@ class TabletAppBar extends StatelessWidget {
             children: [
               appBar?.leading ?? BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute)),
               const SizedBox(width: 6),
-              if (appBarTitle != null) Text(appBarTitle!, style: Theme.of(context).textTheme.headlineSmall),
+              if (appBarTitle != null) Text(appBarTitle!, style: context.textTheme.headlineSmall),
               const Expanded(child: SizedBox()),
               Row(
                 children: appBar?.actions ?? [],

@@ -173,4 +173,3 @@ class TermsOfUseScreen extends StatelessWidget {
     );
   }
 }
-

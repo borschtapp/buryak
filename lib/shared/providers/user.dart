@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/user.dart';
+import '../repositories/repository.dart';
+import '../repositories/user_repository.dart';
 import '../util/logger.dart';
-import 'package:buryak/shared/repositories/user_repository.dart';
-import 'package:buryak/shared/repositories/repository.dart';
 
 part 'user.g.dart';
 

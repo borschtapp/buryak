@@ -20,5 +20,6 @@ class UploadedImage {
   });
 
   factory UploadedImage.fromJson(Map<String, dynamic> json) => _$UploadedImageFromJson(json);
+
   Map<String, dynamic> toJson() => _$UploadedImageToJson(this);
 }

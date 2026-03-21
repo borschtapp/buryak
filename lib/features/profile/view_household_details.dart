@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'notifier_household.dart';
+import '../../shared/extensions.dart';
 import '../../shared/providers/user.dart';
-import 'dialog_rename_household.dart';
 import 'dialog_invite_user.dart';
 import 'dialog_join_household.dart';
+import 'dialog_rename_household.dart';
+import 'notifier_household.dart';
 
 class ViewHouseholdDetails extends HookConsumerWidget {
   const ViewHouseholdDetails({super.key});
@@ -27,20 +28,20 @@ class ViewHouseholdDetails extends HookConsumerWidget {
           error: (err, stack) => Text('Error loading household: $err'),
           data: (household) {
             if (household == null) {
-               return Column(
-                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                 children: [
-                   const Text('Household', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                   const SizedBox(height: 16),
-                   const Text('You are not currently part of a household.'),
-                   const SizedBox(height: 16),
-                   FilledButton.icon(
-                     onPressed: () => showJoinHouseholdDialog(context),
-                     icon: const Icon(Icons.login),
-                     label: const Text('Join Household'),
-                   ),
-                 ],
-               );
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text('Household', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  const Text('You are not currently part of a household.'),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: () => showJoinHouseholdDialog(context),
+                    icon: const Icon(Icons.login),
+                    label: const Text('Join Household'),
+                  ),
+                ],
+              );
             }
 
             final isOwner = household.ownerId == currentUserId;
@@ -73,7 +74,7 @@ class ViewHouseholdDetails extends HookConsumerWidget {
                   ...household.members!.map((member) {
                     final isMe = member.id == currentUserId;
                     final isMemberOwner = member.id == household.ownerId;
-                    
+
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
@@ -92,10 +93,13 @@ class ViewHouseholdDetails extends HookConsumerWidget {
                                     title: const Text('Remove Member'),
                                     content: Text('Remove ${member.name} from the household?'),
                                     actions: [
-                                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
                                       TextButton(
-                                        onPressed: () => Navigator.pop(ctx, true), 
-                                        style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                                        onPressed: () => Navigator.pop(ctx, false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(ctx, true),
+                                        style: TextButton.styleFrom(foregroundColor: context.colors.error),
                                         child: const Text('Remove'),
                                       ),
                                     ],
@@ -127,26 +131,26 @@ class ViewHouseholdDetails extends HookConsumerWidget {
                     ),
                     if (!isOwner)
                       OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                        style: OutlinedButton.styleFrom(foregroundColor: context.colors.error),
                         onPressed: () async {
-                           final confirm = await showDialog<bool>(
-                             context: context,
-                             builder: (ctx) => AlertDialog(
-                               title: const Text('Leave Household'),
-                               content: const Text('Are you sure you want to leave this household?'),
-                               actions: [
-                                 TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                                 TextButton(
-                                   onPressed: () => Navigator.pop(ctx, true), 
-                                   style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
-                                   child: const Text('Leave'),
-                                 ),
-                               ],
-                             ),
-                           );
-                           if (confirm == true) {
-                             await ref.read(householdProvider.notifier).leaveHousehold();
-                           }
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Leave Household'),
+                              content: const Text('Are you sure you want to leave this household?'),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  style: TextButton.styleFrom(foregroundColor: context.colors.error),
+                                  child: const Text('Leave'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            await ref.read(householdProvider.notifier).leaveHousehold();
+                          }
                         },
                         icon: const Icon(Icons.exit_to_app),
                         label: const Text('Leave Household'),

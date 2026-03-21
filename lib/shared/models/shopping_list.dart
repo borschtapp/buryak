@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import 'shopping_item.dart';
 
 part 'shopping_list.g.dart';
@@ -21,6 +22,7 @@ class ShoppingList {
   });
 
   factory ShoppingList.fromJson(Map<String, dynamic> json) => _$ShoppingListFromJson(json);
+
   Map<String, dynamic> toJson() => _$ShoppingListToJson(this);
 
   ShoppingList copyWith({

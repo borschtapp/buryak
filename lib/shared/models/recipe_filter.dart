@@ -1,14 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-enum SortField {
-  id,
-  name;
-}
+enum SortField { id, name }
 
-enum SortOrder {
-  asc,
-  desc;
-}
+enum SortOrder { asc, desc }
 
 @immutable
 class RecipeFilter {
@@ -65,14 +59,13 @@ class RecipeFilter {
       (totalTimeMax != null ? 1 : 0) +
       (sort != SortField.id.name || order != SortOrder.desc.name ? 1 : 0);
 
-  String? get taxonomiesParam =>
-      taxonomyIds.isEmpty ? null : taxonomyIds.join(',');
-  String? get publishersParam =>
-      publisherIds.isEmpty ? null : publisherIds.join(',');
-  String? get authorsParam =>
-      authorIds.isEmpty ? null : authorIds.join(',');
-  String? get equipmentParam =>
-      equipmentIds.isEmpty ? null : equipmentIds.join(',');
+  String? get taxonomiesParam => taxonomyIds.isEmpty ? null : taxonomyIds.join(',');
+
+  String? get publishersParam => publisherIds.isEmpty ? null : publisherIds.join(',');
+
+  String? get authorsParam => authorIds.isEmpty ? null : authorIds.join(',');
+
+  String? get equipmentParam => equipmentIds.isEmpty ? null : equipmentIds.join(',');
 
   RecipeFilter copyWith({
     Object? q = _sentinel,
@@ -114,15 +107,16 @@ class RecipeFilter {
 
   @override
   int get hashCode => Object.hash(
-      q,
-      Object.hashAll(taxonomyIds),
-      Object.hashAll(publisherIds),
-      Object.hashAll(authorIds),
-      Object.hashAll(equipmentIds),
-      cookTimeMax,
-      totalTimeMax,
-      sort,
-      order);
+    q,
+    Object.hashAll(taxonomyIds),
+    Object.hashAll(publisherIds),
+    Object.hashAll(authorIds),
+    Object.hashAll(equipmentIds),
+    cookTimeMax,
+    totalTimeMax,
+    sort,
+    order,
+  );
 }
 
 const _sentinel = Object();

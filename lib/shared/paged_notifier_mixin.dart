@@ -1,4 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'models/paginated_list.dart';
 
 /// Adds offset-based infinite-scroll capability to any [AsyncNotifier] whose
@@ -23,6 +24,7 @@ import 'models/paginated_list.dart';
 mixin PagedNotifierMixin<Item> {
   // Satisfied by $AsyncNotifier<List<Item>> in the mixed-in class hierarchy.
   AsyncValue<List<Item>> get state;
+
   set state(AsyncValue<List<Item>> newState);
 
   bool _initialized = false;
@@ -52,7 +54,7 @@ mixin PagedNotifierMixin<Item> {
 
     final result = await fetch(current.length, pageSize);
     final next = result.data;
-    
+
     _hasMore = (result.meta.offset + next.length) < result.meta.total;
     state = AsyncData([...current, ...next]);
   }

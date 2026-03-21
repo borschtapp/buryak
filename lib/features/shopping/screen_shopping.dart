@@ -53,10 +53,10 @@ class ShoppingItems extends _$ShoppingItems {
 
   List<ShoppingItem> _sortItems(List<ShoppingItem> items) {
     return [...items]..sort((a, b) {
-        if (a.isBought == b.isBought) return 0;
-        if (a.isBought ?? false) return 1;
-        return -1;
-      });
+      if (a.isBought == b.isBought) return 0;
+      if (a.isBought ?? false) return 1;
+      return -1;
+    });
   }
 
   Future<void> loadMore() async {
@@ -108,7 +108,9 @@ class ShoppingItems extends _$ShoppingItems {
     }
 
     try {
-      await ref.read(shoppingListRepositoryProvider).updateItem(
+      await ref
+          .read(shoppingListRepositoryProvider)
+          .updateItem(
             _primaryListId,
             item.id,
             isBought: newValue,
@@ -184,7 +186,6 @@ class ShoppingItemsState {
     );
   }
 }
-
 
 class ShoppingScreen extends HookConsumerWidget {
   const ShoppingScreen({super.key});

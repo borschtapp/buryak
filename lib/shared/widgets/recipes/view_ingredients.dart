@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../../models/recipe_ingredient.dart';
-import '../../models/equipment.dart';
+
 import '../../extensions.dart';
+import '../../models/equipment.dart';
+import '../../models/recipe_ingredient.dart';
 
 class Ingredients extends StatelessWidget {
   final List<RecipeIngredient> ingredients;
@@ -164,12 +165,19 @@ class Ingredients extends StatelessWidget {
         child: CachedNetworkImage(
           imageUrl: icon,
           fit: BoxFit.cover,
-          errorWidget: (context, url, error) =>
-              Icon(Icons.shopping_basket_outlined, color: context.colors.onSurfaceVariant.withAlpha(150), size: 18),
+          errorWidget: (context, url, error) => Icon(
+            Icons.shopping_basket_outlined,
+            color: context.colors.onSurfaceVariant.withValues(alpha: 150 / 255),
+            size: 18,
+          ),
         ),
       );
     }
 
-    return Icon(Icons.shopping_basket_outlined, color: context.colors.onSurfaceVariant.withAlpha(150), size: 20);
+    return Icon(
+      Icons.shopping_basket_outlined,
+      color: context.colors.onSurfaceVariant.withValues(alpha: 150 / 255),
+      size: 20,
+    );
   }
 }

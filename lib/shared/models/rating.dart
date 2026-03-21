@@ -15,5 +15,6 @@ class Rating {
   });
 
   factory Rating.fromJson(Map<String, dynamic> json) => _$RatingFromJson(json);
+
   Map<String, dynamic> toJson() => _$RatingToJson(this);
 }

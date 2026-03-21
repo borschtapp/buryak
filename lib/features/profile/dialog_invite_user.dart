@@ -1,8 +1,10 @@
-import 'package:buryak/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
+
+import '../../shared/constants.dart';
+import '../../shared/extensions.dart';
 import 'notifier_household.dart';
 
 Future<void> showInviteUserDialog(BuildContext context) async {
@@ -75,7 +77,7 @@ class DialogInviteUser extends HookConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                color: context.colors.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: SelectableText(

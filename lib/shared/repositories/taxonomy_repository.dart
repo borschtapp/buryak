@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'repository.dart';
-import '../models/taxonomy.dart';
 import '../models/paginated_list.dart';
+import '../models/taxonomy.dart';
+import 'repository.dart';
 
 part 'taxonomy_repository.g.dart';
 

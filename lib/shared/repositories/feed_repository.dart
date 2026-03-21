@@ -1,10 +1,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'repository.dart';
 import '../models/feed.dart';
+import '../models/paginated_list.dart';
 import '../models/recipe.dart';
 import '../models/recipe_filter.dart';
-import '../models/paginated_list.dart';
+import 'repository.dart';
 
 part 'feed_repository.g.dart';
 

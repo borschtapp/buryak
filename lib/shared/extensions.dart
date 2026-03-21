@@ -18,8 +18,10 @@ extension TypographyUtils on BuildContext {
   BorderRadius get shapeExtraLarge => ThemeProvider.shapeExtraLarge;
 
   MediaQueryData get mediaQuery => MediaQuery.of(this);
-  bool get isTablet => mediaQuery.size.width > AppBreakpoints.tablet;
-  bool get isDesktop => mediaQuery.size.width > AppBreakpoints.desktop;
+
+  bool get isTablet => MediaQuery.widthOf(this) > AppBreakpoints.tablet;
+
+  bool get isDesktop => MediaQuery.widthOf(this) > AppBreakpoints.desktop;
   bool get isMobile => !isTablet && !isDesktop;
 
   void popOrGo(String location) => GoRouter.of(this).canPop() ? pop() : go(location);

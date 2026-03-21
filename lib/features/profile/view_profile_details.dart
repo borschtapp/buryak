@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../shared/extensions.dart';
 import 'view_profile_avatar.dart';
 
 class ProfileDetails extends StatelessWidget {
@@ -25,10 +26,9 @@ class ProfileDetails extends StatelessWidget {
           if (name != null && name!.trim().isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Text(name!, style: Theme.of(context).textTheme.headlineMedium),
+              child: Text(name!, style: context.textTheme.headlineMedium),
             ),
-          if (email != null && email!.trim().isNotEmpty)
-            Text(email!, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          if (email != null && email!.trim().isNotEmpty) Text(email!, style: TextStyle(color: context.colors.onSurfaceVariant)),
         ],
       ),
     );

@@ -10,6 +10,7 @@ class StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   double get minExtent => tabBar.preferredSize.height + 1;
+
   @override
   double get maxExtent => tabBar.preferredSize.height + 1;
 
@@ -25,6 +26,5 @@ class StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(StickyTabBarDelegate oldDelegate) =>
-      oldDelegate.backgroundColor != backgroundColor || oldDelegate.tabBar != tabBar;
+  bool shouldRebuild(StickyTabBarDelegate oldDelegate) => oldDelegate.backgroundColor != backgroundColor || oldDelegate.tabBar != tabBar;
 }

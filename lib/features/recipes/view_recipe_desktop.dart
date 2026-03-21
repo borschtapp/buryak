@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../shared/models/recipe.dart';
 import '../../shared/extensions.dart';
+import '../../shared/models/recipe.dart';
 import '../../shared/ui_constants.dart';
 import '../../shared/widgets/recipes/recipe_hero_image.dart';
-import '../../shared/widgets/recipes/recipe_title_section.dart';
 import '../../shared/widgets/recipes/recipe_meta_row.dart';
+import '../../shared/widgets/recipes/recipe_title_section.dart';
 import '../../shared/widgets/recipes/view_ingredients.dart';
 import '../../shared/widgets/recipes/view_instructions.dart';
 

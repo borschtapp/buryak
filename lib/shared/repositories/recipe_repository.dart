@@ -1,11 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'repository.dart';
+import '../models/paginated_list.dart';
 import '../models/recipe.dart';
 import '../models/recipe_filter.dart';
 import '../models/recipe_ingredient.dart';
 import '../models/recipe_instruction.dart';
-import '../models/paginated_list.dart';
+import 'repository.dart';
 
 part 'recipe_repository.g.dart';
 

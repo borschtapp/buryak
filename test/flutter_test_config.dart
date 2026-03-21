@@ -16,8 +16,7 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
 }
 
 class _TolerantGoldenComparator extends LocalFileComparator {
-  _TolerantGoldenComparator(Uri basedir, {required this.threshold})
-      : super(basedir.resolve('_'));
+  _TolerantGoldenComparator(Uri basedir, {required this.threshold}) : super(basedir.resolve('_'));
 
   final double threshold;
 

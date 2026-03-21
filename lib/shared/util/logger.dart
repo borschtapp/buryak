@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 /// Centralized logger instance for the application.
-/// 
+///
 /// Usage:
 /// ```dart
 /// logger.d('Debug message');
@@ -28,6 +28,6 @@ class _ReleaseFilter extends LogFilter {
   bool shouldLog(LogEvent event) {
     // In release mode, we generally don't want to log anything.
     // However, you could allow Error level logs if you send them to a crash reporting service.
-    return false; 
+    return false;
   }
 }

@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/extensions.dart';
-import '../../shared/validator.dart';
-import '../../shared/route_names.dart';
 import '../../shared/repositories/repository.dart';
 import '../../shared/repositories/user_repository.dart';
+import '../../shared/route_names.dart';
+import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
 
 class ResetPasswordScreen extends HookConsumerWidget {

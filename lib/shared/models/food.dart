@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'unit.dart';
+
 import 'taxonomy.dart';
+import 'unit.dart';
 
 part 'food.g.dart';
 
@@ -34,5 +35,6 @@ class Food {
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => _$FoodFromJson(json);
+
   Map<String, dynamic> toJson() => _$FoodToJson(this);
 }

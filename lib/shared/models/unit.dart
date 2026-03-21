@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import 'taxonomy.dart';
 
 part 'unit.g.dart';
@@ -20,5 +21,6 @@ class Unit {
   });
 
   factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
+
   Map<String, dynamic> toJson() => _$UnitToJson(this);
 }

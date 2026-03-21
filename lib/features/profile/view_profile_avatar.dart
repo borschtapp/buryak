@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+
 import '../../shared/extensions.dart';
 
 class ProfileAvatar extends StatelessWidget {
   final String? image;
   final String name;
+
   const ProfileAvatar({super.key, this.image, required this.name});
 
   @override

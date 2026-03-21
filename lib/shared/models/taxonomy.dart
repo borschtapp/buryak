@@ -29,5 +29,6 @@ class Taxonomy {
   });
 
   factory Taxonomy.fromJson(Map<String, dynamic> json) => _$TaxonomyFromJson(json);
+
   Map<String, dynamic> toJson() => _$TaxonomyToJson(this);
 }

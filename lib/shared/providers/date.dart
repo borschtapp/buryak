@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'date.g.dart';
@@ -19,7 +20,7 @@ Stream<DateTime> currentDate(Ref ref) async* {
     final now = DateTime.now();
     final tomorrow = DateTime(now.year, now.month, now.day + 1);
     final sleepDuration = tomorrow.difference(now);
-    
+
     // Future.delayed uses monotonic time.
     await Future<void>.delayed(sleepDuration);
     yield DateTime.now();

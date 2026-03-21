@@ -1,5 +1,5 @@
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 part 'user.g.dart';
 

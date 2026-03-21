@@ -1,5 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import 'author.dart';
+import 'collection.dart';
+import 'equipment.dart';
 import 'publisher.dart';
 import 'rating.dart';
 import 'recipe_ingredient.dart';
@@ -7,8 +10,6 @@ import 'recipe_instruction.dart';
 import 'recipe_nutrition.dart';
 import 'taxonomy.dart';
 import 'video.dart';
-import 'collection.dart';
-import 'equipment.dart';
 
 part 'recipe.g.dart';
 
@@ -96,5 +97,6 @@ class Recipe {
   }
 
   factory Recipe.fromJson(Map<String, dynamic> json) => _$RecipeFromJson(json);
+
   Map<String, dynamic> toJson() => _$RecipeToJson(this);
 }

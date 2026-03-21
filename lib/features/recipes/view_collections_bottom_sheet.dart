@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/repositories/collection_repository.dart';
 import '../../shared/models/collection.dart';
+import '../../shared/repositories/collection_repository.dart';
 import 'notifier_saved.dart';
 import 'screen_collection.dart';
-import 'package:flutter/semantics.dart';
 
 void showCollectionsBottomSheet(
   BuildContext context,
@@ -142,9 +142,7 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                         color: isInCollection ? Colors.green : null,
                       ),
                       title: Text(collection.name),
-                      trailing: isInCollection
-                          ? const Text('Selected', style: TextStyle(color: Colors.green, fontSize: 12))
-                          : null,
+                      trailing: isInCollection ? const Text('Selected', style: TextStyle(color: Colors.green, fontSize: 12)) : null,
                       onTap: isSaving.value
                           ? null
                           : () {
@@ -162,9 +160,7 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                                 }
                               } else {
                                 if (originallyInCollection) {
-                                  localRemovedIds.value = localRemovedIds.value
-                                      .where((id) => id != collection.id)
-                                      .toSet();
+                                  localRemovedIds.value = localRemovedIds.value.where((id) => id != collection.id).toSet();
                                 } else {
                                   localAddedIds.value = {...localAddedIds.value, collection.id};
                                 }

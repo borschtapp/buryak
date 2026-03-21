@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:buryak/shared/repositories/shopping_list_repository.dart';
-import 'package:buryak/shared/providers/user.dart';
+
 import 'package:buryak/shared/models/user.dart';
+import 'package:buryak/shared/providers/user.dart';
+import 'package:buryak/shared/repositories/shopping_list_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -22,7 +23,6 @@ class FakeAuthNotifier extends AuthNotifier {
 
   @override
   Future<bool> refreshLogin({bool force = false}) async => true;
-
 }
 
 void main() {
@@ -56,15 +56,16 @@ void main() {
   group('ShoppingListRepository', () {
     test('findAll returns a list of shopping lists', () async {
       final listsJson = [
-        {'id': '1', 'name': 'Weekly Groceries', 'is_default': true}
+        {'id': '1', 'name': 'Weekly Groceries', 'is_default': true},
       ];
       final responseBody = jsonEncode({
         'data': listsJson,
         'meta': {'page': 1, 'total': 1, 'limit': 20, 'offset': 0},
       });
 
-      when(() => mockClient.get(any(), headers: any(named: 'headers')))
-          .thenAnswer((_) async => http.Response(responseBody, 200));
+      when(
+        () => mockClient.get(any(), headers: any(named: 'headers')),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await repository.findAll();
       expect(result.data.length, 1);
@@ -73,15 +74,16 @@ void main() {
 
     test('findItems returns a list of items', () async {
       final itemsJson = [
-        {'id': '1', 'text': 'Milk', 'is_bought': false}
+        {'id': '1', 'text': 'Milk', 'is_bought': false},
       ];
       final responseBody = jsonEncode({
         'data': itemsJson,
         'meta': {'page': 1, 'total': 1, 'limit': 20, 'offset': 0},
       });
 
-      when(() => mockClient.get(any(), headers: any(named: 'headers')))
-          .thenAnswer((_) async => http.Response(responseBody, 200));
+      when(
+        () => mockClient.get(any(), headers: any(named: 'headers')),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await repository.findItems('1');
       expect(result.data.length, 1);
@@ -92,8 +94,13 @@ void main() {
       final listJson = {'id': '2', 'name': 'New List', 'is_default': false};
       final responseBody = jsonEncode(listJson);
 
-      when(() => mockClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')))
-          .thenAnswer((_) async => http.Response(responseBody, 201));
+      when(
+        () => mockClient.post(
+          any(),
+          headers: any(named: 'headers'),
+          body: any(named: 'body'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 201));
 
       final result = await repository.create('New List');
 

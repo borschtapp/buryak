@@ -1,4 +1,3 @@
-import 'package:buryak/shared/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -50,7 +49,9 @@ class RootLayout extends StatelessWidget {
           hideBottomNavigationBar: hideBottomNavigationBar,
           floatingActionButton: floatingActionButton,
           extendBodyBehindAppBar: extendBodyBehindAppBar,
-          destinations: router.destinations.map((e) => NavigationDestination(icon: e.icon, label: e.label)).toList(),
+          destinations: router.destinations
+              .map((e) => NavigationDestination(icon: e.icon, selectedIcon: e.selectedIcon, label: e.label))
+              .toList(),
           selectedIndex: currentIndex,
           onDestinationSelected: onSelected,
           fallbackRoute: fallbackRoute,
@@ -58,7 +59,6 @@ class RootLayout extends StatelessWidget {
             children: [
               Expanded(
                 child: TabletAppBar(
-                  isMobile: dimens.isMobile,
                   appBar: appBar,
                   appBarTitle: appBarTitle,
                   scrollable: contentScrollable,

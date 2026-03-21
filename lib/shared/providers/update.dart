@@ -1,8 +1,8 @@
-import 'package:buryak/shared/util/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../repositories/update_repository.dart';
+import '../util/logger.dart';
 
 part 'update.g.dart';
 

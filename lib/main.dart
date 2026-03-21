@@ -22,7 +22,7 @@ void main() async {
     await container.read(authProvider.notifier).init();
   } catch (e) {
     debugPrint('Auth initialization failed: $e');
-    // We could potentially navigate to an error screen here, but for now 
+    // We could potentially navigate to an error screen here, but for now
     // the AuthNotifier.init() already clears storage and logs out on error.
   }
 

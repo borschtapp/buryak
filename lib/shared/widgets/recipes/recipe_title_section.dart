@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/recipe.dart';
 import '../../extensions.dart';
+import '../../models/recipe.dart';
 import '../recipe_author_line.dart';
 
 /// Recipe name, author line, and published date.
@@ -23,8 +23,9 @@ class RecipeTitleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = (compact ? context.textTheme.headlineSmall : context.textTheme.headlineMedium)
-        ?.copyWith(fontWeight: FontWeight.bold);
+    final titleStyle = (compact ? context.textTheme.headlineSmall : context.textTheme.headlineMedium)?.copyWith(
+      fontWeight: FontWeight.bold,
+    );
 
     return Padding(
       padding: padding,

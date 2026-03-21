@@ -1,7 +1,8 @@
-import 'package:buryak/shared/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '../extensions.dart';
 
 class NoAnimationPageTransitionsBuilder extends PageTransitionsBuilder {
   const NoAnimationPageTransitionsBuilder();
@@ -31,9 +32,13 @@ class ThemeProvider {
   );
 
   static BorderRadius get shapeExtraSmall => BorderRadius.circular(4);
+
   static BorderRadius get shapeSmall => BorderRadius.circular(8);
+
   static BorderRadius get shapeMedium => BorderRadius.circular(12);
+
   static BorderRadius get shapeLarge => BorderRadius.circular(16);
+
   static BorderRadius get shapeExtraLarge => BorderRadius.circular(28);
 
   static Widget logo(BuildContext context) {
@@ -61,14 +66,14 @@ class ThemeProvider {
   static CardThemeData cardTheme() {
     return CardThemeData(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: shapeMedium),
+      shape: RoundedSuperellipseBorder(borderRadius: shapeMedium),
       clipBehavior: .antiAlias,
     );
   }
 
   static ListTileThemeData listTileTheme(ColorScheme colors) {
     return ListTileThemeData(
-      shape: RoundedRectangleBorder(borderRadius: shapeMedium),
+      shape: RoundedSuperellipseBorder(borderRadius: shapeMedium),
       selectedColor: colors.secondary,
     );
   }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
+import '../extensions.dart';
 import '../providers/update.dart';
 
-class AppVersionText extends StatefulWidget {
+class AppVersionText extends HookWidget {
   final EdgeInsetsGeometry padding;
   final TextAlign textAlign;
 
@@ -17,36 +19,25 @@ class AppVersionText extends StatefulWidget {
   });
 
   @override
-  State<AppVersionText> createState() => _AppVersionTextState();
-}
-
-class _AppVersionTextState extends State<AppVersionText> {
-  late final Future<PackageInfo> _info = PackageInfo.fromPlatform();
-
-  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<PackageInfo>(
-      future: _info,
-      builder: (context, snapshot) {
-        final version = snapshot.data?.version;
-        if (version == null) return const SizedBox.shrink();
-        return GestureDetector(
-          onTap: () => launchUrl(
-            Uri.parse('https://github.com/${AppConstants.releasesGithubRepo}/releases/latest'),
-            mode: LaunchMode.externalApplication,
+    final info = useFuture(useMemoized(PackageInfo.fromPlatform));
+    final version = info.data?.version;
+    if (version == null) return const SizedBox.shrink();
+    return GestureDetector(
+      onTap: () => launchUrl(
+        Uri.parse('https://github.com/${AppConstants.releasesGithubRepo}/releases/latest'),
+        mode: LaunchMode.externalApplication,
+      ),
+      child: Padding(
+        padding: padding,
+        child: Text(
+          'Version $version',
+          style: context.textTheme.bodySmall?.copyWith(
+            color: context.colors.outline,
           ),
-          child: Padding(
-            padding: widget.padding,
-            child: Text(
-              'Version $version',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-              textAlign: widget.textAlign,
-            ),
-          ),
-        );
-      },
+          textAlign: textAlign,
+        ),
+      ),
     );
   }
 }

@@ -13,13 +13,13 @@ part 'screen_recipe_filters.g.dart';
 
 @riverpod
 Future<List<Taxonomy>> _taxonomiesByType(Ref ref, String type) async {
-  final result = await ref.read(taxonomyRepositoryProvider).findAll(type: type, limit: 100);
+  final result = await ref.watch(taxonomyRepositoryProvider).findAll(type: type, limit: 100);
   return result.data;
 }
 
 @riverpod
 Future<List<Equipment>> _equipment(Ref ref) async {
-  final result = await ref.read(equipmentRepositoryProvider).search(limit: 100);
+  final result = await ref.watch(equipmentRepositoryProvider).search(limit: 100);
   return result.data;
 }
 
@@ -96,10 +96,12 @@ class _RecipeFiltersScreenState extends State<RecipeFiltersScreen> {
     final scaffold = Scaffold(
       appBar: AppBar(
         title: const Text('Filters'),
-        leading: context.isMobile ? null : IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: context.isMobile
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -117,77 +119,75 @@ class _RecipeFiltersScreenState extends State<RecipeFiltersScreen> {
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
           const _SectionHeader('Sort by'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _sortOptions.map((opt) {
-                  final isSelected = _filter.sort == opt.field.name && _filter.order == opt.order.name;
-                  return FilterChip(
-                    label: Text(opt.label),
-                    selected: isSelected,
-                    onSelected: (_) => _setSort(opt.field, opt.order),
-                  );
-                }).toList(),
-              ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _sortOptions.map((opt) {
+                final isSelected = _filter.sort == opt.field.name && _filter.order == opt.order.name;
+                return FilterChip(
+                  label: Text(opt.label),
+                  selected: isSelected,
+                  onSelected: (_) => _setSort(opt.field, opt.order),
+                );
+              }).toList(),
             ),
-            const _SectionHeader('Cook Time'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _filter.cookTimeMax == null
-                        ? 'Any time'
-                        : 'Up to ${(_filter.cookTimeMax! / 60).round()} minutes',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Slider(
-                    min: 0,
-                    max: 3600,
-                    divisions: 60,
-                    value: _filter.cookTimeMax?.toDouble() ?? 0,
-                    onChanged: (value) {
-                      if (value == 0) {
-                        _setCookTimeMax(null);
-                      } else {
-                        _setCookTimeMax(value.toInt());
-                      }
-                    },
-                  ),
-                ],
-              ),
+          ),
+          const _SectionHeader('Cook Time'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _filter.cookTimeMax == null ? 'Any time' : 'Up to ${(_filter.cookTimeMax! / 60).round()} minutes',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                Slider(
+                  min: 0,
+                  max: 3600,
+                  divisions: 60,
+                  value: _filter.cookTimeMax?.toDouble() ?? 0,
+                  onChanged: (value) {
+                    if (value == 0) {
+                      _setCookTimeMax(null);
+                    } else {
+                      _setCookTimeMax(value.toInt());
+                    }
+                  },
+                ),
+              ],
             ),
-            if (widget.showTaxonomyFilters) ...[
-              _TaxonomySection(
-                title: 'Cuisine',
-                type: 'cuisine',
-                selectedIds: _filter.taxonomyIds,
-                onToggle: _toggleTaxonomy,
-              ),
-              _TaxonomySection(
-                title: 'Diet',
-                type: 'diet',
-                selectedIds: _filter.taxonomyIds,
-                onToggle: _toggleTaxonomy,
-              ),
-              _TaxonomySection(
-                title: 'Category',
-                type: 'category',
-                selectedIds: _filter.taxonomyIds,
-                onToggle: _toggleTaxonomy,
-              ),
-            ],
-            _EquipmentSection(
-              selectedIds: _filter.equipmentIds,
-              onToggle: _toggleEquipment,
+          ),
+          if (widget.showTaxonomyFilters) ...[
+            _TaxonomySection(
+              title: 'Cuisine',
+              type: 'cuisine',
+              selectedIds: _filter.taxonomyIds,
+              onToggle: _toggleTaxonomy,
             ),
-            const SizedBox(height: 80), // space for bottom button
+            _TaxonomySection(
+              title: 'Diet',
+              type: 'diet',
+              selectedIds: _filter.taxonomyIds,
+              onToggle: _toggleTaxonomy,
+            ),
+            _TaxonomySection(
+              title: 'Category',
+              type: 'category',
+              selectedIds: _filter.taxonomyIds,
+              onToggle: _toggleTaxonomy,
+            ),
           ],
-        ),
+          _EquipmentSection(
+            selectedIds: _filter.equipmentIds,
+            onToggle: _toggleEquipment,
+          ),
+          const SizedBox(height: 80), // space for bottom button
+        ],
+      ),
       bottomNavigationBar: context.isMobile
           ? SafeArea(
               child: Padding(
@@ -215,13 +215,14 @@ class _RecipeFiltersScreenState extends State<RecipeFiltersScreen> {
 
 class _SectionHeader extends StatelessWidget {
   final String title;
+
   const _SectionHeader(this.title);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-      child: Text(title, style: Theme.of(context).textTheme.titleSmall),
+      child: Text(title, style: context.textTheme.titleSmall),
     );
   }
 }
@@ -274,7 +275,7 @@ class _TaxonomySection extends ConsumerWidget {
           children: [
             const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
             const SizedBox(width: 12),
-            Text('Loading $title...', style: Theme.of(context).textTheme.bodySmall),
+            Text('Loading $title...', style: context.textTheme.bodySmall),
           ],
         ),
       ),

@@ -20,5 +20,6 @@ class Author {
   });
 
   factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);
+
   Map<String, dynamic> toJson() => _$AuthorToJson(this);
 }

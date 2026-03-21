@@ -11,7 +11,9 @@ Map<String, dynamic> fakeRecipeJson({
     'total_time': totalTime,
     'yield': 4,
     'rating': {'value': 4.5, 'count': 10},
-    'images': [{'url': 'https://example.com/image.jpg'}],
+    'images': [
+      {'url': 'https://example.com/image.jpg'},
+    ],
     'instructions': [
       {'id': 'i1', 'text': 'Step 1', 'order': 1},
       {'id': 'i2', 'text': 'Step 2', 'order': 2},

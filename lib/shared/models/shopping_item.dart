@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import 'food.dart';
 import 'unit.dart';
 
@@ -32,6 +33,7 @@ class ShoppingItem {
   });
 
   factory ShoppingItem.fromJson(Map<String, dynamic> json) => _$ShoppingItemFromJson(json);
+
   Map<String, dynamic> toJson() => _$ShoppingItemToJson(this);
 
   ShoppingItem copyWith({

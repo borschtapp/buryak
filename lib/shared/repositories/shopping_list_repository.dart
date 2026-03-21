@@ -1,9 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'repository.dart';
-import '../models/shopping_list.dart';
-import '../models/shopping_item.dart';
 import '../models/paginated_list.dart';
+import '../models/shopping_item.dart';
+import '../models/shopping_list.dart';
+import 'repository.dart';
 
 part 'shopping_list_repository.g.dart';
 

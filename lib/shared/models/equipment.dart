@@ -20,5 +20,6 @@ class Equipment {
   });
 
   factory Equipment.fromJson(Map<String, dynamic> json) => _$EquipmentFromJson(json);
+
   Map<String, dynamic> toJson() => _$EquipmentToJson(this);
 }

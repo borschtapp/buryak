@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../models/recipe.dart';
 import '../../extensions.dart';
+import '../../models/recipe.dart';
 
 /// Metadata row + taxonomy chips for a recipe.
 ///
@@ -33,8 +33,7 @@ class RecipeMetaRow extends StatelessWidget {
             runSpacing: 8,
             children: [
               if (showTime) _MetaItem(icon: Icons.timer_outlined, label: recipe.totalTime.toFormattedDuration()),
-              if (recipe.yield != null && recipe.yield! > 0)
-                _MetaItem(icon: Icons.restaurant_outlined, label: '${recipe.yield} servings'),
+              if (recipe.yield != null && recipe.yield! > 0) _MetaItem(icon: Icons.restaurant_outlined, label: '${recipe.yield} servings'),
               if (recipe.difficulty != null && recipe.difficulty!.isNotEmpty)
                 _MetaItem(icon: Icons.signal_cellular_alt_outlined, label: recipe.difficulty!),
               if (recipe.method != null && recipe.method!.isNotEmpty)
@@ -69,14 +68,16 @@ class RecipeMetaRow extends StatelessWidget {
         .toList();
 
     return filtered
-        .map((t) => Chip(
-              label: Text(t.label!),
-              labelStyle: context.textTheme.labelSmall,
-              padding: EdgeInsets.zero,
-              side: BorderSide(color: context.colors.outlineVariant),
-              backgroundColor: context.colors.surfaceContainerHighest,
-              visualDensity: VisualDensity.compact,
-            ))
+        .map(
+          (t) => Chip(
+            label: Text(t.label!),
+            labelStyle: context.textTheme.labelSmall,
+            padding: EdgeInsets.zero,
+            side: BorderSide(color: context.colors.outlineVariant),
+            backgroundColor: context.colors.surfaceContainerHighest,
+            visualDensity: VisualDensity.compact,
+          ),
+        )
         .toList();
   }
 }

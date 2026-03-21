@@ -31,6 +31,7 @@ class ArticleContent extends StatelessWidget {
 
 class Paragraph extends StatelessWidget {
   final String text;
+
   const Paragraph(this.text, {super.key});
 
   @override
@@ -44,6 +45,7 @@ class Paragraph extends StatelessWidget {
 
 class Header extends StatelessWidget {
   final String text;
+
   const Header(this.text, {super.key});
 
   @override

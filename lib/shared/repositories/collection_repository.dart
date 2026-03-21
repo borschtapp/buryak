@@ -1,9 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'repository.dart';
 import '../models/collection.dart';
-import '../models/recipe.dart';
 import '../models/paginated_list.dart';
+import '../models/recipe.dart';
+import 'repository.dart';
 
 part 'collection_repository.g.dart';
 

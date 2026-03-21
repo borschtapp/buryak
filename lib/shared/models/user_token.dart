@@ -20,5 +20,6 @@ class UserToken {
   });
 
   factory UserToken.fromJson(Map<String, dynamic> json) => _$UserTokenFromJson(json);
+
   Map<String, dynamic> toJson() => _$UserTokenToJson(this);
 }

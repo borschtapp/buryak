@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 String generateFakeJwt({Duration? expiresIn}) {
-  final exp = expiresIn != null
-      ? (DateTime.now().add(expiresIn).millisecondsSinceEpoch ~/ 1000)
-      : 9999999999;
-  
+  final exp = expiresIn != null ? (DateTime.now().add(expiresIn).millisecondsSinceEpoch ~/ 1000) : 9999999999;
+
   final header = base64Url.encode(utf8.encode(json.encode({'alg': 'HS256', 'typ': 'JWT'})));
   final payload = base64Url.encode(utf8.encode(json.encode({'exp': exp})));
   return '$header.$payload.fake_signature';

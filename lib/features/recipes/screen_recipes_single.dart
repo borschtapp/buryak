@@ -4,11 +4,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../shared/extensions.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/widgets/error_view.dart';
-import 'view_shopping_bottom_sheet.dart';
-import 'view_plan_bottom_sheet.dart';
-import 'view_recipe_mobile.dart';
-import 'view_recipe_desktop.dart';
 import 'controller_recipe.dart';
+import 'view_plan_bottom_sheet.dart';
+import 'view_recipe_desktop.dart';
+import 'view_recipe_mobile.dart';
+import 'view_shopping_bottom_sheet.dart';
 
 class RecipeScreen extends ConsumerWidget {
   const RecipeScreen({
@@ -45,10 +45,7 @@ class RecipeScreen extends ConsumerWidget {
             child: context.isMobile ? RecipeMobileView(recipe: recipe) : RecipeDesktopView(recipe: recipe),
           ),
           if (context.isMobile) ...[
-            if (isLoading)
-              const LinearProgressIndicator(minHeight: 2)
-            else
-              _MobileBottomActionBar(recipe: recipe),
+            if (isLoading) const LinearProgressIndicator(minHeight: 2) else _MobileBottomActionBar(recipe: recipe),
           ],
         ],
       ),
@@ -67,7 +64,9 @@ class _MobileBottomActionBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
         color: context.colors.surface,
-        border: Border(top: BorderSide(color: context.colors.secondary.withAlpha(50))),
+        border: Border(
+          top: BorderSide(color: context.colors.secondary.withValues(alpha: 50 / 255)),
+        ),
       ),
       child: Row(
         children: [

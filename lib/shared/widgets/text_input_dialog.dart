@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../extensions.dart';
 import '../repositories/repository.dart';
 
 /// A reusable dialog widget for collecting single text input from users.
@@ -50,7 +51,7 @@ class TextInputDialog extends HookConsumerWidget {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: context.textTheme.headlineSmall,
             ),
             const SizedBox(height: 24),
             TextField(

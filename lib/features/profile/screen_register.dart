@@ -6,9 +6,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/extensions.dart';
 import '../../shared/providers/user.dart';
-import '../../shared/validator.dart';
-import '../../shared/route_names.dart';
 import '../../shared/repositories/repository.dart';
+import '../../shared/route_names.dart';
+import '../../shared/validator.dart';
 import '../../shared/views/scaffold_login_page.dart';
 
 class RegisterScreen extends HookConsumerWidget {

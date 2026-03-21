@@ -15,5 +15,6 @@ class InviteInfo {
   });
 
   factory InviteInfo.fromJson(Map<String, dynamic> json) => _$InviteInfoFromJson(json);
+
   Map<String, dynamic> toJson() => _$InviteInfoToJson(this);
 }

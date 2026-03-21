@@ -32,5 +32,6 @@ class RecipeInstruction {
   });
 
   factory RecipeInstruction.fromJson(Map<String, dynamic> json) => _$RecipeInstructionFromJson(json);
+
   Map<String, dynamic> toJson() => _$RecipeInstructionToJson(this);
 }

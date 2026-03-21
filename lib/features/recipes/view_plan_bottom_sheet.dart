@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
+
+import '../../features/planner/screen_planner.dart';
+import '../../shared/extensions.dart';
 import '../../shared/models/meal_plan.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/meal_plan_repository.dart';
-import '../../shared/extensions.dart';
-import 'package:intl/intl.dart';
-import '../../features/planner/screen_planner.dart';
 
 class AddToPlanBottomSheet extends HookConsumerWidget {
   final Recipe recipe;
@@ -38,12 +39,14 @@ class AddToPlanBottomSheet extends HookConsumerWidget {
     Future<void> save() async {
       isSaving.value = true;
       try {
-        await ref.read(mealPlanRepositoryProvider).create(
-          selectedDate.value,
-          selectedMealType.value,
-          recipeId: recipe.id,
-          servings: servings.value,
-        );
+        await ref
+            .read(mealPlanRepositoryProvider)
+            .create(
+              selectedDate.value,
+              selectedMealType.value,
+              recipeId: recipe.id,
+              servings: servings.value,
+            );
         ref.invalidate(mealPlanWeekProvider);
 
         if (context.mounted) {

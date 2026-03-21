@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../models/recipe_nutrition.dart';
+
 import '../../extensions.dart';
+import '../../models/recipe_nutrition.dart';
 
 class Nutrition extends StatelessWidget {
   final RecipeNutrition? nutrition;
@@ -50,17 +51,17 @@ class Nutrition extends StatelessWidget {
     final items = _getNutritionItems();
     final rows = <Widget>[];
     for (var i = 0; i < items.length; i += 2) {
-      rows.add(Row(
-        children: [
-          Expanded(child: _buildNutritionItem(context, items[i])),
-          const SizedBox(width: 12),
-          Expanded(
-            child: i + 1 < items.length
-                ? _buildNutritionItem(context, items[i + 1])
-                : const SizedBox.shrink(),
-          ),
-        ],
-      ));
+      rows.add(
+        Row(
+          children: [
+            Expanded(child: _buildNutritionItem(context, items[i])),
+            const SizedBox(width: 12),
+            Expanded(
+              child: i + 1 < items.length ? _buildNutritionItem(context, items[i + 1]) : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      );
       if (i + 2 < items.length) rows.add(const SizedBox(height: 12));
     }
     return Column(children: rows);

@@ -25,12 +25,14 @@ class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
   Future<List<Recipe>> build() async {
     resetPagination();
     final filter = ref.read(savedRecipesFilterProvider);
-    final result = await ref.read(recipeRepositoryProvider).findAll(
-      preload: _preload,
-      filter: filter,
-      limit: pageSize,
-      offset: 0,
-    );
+    final result = await ref
+        .read(recipeRepositoryProvider)
+        .findAll(
+          preload: _preload,
+          filter: filter,
+          limit: pageSize,
+          offset: 0,
+        );
     return result.data;
   }
 
@@ -41,12 +43,14 @@ class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
 
   Future<void> loadMore() => loadNextPage((offset, limit) {
     final filter = ref.read(savedRecipesFilterProvider);
-    return ref.read(recipeRepositoryProvider).findAll(
-      preload: _preload,
-      filter: filter,
-      offset: offset,
-      limit: limit,
-    );
+    return ref
+        .read(recipeRepositoryProvider)
+        .findAll(
+          preload: _preload,
+          filter: filter,
+          offset: offset,
+          limit: limit,
+        );
   });
 }
 

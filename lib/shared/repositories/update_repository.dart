@@ -1,6 +1,6 @@
-import 'package:buryak/shared/constants.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../constants.dart';
 import 'repository.dart';
 
 part 'update_repository.g.dart';
@@ -10,11 +10,12 @@ UpdateRepository updateRepository(Ref ref) => UpdateRepository(ref: ref);
 
 class UpdateRepository extends Repository {
   const UpdateRepository({required super.ref})
-      : super(
-          module: '/repos/${AppConstants.releasesGithubRepo}/releases',  // list endpoint, works with prereleases
-          isAuth: false,
-          baseUrlOverride: 'https://api.github.com',
-        );
+    : super(
+        module: '/repos/${AppConstants.releasesGithubRepo}/releases',
+        // list endpoint, works with prereleases
+        isAuth: false,
+        baseUrlOverride: 'https://api.github.com',
+      );
 
   Future<String?> fetchLatestVersion() async {
     final response = await sendRequest(

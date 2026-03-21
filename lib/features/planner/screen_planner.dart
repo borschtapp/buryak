@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/extensions.dart';
 import '../../shared/models/meal_plan.dart';
+import '../../shared/providers/date.dart';
 import '../../shared/repositories/meal_plan_repository.dart';
 import '../../shared/route_names.dart';
-
-import '../../shared/providers/date.dart';
 import '../../shared/widgets/empty_state_view.dart';
 import '../../shared/widgets/error_view.dart';
 
@@ -62,9 +61,7 @@ class PlannerScreen extends ConsumerWidget {
                   '${entry.servings ?? 1} serving${(entry.servings ?? 1) == 1 ? '' : 's'}',
                   style: context.textTheme.bodySmall,
                 ),
-                onTap: entry.recipeId != null
-                    ? () => context.goNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!})
-                    : null,
+                onTap: entry.recipeId != null ? () => context.goNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!}) : null,
               );
             },
           ),

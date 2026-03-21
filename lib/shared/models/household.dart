@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import 'collection.dart';
 import 'feed.dart';
 import 'shopping_list.dart';
@@ -34,6 +35,7 @@ class Household {
   });
 
   factory Household.fromJson(Map<String, dynamic> json) => _$HouseholdFromJson(json);
+
   Map<String, dynamic> toJson() => _$HouseholdToJson(this);
 
   Household copyWith({

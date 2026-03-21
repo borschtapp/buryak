@@ -2,8 +2,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/models/household.dart';
 import '../../shared/models/user_token.dart';
-import '../../shared/repositories/household_repository.dart';
 import '../../shared/providers/user.dart';
+import '../../shared/repositories/household_repository.dart';
 import '../../shared/util/logger.dart';
 
 part 'notifier_household.g.dart';

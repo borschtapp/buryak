@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import '../models/recipe.dart';
+
 import '../extensions.dart';
+import '../models/recipe.dart';
 
 class RecipeAuthorLine extends StatelessWidget {
   final Recipe recipe;
@@ -28,8 +29,7 @@ class RecipeAuthorLine extends StatelessWidget {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (showPrefix)
-            Text('Published by ', style: textStyle?.copyWith(color: context.colors.onSurfaceVariant)),
+          if (showPrefix) Text('Published by ', style: textStyle?.copyWith(color: context.colors.onSurfaceVariant)),
           InkWell(
             onTap: () async {
               try {

@@ -1,13 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../models/recipe.dart';
-import '../../extensions.dart';
-import '../../widgets/recipe_author_line.dart';
-import '../../widgets/recipe_placeholder.dart';
 import '../../../features/recipes/controller_recipe.dart';
 import '../../../features/recipes/view_collections_bottom_sheet.dart';
+import '../../extensions.dart';
+import '../../models/recipe.dart';
+import '../../widgets/recipe_author_line.dart';
+import '../../widgets/recipe_placeholder.dart';
 
 class RecipeTile extends HookConsumerWidget {
   const RecipeTile({
@@ -44,7 +44,10 @@ class RecipeTile extends HookConsumerWidget {
                       child: Container(
                         foregroundDecoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.black.withAlpha(200), Colors.transparent],
+                            colors: [
+                              Colors.black.withValues(alpha: 200 / 255),
+                              Colors.transparent,
+                            ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             stops: const [0, 0.3],
@@ -115,7 +118,7 @@ class RecipeTile extends HookConsumerWidget {
                     children: [
                       Text(
                         recipe.name,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: context.textTheme.titleMedium,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                       ),

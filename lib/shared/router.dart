@@ -4,36 +4,65 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'extensions.dart';
-import 'providers/shell.dart';
-import 'providers/user.dart';
-import 'views/root_layout.dart';
-import 'models/recipe.dart';
-
-import '../features/legal/screen_privacy_policy.dart';
-import 'widgets/recipes/view_recipe_actions.dart';
-import '../features/legal/screen_terms_of_use.dart';
 import '../features/explore/screen_explore.dart';
+import '../features/legal/screen_privacy_policy.dart';
+import '../features/legal/screen_terms_of_use.dart';
 import '../features/planner/screen_planner.dart';
 import '../features/profile/screen_forgot_password.dart';
 import '../features/profile/screen_login.dart';
 import '../features/profile/screen_profile.dart';
-import '../features/recipes/screen_collection.dart';
 import '../features/profile/screen_register.dart';
 import '../features/profile/screen_reset_password.dart';
-import '../features/recipes/screen_saved.dart';
+import '../features/recipes/screen_collection.dart';
 import '../features/recipes/screen_recipes_single.dart';
+import '../features/recipes/screen_saved.dart';
 import '../features/shopping/screen_shopping.dart';
+import 'extensions.dart';
+import 'models/recipe.dart';
+import 'providers/shell.dart';
+import 'providers/user.dart';
 import 'route_names.dart';
+import 'views/root_layout.dart';
+import 'widgets/recipes/view_recipe_actions.dart';
 
 part 'router.g.dart';
 
 const List<AppDestination> destinations = [
-  AppDestination(label: 'Explore', route: '/', name: RouteNames.home, icon: Icon(Icons.explore)),
-  AppDestination(label: 'Saved', route: '/saved', name: RouteNames.saved, icon: Icon(Icons.bookmark)),
-  AppDestination(label: 'Planner', route: '/planner', name: RouteNames.planner, icon: Icon(Icons.today)),
-  AppDestination(label: 'List', route: '/shopping', name: RouteNames.shopping, icon: Icon(Icons.list)),
-  AppDestination(label: 'Profile', route: '/profile', name: RouteNames.profile, icon: Icon(Icons.person)),
+  AppDestination(
+    label: 'Explore',
+    route: '/',
+    name: RouteNames.home,
+    icon: Icon(Icons.explore_outlined),
+    selectedIcon: Icon(Icons.explore),
+  ),
+  AppDestination(
+    label: 'Saved',
+    route: '/saved',
+    name: RouteNames.saved,
+    icon: Icon(Icons.bookmark_outline),
+    selectedIcon: Icon(Icons.bookmark),
+  ),
+  AppDestination(
+    label: 'Planner',
+    route: '/planner',
+    name: RouteNames.planner,
+    icon: Icon(Icons.today_outlined),
+    selectedIcon: Icon(Icons.today),
+  ),
+  AppDestination(
+    label: 'List',
+    route: '/shopping',
+    name: RouteNames.shopping,
+    icon: Icon(Icons.list),
+    selectedIcon: Icon(Icons.list),
+  ),
+  AppDestination(
+    label: 'Profile',
+    route: '/profile',
+    name: RouteNames.profile,
+    icon: Icon(Icons.person_outline),
+    selectedIcon: Icon(Icons.person),
+  ),
 ];
 
 class AppDestination {
@@ -42,6 +71,7 @@ class AppDestination {
     required this.name,
     required this.label,
     required this.icon,
+    required this.selectedIcon,
     this.child,
   });
 
@@ -49,6 +79,7 @@ class AppDestination {
   final String name;
   final String label;
   final Icon icon;
+  final Icon selectedIcon;
   final Widget? child;
 }
 
@@ -79,6 +110,7 @@ class _RouteConfig {
   final bool hideBottomNav;
   final bool contentScrollable;
   final bool extendBodyBehindAppBar;
+
   const _RouteConfig({
     // ignore: unused_element_parameter
     this.appBarTitle,

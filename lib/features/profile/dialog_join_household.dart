@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'notifier_household.dart';
 
 Future<void> showJoinHouseholdDialog(BuildContext context, {String? initialCode}) async {
@@ -12,7 +13,7 @@ Future<void> showJoinHouseholdDialog(BuildContext context, {String? initialCode}
 
 class DialogJoinHousehold extends HookConsumerWidget {
   final String? initialCode;
-  
+
   const DialogJoinHousehold({super.key, this.initialCode});
 
   @override
@@ -45,27 +46,31 @@ class DialogJoinHousehold extends HookConsumerWidget {
           child: const Text('Cancel'),
         ),
         FilledButton(
-          onPressed: isLoading.value ? null : () async {
-            if (!formKey.currentState!.validate()) return;
-            
-            isLoading.value = true;
-            try {
-              await ref.read(householdProvider.notifier).joinHousehold(controller.text.trim());
-              if (context.mounted) {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully joined household!')));
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-              }
-            } finally {
-              if (context.mounted) isLoading.value = false;
-            }
-          },
-          child: isLoading.value 
-            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-            : const Text('Join'),
+          onPressed: isLoading.value
+              ? null
+              : () async {
+                  if (!formKey.currentState!.validate()) return;
+
+                  isLoading.value = true;
+                  try {
+                    await ref.read(householdProvider.notifier).joinHousehold(controller.text.trim());
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(const SnackBar(content: Text('Successfully joined household!')));
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                    }
+                  } finally {
+                    if (context.mounted) isLoading.value = false;
+                  }
+                },
+          child: isLoading.value
+              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              : const Text('Join'),
         ),
       ],
     );
