@@ -5,21 +5,24 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../features/planner/screen_planner.dart';
-import '../../shared/extensions.dart';
-import '../../shared/models/meal_plan.dart';
-import '../../shared/models/recipe.dart';
-import '../../shared/repositories/meal_plan_repository.dart';
+import '../extensions.dart';
+import '../models/meal_plan.dart';
+import '../models/recipe.dart';
+import '../repositories/meal_plan_repository.dart';
 
-class AddToPlanBottomSheet extends HookConsumerWidget {
-  final Recipe recipe;
+class PlanBottomSheet extends HookConsumerWidget {
+  final Recipe? recipe;
+  final MealPlan? plan;
 
-  const AddToPlanBottomSheet({super.key, required this.recipe});
+  const PlanBottomSheet({super.key, this.recipe, this.plan})
+      : assert(recipe != null || plan != null, 'Must provide either recipe or plan');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedDate = useState(DateTime.now());
-    final selectedMealType = useState(MealType.lunch);
-    final servings = useState(recipe.yield ?? 1);
+    final isEditing = plan != null;
+    final selectedDate = useState(plan?.date ?? DateTime.now());
+    final selectedMealType = useState(plan?.mealType ?? MealType.lunch);
+    final servings = useState(plan?.servings ?? recipe?.yield ?? 1);
     final isSaving = useState(false);
 
     final mealTypes = MealType.values;
@@ -28,7 +31,7 @@ class AddToPlanBottomSheet extends HookConsumerWidget {
       final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate.value,
-        firstDate: DateTime.now(),
+        firstDate: isEditing ? DateTime.now().subtract(const Duration(days: 365)) : DateTime.now(),
         lastDate: DateTime.now().add(const Duration(days: 365)),
       );
       if (picked != null && picked != selectedDate.value) {
@@ -39,20 +42,27 @@ class AddToPlanBottomSheet extends HookConsumerWidget {
     Future<void> save() async {
       isSaving.value = true;
       try {
-        await ref
-            .read(mealPlanRepositoryProvider)
-            .create(
-              selectedDate.value,
-              selectedMealType.value,
-              recipeId: recipe.id,
-              servings: servings.value,
-            );
+        if (isEditing) {
+          await ref.read(mealPlanRepositoryProvider).update(
+                plan!.id,
+                date: selectedDate.value,
+                mealType: selectedMealType.value,
+                servings: servings.value,
+              );
+        } else {
+          await ref.read(mealPlanRepositoryProvider).create(
+                selectedDate.value,
+                selectedMealType.value,
+                recipeId: recipe!.id,
+                servings: servings.value,
+              );
+        }
         ref.invalidate(mealPlanWeekProvider);
 
         if (context.mounted) {
           context.pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Added to meal plan')),
+            SnackBar(content: Text(isEditing ? 'Meal plan updated' : 'Added to meal plan')),
           );
         }
       } catch (e) {
@@ -66,6 +76,9 @@ class AddToPlanBottomSheet extends HookConsumerWidget {
       }
     }
 
+    final title = isEditing ? 'Edit ${plan!.recipe?.name ?? plan!.description ?? 'Meal'}' : 'Add to plan';
+    final buttonText = isEditing ? 'Save changes' : 'Add to plan';
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
       child: Column(
@@ -75,7 +88,9 @@ class AddToPlanBottomSheet extends HookConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Add to plan', style: context.textTheme.titleLarge),
+              Expanded(
+                child: Text(title, style: context.textTheme.titleLarge, overflow: TextOverflow.ellipsis),
+              ),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => context.pop(),
@@ -137,7 +152,7 @@ class AddToPlanBottomSheet extends HookConsumerWidget {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
-                : const Text('Add to plan'),
+                : Text(buttonText),
           ),
         ],
       ),

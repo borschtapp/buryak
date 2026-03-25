@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/extensions.dart';
@@ -11,16 +12,34 @@ import '../../shared/repositories/meal_plan_repository.dart';
 import '../../shared/route_names.dart';
 import '../../shared/widgets/empty_state_view.dart';
 import '../../shared/widgets/error_view.dart';
+import '../../shared/views/view_plan_bottom_sheet.dart';
 
 part 'screen_planner.g.dart';
 
 @Riverpod(keepAlive: true)
-Future<List<MealPlan>> mealPlanWeek(Ref ref) async {
-  final now = ref.watch(currentDateProvider).value ?? DateTime.now();
-  final from = DateTime(now.year, now.month, now.day);
-  final to = from.add(const Duration(days: 6));
-  final result = await ref.read(mealPlanRepositoryProvider).findAll(from: from, to: to);
-  return result.data;
+class MealPlanWeek extends _$MealPlanWeek {
+  @override
+  FutureOr<List<MealPlan>> build() async {
+    final now = ref.watch(currentDateProvider).value ?? DateTime.now();
+    final from = DateTime(now.year, now.month, now.day);
+    final to = from.add(const Duration(days: 6));
+    final result = await ref.read(mealPlanRepositoryProvider).findAll(from: from, to: to);
+    return result.data;
+  }
+
+  Future<void> deletePlan(String id) async {
+    final previousState = state;
+
+    // Optimistic update
+    state = state.whenData((plans) => plans.where((p) => p.id != id).toList());
+
+    try {
+      await ref.read(mealPlanRepositoryProvider).delete(id);
+    } catch (e) {
+      state = previousState;
+      rethrow;
+    }
+  }
 }
 
 class PlannerScreen extends ConsumerWidget {
@@ -51,17 +70,49 @@ class PlannerScreen extends ConsumerWidget {
             separatorBuilder: (context, _) => const Divider(),
             itemBuilder: (context, index) {
               final entry = entries[index];
-              return ListTile(
-                leading: const Icon(Icons.restaurant_menu),
-                title: Text(entry.recipe?.name ?? entry.description ?? 'Meal'),
-                subtitle: Text(
-                  '${DateFormat('MMM d').format(entry.date)} · ${entry.mealType.name.capitalize()}',
+              return Dismissible(
+                key: ValueKey(entry.id),
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: const Icon(Icons.delete, color: Colors.white),
                 ),
-                trailing: Text(
-                  '${entry.servings ?? 1} serving${(entry.servings ?? 1) == 1 ? '' : 's'}',
-                  style: context.textTheme.bodySmall,
+                direction: DismissDirection.endToStart,
+                onDismissed: (_) async {
+                  final itemName = entry.recipe?.name ?? entry.description ?? 'Meal plan';
+                  try {
+                    await ref.read(mealPlanWeekProvider.notifier).deletePlan(entry.id);
+                    if (context.mounted) {
+                      SemanticsService.sendAnnouncement(View.of(context), '$itemName removed', TextDirection.ltr);
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Failed to remove meal plan.')),
+                      );
+                    }
+                  }
+                },
+                child: ListTile(
+                  leading: const Icon(Icons.restaurant_menu),
+                  title: Text(entry.recipe?.name ?? entry.description ?? 'Meal'),
+                  subtitle: Text(
+                    '${DateFormat('MMM d').format(entry.date)} · ${entry.mealType.name.capitalize()}',
+                  ),
+                  trailing: Text(
+                    '${entry.servings ?? 1} serving${(entry.servings ?? 1) == 1 ? '' : 's'}',
+                    style: context.textTheme.bodySmall,
+                  ),
+                  onTap: entry.recipeId != null ? () => context.goNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!}) : null,
+                  onLongPress: () {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => PlanBottomSheet(plan: entry),
+                    );
+                  },
                 ),
-                onTap: entry.recipeId != null ? () => context.goNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!}) : null,
               );
             },
           ),

@@ -4,8 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../shared/extensions.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/widgets/error_view.dart';
+import '../../shared/views/view_plan_bottom_sheet.dart';
 import 'controller_recipe.dart';
-import 'view_plan_bottom_sheet.dart';
 import 'view_recipe_desktop.dart';
 import 'view_recipe_mobile.dart';
 import 'view_shopping_bottom_sheet.dart';
@@ -109,7 +109,7 @@ class _MobileBottomActionBar extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => AddToPlanBottomSheet(recipe: recipe),
+      builder: (context) => PlanBottomSheet(recipe: recipe),
     );
   }
 }
