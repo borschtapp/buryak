@@ -5,7 +5,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../shared/constants.dart';
 import '../../shared/extensions.dart';
-import 'notifier_household.dart';
+import '../../shared/providers/household.dart';
 
 Future<void> showInviteUserDialog(BuildContext context) async {
   return showDialog(

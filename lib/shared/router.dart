@@ -14,16 +14,16 @@ import '../features/profile/screen_profile.dart';
 import '../features/profile/screen_register.dart';
 import '../features/profile/screen_reset_password.dart';
 import '../features/recipes/screen_collection.dart';
-import '../features/recipes/screen_recipes_single.dart';
+import '../features/recipes/screen_recipe.dart';
 import '../features/recipes/screen_saved.dart';
+import '../features/recipes/section_recipe_actions.dart';
 import '../features/shopping/screen_shopping.dart';
 import 'extensions.dart';
+import 'layouts/root_layout.dart';
 import 'models/recipe.dart';
 import 'providers/shell.dart';
 import 'providers/user.dart';
 import 'route_names.dart';
-import 'views/root_layout.dart';
-import 'widgets/recipes/view_recipe_actions.dart';
 
 part 'router.g.dart';
 

@@ -4,13 +4,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../shared/components/empty_state.dart';
+import '../../shared/components/error_state.dart';
 import '../../shared/extensions.dart';
 import '../../shared/hooks.dart';
 import '../../shared/models/shopping_item.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
-import '../../shared/widgets/empty_state_view.dart';
-import '../../shared/widgets/error_view.dart';
-import 'view_add_item_dialog.dart';
+import 'dialog_add_item.dart';
 
 part 'screen_shopping.g.dart';
 
@@ -222,7 +222,7 @@ class ShoppingScreen extends HookConsumerWidget {
     return itemsAsync.when(
       data: (state) {
         if (state.items.isEmpty) {
-          return EmptyStateView(
+          return EmptyState(
             icon: Icons.shopping_basket_outlined,
             title: 'Your shopping list is empty',
             subtitle: 'Tap the + button to add items you need for your recipes.',
@@ -315,7 +315,7 @@ class ShoppingScreen extends HookConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => ErrorView(
+      error: (err, stack) => ErrorState(
         message: err.toString(),
         onRetry: () => ref.invalidate(shoppingItemsProvider),
       ),

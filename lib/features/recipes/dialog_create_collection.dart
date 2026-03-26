@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/widgets/text_input_dialog.dart';
-import 'notifier_saved.dart';
+import '../../shared/components/dialog_text_input.dart';
+import '../../shared/providers/saved.dart';
 
 void showCreateCollectionDialog(BuildContext context, WidgetRef ref) {
   showDialog<void>(

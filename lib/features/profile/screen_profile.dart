@@ -3,13 +3,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/components/profile_details.dart';
 import '../../shared/extensions.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/route_names.dart';
-import '../../shared/widgets/app_version.dart';
+import '../../shared/sections/app_version.dart';
 import 'dialog_join_household.dart';
-import 'view_household_details.dart';
-import 'view_profile_details.dart';
+import 'section_household_details.dart';
 
 class ProfileScreen extends HookConsumerWidget {
   final String? joinCode;
@@ -44,7 +44,7 @@ class ProfileScreen extends HookConsumerWidget {
         children: [
           ProfileDetails(name: name, email: email, image: image),
           const SizedBox(height: 16),
-          const ViewHouseholdDetails(),
+          const HouseholdDetails(),
           const SizedBox(height: 16),
           const Divider(),
           ListTile(

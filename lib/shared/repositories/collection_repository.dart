@@ -1,9 +1,9 @@
-import 'package:buryak/shared/repositories/recipe_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/collection.dart';
 import '../models/paginated_list.dart';
 import '../models/recipe.dart';
+import 'recipe_repository.dart';
 import 'repository.dart';
 
 part 'collection_repository.g.dart';

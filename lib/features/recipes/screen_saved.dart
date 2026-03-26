@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/components/error_state.dart';
 import '../../shared/hooks.dart';
+import '../../shared/providers/saved.dart';
 import '../../shared/providers/shell.dart';
-import '../../shared/widgets/error_view.dart';
-import '../../shared/widgets/recipe_search_bar.dart';
 import 'dialog_create_collection.dart';
 import 'dialog_import_recipe.dart';
-import 'notifier_saved.dart';
-import 'view_saved_tabs.dart';
+import 'section_recipe_search_bar.dart';
+import 'section_saved_tabs.dart';
 
 class SavedScreen extends HookConsumerWidget {
   const SavedScreen({super.key});
@@ -89,7 +89,7 @@ class SavedScreen extends HookConsumerWidget {
             controller: tabController,
             children: [
               recipesAsync.when(
-                data: (recipes) => SavedRecipesTab(
+                data: (recipes) => SavedTabs(
                   recipes: recipes,
                   filter: filter,
                   onLoadMore: handleLoadMoreRecipes,
@@ -97,7 +97,7 @@ class SavedScreen extends HookConsumerWidget {
                   hasMore: recipesNotifier.hasMore,
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => ErrorView(message: err.toString()),
+                error: (err, stack) => ErrorState(message: err.toString()),
               ),
               collectionsAsync.when(
                 data: (collections) => SavedCookbooksTab(
@@ -108,7 +108,7 @@ class SavedScreen extends HookConsumerWidget {
                   hasMore: collectionsNotifier.hasMore,
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => ErrorView(message: err.toString()),
+                error: (err, stack) => ErrorState(message: err.toString()),
               ),
             ],
           ),

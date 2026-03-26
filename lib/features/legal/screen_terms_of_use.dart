@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../shared/constants.dart';
+import '../../shared/layouts/article_content.dart';
 import '../../shared/route_names.dart';
-import '../../shared/views/article_content.dart';
 
 class TermsOfUseScreen extends StatelessWidget {
   const TermsOfUseScreen({super.key});

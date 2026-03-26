@@ -5,14 +5,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../shared/components/empty_state.dart';
+import '../../shared/components/error_state.dart';
 import '../../shared/extensions.dart';
 import '../../shared/models/meal_plan.dart';
 import '../../shared/providers/date.dart';
 import '../../shared/repositories/meal_plan_repository.dart';
 import '../../shared/route_names.dart';
-import '../../shared/widgets/empty_state_view.dart';
-import '../../shared/widgets/error_view.dart';
-import '../../shared/views/view_plan_bottom_sheet.dart';
+import 'dialog_edit_plan.dart';
 
 part 'screen_planner.g.dart';
 
@@ -52,7 +52,7 @@ class PlannerScreen extends ConsumerWidget {
     return mealPlanAsync.when(
       data: (entries) {
         if (entries.isEmpty) {
-          return EmptyStateView(
+          return EmptyState(
             icon: Icons.calendar_today_outlined,
             title: 'No meals planned this week.',
             action: TextButton.icon(
@@ -119,7 +119,7 @@ class PlannerScreen extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => ErrorView(
+      error: (err, stack) => ErrorState(
         message: err.toString(),
         onRetry: () => ref.invalidate(mealPlanWeekProvider),
       ),

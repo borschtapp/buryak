@@ -3,6 +3,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../shared/components/dialog_text_input.dart';
+import '../../shared/components/empty_state.dart';
+import '../../shared/components/error_state.dart';
 import '../../shared/hooks.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
@@ -10,11 +13,8 @@ import '../../shared/paged_notifier_mixin.dart';
 import '../../shared/providers/shell.dart';
 import '../../shared/repositories/feed_repository.dart';
 import '../../shared/repositories/recipe_repository.dart';
-import '../../shared/widgets/empty_state_view.dart';
-import '../../shared/widgets/error_view.dart';
-import '../../shared/widgets/recipe_search_bar.dart';
-import '../../shared/widgets/recipes/view_recipes_grid.dart';
-import '../../shared/widgets/text_input_dialog.dart';
+import '../recipes/section_recipe_search_bar.dart';
+import '../recipes/section_recipes_grid.dart';
 
 part 'screen_explore.g.dart';
 
@@ -138,7 +138,7 @@ class ExploreScreen extends HookConsumerWidget {
         Expanded(
           child: streamAsync.when(
             data: (results) => results.isEmpty
-                ? EmptyStateView(
+                ? EmptyState(
                     icon: Icons.explore_outlined,
                     title: filter.isEmpty ? 'No recipes found' : 'No results',
                     subtitle: filter.isEmpty
@@ -161,7 +161,7 @@ class ExploreScreen extends HookConsumerWidget {
                   )
                 : RefreshIndicator(
                     onRefresh: () async => ref.invalidate(feedStreamProvider),
-                    child: RecipesGridView(
+                    child: RecipesGrid(
                       results,
                       onLoadMore: handleLoadMore,
                       isLoadingMore: isLoadingMore.value,
@@ -169,7 +169,7 @@ class ExploreScreen extends HookConsumerWidget {
                     ),
                   ),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => ErrorView(
+            error: (err, stack) => ErrorState(
               message: err.toString(),
               onRetry: () => ref.invalidate(feedStreamProvider),
             ),

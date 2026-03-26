@@ -4,7 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/providers/saved.dart';
 import '../../shared/repositories/recipe_repository.dart';
-import 'notifier_saved.dart';
 
 part 'controller_recipe.g.dart';
 

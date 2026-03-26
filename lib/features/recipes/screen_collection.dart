@@ -3,12 +3,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../shared/components/error_state.dart';
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/paged_notifier_mixin.dart';
 import '../../shared/repositories/collection_repository.dart';
-import '../../shared/widgets/error_view.dart';
-import '../../shared/widgets/recipes/view_recipes_grid.dart';
+import 'section_recipes_grid.dart';
 
 part 'screen_collection.g.dart';
 
@@ -72,7 +72,7 @@ class CollectionScreen extends HookConsumerWidget {
         if (recipes.isEmpty) {
           return const Center(child: Text('No recipes in this cookbook yet.'));
         }
-        return RecipesGridView(
+        return RecipesGrid(
           recipes,
           onLoadMore: handleLoadMore,
           isLoadingMore: isLoadingMore.value,
@@ -80,7 +80,7 @@ class CollectionScreen extends HookConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => ErrorView(
+      error: (err, stack) => ErrorState(
         message: err.toString(),
         onRetry: () => ref.invalidate(collectionRecipesProvider(collectionId)),
       ),
