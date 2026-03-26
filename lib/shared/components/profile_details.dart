@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../extensions.dart';
+import '../util/extensions.dart';
 import 'profile_avatar.dart';
 
 class ProfileDetails extends StatelessWidget {

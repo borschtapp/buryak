@@ -7,11 +7,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/components/empty_state.dart';
 import '../../shared/components/error_state.dart';
-import '../../shared/extensions.dart';
 import '../../shared/models/meal_plan.dart';
 import '../../shared/providers/date.dart';
 import '../../shared/repositories/meal_plan_repository.dart';
 import '../../shared/route_names.dart';
+import '../../shared/util/extensions.dart';
 import 'dialog_edit_plan.dart';
 
 part 'screen_planner.g.dart';
@@ -27,10 +27,17 @@ class MealPlanWeek extends _$MealPlanWeek {
     return result.data;
   }
 
+  void updatePlan(MealPlan updated) {
+    state = state.whenData((plans) => plans.map((p) => p.id == updated.id ? updated : p).toList());
+  }
+
+  void addPlan(MealPlan plan) {
+    state = state.whenData((plans) => [...plans, plan]);
+  }
+
   Future<void> deletePlan(String id) async {
     final previousState = state;
 
-    // Optimistic update
     state = state.whenData((plans) => plans.where((p) => p.id != id).toList());
 
     try {
@@ -101,7 +108,7 @@ class PlannerScreen extends ConsumerWidget {
                     '${DateFormat('MMM d').format(entry.date)} · ${entry.mealType.name.capitalize()}',
                   ),
                   trailing: Text(
-                    '${entry.servings ?? 1} serving${(entry.servings ?? 1) == 1 ? '' : 's'}',
+                    (entry.servings ?? 1).pluralize('serving'),
                     style: context.textTheme.bodySmall,
                   ),
                   onTap: entry.recipeId != null ? () => context.goNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!}) : null,

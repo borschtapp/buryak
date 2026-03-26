@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../extensions.dart';
 import '../../models/recipe.dart';
+import '../../util/error_extensions.dart';
+import '../../util/extensions.dart';
 
-class RecipeAuthorLine extends StatelessWidget {
+class RecipeAuthorLine extends ConsumerWidget {
   final Recipe recipe;
   final bool showPrefix;
   final bool useUnderline;
@@ -17,7 +19,7 @@ class RecipeAuthorLine extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final name = recipe.author?.name ?? recipe.publisher?.name;
     final url = recipe.author?.url ?? recipe.publisher?.url;
 
@@ -40,11 +42,7 @@ class RecipeAuthorLine extends StatelessWidget {
                   );
                 }
               } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
-                }
+                ref.handleException(e);
               }
             },
             child: Text(

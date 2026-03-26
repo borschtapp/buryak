@@ -19,9 +19,6 @@ class SavedScreen extends HookConsumerWidget {
     final tabController = useTabController(initialLength: 2);
     useListenable(tabController);
 
-    final isLoadingMoreRecipes = useState(false);
-    final isLoadingMoreCollections = useState(false);
-
     final fab = useMemoized(
       () => _buildFab(context, ref, tabController.index),
       [tabController.index],
@@ -33,26 +30,6 @@ class SavedScreen extends HookConsumerWidget {
     final collectionsAsync = ref.watch(savedCollectionsProvider);
     final recipesNotifier = ref.read(savedRecipesProvider.notifier);
     final collectionsNotifier = ref.read(savedCollectionsProvider.notifier);
-
-    Future<void> handleLoadMoreRecipes() async {
-      if (isLoadingMoreRecipes.value || !recipesNotifier.hasMore) return;
-      isLoadingMoreRecipes.value = true;
-      try {
-        await recipesNotifier.loadMore();
-      } finally {
-        if (context.mounted) isLoadingMoreRecipes.value = false;
-      }
-    }
-
-    Future<void> handleLoadMoreCollections() async {
-      if (isLoadingMoreCollections.value || !collectionsNotifier.hasMore) return;
-      isLoadingMoreCollections.value = true;
-      try {
-        await collectionsNotifier.loadMore();
-      } finally {
-        if (context.mounted) isLoadingMoreCollections.value = false;
-      }
-    }
 
     final filter = ref.read(savedRecipesFilterProvider);
 
@@ -92,8 +69,8 @@ class SavedScreen extends HookConsumerWidget {
                 data: (recipes) => SavedTabs(
                   recipes: recipes,
                   filter: filter,
-                  onLoadMore: handleLoadMoreRecipes,
-                  isLoadingMore: isLoadingMoreRecipes.value,
+                  onLoadMore: recipesNotifier.loadMore,
+                  isLoadingMore: recipesNotifier.isLoadingMore,
                   hasMore: recipesNotifier.hasMore,
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -103,8 +80,8 @@ class SavedScreen extends HookConsumerWidget {
                 data: (collections) => SavedCookbooksTab(
                   collections: collections,
                   onCreateCollection: () => showCreateCollectionDialog(context, ref),
-                  onLoadMore: handleLoadMoreCollections,
-                  isLoadingMore: isLoadingMoreCollections.value,
+                  onLoadMore: collectionsNotifier.loadMore,
+                  isLoadingMore: collectionsNotifier.isLoadingMore,
                   hasMore: collectionsNotifier.hasMore,
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),

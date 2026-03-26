@@ -9,7 +9,7 @@ import '../../shared/components/error_state.dart';
 import '../../shared/hooks.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
-import '../../shared/paged_notifier_mixin.dart';
+import '../../shared/providers/paged_notifier_mixin.dart';
 import '../../shared/providers/shell.dart';
 import '../../shared/repositories/feed_repository.dart';
 import '../../shared/repositories/recipe_repository.dart';
@@ -39,7 +39,7 @@ class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
         .stream(
           preload: _preload,
           filter: filter,
-          limit: pageSize,
+          limit: limit,
           offset: 0,
         );
     return result.data;
@@ -89,8 +89,6 @@ class ExploreScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLoadingMore = useState(false);
-
     final fab = useMemoized(
       () => FloatingActionButton(
         heroTag: 'explore_add_fab',
@@ -105,16 +103,6 @@ class ExploreScreen extends HookConsumerWidget {
     final streamAsync = ref.watch(feedStreamProvider);
     final notifier = ref.read(feedStreamProvider.notifier);
     final filter = ref.read(exploreFilterProvider);
-
-    Future<void> handleLoadMore() async {
-      if (isLoadingMore.value || !notifier.hasMore) return;
-      isLoadingMore.value = true;
-      try {
-        await notifier.loadMore();
-      } finally {
-        if (context.mounted) isLoadingMore.value = false;
-      }
-    }
 
     return Column(
       children: [
@@ -163,8 +151,8 @@ class ExploreScreen extends HookConsumerWidget {
                     onRefresh: () async => ref.invalidate(feedStreamProvider),
                     child: RecipesGrid(
                       results,
-                      onLoadMore: handleLoadMore,
-                      isLoadingMore: isLoadingMore.value,
+                      onLoadMore: notifier.loadMore,
+                      isLoadingMore: notifier.isLoadingMore,
                       hasMore: notifier.hasMore,
                     ),
                   ),

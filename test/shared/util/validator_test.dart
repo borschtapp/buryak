@@ -1,5 +1,5 @@
+import 'package:buryak/shared/util/validator.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:buryak/shared/validator.dart';
 
 void main() {
   group('Validator.validateEmail', () {

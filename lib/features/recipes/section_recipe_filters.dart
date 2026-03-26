@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../shared/extensions.dart';
+import '../../shared/components/loading_with_message.dart';
 import '../../shared/models/equipment.dart';
 import '../../shared/models/recipe_filter.dart';
 import '../../shared/models/taxonomy.dart';
 import '../../shared/repositories/equipment_repository.dart';
 import '../../shared/repositories/taxonomy_repository.dart';
+import '../../shared/util/extensions.dart';
 
 part 'section_recipe_filters.g.dart';
 
@@ -60,35 +61,45 @@ class _RecipeFiltersState extends State<RecipeFilters> {
   }
 
   void _toggleTaxonomy(String id) {
+    final newIds = _filter.taxonomyIds.toggled(id);
+    final newFilter = _filter.copyWith(taxonomyIds: newIds);
+
     setState(() {
-      _filter = _filter.copyWith(
-        taxonomyIds: _filter.taxonomyIds.toggled(id),
-      );
-      widget.onFilterChanged?.call(_filter);
+      _filter = newFilter;
     });
+
+    widget.onFilterChanged?.call(newFilter);
   }
 
   void _toggleEquipment(String id) {
+    final newIds = _filter.equipmentIds.toggled(id);
+    final newFilter = _filter.copyWith(equipmentIds: newIds);
+
     setState(() {
-      _filter = _filter.copyWith(
-        equipmentIds: _filter.equipmentIds.toggled(id),
-      );
-      widget.onFilterChanged?.call(_filter);
+      _filter = newFilter;
     });
+
+    widget.onFilterChanged?.call(newFilter);
   }
 
   void _setSort(SortField field, SortOrder order) {
+    final newFilter = _filter.copyWith(sort: field.name, order: order.name);
+
     setState(() {
-      _filter = _filter.copyWith(sort: field.name, order: order.name);
-      widget.onFilterChanged?.call(_filter);
+      _filter = newFilter;
     });
+
+    widget.onFilterChanged?.call(newFilter);
   }
 
   void _setCookTimeMax(int? seconds) {
+    final newFilter = _filter.copyWith(cookTimeMax: seconds);
+
     setState(() {
-      _filter = _filter.copyWith(cookTimeMax: seconds);
-      widget.onFilterChanged?.call(_filter);
+      _filter = newFilter;
     });
+
+    widget.onFilterChanged?.call(newFilter);
   }
 
   @override
@@ -269,16 +280,7 @@ class _TaxonomySection extends ConsumerWidget {
           ],
         );
       },
-      loading: () => Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
-            const SizedBox(width: 12),
-            Text('Loading $title...', style: context.textTheme.bodySmall),
-          ],
-        ),
-      ),
+      loading: () => LoadingWithMessage(message: 'Loading $title...'),
       error: (e, s) => Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: Text(
@@ -327,16 +329,7 @@ class _EquipmentSection extends ConsumerWidget {
           ],
         );
       },
-      loading: () => Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
-            const SizedBox(width: 12),
-            Text('Loading Equipment...', style: Theme.of(context).textTheme.bodySmall),
-          ],
-        ),
-      ),
+      loading: () => const LoadingWithMessage(message: 'Loading Equipment...'),
       error: (e, s) => Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: Text(

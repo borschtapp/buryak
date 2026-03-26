@@ -45,7 +45,7 @@ class MealPlanRepository extends Repository {
       method: .post,
       body: {
         'date': DateFormat('yyyy-MM-dd').format(date),
-        'meal_type': mealType.name,
+        'meal_type': mealType.toJsonValue(),
         'description': ?description,
         'servings': ?servings,
         'recipe_id': ?recipeId,
@@ -67,7 +67,7 @@ class MealPlanRepository extends Repository {
       path: '/$id',
       body: {
         if (date != null) 'date': DateFormat('yyyy-MM-dd').format(date),
-        'meal_type': ?mealType?.name,
+        'meal_type': ?mealType?.toJsonValue(),
         'description': ?description,
         'servings': ?servings,
         'recipe_id': ?recipeId,

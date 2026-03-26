@@ -3,20 +3,16 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../models/collection.dart';
 import '../models/recipe.dart';
 import '../models/recipe_filter.dart';
-import '../paged_notifier_mixin.dart';
 import '../repositories/collection_repository.dart';
 import '../repositories/recipe_repository.dart';
+import 'paged_notifier_mixin.dart';
 
 part 'saved.g.dart';
 
 @riverpod
 Set<String> savedRecipeIds(Ref ref) {
-  final savedRecipesAsync = ref.watch(savedRecipesProvider);
-  return savedRecipesAsync.when<Set<String>>(
-    data: (List<Recipe> recipes) => recipes.where((r) => r.isSaved == true).map((r) => r.id).toSet(),
-    loading: () => {},
-    error: (err, stack) => {},
-  );
+  final recipes = ref.watch(savedRecipesProvider).asData?.value ?? [];
+  return recipes.map((r) => r.id).toSet();
 }
 
 @riverpod
@@ -45,7 +41,7 @@ class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
         .findAll(
           preload: _preload,
           filter: filter,
-          limit: pageSize,
+          limit: limit,
           offset: 0,
         );
     return result.data;
@@ -80,7 +76,7 @@ class SavedCollections extends _$SavedCollections with PagedNotifierMixin<Collec
         .read(collectionRepositoryProvider)
         .findAll(
           preload: _preload,
-          limit: pageSize,
+          limit: limit,
           offset: 0,
         );
     return result.data;

@@ -4,14 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/empty_state.dart';
-import '../../shared/extensions.dart';
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
 import '../../shared/providers/saved.dart';
 import '../../shared/repositories/collection_repository.dart';
-import '../../shared/repositories/repository.dart';
 import '../../shared/route_names.dart';
+import '../../shared/util/error_extensions.dart';
+import '../../shared/util/extensions.dart';
 import 'section_recipes_grid.dart';
 
 class SavedTabs extends ConsumerWidget {
@@ -220,17 +220,7 @@ class SavedCookbooksTab extends ConsumerWidget {
                 ref.invalidate(savedCollectionsProvider);
                 if (context.mounted) Navigator.pop(context);
               } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Failed to delete cookbook: ${e is GeneralApiException ? e.message : "Unexpected error"}',
-                      ),
-                    ),
-                  );
-                }
+                ref.handleException(e);
               }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),

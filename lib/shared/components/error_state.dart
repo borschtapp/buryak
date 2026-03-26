@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../extensions.dart';
+import '../util/extensions.dart';
 
 class ErrorState extends StatelessWidget {
   final String message;

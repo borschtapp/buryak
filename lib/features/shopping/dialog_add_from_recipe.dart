@@ -3,9 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/extensions.dart';
+import '../../shared/components/loading_indicator.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
+import '../../shared/util/error_extensions.dart';
+import '../../shared/util/extensions.dart';
 import 'screen_shopping.dart';
 
 class ShoppingBottomSheet extends HookConsumerWidget {
@@ -61,17 +63,16 @@ class ShoppingBottomSheet extends HookConsumerWidget {
           }
         }
       } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
-          );
-        }
+        ref.handleException(e);
       } finally {
         isSaving.value = false;
       }
     }
 
-    final ingredients = (recipe.ingredients ?? []).where((i) => i.food?.pantry != true).toList();
+    final ingredients = useMemoized(
+      () => (recipe.ingredients ?? []).where((i) => i.food?.pantry != true).toList(),
+      [recipe.ingredients],
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -127,13 +128,7 @@ class ShoppingBottomSheet extends HookConsumerWidget {
             padding: const EdgeInsets.all(20),
             child: FilledButton(
               onPressed: isSaving.value || selectedIngredientIds.value.isEmpty ? null : save,
-              child: isSaving.value
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Text('Add to list'),
+              child: isSaving.value ? const LoadingIndicator() : const Text('Add to list'),
             ),
           ),
         ],

@@ -6,49 +6,42 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/components/empty_state.dart';
 import '../../shared/components/error_state.dart';
-import '../../shared/extensions.dart';
 import '../../shared/hooks.dart';
 import '../../shared/models/shopping_item.dart';
+import '../../shared/providers/paged_notifier_mixin.dart';
+import '../../shared/providers/shopping.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
+import '../../shared/util/extensions.dart';
 import 'dialog_add_item.dart';
 
 part 'screen_shopping.g.dart';
 
-const int _pageSize = 20;
-
 @Riverpod(keepAlive: true)
-class ShoppingItems extends _$ShoppingItems {
+class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem> {
   late String _primaryListId;
-  late int _totalItems;
 
   @override
-  FutureOr<ShoppingItemsState> build() async {
+  int get limit => 20;
+
+  @override
+  List<ShoppingItem> Function(List<ShoppingItem>)? get sortItems => _sortItems;
+
+  @override
+  Future<List<ShoppingItem>> build() async {
+    resetPagination();
     var listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
     var lists = listsResponse.data;
 
     if (lists.isEmpty) {
-      return ShoppingItemsState(items: [], hasMore: false, isLoading: false);
+      _primaryListId = '';
+      return [];
     }
 
     final primaryList = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
     _primaryListId = primaryList.id;
 
-    final itemsResponse = await ref
-        .read(shoppingListRepositoryProvider)
-        .findItems(
-          primaryList.id,
-          limit: _pageSize,
-          offset: 0,
-        );
-
-    _totalItems = itemsResponse.meta.total;
-    final hasMore = itemsResponse.data.length < _totalItems;
-
-    return ShoppingItemsState(
-      items: _sortItems(itemsResponse.data),
-      hasMore: hasMore,
-      isLoading: false,
-    );
+    final itemsResponse = await ref.read(shoppingListRepositoryProvider).findItems(primaryList.id, limit: limit, offset: 0);
+    return itemsResponse.data;
   }
 
   List<ShoppingItem> _sortItems(List<ShoppingItem> items) {
@@ -59,62 +52,26 @@ class ShoppingItems extends _$ShoppingItems {
     });
   }
 
-  Future<void> loadMore() async {
-    final currentState = state.value;
-    if (currentState == null || !currentState.hasMore || currentState.isLoading) {
-      return;
-    }
-
-    state = AsyncData(currentState.copyWith(isLoading: true));
-
-    try {
-      final offset = currentState.items.length;
-      final itemsResponse = await ref
-          .read(shoppingListRepositoryProvider)
-          .findItems(
-            _primaryListId,
-            limit: _pageSize,
-            offset: offset,
-          );
-
-      final newItems = [...currentState.items, ...itemsResponse.data];
-      final hasMore = newItems.length < _totalItems;
-
-      state = AsyncData(
-        currentState.copyWith(
-          items: _sortItems(newItems),
-          hasMore: hasMore,
-          isLoading: false,
-        ),
-      );
-    } catch (e) {
-      state = AsyncData(currentState.copyWith(isLoading: false));
-      rethrow;
-    }
-  }
+  Future<void> loadMore() => loadNextPage((offset, pageLimit) {
+    return ref.read(shoppingListRepositoryProvider).findItems(_primaryListId, limit: pageLimit, offset: offset);
+  });
 
   Future<void> toggleItem(ShoppingItem item) async {
     final newValue = !(item.isBought ?? false);
 
-    // Optimistic Update
+    // Optimistic update: find and toggle the item
     final previousState = state;
     if (state.value != null) {
-      final items = [...state.value!.items];
+      final items = [...state.value!];
       final index = items.indexWhere((i) => i.id == item.id);
       if (index != -1) {
-        items[index] = item.copyWith(isBought: newValue);
-        state = AsyncData(state.value!.copyWith(items: _sortItems(items)));
+        items[index] = items[index].copyWith(isBought: newValue);
+        state = AsyncData(_sortItems(items));
       }
     }
 
     try {
-      await ref
-          .read(shoppingListRepositoryProvider)
-          .updateItem(
-            _primaryListId,
-            item.id,
-            isBought: newValue,
-          );
+      await ref.read(shoppingListRepositoryProvider).updateItem(_primaryListId, item.id, isBought: newValue);
     } catch (e) {
       state = previousState;
       rethrow;
@@ -125,9 +82,7 @@ class ShoppingItems extends _$ShoppingItems {
     final previousState = state;
 
     // Optimistic update: remove item from the current state list
-    state = state.whenData(
-      (s) => s.copyWith(items: s.items.where((i) => i.id != id).toList()),
-    );
+    state = state.whenData((items) => items.where((i) => i.id != id).toList());
 
     try {
       await ref.read(shoppingListRepositoryProvider).deleteItem(_primaryListId, id);
@@ -139,51 +94,19 @@ class ShoppingItems extends _$ShoppingItems {
   }
 
   Future<void> addItem(String name) async {
-    // We need the list ID. Find it from the current lists or re-fetch.
-    final listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
-    var lists = listsResponse.data;
-    if (lists.isEmpty) {
-      final newList = await ref.read(shoppingListRepositoryProvider).create('Shopping List', isDefault: true);
-      lists = [newList];
-    }
-    final primaryList = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
-    _primaryListId = primaryList.id;
-
-    final newItem = await ref.read(shoppingListRepositoryProvider).createItem(_primaryListId, name);
+    // Get the primary list ID from cache (or fetch if not cached)
+    final primaryListId = await ref.read(primaryShoppingListIdProvider.future);
+    _primaryListId = primaryListId;
+    final newItem = await ref.read(shoppingListRepositoryProvider).createItem(primaryListId, name);
 
     if (state.value != null) {
-      final items = [...state.value!.items];
+      final items = [...state.value!];
+      // New items are not bought, so insert at beginning (before any bought items)
       items.insert(0, newItem);
-      _totalItems++;
-      state = AsyncData(state.value!.copyWith(items: _sortItems(items)));
+      state = AsyncData(items);
     } else {
-      _totalItems = 1;
-      state = AsyncData(ShoppingItemsState(items: [newItem], hasMore: false, isLoading: false));
+      state = AsyncData([newItem]);
     }
-  }
-}
-
-class ShoppingItemsState {
-  final List<ShoppingItem> items;
-  final bool hasMore;
-  final bool isLoading;
-
-  ShoppingItemsState({
-    required this.items,
-    required this.hasMore,
-    required this.isLoading,
-  });
-
-  ShoppingItemsState copyWith({
-    List<ShoppingItem>? items,
-    bool? hasMore,
-    bool? isLoading,
-  }) {
-    return ShoppingItemsState(
-      items: items ?? this.items,
-      hasMore: hasMore ?? this.hasMore,
-      isLoading: isLoading ?? this.isLoading,
-    );
   }
 }
 
@@ -218,10 +141,11 @@ class ShoppingScreen extends HookConsumerWidget {
     );
 
     final itemsAsync = ref.watch(shoppingItemsProvider);
+    final notifier = ref.read(shoppingItemsProvider.notifier);
 
     return itemsAsync.when(
-      data: (state) {
-        if (state.items.isEmpty) {
+      data: (List<ShoppingItem> items) {
+        if (items.isEmpty) {
           return EmptyState(
             icon: Icons.shopping_basket_outlined,
             title: 'Your shopping list is empty',
@@ -238,21 +162,22 @@ class ShoppingScreen extends HookConsumerWidget {
           child: ListView.separated(
             controller: scrollController,
             padding: const EdgeInsets.all(16),
-            itemCount: state.items.length + (state.hasMore ? 1 : 0),
+            itemCount: items.length + (notifier.hasMore ? 1 : 0),
             separatorBuilder: (context, index) {
-              if (index == state.items.length) return const SizedBox.shrink();
+              if (index == items.length) return const SizedBox.shrink();
               return const Divider(height: 1);
             },
             itemBuilder: (context, index) {
-              // Loading indicator at the end
-              if (index == state.items.length) {
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: state.isLoading ? const CircularProgressIndicator() : const SizedBox.shrink(),
-                );
+              if (index == items.length) {
+                return notifier.isLoadingMore
+                    ? const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : const SizedBox.shrink();
               }
 
-              final item = state.items[index];
+              final item = items[index];
               return Dismissible(
                 key: ValueKey(item.id),
                 background: Container(

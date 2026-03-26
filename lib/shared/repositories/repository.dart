@@ -232,6 +232,9 @@ class RequestHandler {
       } on GeneralApiException {
         rethrow;
       } catch (e) {
+        if (kDebugMode) {
+          dev.log('✗ API Error: $e', name: 'http', error: e);
+        }
         throw GeneralApiException(message: e.toString());
       }
     }

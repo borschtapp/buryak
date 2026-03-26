@@ -4,12 +4,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/extensions.dart';
+import '../../shared/components/loading_indicator.dart';
 import '../../shared/layouts/scaffold_login_page.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/repositories/repository.dart';
 import '../../shared/route_names.dart';
-import '../../shared/validator.dart';
+import '../../shared/util/extensions.dart';
+import '../../shared/util/validator.dart';
 
 class RegisterScreen extends HookConsumerWidget {
   final String? inviteCode;
@@ -177,13 +178,7 @@ class RegisterScreen extends HookConsumerWidget {
               const SizedBox(height: 14),
               ElevatedButton(
                 onPressed: isLoading.value ? null : register,
-                child: isLoading.value
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Register'),
+                child: isLoading.value ? const LoadingIndicator() : const Text('Register'),
               ),
               const SizedBox(height: 15),
               TextButton(

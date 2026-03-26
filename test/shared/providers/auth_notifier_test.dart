@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../helpers/fake_user.dart';
+import '../../helpers/fake_user.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 

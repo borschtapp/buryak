@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../../shared/extensions.dart';
 import '../../shared/models/recipe_filter.dart';
+import '../../shared/util/extensions.dart';
 import 'section_recipe_filters.dart';
 
 /// A search bar row with a debounced text field and a filter button.

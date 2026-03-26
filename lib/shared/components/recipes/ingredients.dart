@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../extensions.dart';
 import '../../models/equipment.dart';
 import '../../models/recipe_ingredient.dart';
+import '../../util/extensions.dart';
 
 class Ingredients extends StatelessWidget {
   final List<RecipeIngredient> ingredients;

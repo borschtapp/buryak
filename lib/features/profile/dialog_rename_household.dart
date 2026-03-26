@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/components/loading_indicator.dart';
 import '../../shared/providers/household.dart';
+import '../../shared/util/error_extensions.dart';
 
 Future<void> showRenameHouseholdDialog(BuildContext context) async {
   return showDialog(
@@ -50,16 +52,12 @@ class DialogRenameHousehold extends HookConsumerWidget {
                     await ref.read(householdProvider.notifier).rename(controller.text.trim());
                     if (context.mounted) Navigator.of(context).pop();
                   } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-                    }
+                    ref.handleException(e);
                   } finally {
                     if (context.mounted) isLoading.value = false;
                   }
                 },
-          child: isLoading.value
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-              : const Text('Save'),
+          child: isLoading.value ? const LoadingIndicator() : const Text('Save'),
         ),
       ],
     );

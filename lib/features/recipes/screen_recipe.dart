@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/error_state.dart';
-import '../../shared/extensions.dart';
 import '../../shared/models/recipe.dart';
+import '../../shared/util/extensions.dart';
 import '../planner/dialog_edit_plan.dart';
 import '../shopping/dialog_add_from_recipe.dart';
 import 'controller_recipe.dart';

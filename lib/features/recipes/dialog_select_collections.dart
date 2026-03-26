@@ -3,9 +3,11 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/components/loading_indicator.dart';
 import '../../shared/models/collection.dart';
 import '../../shared/providers/saved.dart';
 import '../../shared/repositories/collection_repository.dart';
+import '../../shared/util/error_extensions.dart';
 import 'screen_collection.dart';
 
 void showCollectionsBottomSheet(
@@ -14,10 +16,7 @@ void showCollectionsBottomSheet(
   required String recipeId,
   List<Collection>? initialCollections,
 }) {
-  if (recipeId.isEmpty) {
-    debugPrint('showCollectionsBottomSheet called with empty recipeId');
-    return;
-  }
+  assert(recipeId.isNotEmpty, 'recipeId cannot be empty');
 
   showModalBottomSheet<void>(
     context: context,
@@ -81,11 +80,7 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                     const Text('Add to Cookbook', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     if (localAddedIds.value.isNotEmpty || localRemovedIds.value.isNotEmpty)
                       isSaving.value
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
+                          ? const LoadingIndicator()
                           : TextButton(
                               onPressed: () async {
                                 isSaving.value = true;
@@ -109,11 +104,7 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                                     Navigator.pop(context);
                                   }
                                 } catch (e) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error: $e')),
-                                    );
-                                  }
+                                  ref.handleException(e);
                                 } finally {
                                   isSaving.value = false;
                                 }

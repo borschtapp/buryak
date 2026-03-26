@@ -5,8 +5,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
-import '../extensions.dart';
 import '../providers/update.dart';
+import '../util/extensions.dart';
 
 class AppVersionText extends HookWidget {
   final EdgeInsetsGeometry padding;

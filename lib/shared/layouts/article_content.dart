@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../extensions.dart';
+import '../util/extensions.dart';
 
 class ArticleContent extends StatelessWidget {
   const ArticleContent({

@@ -10,9 +10,9 @@ import '../../shared/components/recipes/meta_row.dart';
 import '../../shared/components/recipes/nutrition.dart';
 import '../../shared/components/recipes/recipe_title.dart';
 import '../../shared/components/recipes/sticky_tab_bar_delegate.dart';
-import '../../shared/extensions.dart';
 import '../../shared/models/recipe.dart';
-import '../../shared/ui_constants.dart';
+import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 
 class RecipeMobileView extends HookWidget {
   const RecipeMobileView({super.key, required this.recipe});

@@ -1,5 +1,5 @@
 import 'package:buryak/shared/models/paginated_list.dart';
-import 'package:buryak/shared/paged_notifier_mixin.dart';
+import 'package:buryak/shared/providers/paged_notifier_mixin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -11,7 +11,7 @@ class TestPagedNotifier extends AsyncNotifier<List<int>> with PagedNotifierMixin
   }
 
   @override
-  int get pageSize => 3;
+  int get limit => 3;
 
   Future<void> loadMore(Future<PaginatedList<int>> Function(int offset, int limit) fetch) {
     return loadNextPage(fetch);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../extensions.dart';
 import '../../models/recipe.dart';
+import '../../util/extensions.dart';
 
 /// Metadata row + taxonomy chips for a recipe.
 ///

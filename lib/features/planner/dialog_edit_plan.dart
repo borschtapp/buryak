@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../shared/extensions.dart';
+import '../../shared/components/loading_indicator.dart';
 import '../../shared/models/meal_plan.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/meal_plan_repository.dart';
+import '../../shared/util/error_extensions.dart';
+import '../../shared/util/extensions.dart';
 import 'screen_planner.dart';
 
 class PlanBottomSheet extends HookConsumerWidget {
@@ -15,6 +17,15 @@ class PlanBottomSheet extends HookConsumerWidget {
   final MealPlan? plan;
 
   const PlanBottomSheet({super.key, this.recipe, this.plan}) : assert(recipe != null || plan != null, 'Must provide either recipe or plan');
+
+  static final List<ButtonSegment<MealType>> _mealTypeSegments = MealType.values
+      .map(
+        (type) => ButtonSegment<MealType>(
+          value: type,
+          label: Text(type.name.capitalize()),
+        ),
+      )
+      .toList();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,14 +35,13 @@ class PlanBottomSheet extends HookConsumerWidget {
     final servings = useState(plan?.servings ?? recipe?.yield ?? 1);
     final isSaving = useState(false);
 
-    final mealTypes = MealType.values;
-
     Future<void> selectDate() async {
+      final now = DateTime.now();
       final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate.value,
-        firstDate: isEditing ? DateTime.now().subtract(const Duration(days: 365)) : DateTime.now(),
-        lastDate: DateTime.now().add(const Duration(days: 365)),
+        firstDate: isEditing ? now.subtract(const Duration(days: 365)) : now,
+        lastDate: now.add(const Duration(days: 365)),
       );
       if (picked != null && picked != selectedDate.value) {
         selectedDate.value = picked;
@@ -41,26 +51,31 @@ class PlanBottomSheet extends HookConsumerWidget {
     Future<void> save() async {
       isSaving.value = true;
       try {
+        final updated = isEditing
+            ? await ref
+                  .read(mealPlanRepositoryProvider)
+                  .update(
+                    plan!.id,
+                    date: selectedDate.value,
+                    mealType: selectedMealType.value,
+                    servings: servings.value,
+                  )
+            : await ref
+                  .read(mealPlanRepositoryProvider)
+                  .create(
+                    selectedDate.value,
+                    selectedMealType.value,
+                    recipeId: recipe!.id,
+                    servings: servings.value,
+                  );
+
+        // Update local state instead of re-fetching the entire week
+        final notifier = ref.read(mealPlanWeekProvider.notifier);
         if (isEditing) {
-          await ref
-              .read(mealPlanRepositoryProvider)
-              .update(
-                plan!.id,
-                date: selectedDate.value,
-                mealType: selectedMealType.value,
-                servings: servings.value,
-              );
+          notifier.updatePlan(updated);
         } else {
-          await ref
-              .read(mealPlanRepositoryProvider)
-              .create(
-                selectedDate.value,
-                selectedMealType.value,
-                recipeId: recipe!.id,
-                servings: servings.value,
-              );
+          notifier.addPlan(updated);
         }
-        ref.invalidate(mealPlanWeekProvider);
 
         if (context.mounted) {
           context.pop();
@@ -69,13 +84,11 @@ class PlanBottomSheet extends HookConsumerWidget {
           );
         }
       } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
-          );
-        }
+        ref.handleException(e);
       } finally {
-        isSaving.value = false;
+        if (context.mounted) {
+          isSaving.value = false;
+        }
       }
     }
 
@@ -115,14 +128,7 @@ class PlanBottomSheet extends HookConsumerWidget {
           Text('Meal Type', style: context.textTheme.titleSmall),
           const SizedBox(height: 8),
           SegmentedButton<MealType>(
-            segments: mealTypes
-                .map(
-                  (type) => ButtonSegment<MealType>(
-                    value: type,
-                    label: Text(type.name.capitalize()),
-                  ),
-                )
-                .toList(),
+            segments: _mealTypeSegments,
             selected: {selectedMealType.value},
             onSelectionChanged: (Set<MealType> newSelection) {
               selectedMealType.value = newSelection.first;
@@ -149,13 +155,7 @@ class PlanBottomSheet extends HookConsumerWidget {
           const SizedBox(height: 32),
           FilledButton(
             onPressed: isSaving.value ? null : save,
-            child: isSaving.value
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : Text(buttonText),
+            child: isSaving.value ? const LoadingIndicator() : Text(buttonText),
           ),
         ],
       ),

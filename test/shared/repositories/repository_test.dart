@@ -1,9 +1,11 @@
 import 'dart:convert';
+
+import 'package:buryak/shared/repositories/repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:buryak/shared/repositories/repository.dart';
-import '../helpers/fake_user.dart';
+
+import '../../helpers/fake_user.dart';
 
 final dummyProvider = Provider<Ref>((ref) => ref);
 late Ref mockRef;

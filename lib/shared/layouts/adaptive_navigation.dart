@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../extensions.dart';
 import '../providers/theme.dart';
+import '../util/extensions.dart';
 import 'article_content.dart';
 
 class AdaptiveNavigation extends StatelessWidget {

@@ -4,8 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/recipes/author_line.dart';
 import '../../shared/components/recipes/placeholder.dart';
-import '../../shared/extensions.dart';
 import '../../shared/models/recipe.dart';
+import '../../shared/util/extensions.dart';
 import 'controller_recipe.dart';
 import 'dialog_select_collections.dart';
 

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../extensions.dart';
+import '../../util/extensions.dart';
 
 class RecipePlaceholder extends StatelessWidget {
   final double? height;

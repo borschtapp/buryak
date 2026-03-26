@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../extensions.dart';
 import '../../models/recipe_nutrition.dart';
+import '../../util/extensions.dart';
 
 class Nutrition extends StatelessWidget {
   final RecipeNutrition? nutrition;

@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../extensions.dart';
 import '../../models/recipe_instruction.dart';
+import '../../util/extensions.dart';
 
 class Instructions extends StatelessWidget {
   final List<RecipeInstruction> instructions;

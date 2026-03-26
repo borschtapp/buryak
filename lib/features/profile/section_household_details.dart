@@ -1,9 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/extensions.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/providers/user.dart';
+import '../../shared/util/extensions.dart';
 import 'dialog_invite_user.dart';
 import 'dialog_join_household.dart';
 import 'dialog_rename_household.dart';
@@ -78,7 +79,7 @@ class HouseholdDetails extends HookConsumerWidget {
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
-                        backgroundImage: member.imageUrl?.isNotEmpty == true ? NetworkImage(member.imageUrl!) : null,
+                        backgroundImage: member.imageUrl?.isNotEmpty == true ? CachedNetworkImageProvider(member.imageUrl!) : null,
                         child: member.imageUrl?.isEmpty != false ? const Icon(Icons.person) : null,
                       ),
                       title: Text('${member.name}${isMe ? ' (You)' : ''}'),

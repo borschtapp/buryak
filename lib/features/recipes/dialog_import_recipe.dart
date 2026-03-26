@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../shared/components/dialog_text_input.dart';
 import '../../shared/repositories/recipe_repository.dart';
 import '../../shared/route_names.dart';
-import '../../shared/validator.dart';
+import '../../shared/util/validator.dart';
 
 void showImportRecipeDialog(BuildContext context, WidgetRef ref) {
   showDialog<void>(

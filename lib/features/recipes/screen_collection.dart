@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/components/error_state.dart';
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
-import '../../shared/paged_notifier_mixin.dart';
+import '../../shared/providers/paged_notifier_mixin.dart';
 import '../../shared/repositories/collection_repository.dart';
 import 'section_recipes_grid.dart';
 
@@ -27,7 +26,7 @@ class CollectionRecipes extends _$CollectionRecipes with PagedNotifierMixin<Reci
         .getRecipes(
           id,
           preload: [.images, .saved, .collections, .publisher],
-          limit: pageSize,
+          limit: limit,
           offset: 0,
         );
     return result.data;
@@ -45,27 +44,15 @@ class CollectionRecipes extends _$CollectionRecipes with PagedNotifierMixin<Reci
   );
 }
 
-class CollectionScreen extends HookConsumerWidget {
+class CollectionScreen extends ConsumerWidget {
   final String collectionId;
 
   const CollectionScreen({super.key, required this.collectionId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLoadingMore = useState(false);
-
     final recipesAsync = ref.watch(collectionRecipesProvider(collectionId));
     final notifier = ref.read(collectionRecipesProvider(collectionId).notifier);
-
-    Future<void> handleLoadMore() async {
-      if (isLoadingMore.value || !notifier.hasMore) return;
-      isLoadingMore.value = true;
-      try {
-        await notifier.loadMore();
-      } finally {
-        if (context.mounted) isLoadingMore.value = false;
-      }
-    }
 
     return recipesAsync.when(
       data: (recipes) {
@@ -74,8 +61,8 @@ class CollectionScreen extends HookConsumerWidget {
         }
         return RecipesGrid(
           recipes,
-          onLoadMore: handleLoadMore,
-          isLoadingMore: isLoadingMore.value,
+          onLoadMore: notifier.loadMore,
+          isLoadingMore: notifier.isLoadingMore,
           hasMore: notifier.hasMore,
         );
       },

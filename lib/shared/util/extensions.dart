@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'providers/theme.dart';
-import 'util/breakpoints.dart';
+import '../providers/theme.dart';
+import 'breakpoints.dart';
 
 /// Provides convenient access to theme, typography, breakpoints, and navigation.
 /// Breakpoint checks (isTablet, isDesktop, isMobile) are based on device width.
@@ -52,6 +52,13 @@ extension StringExtensions on String {
     if (length == 1) return toUpperCase();
     return '${this[0].toUpperCase()}${substring(1)}';
   }
+}
+
+extension IntPluralize on int {
+  /// Formats a count with a noun, handling singular/plural forms.
+  /// Example: 1.pluralize('serving') → "1 serving"
+  ///          2.pluralize('serving') → "2 servings"
+  String pluralize(String singular, [String? plural]) => this == 1 ? '$this $singular' : '$this ${plural ?? '${singular}s'}';
 }
 
 extension SecondsToDuration on int? {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../extensions.dart';
-import '../repositories/repository.dart';
+import '../util/error_extensions.dart';
+import '../util/extensions.dart';
 
 /// A reusable dialog widget for collecting single text input from users.
 ///
@@ -64,7 +64,7 @@ class TextInputDialog extends HookConsumerWidget {
                 helperText: helperText,
                 errorText: validationError.value,
               ),
-              onSubmitted: isLoading.value ? null : (_) => _handleSubmit(context, controller, isLoading, validationError),
+              onSubmitted: isLoading.value ? null : (_) => _handleSubmit(context, ref, controller, isLoading, validationError),
             ),
             const SizedBox(height: 24),
             Row(
@@ -78,7 +78,7 @@ class TextInputDialog extends HookConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: FilledButton(
-                    onPressed: isLoading.value ? null : () => _handleSubmit(context, controller, isLoading, validationError),
+                    onPressed: isLoading.value ? null : () => _handleSubmit(context, ref, controller, isLoading, validationError),
                     child: Text(submitLabel),
                   ),
                 ),
@@ -92,6 +92,7 @@ class TextInputDialog extends HookConsumerWidget {
 
   Future<void> _handleSubmit(
     BuildContext context,
+    WidgetRef ref,
     TextEditingController controller,
     ValueNotifier<bool> isLoading,
     ValueNotifier<String?> validationError,
@@ -109,12 +110,7 @@ class TextInputDialog extends HookConsumerWidget {
     try {
       await onSubmit(value, context);
     } catch (e) {
-      if (context.mounted) {
-        final message = e is GeneralApiException ? e.message : 'An unexpected error occurred.';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
-      }
+      ref.handleException(e);
     } finally {
       if (context.mounted) {
         isLoading.value = false;

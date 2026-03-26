@@ -3,9 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../shared/components/loading_indicator.dart';
 import '../../shared/constants.dart';
-import '../../shared/extensions.dart';
 import '../../shared/providers/household.dart';
+import '../../shared/util/error_extensions.dart';
+import '../../shared/util/extensions.dart';
 
 Future<void> showInviteUserDialog(BuildContext context) async {
   return showDialog(
@@ -56,16 +58,12 @@ class DialogInviteUser extends HookConsumerWidget {
                         emailController.clear();
                       }
                     } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-                      }
+                      ref.handleException(e);
                     } finally {
                       if (context.mounted) isEmailLoading.value = false;
                     }
                   },
-            icon: isEmailLoading.value
-                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.email),
+            icon: isEmailLoading.value ? const LoadingIndicator() : const Icon(Icons.email),
             label: const Text('Send Email Invite'),
           ),
           const SizedBox(height: 24),
@@ -110,16 +108,12 @@ class DialogInviteUser extends HookConsumerWidget {
                           generatedCode.value = token.token; // "token" field contains the code
                         }
                       } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-                        }
+                        ref.handleException(e);
                       } finally {
                         if (context.mounted) isLinkLoading.value = false;
                       }
                     },
-              icon: isLinkLoading.value
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.link),
+              icon: isLinkLoading.value ? const LoadingIndicator() : const Icon(Icons.link),
               label: const Text('Generate Share Link'),
             ),
           ],

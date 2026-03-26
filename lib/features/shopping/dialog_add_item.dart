@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/util/error_extensions.dart';
 import 'screen_shopping.dart';
 
 Future<void> showAddItemDialog(BuildContext context, WidgetRef ref) async {
@@ -14,11 +15,7 @@ Future<void> showAddItemDialog(BuildContext context, WidgetRef ref) async {
     try {
       await ref.read(shoppingItemsProvider.notifier).addItem(name.trim());
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to add item.')),
-        );
-      }
+      ref.handleException(e);
     }
   }
 }

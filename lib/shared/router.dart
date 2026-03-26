@@ -18,12 +18,12 @@ import '../features/recipes/screen_recipe.dart';
 import '../features/recipes/screen_saved.dart';
 import '../features/recipes/section_recipe_actions.dart';
 import '../features/shopping/screen_shopping.dart';
-import 'extensions.dart';
 import 'layouts/root_layout.dart';
 import 'models/recipe.dart';
 import 'providers/shell.dart';
 import 'providers/user.dart';
 import 'route_names.dart';
+import 'util/extensions.dart';
 
 part 'router.g.dart';
 

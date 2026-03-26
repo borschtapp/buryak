@@ -3,11 +3,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/components/loading_indicator.dart';
 import '../../shared/components/profile_details.dart';
-import '../../shared/extensions.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/route_names.dart';
 import '../../shared/sections/app_version.dart';
+import '../../shared/util/error_extensions.dart';
+import '../../shared/util/extensions.dart';
 import 'dialog_join_household.dart';
 import 'section_household_details.dart';
 
@@ -75,9 +77,7 @@ class ProfileScreen extends HookConsumerWidget {
           ),
           const Divider(),
           ListTile(
-            leading: isDeleting.value
-                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                : Icon(Icons.delete_forever, color: errorColor),
+            leading: isDeleting.value ? const LoadingIndicator() : Icon(Icons.delete_forever, color: errorColor),
             title: Text(
               isDeleting.value ? 'Deleting Account...' : 'Delete Account',
               style: TextStyle(color: errorColor),
@@ -114,12 +114,9 @@ class ProfileScreen extends HookConsumerWidget {
                           context.goNamed(RouteNames.login);
                         }
                       } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Failed to delete account: $e')),
-                          );
-                          isDeleting.value = false;
-                        }
+                        ref.handleException(e);
+                      } finally {
+                        isDeleting.value = false;
                       }
                     }
                   },

@@ -5,9 +5,9 @@ import '../../shared/components/recipes/ingredients.dart';
 import '../../shared/components/recipes/instructions.dart';
 import '../../shared/components/recipes/meta_row.dart';
 import '../../shared/components/recipes/recipe_title.dart';
-import '../../shared/extensions.dart';
 import '../../shared/models/recipe.dart';
-import '../../shared/ui_constants.dart';
+import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 
 class RecipeDesktopView extends StatelessWidget {
   const RecipeDesktopView({super.key, required this.recipe});

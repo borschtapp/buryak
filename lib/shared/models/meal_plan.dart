@@ -4,6 +4,7 @@ import 'recipe.dart';
 
 part 'meal_plan.g.dart';
 
+@JsonEnum(valueField: 'name')
 enum MealType {
   @JsonValue('breakfast')
   breakfast,
@@ -12,7 +13,10 @@ enum MealType {
   @JsonValue('dinner')
   dinner,
   @JsonValue('snack')
-  snack,
+  snack
+  ;
+
+  String toJsonValue() => _$MealTypeEnumMap[this]!;
 }
 
 @JsonSerializable()
