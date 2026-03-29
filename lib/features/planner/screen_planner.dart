@@ -111,7 +111,9 @@ class PlannerScreen extends ConsumerWidget {
                     (entry.servings ?? 1).pluralize('serving'),
                     style: context.textTheme.bodySmall,
                   ),
-                  onTap: entry.recipeId != null ? () => context.goNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!}) : null,
+                  onTap: entry.recipeId != null
+                      ? () => context.pushNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!})
+                      : null,
                   onLongPress: () {
                     showModalBottomSheet<void>(
                       context: context,

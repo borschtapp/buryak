@@ -88,14 +88,15 @@ final _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _shellKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 /// Maps every named route to the tab index it should highlight.
+/// Note: RouteNames.recipe is intentionally omitted — its tab is resolved
+/// dynamically from the route below it in the stack (see [_resolveTabIndex]).
 const Map<String, int> _tabIndex = {
   RouteNames.home: 0,
-  RouteNames.recipe: 0, // Detail of Explore
   RouteNames.saved: 1,
   RouteNames.planner: 2,
   RouteNames.shopping: 3,
   RouteNames.profile: 4,
-  RouteNames.collection: 1, // Detail of Saved
+  RouteNames.collection: 1,
   RouteNames.privacy: 4,
   RouteNames.terms: 4,
   RouteNames.login: 4,
@@ -142,7 +143,7 @@ GoRouter router(Ref ref) {
         builder: (context, state, child) {
           final routeName = state.topRoute?.name;
           final config = _routeConfigs[routeName];
-          final tabIdx = _tabIndex[routeName] ?? 0;
+          final tabIdx = _resolveTabIndex(context, routeName);
 
           final appBar = _buildShellAppBar(context, state, routeName);
 
@@ -325,11 +326,40 @@ GoRouter router(Ref ref) {
   );
 }
 
+/// Walks the current GoRouter match list (from top-1 downward) to find the
+/// first route that has a known tab index. Used to give pushed detail routes
+/// (e.g. recipe) the correct tab highlight and back-navigation fallback.
+String? _findSourceRouteName(BuildContext context) {
+  try {
+    final matches = GoRouter.of(context).routerDelegate.currentConfiguration.matches;
+    for (int i = matches.length - 2; i >= 0; i--) {
+      final route = matches[i].route;
+      if (route is GoRoute && route.name != null && _tabIndex.containsKey(route.name)) {
+        return route.name;
+      }
+    }
+  } catch (_) {}
+  return null;
+}
+
+/// Resolves the tab index to highlight for the given route name.
+/// For recipe routes this is determined dynamically from the route below in the
+/// stack so that the highlighted tab reflects where the user navigated from.
+int _resolveTabIndex(BuildContext context, String? routeName) {
+  if (routeName == RouteNames.recipe) {
+    final source = _findSourceRouteName(context);
+    if (source != null) return _tabIndex[source]!;
+    return 0;
+  }
+  return _tabIndex[routeName] ?? 0;
+}
+
 AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? routeName) {
   if (routeName == RouteNames.recipe) {
     final recipeId = state.pathParameters['rid'];
+    final fallback = _findSourceRouteName(context) ?? RouteNames.home;
     return AppBar(
-      leading: BackButton(onPressed: () => context.popOrGoNamed(RouteNames.home)),
+      leading: BackButton(onPressed: () => context.popOrGoNamed(fallback)),
       backgroundColor: Colors.transparent,
       elevation: 0,
       flexibleSpace: Container(

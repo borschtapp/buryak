@@ -124,7 +124,7 @@ class SavedCookbooksTab extends ConsumerWidget {
                             clipBehavior: Clip.antiAlias,
                             child: InkWell(
                               onTap: () {
-                                context.goNamed(
+                                context.pushNamed(
                                   RouteNames.collection,
                                   pathParameters: {'cid': collection.id},
                                 );
