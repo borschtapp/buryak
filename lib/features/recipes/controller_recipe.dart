@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/providers/saved.dart';
 import '../../shared/repositories/recipe_repository.dart';
@@ -12,6 +13,13 @@ class RecipeController extends _$RecipeController {
   @override
   Future<Recipe> build(String recipeId) {
     return ref.watch(recipeRepositoryProvider).findOne(recipeId);
+  }
+
+  void updateCollections(List<Collection> collections) {
+    final current = state.asData?.value;
+    if (current != null) {
+      state = AsyncData(current.copyWith(collections: collections));
+    }
   }
 
   Future<void> toggleSaved() async {

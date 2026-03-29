@@ -35,20 +35,25 @@ class RecipeActions extends HookConsumerWidget {
         ),
         IconButton(
           visualDensity: VisualDensity.compact,
-          icon: const Icon(Icons.playlist_add),
+          icon: Icon(recipe?.collections?.isNotEmpty ?? false ? Icons.collections_bookmark : Icons.bookmark_add_outlined),
           tooltip: 'Add to Cookbook',
           onPressed: recipe == null
               ? null
-              : () => showCollectionsBottomSheet(
-                  context,
-                  ref,
-                  recipeId: recipeId,
-                  initialCollections: recipe.collections,
-                ),
+              : () async {
+                  final updated = await showCollectionsBottomSheet(
+                    context,
+                    ref,
+                    recipeId: recipeId,
+                    initialCollections: recipe.collections,
+                  );
+                  if (updated != null) {
+                    ref.read(recipeControllerProvider(recipeId).notifier).updateCollections(updated);
+                  }
+                },
         ),
         IconButton(
           visualDensity: VisualDensity.compact,
-          icon: Icon(isSaved ? Icons.bookmark_added : Icons.bookmark_add_outlined),
+          icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline),
           tooltip: isSaved ? 'Unsave' : 'Save',
           onPressed: () async {
             final wasSaved = isSaved;

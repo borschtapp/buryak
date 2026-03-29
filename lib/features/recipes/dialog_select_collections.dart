@@ -10,7 +10,7 @@ import '../../shared/repositories/collection_repository.dart';
 import '../../shared/util/error_extensions.dart';
 import 'screen_collection.dart';
 
-void showCollectionsBottomSheet(
+Future<List<Collection>?> showCollectionsBottomSheet(
   BuildContext context,
   WidgetRef ref, {
   required String recipeId,
@@ -18,7 +18,7 @@ void showCollectionsBottomSheet(
 }) {
   assert(recipeId.isNotEmpty, 'recipeId cannot be empty');
 
-  showModalBottomSheet<void>(
+  return showModalBottomSheet<List<Collection>>(
     context: context,
     isScrollControlled: true,
     builder: (context) => DraggableScrollableSheet(
@@ -97,11 +97,19 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                                   ref.invalidate(savedCollectionsProvider);
                                   ref.invalidate(collectionRecipesProvider);
 
+                                  final updatedCollections = collections
+                                      .where(
+                                        (c) =>
+                                            (initialCollectionIds.contains(c.id) && !localRemovedIds.value.contains(c.id)) ||
+                                            localAddedIds.value.contains(c.id),
+                                      )
+                                      .toList();
+
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text('Cookbooks updated')),
                                     );
-                                    Navigator.pop(context);
+                                    Navigator.pop(context, updatedCollections);
                                   }
                                 } catch (e) {
                                   ref.handleException(e);

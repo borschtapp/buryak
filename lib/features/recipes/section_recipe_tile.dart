@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/recipes/author_line.dart';
@@ -24,6 +25,12 @@ class RecipeTile extends HookConsumerWidget {
       recipeId: recipeId,
       ref: ref,
     );
+
+    final collections = useState(recipe.collections);
+    useEffect(() {
+      collections.value = recipe.collections;
+      return null;
+    }, [recipe.collections]);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -54,12 +61,11 @@ class RecipeTile extends HookConsumerWidget {
                           ),
                         ),
                         child: () {
-                          final imageUrl = recipe.primaryImageUrl;
-                          if (imageUrl == null) {
+                          if (recipe.imageUrl == null) {
                             return const RecipePlaceholder();
                           }
                           return CachedNetworkImage(
-                            imageUrl: imageUrl,
+                            imageUrl: recipe.imageUrl!,
                             fit: BoxFit.cover,
                             errorWidget: (context, url, error) => const RecipePlaceholder(),
                           );
@@ -74,13 +80,19 @@ class RecipeTile extends HookConsumerWidget {
                   child: Row(
                     children: [
                       IconButton(
-                        onPressed: () => showCollectionsBottomSheet(
-                          context,
-                          ref,
-                          recipeId: recipeId,
-                          initialCollections: recipe.collections,
+                        onPressed: () async {
+                          final updated = await showCollectionsBottomSheet(
+                            context,
+                            ref,
+                            recipeId: recipeId,
+                            initialCollections: collections.value,
+                          );
+                          if (updated != null) collections.value = updated;
+                        },
+                        icon: Icon(
+                          collections.value?.isNotEmpty ?? false ? Icons.collections_bookmark : Icons.bookmark_add_outlined,
+                          color: Colors.white,
                         ),
-                        icon: const Icon(Icons.playlist_add, color: Colors.white),
                         tooltip: 'Add to Cookbook',
                       ),
                       const SizedBox(width: 12),
@@ -96,7 +108,7 @@ class RecipeTile extends HookConsumerWidget {
                             }
                           }
                         },
-                        icon: Icon(isSaved ? Icons.bookmark_added : Icons.bookmark_add_outlined, color: Colors.white),
+                        icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline, color: Colors.white),
                         tooltip: isSaved ? 'Remove from Saved' : 'Save Recipe',
                       ),
                     ],

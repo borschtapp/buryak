@@ -24,14 +24,12 @@ class RecipeHeroImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final image = recipe.primaryImageUrl;
-
     Widget imageWidget = Semantics(
       label: 'Photo of ${recipe.name}',
       excludeSemantics: true,
-      child: image != null
+      child: recipe.imageUrl != null
           ? CachedNetworkImage(
-              imageUrl: image,
+              imageUrl: recipe.imageUrl!,
               height: height,
               width: double.infinity,
               fit: BoxFit.cover,
