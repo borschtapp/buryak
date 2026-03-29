@@ -13,6 +13,7 @@ import '../../shared/providers/shopping.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
 import '../../shared/util/extensions.dart';
 import 'dialog_add_item.dart';
+import 'dialog_edit_item.dart';
 
 part 'screen_shopping.g.dart';
 
@@ -88,6 +89,26 @@ class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem
       await ref.read(shoppingListRepositoryProvider).deleteItem(_primaryListId, id);
     } catch (e) {
       // Revert to previous state on failure
+      state = previousState;
+      rethrow;
+    }
+  }
+
+  Future<void> updateItem(ShoppingItem item, {String? text, double? amount}) async {
+    final previousState = state;
+
+    if (state.value != null) {
+      final items = [...state.value!];
+      final index = items.indexWhere((i) => i.id == item.id);
+      if (index != -1) {
+        items[index] = items[index].copyWith(text: text ?? items[index].text, amount: amount);
+        state = AsyncData(items);
+      }
+    }
+
+    try {
+      await ref.read(shoppingListRepositoryProvider).updateItem(_primaryListId, item.id, text: text, amount: amount);
+    } catch (e) {
       state = previousState;
       rethrow;
     }
@@ -178,15 +199,36 @@ class ShoppingScreen extends HookConsumerWidget {
               }
 
               final item = items[index];
+              void openEditSheet() {
+                showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (context) => EditShoppingItemBottomSheet(item: item),
+                );
+              }
+
               return Dismissible(
                 key: ValueKey(item.id),
                 background: Container(
-                  color: Colors.red,
+                  color: Colors.orange,
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: const Icon(Icons.edit, color: Colors.white),
+                ),
+                secondaryBackground: Container(
+                  color: Theme.of(context).colorScheme.error,
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: const Icon(Icons.delete, color: Colors.white),
+                  child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
                 ),
-                direction: DismissDirection.endToStart,
+                direction: DismissDirection.horizontal,
+                confirmDismiss: (direction) async {
+                  if (direction == DismissDirection.startToEnd) {
+                    openEditSheet();
+                    return false;
+                  }
+                  return true;
+                },
                 onDismissed: (_) async {
                   final itemName = item.text ?? 'Item';
                   try {
@@ -203,6 +245,7 @@ class ShoppingScreen extends HookConsumerWidget {
                   }
                 },
                 child: ListTile(
+                  onLongPress: openEditSheet,
                   leading: Checkbox(
                     value: item.isBought ?? false,
                     semanticLabel: 'Mark ${item.text ?? "item"} as bought',
