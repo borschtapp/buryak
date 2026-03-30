@@ -1,26 +1,21 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'taxonomy.dart';
 
+part 'unit.freezed.dart';
+
 part 'unit.g.dart';
 
-@JsonSerializable()
-class Unit {
-  final String id;
-  final String slug;
-  final String name;
+@freezed
+abstract class Unit with _$Unit {
+  const factory Unit({
+    required String id,
+    required String slug,
+    required String name,
 
-  // Preload fields
-  final List<Taxonomy>? taxonomies;
-
-  Unit({
-    required this.id,
-    required this.slug,
-    required this.name,
-    this.taxonomies,
-  });
+    // Preload fields
+    List<Taxonomy>? taxonomies,
+  }) = _Unit;
 
   factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
-
-  Map<String, dynamic> toJson() => _$UnitToJson(this);
 }

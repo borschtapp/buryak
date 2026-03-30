@@ -1,4 +1,4 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'collection.dart';
 import 'feed.dart';
@@ -6,55 +6,24 @@ import 'shopping_list.dart';
 import 'user.dart';
 import 'user_token.dart';
 
+part 'household.freezed.dart';
+
 part 'household.g.dart';
 
-@JsonSerializable()
-class Household {
-  final String id;
-  @JsonKey(name: 'owner_id')
-  final String ownerId;
-  final String name;
+@freezed
+abstract class Household with _$Household {
+  const factory Household({
+    required String id,
+    @JsonKey(name: 'owner_id') required String ownerId,
+    required String name,
 
-  // Preload fields
-  final List<User>? members;
-  final List<Feed>? feeds;
-  final List<Collection>? collections;
-  @JsonKey(name: 'shopping_lists')
-  final List<ShoppingList>? shoppingLists;
-  final List<UserToken>? invites;
-
-  Household({
-    required this.id,
-    required this.ownerId,
-    required this.name,
-    this.members,
-    this.feeds,
-    this.collections,
-    this.shoppingLists,
-    this.invites,
-  });
-
-  factory Household.fromJson(Map<String, dynamic> json) => _$HouseholdFromJson(json);
-
-  Map<String, dynamic> toJson() => _$HouseholdToJson(this);
-
-  Household copyWith({
-    String? name,
+    // Preload fields
     List<User>? members,
     List<Feed>? feeds,
     List<Collection>? collections,
-    List<ShoppingList>? shoppingLists,
+    @JsonKey(name: 'shopping_lists') List<ShoppingList>? shoppingLists,
     List<UserToken>? invites,
-  }) {
-    return Household(
-      id: id,
-      ownerId: ownerId,
-      name: name ?? this.name,
-      members: members ?? this.members,
-      feeds: feeds ?? this.feeds,
-      collections: collections ?? this.collections,
-      shoppingLists: shoppingLists ?? this.shoppingLists,
-      invites: invites ?? this.invites,
-    );
-  }
+  }) = _Household;
+
+  factory Household.fromJson(Map<String, dynamic> json) => _$HouseholdFromJson(json);
 }

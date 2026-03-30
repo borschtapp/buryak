@@ -1,25 +1,17 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'author.freezed.dart';
 part 'author.g.dart';
 
-@JsonSerializable()
-class Author {
-  final String? id;
-  final String? name;
-  final String? description;
-  final String? url;
-  @JsonKey(name: 'image_url')
-  final String? imageUrl;
-
-  Author({
-    this.id,
-    this.name,
-    this.description,
-    this.url,
-    this.imageUrl,
-  });
+@freezed
+abstract class Author with _$Author {
+  const factory Author({
+    String? id,
+    String? name,
+    String? description,
+    String? url,
+    @JsonKey(name: 'image_url') String? imageUrl,
+  }) = _Author;
 
   factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AuthorToJson(this);
 }

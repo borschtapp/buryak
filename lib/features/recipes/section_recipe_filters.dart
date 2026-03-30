@@ -83,7 +83,7 @@ class _RecipeFiltersState extends State<RecipeFilters> {
   }
 
   void _setSort(SortField field, SortOrder order) {
-    final newFilter = _filter.copyWith(sort: field.name, order: order.name);
+    final newFilter = _filter.copyWith(sort: field, order: order);
 
     setState(() {
       _filter = newFilter;
@@ -136,7 +136,7 @@ class _RecipeFiltersState extends State<RecipeFilters> {
               spacing: 8,
               runSpacing: 8,
               children: _sortOptions.map((opt) {
-                final isSelected = _filter.sort == opt.field.name && _filter.order == opt.order.name;
+                final isSelected = _filter.sort == opt.field && _filter.order == opt.order;
                 return FilterChip(
                   label: Text(opt.label),
                   selected: isSelected,

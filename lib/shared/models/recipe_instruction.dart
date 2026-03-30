@@ -1,37 +1,24 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'recipe_instruction.freezed.dart';
 
 part 'recipe_instruction.g.dart';
 
-@JsonSerializable()
-class RecipeInstruction {
-  final String id;
-  final int? order;
-  final String? title;
-  final String text;
-  final String? url;
-  @JsonKey(name: 'image_url')
-  final String? imageUrl;
-  @JsonKey(name: 'video_url')
-  final String? videoUrl;
-  @JsonKey(name: 'parent_id')
-  final String? parentId;
+@freezed
+abstract class RecipeInstruction with _$RecipeInstruction {
+  const factory RecipeInstruction({
+    required String id,
+    int? order,
+    String? title,
+    required String text,
+    String? url,
+    @JsonKey(name: 'image_url') String? imageUrl,
+    @JsonKey(name: 'video_url') String? videoUrl,
+    @JsonKey(name: 'parent_id') String? parentId,
 
-  // Preload fields
-  final RecipeInstruction? parent;
-
-  RecipeInstruction({
-    required this.id,
-    this.order,
-    this.title,
-    required this.text,
-    this.url,
-    this.imageUrl,
-    this.videoUrl,
-    this.parentId,
-    this.parent,
-  });
+    // Preload fields
+    RecipeInstruction? parent,
+  }) = _RecipeInstruction;
 
   factory RecipeInstruction.fromJson(Map<String, dynamic> json) => _$RecipeInstructionFromJson(json);
-
-  Map<String, dynamic> toJson() => _$RecipeInstructionToJson(this);
 }

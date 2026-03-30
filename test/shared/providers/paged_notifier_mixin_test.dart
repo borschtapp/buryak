@@ -42,7 +42,7 @@ void main() {
       await notifier.loadMore((offset, limit) async {
         expect(offset, 3);
         expect(limit, 3);
-        return PaginatedList(data: [4, 5, 6], meta: Meta(total: 9, limit: 3, offset: 3));
+        return PaginatedList(data: [4, 5, 6], meta: const Meta(total: 9, limit: 3, offset: 3));
       });
 
       expect(container.read(provider).value, [1, 2, 3, 4, 5, 6]);
@@ -51,7 +51,7 @@ void main() {
       // Fetch that returns enough to reach total
       await notifier.loadMore((offset, limit) async {
         expect(offset, 6);
-        return PaginatedList(data: [7], meta: Meta(total: 7, limit: 3, offset: 6));
+        return PaginatedList(data: [7], meta: const Meta(total: 7, limit: 3, offset: 6));
       });
 
       expect(container.read(provider).value, [1, 2, 3, 4, 5, 6, 7]);
@@ -74,7 +74,7 @@ void main() {
       // but the mixin's loadNextPage asserts _isInitialized.
       expect(
         () => notifier.loadMore(
-          (offset, limit) async => PaginatedList(data: [], meta: Meta(total: 0, limit: 20, offset: 0)),
+          (offset, limit) async => PaginatedList(data: [], meta: const Meta(total: 0, limit: 20, offset: 0)),
         ),
         throwsA(isA<AssertionError>()),
       );

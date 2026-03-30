@@ -23,7 +23,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(
-      User(
+      const User(
         id: '',
         householdId: '',
         name: '',

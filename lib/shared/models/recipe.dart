@@ -12,6 +12,7 @@ import 'taxonomy.dart';
 import 'video.dart';
 
 part 'recipe.freezed.dart';
+
 part 'recipe.g.dart';
 
 @freezed

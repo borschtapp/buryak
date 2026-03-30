@@ -1,25 +1,18 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'uploaded_image.freezed.dart';
 
 part 'uploaded_image.g.dart';
 
-@JsonSerializable()
-class UploadedImage {
-  final String url;
-  final int? width;
-  final int? height;
-  final int? size;
-  @JsonKey(name: 'content_type')
-  final String? contentType;
-
-  UploadedImage({
-    required this.url,
-    this.width,
-    this.height,
-    this.size,
-    this.contentType,
-  });
+@freezed
+abstract class UploadedImage with _$UploadedImage {
+  const factory UploadedImage({
+    required String url,
+    int? width,
+    int? height,
+    int? size,
+    @JsonKey(name: 'content_type') String? contentType,
+  }) = _UploadedImage;
 
   factory UploadedImage.fromJson(Map<String, dynamic> json) => _$UploadedImageFromJson(json);
-
-  Map<String, dynamic> toJson() => _$UploadedImageToJson(this);
 }

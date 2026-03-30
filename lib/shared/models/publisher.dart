@@ -1,37 +1,26 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'feed.dart';
 import 'recipe.dart';
 
+part 'publisher.freezed.dart';
+
 part 'publisher.g.dart';
 
-@JsonSerializable()
-class Publisher {
-  final String id;
-  final String name;
-  final String? description;
-  final String url;
-  @JsonKey(name: 'image_url')
-  final String? imageUrl;
+@freezed
+abstract class Publisher with _$Publisher {
+  const factory Publisher({
+    required String id,
+    required String name,
+    String? description,
+    required String url,
+    @JsonKey(name: 'image_url') String? imageUrl,
 
-  // Preload fields
-  @JsonKey(name: 'total_recipes')
-  final int? totalRecipes;
-  final List<Feed>? feeds;
-  final List<Recipe>? recipes;
-
-  Publisher({
-    required this.id,
-    required this.name,
-    this.description,
-    required this.url,
-    this.imageUrl,
-    this.totalRecipes,
-    this.feeds,
-    this.recipes,
-  });
+    // Preload fields
+    @JsonKey(name: 'total_recipes') int? totalRecipes,
+    List<Feed>? feeds,
+    List<Recipe>? recipes,
+  }) = _Publisher;
 
   factory Publisher.fromJson(Map<String, dynamic> json) => _$PublisherFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PublisherToJson(this);
 }

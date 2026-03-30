@@ -21,6 +21,7 @@ class MockHouseholdRepository extends Mock implements HouseholdRepository {}
 
 class MockAuthNotifier extends AuthNotifier {
   final User? initialUser;
+
   MockAuthNotifier(this.initialUser);
 
   @override
@@ -40,14 +41,14 @@ void main() {
         offset: any(named: 'offset'),
         limit: any(named: 'limit'),
       ),
-    ).thenAnswer((_) async => PaginatedList(data: [], meta: Meta(total: 0, limit: 20, offset: 0)));
+    ).thenAnswer((_) async => PaginatedList(data: [], meta: const Meta(total: 0, limit: 20, offset: 0)));
     when(
       () => mockHouseholdRepository.findOne(
         any(),
         preload: any(named: 'preload'),
       ),
     ).thenAnswer(
-      (_) async => Household(
+      (_) async => const Household(
         id: 'household-1',
         ownerId: 'user-1',
         name: 'Test Household',
@@ -56,7 +57,7 @@ void main() {
     when(() => mockHouseholdRepository.findMembers(any())).thenAnswer(
       (_) async => PaginatedList(
         data: [User.fromJson(fakeUserJson())],
-        meta: Meta(total: 1, limit: 10, offset: 0),
+        meta: const Meta(total: 1, limit: 10, offset: 0),
       ),
     );
     FlutterSecureStorage.setMockInitialValues({});

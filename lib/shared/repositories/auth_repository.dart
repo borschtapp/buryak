@@ -50,7 +50,7 @@ class AuthRepository extends Repository {
     return user.copyWith(
       accessToken: data['access_token']?.toString() ?? '',
       refreshToken: data['refresh_token']?.toString() ?? '',
-      householdId: data['household_id']?.toString(),
+      householdId: data['household_id']?.toString() ?? user.householdId,
     );
   }
 

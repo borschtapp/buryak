@@ -1,34 +1,23 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'taxonomy.freezed.dart';
 
 part 'taxonomy.g.dart';
 
-@JsonSerializable()
-class Taxonomy {
-  final String id;
-  final String? slug;
-  final String? type;
-  final String? label;
-  @JsonKey(name: 'parent_id')
-  final String? parentId;
-  @JsonKey(name: 'canonical_id')
-  final String? canonicalId;
+@freezed
+abstract class Taxonomy with _$Taxonomy {
+  const factory Taxonomy({
+    required String id,
+    String? slug,
+    String? type,
+    String? label,
+    @JsonKey(name: 'parent_id') String? parentId,
+    @JsonKey(name: 'canonical_id') String? canonicalId,
 
-  // Preload fields
-  final Taxonomy? parent;
-  final Taxonomy? canonical;
-
-  Taxonomy({
-    required this.id,
-    this.slug,
-    this.type,
-    this.label,
-    this.parentId,
-    this.parent,
-    this.canonicalId,
-    this.canonical,
-  });
+    // Preload fields
+    Taxonomy? parent,
+    Taxonomy? canonical,
+  }) = _Taxonomy;
 
   factory Taxonomy.fromJson(Map<String, dynamic> json) => _$TaxonomyFromJson(json);
-
-  Map<String, dynamic> toJson() => _$TaxonomyToJson(this);
 }

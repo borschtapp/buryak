@@ -1,6 +1,8 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'recipe.dart';
+
+part 'meal_plan.freezed.dart';
 
 part 'meal_plan.g.dart';
 
@@ -19,53 +21,21 @@ enum MealType {
   String toJsonValue() => _$MealTypeEnumMap[this]!;
 }
 
-@JsonSerializable()
-class MealPlan {
-  final String id;
-  @_DateConverter()
-  final DateTime date;
-  @JsonKey(name: 'meal_type')
-  final MealType mealType;
-  @JsonKey(name: 'recipe_id')
-  final String? recipeId;
-  final int? servings;
-  final String? description;
+@freezed
+abstract class MealPlan with _$MealPlan {
+  const factory MealPlan({
+    required String id,
+    @_DateConverter() required DateTime date,
+    @JsonKey(name: 'meal_type') required MealType mealType,
+    @JsonKey(name: 'recipe_id') String? recipeId,
+    int? servings,
+    String? description,
 
-  // Preload fields
-  final Recipe? recipe;
-
-  MealPlan({
-    required this.id,
-    required this.date,
-    required this.mealType,
-    this.servings,
-    this.description,
-    this.recipeId,
-    this.recipe,
-  });
+    // Preload fields
+    Recipe? recipe,
+  }) = _MealPlan;
 
   factory MealPlan.fromJson(Map<String, dynamic> json) => _$MealPlanFromJson(json);
-
-  Map<String, dynamic> toJson() => _$MealPlanToJson(this);
-
-  MealPlan copyWith({
-    DateTime? date,
-    MealType? mealType,
-    String? description,
-    int? servings,
-    String? recipeId,
-    Recipe? recipe,
-  }) {
-    return MealPlan(
-      id: id,
-      date: date ?? this.date,
-      mealType: mealType ?? this.mealType,
-      description: description ?? this.description,
-      servings: servings ?? this.servings,
-      recipeId: recipeId ?? this.recipeId,
-      recipe: recipe ?? this.recipe,
-    );
-  }
 }
 
 class _DateConverter implements JsonConverter<DateTime, String> {

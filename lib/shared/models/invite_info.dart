@@ -1,20 +1,15 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'invite_info.freezed.dart';
 
 part 'invite_info.g.dart';
 
-@JsonSerializable()
-class InviteInfo {
-  @JsonKey(name: 'household_name')
-  final String householdName;
-  @JsonKey(name: 'inviter_name')
-  final String inviterName;
-
-  InviteInfo({
-    required this.householdName,
-    required this.inviterName,
-  });
+@freezed
+abstract class InviteInfo with _$InviteInfo {
+  const factory InviteInfo({
+    @JsonKey(name: 'household_name') required String householdName,
+    @JsonKey(name: 'inviter_name') required String inviterName,
+  }) = _InviteInfo;
 
   factory InviteInfo.fromJson(Map<String, dynamic> json) => _$InviteInfoFromJson(json);
-
-  Map<String, dynamic> toJson() => _$InviteInfoToJson(this);
 }

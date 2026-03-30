@@ -1,25 +1,18 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'equipment.freezed.dart';
 
 part 'equipment.g.dart';
 
-@JsonSerializable()
-class Equipment {
-  final String id;
-  final String name;
-  final String? description;
-  final String? slug;
-  @JsonKey(name: 'image_url')
-  final String? imageUrl;
-
-  Equipment({
-    required this.id,
-    required this.name,
-    this.description,
-    this.slug,
-    this.imageUrl,
-  });
+@freezed
+abstract class Equipment with _$Equipment {
+  const factory Equipment({
+    required String id,
+    required String name,
+    String? description,
+    String? slug,
+    @JsonKey(name: 'image_url') String? imageUrl,
+  }) = _Equipment;
 
   factory Equipment.fromJson(Map<String, dynamic> json) => _$EquipmentFromJson(json);
-
-  Map<String, dynamic> toJson() => _$EquipmentToJson(this);
 }
