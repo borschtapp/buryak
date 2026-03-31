@@ -16,14 +16,12 @@ import '../features/planner/screen_planner.dart';
 import '../features/recipes/screen_collection.dart';
 import '../features/recipes/screen_recipe.dart';
 import '../features/recipes/screen_saved.dart';
-import '../features/recipes/section_recipe_actions.dart';
 import '../features/shopping/screen_shopping.dart';
 import 'layouts/root_layout.dart';
 import 'models/recipe.dart';
 import 'providers/shell.dart';
 import 'providers/user.dart';
 import 'route_names.dart';
-import 'util/extensions.dart';
 
 part 'router.g.dart';
 
@@ -223,6 +221,7 @@ GoRouter router(Ref ref) {
               child: RecipeScreen(
                 recipeId: state.pathParameters['rid']!,
                 initialRecipe: state.extra is Recipe ? state.extra as Recipe : null,
+                backFallback: _findSourceRouteName(context) ?? RouteNames.feed,
               ),
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 return FadeScaleTransition(
@@ -356,28 +355,15 @@ int _resolveTabIndex(BuildContext context, String? routeName) {
 
 AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? routeName) {
   if (routeName == RouteNames.recipe) {
-    final recipeId = state.pathParameters['rid'];
-    final fallback = _findSourceRouteName(context) ?? RouteNames.feed;
+    // RecipeMobileView owns its own SliverAppBar (back button + actions + hero image).
+    // RecipeDesktopView owns its own actions row alongside the title.
+    // Zero-height placeholder prevents the shell Scaffold from reserving space.
     return AppBar(
-      leading: BackButton(onPressed: () => context.popOrGoNamed(fallback)),
-      backgroundColor: Colors.transparent,
+      toolbarHeight: 0,
+      automaticallyImplyLeading: false,
       elevation: 0,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              context.colors.shadow.withValues(alpha: 0.7),
-              Colors.transparent,
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        if (recipeId != null) RecipeActions(recipeId: recipeId),
-        const SizedBox(width: 8),
-      ],
+      scrolledUnderElevation: 0,
+      backgroundColor: Colors.transparent,
     );
   }
   if (routeName == RouteNames.collection) {

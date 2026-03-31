@@ -18,6 +18,7 @@ class RecipeActions extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isSaved = ref.watch(recipeIsSavedProvider(recipeId));
     final recipe = ref.watch(recipeControllerProvider(recipeId)).asData?.value;
+    final isCollected = recipe?.collections?.isNotEmpty ?? false;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -35,8 +36,8 @@ class RecipeActions extends HookConsumerWidget {
         ),
         IconButton(
           visualDensity: VisualDensity.compact,
-          icon: Icon(recipe?.collections?.isNotEmpty ?? false ? Icons.collections_bookmark : Icons.bookmark_add_outlined),
-          tooltip: 'Add to Cookbook',
+          icon: Icon(isCollected ? Icons.collections_bookmark : Icons.bookmark_add_outlined),
+          tooltip: isCollected ? 'Unsave' : 'Save',
           onPressed: recipe == null
               ? null
               : () async {
@@ -54,24 +55,14 @@ class RecipeActions extends HookConsumerWidget {
         IconButton(
           visualDensity: VisualDensity.compact,
           icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline),
-          tooltip: isSaved ? 'Unsave' : 'Save',
+          tooltip: isSaved ? 'Dislike' : 'Like',
           onPressed: () async {
-            final wasSaved = isSaved;
             try {
               await ref.read(recipeControllerProvider(recipeId).notifier).toggleSaved();
-
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(wasSaved ? 'Recipe removed' : 'Recipe saved'),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-              }
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Failed to update saved status')),
+                  const SnackBar(content: Text('Failed to update liked status')),
                 );
               }
             }

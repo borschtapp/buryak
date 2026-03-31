@@ -8,6 +8,7 @@ import '../../shared/components/recipes/recipe_title.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
+import 'section_recipe_actions.dart';
 
 class RecipeDesktopView extends StatelessWidget {
   const RecipeDesktopView({super.key, required this.recipe});
@@ -27,7 +28,13 @@ class RecipeDesktopView extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           const SizedBox(height: 32),
-          RecipeTitle(recipe: recipe),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: RecipeTitle(recipe: recipe)),
+              RecipeActions(recipeId: recipe.id),
+            ],
+          ),
           const SizedBox(height: 12),
           RecipeMetaRow(recipe: recipe),
           const SizedBox(height: 48),

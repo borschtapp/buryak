@@ -32,6 +32,8 @@ class RecipeTile extends HookConsumerWidget {
       return null;
     }, [recipe.collections]);
 
+    final isCollected = collections.value?.isNotEmpty ?? false;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       child: Column(
@@ -90,10 +92,10 @@ class RecipeTile extends HookConsumerWidget {
                           if (updated != null) collections.value = updated;
                         },
                         icon: Icon(
-                          collections.value?.isNotEmpty ?? false ? Icons.collections_bookmark : Icons.bookmark_add_outlined,
+                          isCollected ? Icons.collections_bookmark : Icons.bookmark_add_outlined,
                           color: Colors.white,
                         ),
-                        tooltip: 'Add to Cookbook',
+                        tooltip: isCollected ? 'Unsave' : 'Save',
                       ),
                       const SizedBox(width: 12),
                       IconButton(
@@ -103,13 +105,13 @@ class RecipeTile extends HookConsumerWidget {
                           } catch (e) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Failed to update saved status')),
+                                const SnackBar(content: Text('Failed to update liked status')),
                               );
                             }
                           }
                         },
                         icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline, color: Colors.white),
-                        tooltip: isSaved ? 'Remove from Saved' : 'Save Recipe',
+                        tooltip: isSaved ? 'Dislike' : 'Like',
                       ),
                     ],
                   ),

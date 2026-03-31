@@ -12,8 +12,9 @@ import 'screen_shopping.dart';
 
 class ShoppingBottomSheet extends HookConsumerWidget {
   final Recipe recipe;
+  final ScrollController? scrollController;
 
-  const ShoppingBottomSheet({super.key, required this.recipe});
+  const ShoppingBottomSheet({super.key, required this.recipe, this.scrollController});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,8 +48,8 @@ class ShoppingBottomSheet extends HookConsumerWidget {
               )
               .toList();
 
-          await repo.createItems(primaryList.id, itemsToCreate);
-          final successCount = selectedIngredients.length;
+          final createdItems = await repo.createItems(primaryList.id, itemsToCreate);
+          final successCount = createdItems.length;
 
           ref.invalidate(shoppingItemsProvider);
 
@@ -75,11 +76,25 @@ class ShoppingBottomSheet extends HookConsumerWidget {
     );
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: context.colors.onSurfaceVariant.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -95,19 +110,22 @@ class ShoppingBottomSheet extends HookConsumerWidget {
           ),
           const Divider(),
           if (ingredients.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text('No ingredients found for this recipe.'),
+            const Expanded(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text('No ingredients found for this recipe.'),
+                ),
+              ),
             )
           else
-            Flexible(
+            Expanded(
               child: ListView.builder(
-                shrinkWrap: true,
+                controller: scrollController,
                 itemCount: ingredients.length,
                 itemBuilder: (context, index) {
                   final ingredient = ingredients[index];
                   return CheckboxListTile(
-                    autofocus: index == 0,
                     value: selectedIngredientIds.value.contains(ingredient.id),
                     onChanged: (value) {
                       final newSet = Set<String>.from(selectedIngredientIds.value);
@@ -125,7 +143,7 @@ class ShoppingBottomSheet extends HookConsumerWidget {
               ),
             ),
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + MediaQuery.paddingOf(context).bottom),
             child: FilledButton(
               onPressed: isSaving.value || selectedIngredientIds.value.isEmpty ? null : save,
               child: isSaving.value ? const LoadingIndicator() : const Text('Add to list'),

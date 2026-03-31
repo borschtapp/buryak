@@ -15,10 +15,12 @@ class RecipeScreen extends ConsumerWidget {
     super.key,
     required this.recipeId,
     this.initialRecipe,
+    this.backFallback,
   });
 
   final String recipeId;
   final Recipe? initialRecipe;
+  final String? backFallback;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,7 +44,7 @@ class RecipeScreen extends ConsumerWidget {
       child: Column(
         children: [
           Expanded(
-            child: context.isMobile ? RecipeMobileView(recipe: recipe) : RecipeDesktopView(recipe: recipe),
+            child: context.isMobile ? RecipeMobileView(recipe: recipe, backFallback: backFallback) : RecipeDesktopView(recipe: recipe),
           ),
           if (context.isMobile) ...[
             if (isLoading) const LinearProgressIndicator(minHeight: 2) else _MobileBottomActionBar(recipe: recipe),
@@ -98,10 +100,27 @@ class _MobileBottomActionBar extends StatelessWidget {
   }
 
   void _showShoppingSheet(BuildContext context) {
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final topReserved = MediaQuery.paddingOf(context).top + kToolbarHeight;
+    final maxFraction = (screenHeight - topReserved) / screenHeight;
+
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => ShoppingBottomSheet(recipe: recipe),
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        minChildSize: 0.3,
+        maxChildSize: maxFraction,
+        expand: false,
+        snap: true,
+        snapSizes: maxFraction > 0.55 ? const [0.5] : null,
+        shouldCloseOnMinExtent: true,
+        builder: (context, scrollController) => ShoppingBottomSheet(
+          recipe: recipe,
+          scrollController: scrollController,
+        ),
+      ),
     );
   }
 

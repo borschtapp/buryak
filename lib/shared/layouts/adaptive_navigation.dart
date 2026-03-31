@@ -133,7 +133,10 @@ class TabletAppBar extends StatelessWidget {
         children: [
           Row(
             children: [
-              appBar?.leading ?? BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute)),
+              appBar?.leading ??
+                  (appBar?.automaticallyImplyLeading != false
+                      ? BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute))
+                      : const SizedBox.shrink()),
               const SizedBox(width: 6),
               if (appBarTitle != null) Text(appBarTitle!, style: context.textTheme.headlineSmall),
               const Expanded(child: SizedBox()),

@@ -13,11 +13,13 @@ import '../../shared/components/recipes/sticky_tab_bar_delegate.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
+import 'section_recipe_actions.dart';
 
 class RecipeMobileView extends HookWidget {
-  const RecipeMobileView({super.key, required this.recipe});
+  const RecipeMobileView({super.key, required this.recipe, this.backFallback});
 
   final Recipe recipe;
+  final String? backFallback;
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +30,24 @@ class RecipeMobileView extends HookWidget {
     );
 
     final heroHeight = min(MediaQuery.heightOf(context) * 0.4, UIConstants.recipeMaxImageHeight);
+    final scrollController = useScrollController();
+
+    final ratingBadge = recipe.rating?.value != null && recipe.rating!.value! > 0 ? _RatingBadge(rating: recipe.rating!.value!) : null;
 
     return CustomScrollView(
+      controller: scrollController,
       slivers: [
+        _RecipeSliverAppBar(
+          recipe: recipe,
+          scrollController: scrollController,
+          heroHeight: heroHeight,
+          ratingBadge: ratingBadge,
+          backFallback: backFallback,
+        ),
         SliverToBoxAdapter(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              RecipeHeroImage(
-                recipe: recipe,
-                height: heroHeight,
-                overlay: recipe.rating?.value != null && recipe.rating!.value! > 0 ? _RatingBadge(rating: recipe.rating!.value!) : null,
-              ),
               RecipeTitle(
                 recipe: recipe,
                 compact: true,
@@ -123,6 +131,81 @@ class RecipeMobileView extends HookWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _RecipeSliverAppBar extends HookWidget {
+  const _RecipeSliverAppBar({
+    required this.recipe,
+    required this.scrollController,
+    required this.heroHeight,
+    this.ratingBadge,
+    this.backFallback,
+  });
+
+  final Recipe recipe;
+  final ScrollController scrollController;
+  final double heroHeight;
+  final Widget? ratingBadge;
+  final String? backFallback;
+
+  @override
+  Widget build(BuildContext context) {
+    final topPadding = MediaQuery.paddingOf(context).top;
+    final collapseThreshold = heroHeight - kToolbarHeight - topPadding;
+
+    final isCollapsed = useState(
+      scrollController.hasClients && scrollController.offset >= collapseThreshold,
+    );
+
+    useEffect(() {
+      void listener() {
+        final collapsed = scrollController.hasClients && scrollController.offset >= collapseThreshold;
+        if (isCollapsed.value != collapsed) isCollapsed.value = collapsed;
+      }
+
+      scrollController.addListener(listener);
+      return () => scrollController.removeListener(listener);
+    }, [scrollController, collapseThreshold]);
+
+    return SliverAppBar(
+      pinned: true,
+      expandedHeight: heroHeight,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      backgroundColor: context.colors.surface,
+      foregroundColor: isCollapsed.value ? context.colors.onSurface : Colors.white,
+      leading: BackButton(
+        onPressed: backFallback != null ? () => context.popOrGoNamed(backFallback!) : null,
+      ),
+      actions: [
+        RecipeActions(recipeId: recipe.id),
+        const SizedBox(width: 8),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        background: Stack(
+          children: [
+            RecipeHeroImage(recipe: recipe, height: heroHeight, overlay: ratingBadge),
+            // Gradient to keep toolbar icons legible over any hero image
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: topPadding + kToolbarHeight + 24,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.black54, Colors.transparent],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
