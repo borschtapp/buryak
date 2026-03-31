@@ -13,7 +13,7 @@ class TermsOfUseScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Terms of Use'),
-        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.profile)),
+        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.account)),
       ),
       body: SingleChildScrollView(
         child: ArticleContent(

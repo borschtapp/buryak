@@ -16,10 +16,10 @@ import '../../shared/repositories/recipe_repository.dart';
 import '../recipes/section_recipe_search_bar.dart';
 import '../recipes/section_recipes_grid.dart';
 
-part 'screen_explore.g.dart';
+part 'screen_feed.g.dart';
 
 @Riverpod(keepAlive: true)
-class ExploreFilter extends _$ExploreFilter {
+class FeedFilter extends _$FeedFilter {
   @override
   RecipeFilter build() => const RecipeFilter();
 
@@ -33,7 +33,7 @@ class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
   @override
   Future<List<Recipe>> build() async {
     resetPagination();
-    final filter = ref.read(exploreFilterProvider);
+    final filter = ref.read(feedFilterProvider);
     final result = await ref
         .read(feedRepositoryProvider)
         .stream(
@@ -46,7 +46,7 @@ class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
   }
 
   Future<void> loadMore() => loadNextPage((offset, limit) {
-    final filter = ref.read(exploreFilterProvider);
+    final filter = ref.read(feedFilterProvider);
     return ref
         .read(feedRepositoryProvider)
         .stream(
@@ -84,14 +84,14 @@ void showAddFeedDialog(BuildContext context, WidgetRef ref) {
   );
 }
 
-class ExploreScreen extends HookConsumerWidget {
-  const ExploreScreen({super.key});
+class FeedScreen extends HookConsumerWidget {
+  const FeedScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fab = useMemoized(
       () => FloatingActionButton(
-        heroTag: 'explore_add_fab',
+        heroTag: 'feed_add_fab',
         onPressed: () => showAddFeedDialog(context, ref),
         child: const Icon(Icons.add),
       ),
@@ -102,7 +102,7 @@ class ExploreScreen extends HookConsumerWidget {
 
     final streamAsync = ref.watch(feedStreamProvider);
     final notifier = ref.read(feedStreamProvider.notifier);
-    final filter = ref.read(exploreFilterProvider);
+    final filter = ref.read(feedFilterProvider);
 
     return Column(
       children: [
@@ -111,7 +111,7 @@ class ExploreScreen extends HookConsumerWidget {
           child: RecipeSearchBar(
             filter: filter,
             onChanged: (newFilter) {
-              ref.read(exploreFilterProvider.notifier).update(newFilter);
+              ref.read(feedFilterProvider.notifier).update(newFilter);
               ref.invalidate(feedStreamProvider);
             },
             onFiltersOpenChanged: (isOpen) {
@@ -140,7 +140,7 @@ class ExploreScreen extends HookConsumerWidget {
                           )
                         : TextButton.icon(
                             onPressed: () {
-                              ref.read(exploreFilterProvider.notifier).update(const RecipeFilter());
+                              ref.read(feedFilterProvider.notifier).update(const RecipeFilter());
                               ref.invalidate(feedStreamProvider);
                             },
                             icon: const Icon(Icons.filter_alt_off),

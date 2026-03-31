@@ -13,10 +13,10 @@ import '../../shared/util/extensions.dart';
 import 'dialog_join_household.dart';
 import 'section_household_details.dart';
 
-class ProfileScreen extends HookConsumerWidget {
+class AccountScreen extends HookConsumerWidget {
   final String? joinCode;
 
-  const ProfileScreen({super.key, this.joinCode});
+  const AccountScreen({super.key, this.joinCode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

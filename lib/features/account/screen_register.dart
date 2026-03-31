@@ -65,7 +65,7 @@ class RegisterScreen extends HookConsumerWidget {
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            context.goNamed(RouteNames.home);
+            context.goNamed(RouteNames.feed);
           }
         } catch (e) {
           if (context.mounted) {

@@ -1,5 +1,5 @@
-import 'package:buryak/features/explore/screen_explore.dart';
-import 'package:buryak/features/profile/screen_profile.dart';
+import 'package:buryak/features/account/screen_account.dart';
+import 'package:buryak/features/feed/screen_feed.dart';
 import 'package:buryak/shared/models/household.dart';
 import 'package:buryak/shared/models/paginated_list.dart';
 import 'package:buryak/shared/models/user.dart';
@@ -85,7 +85,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Login to your account'), findsOneWidget);
-      expect(find.byType(ExploreScreen), findsNothing);
+      expect(find.byType(FeedScreen), findsNothing);
     });
 
     testWidgets('authGuard allows access to / when logged in', (tester) async {
@@ -109,7 +109,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(ExploreScreen), findsOneWidget);
+      expect(find.byType(FeedScreen), findsOneWidget);
       expect(find.text('Login to your account'), findsNothing);
     });
 
@@ -138,15 +138,15 @@ void main() {
       router.go('/login');
       await tester.pumpAndSettle();
 
-      // Should still be on home (ExploreScreen)
-      expect(find.byType(ExploreScreen), findsOneWidget);
+      // Should still be on home (FeedScreen)
+      expect(find.byType(FeedScreen), findsOneWidget);
       expect(find.text('Login to your account'), findsNothing);
     });
   });
 
   group('Deep-link reload', () {
     // These tests cover the regression where reloading at a non-root URL (e.g.
-    // /profile, /saved) always redirected to / because the old app.dart showed
+    // /account, /recipes) always redirected to / because the old app.dart showed
     // a bare MaterialApp(home:) while auth loaded — causing Flutter's Navigator
     // to fail silently on the initial route and reset to /.
     //
@@ -154,9 +154,9 @@ void main() {
     // calling runApp(), so GoRouter always sees the correct auth state from
     // the very first URL match.
 
-    testWidgets('router navigates to /profile when auth is pre-initialized', (tester) async {
-      // Simulate the browser URL being /profile on page reload.
-      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/profile';
+    testWidgets('router navigates to /account when auth is pre-initialized', (tester) async {
+      // Simulate the browser URL being /account on page reload.
+      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/account';
       addTearDown(tester.binding.platformDispatcher.clearDefaultRouteNameTestValue);
 
       final user = User.fromJson(fakeUserJson());
@@ -171,7 +171,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      // Reading routerProvider here causes GoRouter to read /profile as its
+      // Reading routerProvider here causes GoRouter to read /account as its
       // initial location from platformDispatcher.defaultRouteName.
       final goRouter = container.read(routerProvider);
 
@@ -183,16 +183,16 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // ProfileScreen renders the logged-in user's email — confirm we landed
+      // AccountScreen renders the logged-in user's email — confirm we landed
       // on the right screen instead of being redirected to /login or /.
       expect(find.text('test@example.com'), findsOneWidget);
       expect(find.text('Login to your account'), findsNothing);
-      expect(find.byType(ExploreScreen), findsNothing);
+      expect(find.byType(FeedScreen), findsNothing);
     });
 
     testWidgets('authGuard redirects to /login on deep link when NOT logged in', (tester) async {
       // Same reload scenario, but with no active session — must redirect to login.
-      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/profile';
+      tester.binding.platformDispatcher.defaultRouteNameTestValue = '/account';
       addTearDown(tester.binding.platformDispatcher.clearDefaultRouteNameTestValue);
 
       final container = ProviderContainer(
@@ -214,10 +214,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Login to your account'), findsOneWidget);
-      expect(find.byType(ProfileScreen), findsNothing);
+      expect(find.byType(AccountScreen), findsNothing);
     });
 
-    testWidgets('navigating to /profile deep link stays on profile when logged in', (tester) async {
+    testWidgets('navigating to /account deep link stays on account when logged in', (tester) async {
       final user = User.fromJson(fakeUserJson());
       final container = ProviderContainer(
         overrides: [
@@ -238,11 +238,11 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Start at home (ExploreScreen), then navigate to /profile.
-      goRouter.go('/profile');
+      // Start at home (FeedScreen), then navigate to /account.
+      goRouter.go('/account');
       await tester.pumpAndSettle();
 
-      expect(find.byType(ProfileScreen), findsOneWidget);
+      expect(find.byType(AccountScreen), findsOneWidget);
       expect(find.text('Login to your account'), findsNothing);
     });
   });

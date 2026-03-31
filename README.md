@@ -1,11 +1,12 @@
 # Buryak
 
-A comprehensive cookbook and meal planning app built with Flutter. Manage recipes, discover new ideas, plan weekly meals, and generate shopping lists — all in one place.
+A comprehensive cookbook and meal planning app built with Flutter. Manage recipes, discover new
+ideas, plan weekly meals, and generate shopping lists — all in one place.
 
 ## Features
 
 - **Recipe Feed** — browse and search your saved recipes
-- **Explore** — discover new recipes
+- **Feed** — discover new recipes
 - **Meal Planner** — schedule meals across the week
 - **Shopping List** — auto-generated from planned meals
 - **Import** — add recipes from external sources
@@ -53,26 +54,28 @@ lib/
 │   └── views/             # RootLayout, AdaptiveNavigation
 └── features/
     ├── recipes/           # Feed, recipe view, import
-    ├── explore/           # Discovery screen
+    ├── feed/           # Discovery screen
     ├── planner/           # Meal planning calendar
     ├── shopping/          # Shopping list
-    └── profile/           # Auth (login/register) and settings
+    └── account/           # Auth (login/register) and settings
 ```
 
 ## Tech Stack
 
-| Concern | Package |
-|---|---|
-| Navigation | `go_router` ^17 |
-| State management | `flutter_riverpod` + `flutter_hooks` |
-| Code generation | `riverpod_generator`, `json_serializable` |
-| HTTP client | `http` |
-| Auth | `jwt_decoder`, `flutter_secure_storage` |
-| Images | `cached_network_image`, `flutter_svg` |
+| Concern          | Package                                   |
+|------------------|-------------------------------------------|
+| Navigation       | `go_router` ^17                           |
+| State management | `flutter_riverpod` + `flutter_hooks`      |
+| Code generation  | `riverpod_generator`, `json_serializable` |
+| HTTP client      | `http`                                    |
+| Auth             | `jwt_decoder`, `flutter_secure_storage`   |
+| Images           | `cached_network_image`, `flutter_svg`     |
 
 ## API
 
-The backend API is defined in [`swagger.yaml`](swagger.yaml) at the project root. All network calls go through `lib/shared/repositories/` using `RequestHandler` for auth header injection and error handling.
+The backend API is defined in [`swagger.yaml`](swagger.yaml) at the project root. All network calls
+go through `lib/shared/repositories/` using `RequestHandler` for auth header injection and error
+handling.
 
 The base URL is injected at build time via `--dart-define-from-file=.env`:
 

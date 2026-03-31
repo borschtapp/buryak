@@ -1,6 +1,6 @@
 // ignore_for_file: scoped_providers_should_specify_dependencies
 
-import 'package:buryak/features/profile/screen_login.dart';
+import 'package:buryak/features/account/screen_login.dart';
 import 'package:buryak/shared/models/user.dart';
 import 'package:buryak/shared/repositories/auth_repository.dart';
 import 'package:buryak/shared/repositories/repository.dart';

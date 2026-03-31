@@ -1,6 +1,6 @@
 // ignore_for_file: scoped_providers_should_specify_dependencies
 
-import 'package:buryak/features/explore/screen_explore.dart';
+import 'package:buryak/features/feed/screen_feed.dart';
 import 'package:buryak/shared/models/paginated_list.dart';
 import 'package:buryak/shared/models/recipe.dart';
 import 'package:buryak/shared/repositories/feed_repository.dart';
@@ -20,18 +20,18 @@ void main() {
     mockFeedRepository = MockFeedRepository();
   });
 
-  Widget createExploreScreen() {
+  Widget createFeedScreen() {
     return ProviderScope(
       overrides: [
         feedRepositoryProvider.overrideWithValue(mockFeedRepository),
       ],
       child: const MaterialApp(
-        home: Scaffold(body: ExploreScreen()),
+        home: Scaffold(body: FeedScreen()),
       ),
     );
   }
 
-  testWidgets('ExploreScreen shows recipes from stream', (tester) async {
+  testWidgets('FeedScreen shows recipes from stream', (tester) async {
     final recipes = [
       Recipe.fromJson(fakeRecipeJson(name: 'Italian Pasta')),
     ];
@@ -50,13 +50,13 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(createExploreScreen());
+    await tester.pumpWidget(createFeedScreen());
     await tester.pumpAndSettle();
 
     expect(find.text('Italian Pasta'), findsOneWidget);
   });
 
-  testWidgets('ExploreScreen shows error state', (tester) async {
+  testWidgets('FeedScreen shows error state', (tester) async {
     when(
       () => mockFeedRepository.stream(
         preload: any(named: 'preload'),
@@ -66,7 +66,7 @@ void main() {
       ),
     ).thenThrow(Exception('Failed to load recipes'));
 
-    await tester.pumpWidget(createExploreScreen());
+    await tester.pumpWidget(createFeedScreen());
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Failed to load recipes'), findsOneWidget);

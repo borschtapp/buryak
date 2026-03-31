@@ -4,15 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../features/explore/screen_explore.dart';
+import '../features/account/screen_account.dart';
+import '../features/account/screen_forgot_password.dart';
+import '../features/account/screen_login.dart';
+import '../features/account/screen_register.dart';
+import '../features/account/screen_reset_password.dart';
+import '../features/feed/screen_feed.dart';
 import '../features/legal/screen_privacy_policy.dart';
 import '../features/legal/screen_terms_of_use.dart';
 import '../features/planner/screen_planner.dart';
-import '../features/profile/screen_forgot_password.dart';
-import '../features/profile/screen_login.dart';
-import '../features/profile/screen_profile.dart';
-import '../features/profile/screen_register.dart';
-import '../features/profile/screen_reset_password.dart';
 import '../features/recipes/screen_collection.dart';
 import '../features/recipes/screen_recipe.dart';
 import '../features/recipes/screen_saved.dart';
@@ -29,9 +29,9 @@ part 'router.g.dart';
 
 const List<AppDestination> destinations = [
   AppDestination(
-    label: 'Explore',
+    label: 'Feed',
     route: '/',
-    name: RouteNames.home,
+    name: RouteNames.feed,
     icon: Icon(Icons.explore_outlined),
     selectedIcon: Icon(Icons.explore),
   ),
@@ -39,29 +39,29 @@ const List<AppDestination> destinations = [
     label: 'Saved',
     route: '/saved',
     name: RouteNames.saved,
-    icon: Icon(Icons.bookmark_outline),
-    selectedIcon: Icon(Icons.bookmark),
+    icon: Icon(Icons.menu_book_outlined),
+    selectedIcon: Icon(Icons.menu_book),
   ),
   AppDestination(
-    label: 'Planner',
+    label: 'Meal Plan',
     route: '/planner',
     name: RouteNames.planner,
     icon: Icon(Icons.today_outlined),
     selectedIcon: Icon(Icons.today),
   ),
   AppDestination(
-    label: 'List',
+    label: 'Shopping',
     route: '/shopping',
     name: RouteNames.shopping,
-    icon: Icon(Icons.list),
-    selectedIcon: Icon(Icons.list),
+    icon: Icon(Icons.shopping_basket_outlined),
+    selectedIcon: Icon(Icons.shopping_basket),
   ),
   AppDestination(
-    label: 'Profile',
-    route: '/profile',
-    name: RouteNames.profile,
-    icon: Icon(Icons.person_outline),
-    selectedIcon: Icon(Icons.person),
+    label: 'Account',
+    route: '/account',
+    name: RouteNames.account,
+    icon: Icon(Icons.manage_accounts_outlined),
+    selectedIcon: Icon(Icons.manage_accounts),
   ),
 ];
 
@@ -91,11 +91,11 @@ final _shellKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 /// Note: RouteNames.recipe is intentionally omitted — its tab is resolved
 /// dynamically from the route below it in the stack (see [_resolveTabIndex]).
 const Map<String, int> _tabIndex = {
-  RouteNames.home: 0,
+  RouteNames.feed: 0,
   RouteNames.saved: 1,
   RouteNames.planner: 2,
   RouteNames.shopping: 3,
-  RouteNames.profile: 4,
+  RouteNames.account: 4,
   RouteNames.collection: 1,
   RouteNames.privacy: 4,
   RouteNames.terms: 4,
@@ -122,7 +122,7 @@ class _RouteConfig {
 }
 
 const Map<String, _RouteConfig> _routeConfigs = {
-  RouteNames.profile: _RouteConfig(contentScrollable: false),
+  RouteNames.account: _RouteConfig(contentScrollable: false),
   RouteNames.recipe: _RouteConfig(hideBottomNav: true, contentScrollable: false, extendBodyBehindAppBar: true),
   RouteNames.collection: _RouteConfig(hideBottomNav: true, contentScrollable: false),
 };
@@ -149,7 +149,7 @@ GoRouter router(Ref ref) {
 
           // FABs are published by screens via shellFabProvider.
           Widget? fab;
-          if (routeName == RouteNames.home || routeName == RouteNames.shopping || routeName == RouteNames.saved) {
+          if (routeName == RouteNames.feed || routeName == RouteNames.shopping || routeName == RouteNames.saved) {
             fab = Consumer(
               builder: (ctx, ref, _) => ref.watch(shellFabProvider) ?? const SizedBox.shrink(),
             );
@@ -169,12 +169,12 @@ GoRouter router(Ref ref) {
         routes: [
           // ── Primary tab destinations ─────────────────────────────────────
           GoRoute(
-            name: RouteNames.home,
+            name: RouteNames.feed,
             path: '/',
             redirect: _authGuard(ref),
             pageBuilder: (context, state) => NoTransitionPage<void>(
               key: state.pageKey,
-              child: const ExploreScreen(),
+              child: const FeedScreen(),
             ),
           ),
           GoRoute(
@@ -205,18 +205,18 @@ GoRouter router(Ref ref) {
             ),
           ),
           GoRoute(
-            name: RouteNames.profile,
-            path: '/profile',
+            name: RouteNames.account,
+            path: '/account',
             redirect: _authGuard(ref),
             pageBuilder: (context, state) => NoTransitionPage<void>(
               key: state.pageKey,
-              child: ProfileScreen(joinCode: state.uri.queryParameters['joinCode']),
+              child: AccountScreen(joinCode: state.uri.queryParameters['joinCode']),
             ),
           ),
           // ── Detail routes (rendered inside the shell) ────────────────────
           GoRoute(
             name: RouteNames.recipe,
-            path: '/recipe/:rid',
+            path: '/recipes/:rid',
             redirect: _authGuard(ref),
             pageBuilder: (context, state) => CustomTransitionPage<void>(
               key: state.pageKey,
@@ -310,7 +310,7 @@ GoRouter router(Ref ref) {
           final code = state.uri.queryParameters['code'];
           if (code == null || code.isEmpty) return '/';
           if (ref.read(authProvider).isLoggedIn) {
-            return '/profile?joinCode=$code';
+            return '/account?joinCode=$code';
           } else {
             return '/register?code=$code';
           }
@@ -357,7 +357,7 @@ int _resolveTabIndex(BuildContext context, String? routeName) {
 AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? routeName) {
   if (routeName == RouteNames.recipe) {
     final recipeId = state.pathParameters['rid'];
-    final fallback = _findSourceRouteName(context) ?? RouteNames.home;
+    final fallback = _findSourceRouteName(context) ?? RouteNames.feed;
     return AppBar(
       leading: BackButton(onPressed: () => context.popOrGoNamed(fallback)),
       backgroundColor: Colors.transparent,

@@ -36,9 +36,9 @@ class LoginScreen extends HookConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             if (inviteCode != null && inviteCode!.isNotEmpty) {
-              context.goNamed(RouteNames.profile, queryParameters: {'joinCode': inviteCode});
+              context.goNamed(RouteNames.account, queryParameters: {'joinCode': inviteCode});
             } else {
-              context.goNamed(RouteNames.home);
+              context.goNamed(RouteNames.feed);
             }
           }
         } catch (e) {
