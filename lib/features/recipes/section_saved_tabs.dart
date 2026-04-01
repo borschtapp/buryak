@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -132,13 +133,24 @@ class SavedCookbooksTab extends ConsumerWidget {
                               child: Stack(
                                 children: [
                                   Positioned.fill(
-                                    child: Container(
-                                      color: context.colors.surfaceContainerHighest,
-                                      child: Icon(Icons.collections, size: 48, color: context.colors.onSurfaceVariant),
+                                    child: _CollectionCover(
+                                      collection: collection,
                                     ),
                                   ),
                                   Positioned.fill(
-                                    child: Container(color: context.colors.shadow.withValues(alpha: 0.1)),
+                                    child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          stops: const [0.4, 1.0],
+                                          colors: [
+                                            Colors.transparent,
+                                            Colors.black.withValues(alpha: 0.85),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(12.0),
@@ -227,6 +239,65 @@ class SavedCookbooksTab extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CollectionCover extends StatelessWidget {
+  final Collection collection;
+
+  const _CollectionCover({required this.collection});
+
+  @override
+  Widget build(BuildContext context) {
+    final images = (collection.recipes ?? []).map((r) => r.imageUrl).whereType<String>().take(3).toList();
+
+    if (images.isEmpty) {
+      return Container(
+        color: context.colors.surfaceContainerHighest,
+        child: Icon(Icons.collections, size: 48, color: context.colors.onSurfaceVariant),
+      );
+    }
+
+    if (images.length == 1) {
+      return _coverImage(images[0]);
+    }
+
+    if (images.length == 2) {
+      return Row(
+        children: [
+          Expanded(child: _coverImage(images[0])),
+          const VerticalDivider(width: 1, thickness: 1),
+          Expanded(child: _coverImage(images[1])),
+        ],
+      );
+    }
+
+    // 3 images: left half + right half split into top/bottom
+    return Row(
+      children: [
+        Expanded(child: _coverImage(images[0])),
+        const VerticalDivider(width: 1, thickness: 1),
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(child: _coverImage(images[1])),
+              const Divider(height: 1, thickness: 1),
+              Expanded(child: _coverImage(images[2])),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _coverImage(String url) {
+    return CachedNetworkImage(
+      imageUrl: url,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
+      errorWidget: (_, _, _) => const ColoredBox(color: Color(0xFF9E9E9E)),
     );
   }
 }
