@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../constants.dart';
 import '../providers/update.dart';
 import '../util/extensions.dart';
+import 'dialog_update.dart';
 
 class AppVersionText extends HookWidget {
   final EdgeInsetsGeometry padding;
@@ -42,35 +43,32 @@ class AppVersionText extends HookWidget {
   }
 }
 
-class AppVersionSection extends ConsumerWidget {
+class AppVersionSection extends HookConsumerWidget {
   const AppVersionSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final updateState = ref.watch(availableUpdateProvider);
-    final latestVersion = updateState.asData?.value;
+    final release = updateState.asData?.value;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (latestVersion != null)
-          MaterialBanner(
-            content: Text('Version $latestVersion is available'),
-            leading: const Icon(Icons.system_update),
-            actions: [
-              TextButton(
-                onPressed: () => launchUrl(
-                  Uri.parse('https://github.com/${AppConstants.releasesGithubRepo}/releases/latest'),
-                  mode: LaunchMode.externalApplication,
-                ),
-                child: const Text('Update'),
-              ),
-            ],
-          ),
-        const AppVersionText(
-          padding: EdgeInsets.symmetric(vertical: 16),
-        ),
-      ],
+    final dialogShown = useRef(false);
+
+    useEffect(() {
+      if (release == null || dialogShown.value) return null;
+      dialogShown.value = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => UpdateDialog(release: release),
+        );
+      });
+      return null;
+    }, [release]);
+
+    return const AppVersionText(
+      padding: EdgeInsets.symmetric(vertical: 16),
     );
   }
 }

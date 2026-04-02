@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../constants.dart';
+import '../models/release_info.dart';
 import 'repository.dart';
 
 part 'update_repository.g.dart';
@@ -17,7 +18,7 @@ class UpdateRepository extends Repository {
         baseUrlOverride: 'https://api.github.com',
       );
 
-  Future<String?> fetchLatestVersion() async {
+  Future<ReleaseInfo?> fetchLatestRelease() async {
     final response = await sendRequest(
       method: .get,
       queryParams: {'per_page': '1'},
@@ -25,8 +26,17 @@ class UpdateRepository extends Repository {
     );
     final releases = ensureList(response);
     if (releases.isEmpty) return null;
-    final tag = ensureMap(releases.first)['tag_name'] as String?;
-    // Strip leading 'v' from tag, e.g. 'v1.2.3' -> '1.2.3'
-    return tag?.replaceFirst(RegExp(r'^v'), '');
+
+    final release = ensureMap(releases.first);
+    final tag = release['tag_name'] as String?;
+    if (tag == null) return null;
+
+    final version = tag.replaceFirst(RegExp(r'^v'), '');
+
+    final assets = release['assets'] as List?;
+    final apkAsset = assets?.map(ensureMap).where((a) => (a['name'] as String?)?.endsWith('.apk') == true).firstOrNull;
+    final apkUrl = apkAsset?['browser_download_url'] as String?;
+
+    return ReleaseInfo(version: version, apkUrl: apkUrl);
   }
 }

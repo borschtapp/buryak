@@ -9,4 +9,6 @@ class AppConstants {
   static const String contactAddress = 'Musterstraße 12';
   static const String contactCity = '12345 Musterstadt';
   static const String contactEmail = 'info@borscht.app';
+
+  static const String installerChannel = 'app.borscht.buryak/installer';
 }
