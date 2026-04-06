@@ -20,9 +20,7 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
     final hasAmount = item.amount != null;
 
     final nameController = useTextEditingController(text: item.text ?? '');
-    final amountController = useTextEditingController(
-      text: item.amount != null ? item.amount.toString() : '',
-    );
+    final amountController = useTextEditingController(text: item.amount.formatAmount);
     final isSaving = useState(false);
 
     Future<void> save() async {

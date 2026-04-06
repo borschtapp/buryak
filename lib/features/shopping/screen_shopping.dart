@@ -272,7 +272,7 @@ class ShoppingScreen extends HookConsumerWidget {
                   ),
                   subtitle: item.amount != null
                       ? Text(
-                          '${item.amount} ${item.unit?.name ?? ''}',
+                          '${item.amount.displayAmount} ${item.unit?.name ?? ''}'.trim(),
                           style: context.textTheme.bodySmall,
                         )
                       : null,

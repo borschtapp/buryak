@@ -39,12 +39,12 @@ void main() {
         amount: 500,
         unit: Unit(id: 'g', name: 'g', slug: 'g'),
       );
-      expect(ingredient.displayAmount, '500.0 g');
+      expect(ingredient.displayAmount, '500 g');
     });
 
     test('displayAmount returns amount only if unit is missing', () {
       const ingredient = RecipeIngredient(id: '1', amount: 3);
-      expect(ingredient.displayAmount, '3.0');
+      expect(ingredient.displayAmount, '3');
     });
 
     test('displayAmount returns unit name only if amount is missing', () {

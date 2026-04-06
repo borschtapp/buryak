@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'food.dart';
 import 'unit.dart';
+import '../util/extensions.dart';
 
 part 'recipe_ingredient.freezed.dart';
 
@@ -32,9 +33,9 @@ abstract class RecipeIngredient with _$RecipeIngredient {
   String get displayAmount {
     final hasMax = maxAmount != null && maxAmount != 0;
     return [
-      if (amount != null && amount != 0) hasMax ? '$amount-$maxAmount' : amount.toString(),
+      if (amount != null && amount != 0) hasMax ? '${amount.displayAmount}-${maxAmount.displayAmount}' : amount.displayAmount,
       if (unit?.name.trim().isNotEmpty == true) unit!.name,
-    ].where((s) => s.trim().isNotEmpty).join(' ');
+    ].where((s) => s.isNotEmpty).join(' ');
   }
 
   factory RecipeIngredient.fromJson(Map<String, dynamic> json) => _$RecipeIngredientFromJson(json);
