@@ -7,6 +7,7 @@ class RouteNames {
 
   static const String recipe = 'recipe';
   static const String collection = 'collection';
+  static const String feeds = 'feeds';
 
   static const String login = 'login';
   static const String register = 'register';

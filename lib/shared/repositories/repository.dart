@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
@@ -235,7 +236,7 @@ class RequestHandler {
         if (kDebugMode) {
           dev.log('✗ API Error: $e', name: 'http', error: e);
         }
-        throw GeneralApiException(message: e.toString());
+        throw GeneralApiException(message: e.toString(), originalException: e);
       }
     }
 
@@ -256,8 +257,11 @@ class RequestHandler {
 class GeneralApiException implements Exception {
   final String message;
   final int? statusCode;
+  final Object? originalException;
 
-  GeneralApiException({required this.message, this.statusCode});
+  GeneralApiException({required this.message, this.statusCode, this.originalException});
+
+  bool get isTimeout => originalException is TimeoutException;
 
   @override
   String toString() {

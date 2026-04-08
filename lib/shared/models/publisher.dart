@@ -4,7 +4,6 @@ import 'feed.dart';
 import 'recipe.dart';
 
 part 'publisher.freezed.dart';
-
 part 'publisher.g.dart';
 
 @freezed
@@ -13,7 +12,7 @@ abstract class Publisher with _$Publisher {
     required String id,
     required String name,
     String? description,
-    required String url,
+    String? url,
     @JsonKey(name: 'image_url') String? imageUrl,
 
     // Preload fields

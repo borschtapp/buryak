@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/components/dialog_confirm.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/util/extensions.dart';
@@ -88,25 +89,14 @@ class HouseholdDetails extends HookConsumerWidget {
                           ? IconButton(
                               icon: const Icon(Icons.person_remove),
                               onPressed: () async {
-                                final confirm = await showDialog<bool>(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    title: const Text('Remove Member'),
-                                    content: Text('Remove ${member.name} from the household?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(ctx, false),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(ctx, true),
-                                        style: TextButton.styleFrom(foregroundColor: context.colors.error),
-                                        child: const Text('Remove'),
-                                      ),
-                                    ],
-                                  ),
+                                final confirm = await showConfirmDialog(
+                                  context,
+                                  title: 'Remove Member',
+                                  content: 'Remove ${member.name} from the household?',
+                                  confirmLabel: 'Remove',
+                                  destructive: true,
                                 );
-                                if (confirm == true) {
+                                if (confirm) {
                                   await ref.read(householdProvider.notifier).removeMember(member.id);
                                 }
                               },
@@ -134,22 +124,14 @@ class HouseholdDetails extends HookConsumerWidget {
                       OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(foregroundColor: context.colors.error),
                         onPressed: () async {
-                          final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: const Text('Leave Household'),
-                              content: const Text('Are you sure you want to leave this household?'),
-                              actions: [
-                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(ctx, true),
-                                  style: TextButton.styleFrom(foregroundColor: context.colors.error),
-                                  child: const Text('Leave'),
-                                ),
-                              ],
-                            ),
+                          final confirm = await showConfirmDialog(
+                            context,
+                            title: 'Leave Household',
+                            content: 'Are you sure you want to leave this household?',
+                            confirmLabel: 'Leave',
+                            destructive: true,
                           );
-                          if (confirm == true) {
+                          if (confirm) {
                             await ref.read(householdProvider.notifier).leaveHousehold();
                           }
                         },

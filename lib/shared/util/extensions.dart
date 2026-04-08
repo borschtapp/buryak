@@ -52,6 +52,16 @@ extension StringExtensions on String {
     if (length == 1) return toUpperCase();
     return '${this[0].toUpperCase()}${substring(1)}';
   }
+
+  String timeAgo() {
+    final dt = DateTime.tryParse(this);
+    if (dt == null) return '';
+    final diff = DateTime.now().difference(dt);
+    if (diff.isNegative || diff.inSeconds < 60) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    return '${diff.inDays}d ago';
+  }
 }
 
 extension IntPluralize on int {

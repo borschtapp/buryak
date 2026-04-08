@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/components/dialog_confirm.dart';
 import '../../shared/components/loading_indicator.dart';
 import '../../shared/components/profile_details.dart';
 import '../../shared/providers/user.dart';
@@ -85,28 +86,16 @@ class AccountScreen extends HookConsumerWidget {
             onTap: isDeleting.value
                 ? null
                 : () async {
-                    final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: const Text('Delete Account'),
-                        content: const Text(
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: 'Delete Account',
+                      content:
                           'This will permanently delete your account and all associated data. '
                           'This action cannot be undone.',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(ctx).pop(false),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.of(ctx).pop(true),
-                            style: TextButton.styleFrom(foregroundColor: errorColor),
-                            child: const Text('Delete'),
-                          ),
-                        ],
-                      ),
+                      confirmLabel: 'Delete',
+                      destructive: true,
                     );
-                    if (confirmed == true && context.mounted) {
+                    if (confirmed && context.mounted) {
                       isDeleting.value = true;
                       try {
                         await ref.read(authProvider.notifier).deleteAccount();

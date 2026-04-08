@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../shared/components/dialog_text_input.dart';
 import '../../shared/components/empty_state.dart';
 import '../../shared/components/error_state.dart';
 import '../../shared/hooks.dart';
@@ -15,6 +14,7 @@ import '../../shared/repositories/feed_repository.dart';
 import '../../shared/repositories/recipe_repository.dart';
 import '../recipes/section_recipe_search_bar.dart';
 import '../recipes/section_recipes_grid.dart';
+import 'dialog_add_feed.dart';
 
 part 'screen_feed.g.dart';
 
@@ -33,9 +33,9 @@ class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
   @override
   Future<List<Recipe>> build() async {
     resetPagination();
-    final filter = ref.read(feedFilterProvider);
+    final filter = ref.watch(feedFilterProvider);
     final result = await ref
-        .read(feedRepositoryProvider)
+        .watch(feedRepositoryProvider)
         .stream(
           preload: _preload,
           filter: filter,
@@ -58,32 +58,6 @@ class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
   });
 }
 
-void showAddFeedDialog(BuildContext context, WidgetRef ref) {
-  showDialog<void>(
-    context: context,
-    useRootNavigator: true,
-    builder: (dialogContext) => TextInputDialog(
-      title: 'Add New Feed',
-      hintText: 'Feed URL (RSS/Atom)',
-      helperText: 'Enter the URL of the recipe feed',
-      submitLabel: 'Add',
-      validator: (value) => value.isEmpty ? 'URL cannot be empty' : null,
-      onSubmit: (url, ctx) async {
-        await ref.read(feedRepositoryProvider).subscribe(url);
-        ref.invalidate(feedStreamProvider);
-        if (ctx.mounted) {
-          Navigator.pop(ctx);
-          ScaffoldMessenger.of(ctx).showSnackBar(
-            const SnackBar(
-              content: Text('Feed added! It might take a few minutes for recipes to be processed.'),
-            ),
-          );
-        }
-      },
-    ),
-  );
-}
-
 class FeedScreen extends HookConsumerWidget {
   const FeedScreen({super.key});
 
@@ -102,7 +76,7 @@ class FeedScreen extends HookConsumerWidget {
 
     final streamAsync = ref.watch(feedStreamProvider);
     final notifier = ref.read(feedStreamProvider.notifier);
-    final filter = ref.read(feedFilterProvider);
+    final filter = ref.watch(feedFilterProvider);
 
     return Column(
       children: [
@@ -112,7 +86,6 @@ class FeedScreen extends HookConsumerWidget {
             filter: filter,
             onChanged: (newFilter) {
               ref.read(feedFilterProvider.notifier).update(newFilter);
-              ref.invalidate(feedStreamProvider);
             },
             onFiltersOpenChanged: (isOpen) {
               if (isOpen) {
@@ -141,7 +114,6 @@ class FeedScreen extends HookConsumerWidget {
                         : TextButton.icon(
                             onPressed: () {
                               ref.read(feedFilterProvider.notifier).update(const RecipeFilter());
-                              ref.invalidate(feedStreamProvider);
                             },
                             icon: const Icon(Icons.filter_alt_off),
                             label: const Text('Clear filters'),

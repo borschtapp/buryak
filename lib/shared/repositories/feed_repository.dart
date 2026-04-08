@@ -55,6 +55,17 @@ class FeedRepository extends Repository {
     await sendRequest(method: .delete, path: '/$id');
   }
 
+  Future<(int found, int imported)?> sync(String id) async {
+    try {
+      final response = await sendRequest(method: .post, path: '/$id/sync');
+      final data = ensureMap(response);
+      return (data['found'] as int? ?? 0, data['imported'] as int? ?? 0);
+    } on GeneralApiException catch (e) {
+      if (e.isTimeout) return null;
+      rethrow;
+    }
+  }
+
   Future<PaginatedList<Recipe>> stream({
     List<RecipePreload>? preload,
     RecipeFilter? filter,

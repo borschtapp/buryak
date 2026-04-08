@@ -151,7 +151,7 @@ class RecipeSearchBar extends HookWidget {
           count: nonSearchActiveCount,
           isLabelVisible: nonSearchActiveCount > 0,
           child: IconButton.filledTonal(
-            icon: const Icon(Icons.tune),
+            icon: const Icon(Icons.filter_alt),
             tooltip: 'Filters',
             onPressed: openFilters,
           ),

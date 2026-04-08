@@ -13,6 +13,7 @@ class AdaptiveNavigation extends StatelessWidget {
     required this.child,
     this.appBar,
     this.appBarTitle,
+    this.tabActions,
     this.floatingActionButton,
     this.hideBottomNavigationBar = false,
     this.extendBodyBehindAppBar = false,
@@ -21,6 +22,13 @@ class AdaptiveNavigation extends StatelessWidget {
 
   final AppBar? appBar;
   final String? appBarTitle;
+
+  /// Static actions for primary-tab routes (e.g. the tune icon on Feed).
+  /// These appear in the logo AppBar without disrupting centering or
+  /// triggering the inline TabletAppBar header. Ignored for detail routes
+  /// that supply a custom [appBar] or [appBarTitle].
+  final List<Widget>? tabActions;
+
   final bool hideBottomNavigationBar;
   final bool extendBodyBehindAppBar;
   final Widget? floatingActionButton;
@@ -38,7 +46,7 @@ class AdaptiveNavigation extends StatelessWidget {
           return Scaffold(
             body: child,
             extendBodyBehindAppBar: extendBodyBehindAppBar,
-            appBar: buildMobileAppBar(context),
+            appBar: _buildMobileAppBar(context),
             floatingActionButton: floatingActionButton,
             bottomNavigationBar: hideBottomNavigationBar
                 ? null
@@ -54,7 +62,9 @@ class AdaptiveNavigation extends StatelessWidget {
           appBar: (appBar == null && appBarTitle == null)
               ? AppBar(
                   automaticallyImplyLeading: false,
+                  centerTitle: true,
                   title: ThemeProvider.logo(context),
+                  actions: tabActions,
                 )
               : null,
           body: Row(
@@ -87,7 +97,7 @@ class AdaptiveNavigation extends StatelessWidget {
     );
   }
 
-  AppBar buildMobileAppBar(BuildContext context) {
+  AppBar _buildMobileAppBar(BuildContext context) {
     if (appBar != null) return appBar!;
 
     if (appBarTitle != null) {
@@ -100,6 +110,7 @@ class AdaptiveNavigation extends StatelessWidget {
     return AppBar(
       centerTitle: true,
       title: ThemeProvider.logo(context),
+      actions: tabActions,
     );
   }
 }
@@ -126,6 +137,8 @@ class TabletAppBar extends StatelessWidget {
       return Container(alignment: .topLeft, child: child);
     }
 
+    final title = appBarTitle != null ? Text(appBarTitle!, style: context.textTheme.headlineSmall) : appBar?.title;
+
     final content = ArticleContent(
       child: Column(
         crossAxisAlignment: .start,
@@ -138,7 +151,7 @@ class TabletAppBar extends StatelessWidget {
                       ? BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute))
                       : const SizedBox.shrink()),
               const SizedBox(width: 6),
-              if (appBarTitle != null) Text(appBarTitle!, style: context.textTheme.headlineSmall),
+              ?title,
               const Expanded(child: SizedBox()),
               Row(
                 children: appBar?.actions ?? [],

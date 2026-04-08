@@ -11,6 +11,7 @@ class RootLayout extends StatelessWidget {
     required this.currentIndex,
     this.appBar,
     this.appBarTitle,
+    this.tabActions,
     this.floatingActionButton,
     this.hideBottomNavigationBar = false,
     this.extendBodyBehindAppBar = false,
@@ -21,6 +22,7 @@ class RootLayout extends StatelessWidget {
   final AppBar? appBar;
   final int currentIndex;
   final String? appBarTitle;
+  final List<Widget>? tabActions;
   final bool hideBottomNavigationBar;
   final Widget? floatingActionButton;
   final bool extendBodyBehindAppBar;
@@ -46,6 +48,7 @@ class RootLayout extends StatelessWidget {
           key: _navigationRailKey,
           appBar: appBar,
           appBarTitle: appBarTitle,
+          tabActions: tabActions,
           hideBottomNavigationBar: hideBottomNavigationBar,
           floatingActionButton: floatingActionButton,
           extendBodyBehindAppBar: extendBodyBehindAppBar,

@@ -10,6 +10,7 @@ import '../features/account/screen_login.dart';
 import '../features/account/screen_register.dart';
 import '../features/account/screen_reset_password.dart';
 import '../features/feed/screen_feed.dart';
+import '../features/feed/screen_feeds.dart';
 import '../features/legal/screen_privacy_policy.dart';
 import '../features/legal/screen_terms_of_use.dart';
 import '../features/planner/screen_planner.dart';
@@ -94,6 +95,7 @@ const Map<String, int> _tabIndex = {
   RouteNames.planner: 2,
   RouteNames.shopping: 3,
   RouteNames.account: 4,
+  RouteNames.feeds: 0,
   RouteNames.collection: 1,
   RouteNames.privacy: 4,
   RouteNames.terms: 4,
@@ -110,20 +112,38 @@ class _RouteConfig {
   final bool contentScrollable;
   final bool extendBodyBehindAppBar;
 
+  /// Builds actions for the primary-tab logo AppBar (e.g. tune icon on Feed).
+  /// Only applied when no custom [appBar] or [appBarTitle] is in use, so it
+  /// never conflicts with detail-route headers.
+  final List<Widget> Function(BuildContext)? tabActionsBuilder;
+
   const _RouteConfig({
     // ignore: unused_element_parameter
     this.appBarTitle,
     this.hideBottomNav = false,
     this.contentScrollable = true,
     this.extendBodyBehindAppBar = false,
+    this.tabActionsBuilder,
   });
 }
 
 const Map<String, _RouteConfig> _routeConfigs = {
   RouteNames.account: _RouteConfig(contentScrollable: false),
+  RouteNames.feed: _RouteConfig(
+    tabActionsBuilder: _buildFeedTabActions,
+  ),
+  RouteNames.feeds: _RouteConfig(hideBottomNav: true, contentScrollable: false),
   RouteNames.recipe: _RouteConfig(hideBottomNav: true, contentScrollable: false, extendBodyBehindAppBar: true),
   RouteNames.collection: _RouteConfig(hideBottomNav: true, contentScrollable: false),
 };
+
+List<Widget> _buildFeedTabActions(BuildContext context) => [
+  IconButton(
+    icon: const Icon(Icons.dashboard_customize),
+    tooltip: 'Manage Feeds',
+    onPressed: () => context.pushNamed(RouteNames.feeds),
+  ),
+];
 
 @Riverpod(keepAlive: true)
 GoRouter router(Ref ref) {
@@ -144,6 +164,7 @@ GoRouter router(Ref ref) {
           final tabIdx = _resolveTabIndex(context, routeName);
 
           final appBar = _buildShellAppBar(context, state, routeName);
+          final tabActions = config?.tabActionsBuilder?.call(context);
 
           // FABs are published by screens via shellFabProvider.
           Widget? fab;
@@ -157,6 +178,7 @@ GoRouter router(Ref ref) {
             currentIndex: tabIdx,
             appBar: appBar,
             appBarTitle: config?.appBarTitle,
+            tabActions: tabActions,
             hideBottomNavigationBar: config?.hideBottomNav ?? false,
             contentScrollable: config?.contentScrollable ?? true,
             extendBodyBehindAppBar: config?.extendBodyBehindAppBar ?? false,
@@ -223,6 +245,21 @@ GoRouter router(Ref ref) {
                 initialRecipe: state.extra is Recipe ? state.extra as Recipe : null,
                 backFallback: _findSourceRouteName(context) ?? RouteNames.feed,
               ),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeScaleTransition(
+                  animation: animation,
+                  child: child,
+                );
+              },
+            ),
+          ),
+          GoRoute(
+            name: RouteNames.feeds,
+            path: '/feeds',
+            redirect: _authGuard(ref),
+            pageBuilder: (context, state) => CustomTransitionPage<void>(
+              key: state.pageKey,
+              child: const FeedsScreen(),
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 return FadeScaleTransition(
                   animation: animation,
@@ -353,11 +390,13 @@ int _resolveTabIndex(BuildContext context, String? routeName) {
   return _tabIndex[routeName] ?? 0;
 }
 
+PopupMenuItem<String> _opmlMenuItem(IconData icon, String label) => PopupMenuItem<String>(
+  enabled: false,
+  child: Row(children: [Icon(icon), const SizedBox(width: 12), Text(label)]),
+);
+
 AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? routeName) {
   if (routeName == RouteNames.recipe) {
-    // RecipeMobileView owns its own SliverAppBar (back button + actions + hero image).
-    // RecipeDesktopView owns its own actions row alongside the title.
-    // Zero-height placeholder prevents the shell Scaffold from reserving space.
     return AppBar(
       toolbarHeight: 0,
       automaticallyImplyLeading: false,
@@ -378,6 +417,22 @@ AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? rou
       leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.saved)),
     );
   }
+  if (routeName == RouteNames.feeds) {
+    return AppBar(
+      title: const Text('Manage Feeds'),
+      leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.feed)),
+      actions: [
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          tooltip: 'More options',
+          itemBuilder: (_) => [
+            _opmlMenuItem(Icons.upload_file, 'Import OPML (Coming soon)'),
+            _opmlMenuItem(Icons.download, 'Export OPML (Coming soon)'),
+          ],
+        ),
+      ],
+    );
+  }
   return null;
 }
 
@@ -388,7 +443,7 @@ class _RouterNotifier extends ChangeNotifier {
 }
 
 String? Function(BuildContext, GoRouterState) _loginGuard(Ref ref) {
-  return (context, state) {
+  return (_, _) {
     if (ref.read(authProvider).isLoggedIn) {
       return '/';
     } else {
@@ -398,7 +453,7 @@ String? Function(BuildContext, GoRouterState) _loginGuard(Ref ref) {
 }
 
 String? Function(BuildContext, GoRouterState) _authGuard(Ref ref) {
-  return (context, state) {
+  return (_, _) {
     if (!ref.read(authProvider).isLoggedIn) {
       return '/${RouteNames.login}';
     } else {
