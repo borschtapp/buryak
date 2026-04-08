@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,9 @@ import '../../shared/util/extensions.dart';
 import '../../shared/util/validator.dart';
 import 'dialog_server_url.dart';
 
+const _devEmail = String.fromEnvironment('DEV_EMAIL');
+const _devPassword = String.fromEnvironment('DEV_PASSWORD');
+
 class LoginScreen extends HookConsumerWidget {
   final String? inviteCode;
 
@@ -23,8 +27,8 @@ class LoginScreen extends HookConsumerWidget {
     final isLoading = useState(false);
     final showPassword = useState(false);
     final formKey = useMemoized(GlobalKey<FormState>.new);
-    final emailController = useTextEditingController();
-    final passwordController = useTextEditingController();
+    final emailController = useTextEditingController(text: kDebugMode ? _devEmail : '');
+    final passwordController = useTextEditingController(text: kDebugMode ? _devPassword : '');
 
     Future<void> login() async {
       if (isLoading.value) return;
