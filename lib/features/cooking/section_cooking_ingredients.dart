@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/components/recipes/ingredients.dart';
+import '../../shared/components/recipes/scale_control.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/util/extensions.dart';
 
 class CookingIngredientsPage extends StatelessWidget {
-  const CookingIngredientsPage({super.key, required this.recipe});
+  const CookingIngredientsPage({super.key, required this.recipe, required this.scale, required this.onScaleChanged});
 
   final Recipe recipe;
+  final double scale;
+  final ValueChanged<double> onScaleChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +55,12 @@ class CookingIngredientsPage extends StatelessWidget {
           Ingredients(
             recipe.ingredients ?? [],
             equipment: recipe.equipment,
+            scale: scale,
+            headerTrailing: ScaleControl(
+              recipe: recipe,
+              initialScale: scale,
+              onScaleChanged: onScaleChanged,
+            ),
           ),
         ],
       ),

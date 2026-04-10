@@ -8,8 +8,11 @@ import '../../util/extensions.dart';
 class Ingredients extends StatelessWidget {
   final List<RecipeIngredient> ingredients;
   final List<Equipment>? equipment;
+  final double scale;
+  final Widget? headerTrailing;
+  final bool showHeader;
 
-  const Ingredients(this.ingredients, {this.equipment, super.key});
+  const Ingredients(this.ingredients, {this.equipment, this.scale = 1.0, this.headerTrailing, this.showHeader = true, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,25 +21,23 @@ class Ingredients extends StatelessWidget {
     }
 
     final hasEquipment = equipment != null && equipment!.isNotEmpty;
-    // Header slots: [equipment, divider, title] when equipment present, else [title]
-    final headerCount = hasEquipment ? 3 : 1;
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: headerCount + ingredients.length,
-      itemBuilder: (context, index) {
-        if (hasEquipment) {
-          if (index == 0) return _buildEquipmentSection(context);
-          if (index == 1) return const Divider();
-          if (index == 2) return _buildIngredientsHeader(context);
-          return _buildIngredientRow(context, ingredients[index - 3]);
-        } else {
-          if (index == 0) return _buildIngredientsHeader(context);
-          return _buildIngredientRow(context, ingredients[index - 1]);
-        }
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (hasEquipment) ...[
+          _buildEquipmentSection(context),
+          const Divider(),
+        ],
+        if (showHeader) _buildIngredientsHeader(context),
+        ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: ingredients.length,
+          itemBuilder: (context, index) => _buildIngredientRow(context, ingredients[index]),
+        ),
+      ],
     );
   }
 
@@ -63,8 +64,16 @@ class Ingredients extends StatelessWidget {
 
   Widget _buildIngredientsHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Text('Ingredients', style: context.textTheme.titleMedium),
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20),
+      child: Row(
+        children: [
+          Text('Ingredients', style: context.textTheme.titleMedium),
+          if (headerTrailing != null) ...[
+            const Spacer(),
+            headerTrailing!,
+          ],
+        ],
+      ),
     );
   }
 
@@ -150,7 +159,7 @@ class Ingredients extends StatelessWidget {
             ),
           ),
           Text(
-            ingredient.displayAmount,
+            ingredient.displayScaledAmount(scale),
             style: context.textTheme.bodyLarge?.copyWith(color: context.colors.onSurfaceVariant),
           ),
         ],

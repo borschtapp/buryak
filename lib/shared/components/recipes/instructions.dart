@@ -30,7 +30,7 @@ class Instructions extends StatelessWidget {
               Text(
                 'Step ${index + 1}',
                 style: context.textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey,
+                  color: context.colors.onSurfaceVariant,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -49,7 +49,6 @@ class Instructions extends StatelessWidget {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: context.colors.surfaceContainerHighest,
-                          borderRadius: context.shapeMedium,
                         ),
                         child: const Center(child: CircularProgressIndicator()),
                       ),

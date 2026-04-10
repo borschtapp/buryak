@@ -9,6 +9,7 @@ import '../../shared/components/recipes/instructions.dart';
 import '../../shared/components/recipes/meta_row.dart';
 import '../../shared/components/recipes/nutrition.dart';
 import '../../shared/components/recipes/recipe_title.dart';
+import '../../shared/components/recipes/scale_control.dart';
 import '../../shared/components/recipes/sticky_tab_bar_delegate.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/util/extensions.dart';
@@ -28,6 +29,7 @@ class RecipeMobileView extends HookWidget {
       initialLength: hasNutrition ? 3 : 2,
       keys: [hasNutrition],
     );
+    final scale = useState(1.0);
 
     final heroHeight = min(MediaQuery.heightOf(context) * 0.4, UIConstants.recipeMaxImageHeight);
     final scrollController = useScrollController();
@@ -108,26 +110,25 @@ class RecipeMobileView extends HookWidget {
         SliverToBoxAdapter(
           child: ListenableBuilder(
             listenable: tabController,
-            builder: (_, _) => Column(
-              children: [
-                Offstage(
-                  offstage: tabController.index != 0,
-                  child: Ingredients(recipe.ingredients ?? [], equipment: recipe.equipment),
-                ),
-                Offstage(
-                  offstage: tabController.index != 1,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Instructions(recipe.instructions ?? []),
+            builder: (_, _) {
+              return switch (tabController.index) {
+                0 => Ingredients(
+                  recipe.ingredients ?? [],
+                  equipment: recipe.equipment,
+                  scale: scale.value,
+                  headerTrailing: ScaleControl(
+                    recipe: recipe,
+                    initialScale: scale.value,
+                    onScaleChanged: (s) => scale.value = s,
                   ),
                 ),
-                if (hasNutrition)
-                  Offstage(
-                    offstage: tabController.index != 2,
-                    child: Nutrition(recipe.nutrition),
-                  ),
-              ],
-            ),
+                1 => Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Instructions(recipe.instructions ?? []),
+                ),
+                _ => Nutrition(recipe.nutrition),
+              };
+            },
           ),
         ),
       ],

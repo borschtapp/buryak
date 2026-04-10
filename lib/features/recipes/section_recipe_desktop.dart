@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../shared/components/recipes/hero_image.dart';
@@ -6,19 +7,21 @@ import '../../shared/components/recipes/ingredients.dart';
 import '../../shared/components/recipes/instructions.dart';
 import '../../shared/components/recipes/meta_row.dart';
 import '../../shared/components/recipes/recipe_title.dart';
+import '../../shared/components/recipes/scale_control.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 import 'section_recipe_actions.dart';
 
-class RecipeDesktopView extends StatelessWidget {
+class RecipeDesktopView extends HookWidget {
   const RecipeDesktopView({super.key, required this.recipe});
 
   final Recipe recipe;
 
   @override
   Widget build(BuildContext context) {
+    final scale = useState(1.0);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(40),
       child: Column(
@@ -58,7 +61,17 @@ class RecipeDesktopView extends StatelessWidget {
               Expanded(
                 child: _ContentSection(
                   title: 'Ingredients',
-                  child: Ingredients(recipe.ingredients ?? [], equipment: recipe.equipment),
+                  trailing: ScaleControl(
+                    recipe: recipe,
+                    initialScale: scale.value,
+                    onScaleChanged: (s) => scale.value = s,
+                  ),
+                  child: Ingredients(
+                    recipe.ingredients ?? [],
+                    equipment: recipe.equipment,
+                    scale: scale.value,
+                    showHeader: false,
+                  ),
                 ),
               ),
               const SizedBox(width: 48),
@@ -77,17 +90,23 @@ class RecipeDesktopView extends StatelessWidget {
 }
 
 class _ContentSection extends StatelessWidget {
-  const _ContentSection({required this.title, required this.child});
+  const _ContentSection({required this.title, required this.child, this.trailing});
 
   final String title;
   final Widget child;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: context.textTheme.headlineSmall),
+        Row(
+          children: [
+            Text(title, style: context.textTheme.headlineSmall),
+            if (trailing != null) ...[const Spacer(), trailing!],
+          ],
+        ),
         const SizedBox(height: 16),
         child,
       ],

@@ -29,6 +29,7 @@ class CookingScreen extends HookWidget {
 
     final pageController = usePageController();
     final currentStep = useState(0);
+    final scale = useState(1.0);
 
     // Keep screen awake during cooking
     useEffect(() {
@@ -47,7 +48,7 @@ class CookingScreen extends HookWidget {
                 controller: pageController,
                 onPageChanged: (i) => currentStep.value = i,
                 children: [
-                  CookingIngredientsPage(recipe: recipe),
+                  CookingIngredientsPage(recipe: recipe, scale: scale.value, onScaleChanged: (s) => scale.value = s),
                   for (final instruction in instructions) CookingStepPage(instruction: instruction),
                   CookingCompletePage(
                     recipe: recipe,
