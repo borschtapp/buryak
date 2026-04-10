@@ -49,7 +49,7 @@ class AppVersionSection extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final updateState = ref.watch(availableUpdateProvider);
-    final release = updateState.asData?.value;
+    final release = updateState.value;
 
     final dialogShown = useRef(false);
 

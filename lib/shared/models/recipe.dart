@@ -12,7 +12,6 @@ import 'taxonomy.dart';
 import 'video.dart';
 
 part 'recipe.freezed.dart';
-
 part 'recipe.g.dart';
 
 @freezed
@@ -53,4 +52,8 @@ abstract class Recipe with _$Recipe {
   }) = _Recipe;
 
   factory Recipe.fromJson(Map<String, dynamic> json) => _$RecipeFromJson(json);
+}
+
+extension RecipeCooking on Recipe {
+  bool get hasCookableInstructions => instructions?.isNotEmpty ?? false;
 }

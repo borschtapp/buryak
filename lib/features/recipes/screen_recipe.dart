@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/error_state.dart';
 import '../../shared/models/recipe.dart';
+import '../../shared/route_names.dart';
 import '../../shared/util/extensions.dart';
 import '../planner/dialog_edit_plan.dart';
 import '../shopping/dialog_add_from_recipe.dart';
@@ -73,25 +75,41 @@ class _MobileBottomActionBar extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
+            child: FilledButton.icon(
+              onPressed: recipe.hasCookableInstructions
+                  ? () => context.pushNamed(
+                      RouteNames.cooking,
+                      pathParameters: {'rid': recipe.id},
+                      extra: recipe,
+                    )
+                  : null,
+              icon: const Icon(Icons.local_fire_department, size: 18),
+              label: const Text('Cook'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () => _showPlanSheet(context),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: BorderSide(color: context.colors.primary),
+              ),
+              child: const Text('Plan'),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
             child: OutlinedButton(
               onPressed: () => _showShoppingSheet(context),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: BorderSide(color: context.colors.primary),
               ),
-              child: const Text('Add to shopping'),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: FilledButton(
-              onPressed: () => _showPlanSheet(context),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: context.colors.primaryContainer,
-                foregroundColor: context.colors.onPrimaryContainer,
-              ),
-              child: const Text('Add to plan'),
+              child: const Text('Shop'),
             ),
           ),
         ],
@@ -100,7 +118,7 @@ class _MobileBottomActionBar extends StatelessWidget {
   }
 
   void _showShoppingSheet(BuildContext context) {
-    final screenHeight = MediaQuery.sizeOf(context).height;
+    final screenHeight = MediaQuery.heightOf(context);
     final topReserved = MediaQuery.paddingOf(context).top + kToolbarHeight;
     final maxFraction = (screenHeight - topReserved) / screenHeight;
 

@@ -60,7 +60,7 @@ mixin PagedNotifierMixin<Item> {
   Future<void> loadNextPage(Future<PaginatedList<Item>> Function(int offset, int limit) fetch) async {
     assert(_initialized, 'loadNextPage called before resetPagination() ran in build()');
     if (!_hasMore || _isLoadingMore) return;
-    final current = state.asData?.value;
+    final current = state.value;
     if (current == null) return;
 
     _isLoadingMore = true;

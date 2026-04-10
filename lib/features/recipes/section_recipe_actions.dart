@@ -17,7 +17,7 @@ class RecipeActions extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isSaved = ref.watch(recipeIsSavedProvider(recipeId));
-    final recipe = ref.watch(recipeControllerProvider(recipeId)).asData?.value;
+    final recipe = ref.watch(recipeControllerProvider(recipeId)).value;
     final isCollected = recipe?.collections?.isNotEmpty ?? false;
 
     return Row(

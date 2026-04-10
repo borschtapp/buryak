@@ -9,6 +9,7 @@ import '../features/account/screen_forgot_password.dart';
 import '../features/account/screen_login.dart';
 import '../features/account/screen_register.dart';
 import '../features/account/screen_reset_password.dart';
+import '../features/cooking/screen_cooking.dart';
 import '../features/feed/screen_feed.dart';
 import '../features/feed/screen_feeds.dart';
 import '../features/legal/screen_privacy_policy.dart';
@@ -286,6 +287,25 @@ GoRouter router(Ref ref) {
         ],
       ),
 
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        name: RouteNames.cooking,
+        path: '/cooking/:rid',
+        redirect: (context, state) {
+          final authRedirect = _authGuard(ref)(context, state);
+          if (authRedirect != null) return authRedirect;
+          // Deep link without recipe data — redirect to recipe screen
+          if (state.extra is! Recipe) {
+            return '/recipes/${state.pathParameters['rid']}';
+          }
+          return null;
+        },
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: CookingScreen(recipe: state.extra as Recipe),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeScaleTransition(animation: animation, child: child),
+        ),
+      ),
       GoRoute(
         parentNavigatorKey: _rootKey,
         name: RouteNames.privacy,

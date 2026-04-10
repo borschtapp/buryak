@@ -16,7 +16,7 @@ class RecipeController extends _$RecipeController {
   }
 
   void updateCollections(List<Collection> collections) {
-    final current = state.asData?.value;
+    final current = state.value;
     if (current != null) {
       state = AsyncData(current.copyWith(collections: collections));
     }

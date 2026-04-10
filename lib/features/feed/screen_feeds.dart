@@ -18,7 +18,7 @@ class FeedsScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final feedsAsync = ref.watch(feedListProvider);
-    final feeds = feedsAsync.asData?.value;
+    final feeds = feedsAsync.value;
 
     useFab(
       ref,

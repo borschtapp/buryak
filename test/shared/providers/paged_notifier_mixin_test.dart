@@ -64,7 +64,7 @@ void main() {
     });
 
     test('loadNextPage handles empty initial state gracefully', () async {
-      // This test might be tricky because PagedNotifierMixin assumes state.asData?.value is not null
+      // This test might be tricky because PagedNotifierMixin assumes state.value is not null
       // In build() we usually return initial data.
     });
 

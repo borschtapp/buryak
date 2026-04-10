@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../shared/components/recipes/hero_image.dart';
 import '../../shared/components/recipes/ingredients.dart';
@@ -6,6 +7,7 @@ import '../../shared/components/recipes/instructions.dart';
 import '../../shared/components/recipes/meta_row.dart';
 import '../../shared/components/recipes/recipe_title.dart';
 import '../../shared/models/recipe.dart';
+import '../../shared/route_names.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 import 'section_recipe_actions.dart';
@@ -32,6 +34,18 @@ class RecipeDesktopView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(child: RecipeTitle(recipe: recipe)),
+              if (recipe.hasCookableInstructions) ...[
+                FilledButton.icon(
+                  onPressed: () => context.pushNamed(
+                    RouteNames.cooking,
+                    pathParameters: {'rid': recipe.id},
+                    extra: recipe,
+                  ),
+                  icon: const Icon(Icons.local_fire_department, size: 18),
+                  label: const Text('Start Cooking'),
+                ),
+                const SizedBox(width: 8),
+              ],
               RecipeActions(recipeId: recipe.id),
             ],
           ),

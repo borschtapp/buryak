@@ -11,7 +11,7 @@ part 'saved.g.dart';
 
 @riverpod
 Set<String> savedRecipeIds(Ref ref) {
-  final recipes = ref.watch(savedRecipesProvider).asData?.value ?? [];
+  final recipes = ref.watch(savedRecipesProvider).value ?? [];
   return recipes.map((r) => r.id).toSet();
 }
 
