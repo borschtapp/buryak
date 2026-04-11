@@ -4,7 +4,6 @@ import 'taxonomy.dart';
 import 'unit.dart';
 
 part 'food.freezed.dart';
-
 part 'food.g.dart';
 
 @freezed

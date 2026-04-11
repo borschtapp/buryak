@@ -162,7 +162,7 @@ class ThemeProvider {
     );
   }
 
-  static ThemeData themeLight([Color? targetColor]) {
+  static ThemeData themeLight() {
     final originalTheme = ThemeData.light(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
       primary: const Color(0xFF680019),
@@ -203,7 +203,7 @@ class ThemeProvider {
     );
   }
 
-  static ThemeData themeDark([Color? targetColor]) {
+  static ThemeData themeDark() {
     final originalTheme = ThemeData.dark(useMaterial3: true);
     final colorScheme = originalTheme.colorScheme.copyWith(
       primary: const Color(0xFFFFB3B6),

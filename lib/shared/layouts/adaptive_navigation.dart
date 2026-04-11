@@ -58,8 +58,10 @@ class AdaptiveNavigation extends StatelessWidget {
           );
         }
 
+        final hasShellAppBar = appBar == null && appBarTitle == null;
+
         return Scaffold(
-          appBar: (appBar == null && appBarTitle == null)
+          appBar: hasShellAppBar
               ? AppBar(
                   automaticallyImplyLeading: false,
                   centerTitle: true,
@@ -89,7 +91,7 @@ class AdaptiveNavigation extends StatelessWidget {
                 selectedIndex: selectedIndex,
                 onDestinationSelected: onDestinationSelected,
               ),
-              Expanded(child: child),
+              Expanded(child: hasShellAppBar ? child : SafeArea(child: child)),
             ],
           ),
         );
@@ -144,19 +146,22 @@ class TabletAppBar extends StatelessWidget {
         crossAxisAlignment: .start,
         mainAxisAlignment: .start,
         children: [
-          Row(
-            children: [
-              appBar?.leading ??
-                  (appBar?.automaticallyImplyLeading != false
-                      ? BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute))
-                      : const SizedBox.shrink()),
-              const SizedBox(width: 6),
-              ?title,
-              const Expanded(child: SizedBox()),
-              Row(
-                children: appBar?.actions ?? [],
-              ),
-            ],
+          SafeArea(
+            bottom: false,
+            child: Row(
+              children: [
+                appBar?.leading ??
+                    (appBar?.automaticallyImplyLeading != false
+                        ? BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute))
+                        : const SizedBox.shrink()),
+                const SizedBox(width: 6),
+                ?title,
+                const Expanded(child: SizedBox()),
+                Row(
+                  children: appBar?.actions ?? [],
+                ),
+              ],
+            ),
           ),
           if (scrollable) child else Expanded(child: child),
         ],

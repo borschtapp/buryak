@@ -394,7 +394,12 @@ String? _findSourceRouteName(BuildContext context) {
         return route.name;
       }
     }
-  } catch (_) {}
+  } catch (e, s) {
+    assert(() {
+      debugPrint('[Router] _findSourceRouteName error: $e\n$s');
+      return true;
+    }());
+  }
   return null;
 }
 
@@ -427,10 +432,12 @@ AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? rou
   }
   if (routeName == RouteNames.collection) {
     final collectionId = state.pathParameters['cid'];
+    assert(collectionId != null, 'collection route is missing the :cid path parameter');
+    if (collectionId == null) return null;
     return AppBar(
       title: Consumer(
         builder: (context, ref, _) {
-          final collectionAsync = ref.watch(collectionDetailsProvider(collectionId ?? ''));
+          final collectionAsync = ref.watch(collectionDetailsProvider(collectionId));
           return Text(collectionAsync.whenOrNull(data: (c) => c.name) ?? 'Cookbook');
         },
       ),
@@ -473,9 +480,9 @@ String? Function(BuildContext, GoRouterState) _loginGuard(Ref ref) {
 }
 
 String? Function(BuildContext, GoRouterState) _authGuard(Ref ref) {
-  return (_, _) {
+  return (context, _) {
     if (!ref.read(authProvider).isLoggedIn) {
-      return '/${RouteNames.login}';
+      return GoRouter.of(context).namedLocation(RouteNames.login);
     } else {
       return null;
     }

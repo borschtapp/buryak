@@ -89,7 +89,7 @@ class ShoppingListRepository extends Repository {
       path: '/$listId/items',
       body: items,
     );
-    final list = response as List;
+    final list = ensureList(response);
     return list.map((item) => ShoppingItem.fromJson(ensureMap(item))).toList();
   }
 

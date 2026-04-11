@@ -69,7 +69,7 @@ class _MobileBottomActionBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colors.surface,
         border: Border(
-          top: BorderSide(color: context.colors.secondary.withValues(alpha: 50 / 255)),
+          top: BorderSide(color: context.colors.secondary.withValues(alpha: 0.2)),
         ),
       ),
       child: Row(

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../repositories/repository.dart';
+import '../util/extensions.dart';
 
 part 'error_handler.g.dart';
 
@@ -36,7 +37,12 @@ class ErrorHandler extends _$ErrorHandler {
 
   static String _toMessage(Object e) {
     if (e is FieldsApiException) {
-      return e.fields.entries.map((entry) => '${entry.key}: ${entry.value}').join('\n');
+      return e.fields.entries
+          .map((entry) {
+            final label = entry.key.split('_').map((w) => w.capitalize()).join(' ');
+            return '$label: ${entry.value}';
+          })
+          .join('\n');
     }
     if (e is GeneralApiException) {
       return switch (e.statusCode) {
@@ -45,7 +51,7 @@ class ErrorHandler extends _$ErrorHandler {
         404 => 'The requested item was not found.',
         422 => 'There was a problem with your request. Please check and try again.',
         500 => 'Server error. Please try again later.',
-        _ => 'Something went wrong. Please try again.',
+        _ => e.message.isNotEmpty ? e.message : 'Something went wrong. Please try again.',
       };
     }
     return 'Connection issue. Please check your internet.';

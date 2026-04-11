@@ -80,6 +80,8 @@ void main() {
     });
 
     test('logout clears state and storage', () async {
+      when(() => mockAuthRepository.logout(any())).thenAnswer((_) async {});
+
       // Seed state
       final user = User.fromJson(fakeUserJson());
       FlutterSecureStorage.setMockInitialValues({
@@ -117,6 +119,7 @@ void main() {
     test('refreshLogin logs out on 401 error', () async {
       final oldUser = User.fromJson(fakeUserJson(accessToken: kExpiredJwt));
 
+      when(() => mockAuthRepository.logout(any())).thenAnswer((_) async {});
       when(() => mockAuthRepository.refreshToken(any())).thenThrow(
         GeneralApiException(message: 'Unauthorized', statusCode: 401),
       );

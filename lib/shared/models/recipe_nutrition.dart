@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'recipe_nutrition.freezed.dart';
-
 part 'recipe_nutrition.g.dart';
 
 @freezed

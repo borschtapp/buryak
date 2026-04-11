@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../shared/components/error_state.dart';
 import '../../shared/hooks.dart';
 import '../../shared/providers/saved.dart';
-import '../../shared/providers/shell.dart';
 import 'dialog_create_collection.dart';
 import 'dialog_import_recipe.dart';
 import 'section_recipe_search_bar.dart';
@@ -19,12 +18,13 @@ class SavedScreen extends HookConsumerWidget {
     final tabController = useTabController(initialLength: 2);
     useListenable(tabController);
 
+    final isFiltersOpen = useState(false);
     final fab = useMemoized(
       () => _buildFab(context, ref, tabController.index),
       [tabController.index],
     );
 
-    useFab(ref, fab);
+    useFab(ref, isFiltersOpen.value ? null : fab);
 
     final recipesAsync = ref.watch(savedRecipesProvider);
     final collectionsAsync = ref.watch(savedCollectionsProvider);
@@ -52,13 +52,7 @@ class SavedScreen extends HookConsumerWidget {
                 ref.read(savedRecipesFilterProvider.notifier).update(f);
                 ref.invalidate(savedRecipesProvider);
               },
-              onFiltersOpenChanged: (isOpen) {
-                if (isOpen) {
-                  ref.read(shellFabProvider.notifier).update(null);
-                } else {
-                  ref.read(shellFabProvider.notifier).update(fab);
-                }
-              },
+              onFiltersOpenChanged: (isOpen) => isFiltersOpen.value = isOpen,
             ),
           ),
         Expanded(

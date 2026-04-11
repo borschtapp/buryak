@@ -4,7 +4,6 @@ import 'publisher.dart';
 import 'recipe.dart';
 
 part 'feed.freezed.dart';
-
 part 'feed.g.dart';
 
 @freezed

@@ -65,8 +65,8 @@ void main() {
       expect(Validator.validatePassword(''), isNotNull);
     });
 
-    test('returns error for whitespace only (length 8)', () {
-      expect(Validator.validatePassword('        '), isNotNull);
+    test('returns null for whitespace-only password of 8+ characters (spaces are valid)', () {
+      expect(Validator.validatePassword('        '), isNull);
     });
 
     test('returns error for password of exactly 7 characters', () {

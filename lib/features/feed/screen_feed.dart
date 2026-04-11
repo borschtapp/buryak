@@ -9,7 +9,7 @@ import '../../shared/hooks.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
 import '../../shared/providers/paged_notifier_mixin.dart';
-import '../../shared/providers/shell.dart';
+import '../../shared/providers/user.dart';
 import '../../shared/repositories/feed_repository.dart';
 import '../../shared/repositories/recipe_repository.dart';
 import '../recipes/section_recipe_search_bar.dart';
@@ -21,7 +21,12 @@ part 'screen_feed.g.dart';
 @Riverpod(keepAlive: true)
 class FeedFilter extends _$FeedFilter {
   @override
-  RecipeFilter build() => const RecipeFilter();
+  RecipeFilter build() {
+    ref.listen(authProvider, (_, next) {
+      if (next == null) state = const RecipeFilter();
+    });
+    return const RecipeFilter();
+  }
 
   void update(RecipeFilter filter) => state = filter;
 }
@@ -33,9 +38,16 @@ class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
   @override
   Future<List<Recipe>> build() async {
     resetPagination();
+    // Watch authProvider so build() re-runs on login and logout, preventing
+    // stale data from persisting across account switches.
+    final user = ref.watch(authProvider);
+    if (user == null) return [];
+
     final filter = ref.watch(feedFilterProvider);
+    // Use ref.read (not ref.watch) for the repository — consistent with
+    // loadMore() and avoids spurious rebuilds from a stable provider.
     final result = await ref
-        .watch(feedRepositoryProvider)
+        .read(feedRepositoryProvider)
         .stream(
           preload: _preload,
           filter: filter,
@@ -63,6 +75,7 @@ class FeedScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isFiltersOpen = useState(false);
     final fab = useMemoized(
       () => FloatingActionButton(
         heroTag: 'feed_add_fab',
@@ -72,7 +85,7 @@ class FeedScreen extends HookConsumerWidget {
       [],
     );
 
-    useFab(ref, fab);
+    useFab(ref, isFiltersOpen.value ? null : fab);
 
     final streamAsync = ref.watch(feedStreamProvider);
     final notifier = ref.read(feedStreamProvider.notifier);
@@ -87,13 +100,7 @@ class FeedScreen extends HookConsumerWidget {
             onChanged: (newFilter) {
               ref.read(feedFilterProvider.notifier).update(newFilter);
             },
-            onFiltersOpenChanged: (isOpen) {
-              if (isOpen) {
-                ref.read(shellFabProvider.notifier).update(null);
-              } else {
-                ref.read(shellFabProvider.notifier).update(fab);
-              }
-            },
+            onFiltersOpenChanged: (isOpen) => isFiltersOpen.value = isOpen,
           ),
         ),
         Expanded(

@@ -20,7 +20,7 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
   static const String _userKey = 'user';
 
   Timer? _refreshTimer;
-  bool _isRefreshing = false;
+  Completer<bool>? _refreshCompleter;
   bool _observerAdded = false;
 
   @override
@@ -80,15 +80,19 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
 
   /// Refreshes the login token. If [force] is true, it refreshes regardless of expiration.
   Future<bool> refreshLogin({bool force = false}) async {
-    if (state == null || _isRefreshing) return false;
+    if (state == null) return false;
+
+    // Share the result of an in-progress refresh with concurrent callers.
+    if (_refreshCompleter != null) return _refreshCompleter!.future;
 
     // Skip if token is still valid and not forced
     if (!force && state!.isValidAccessToken()) return true;
 
-    _isRefreshing = true;
+    _refreshCompleter = Completer<bool>();
     try {
       final refreshed = await ref.read(authRepositoryProvider).refreshToken(state!);
       await _persist(refreshed);
+      _refreshCompleter!.complete(true);
       return true;
     } catch (e, s) {
       // If we get an unauthorized error during refresh, log as info and log out
@@ -98,9 +102,10 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
       } else {
         logger.e('AuthNotifier.refreshLogin error', error: e, stackTrace: s);
       }
+      _refreshCompleter!.complete(false);
       return false;
     } finally {
-      _isRefreshing = false;
+      _refreshCompleter = null;
     }
   }
 
@@ -140,6 +145,13 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
 
   Future<void> logout() async {
     _cancelTokenRefresh();
+    if (state?.refreshToken != null) {
+      try {
+        await ref.read(authRepositoryProvider).logout(state!.refreshToken!);
+      } catch (e) {
+        logger.w('Failed to revoke refresh token on server', error: e);
+      }
+    }
     state = null;
     await _storage.delete(key: _userKey);
   }
@@ -179,8 +191,10 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
         await refreshLogin();
       });
     } catch (e) {
-      logger.w('Failed to schedule token refresh - logging out', error: e);
-      unawaited(logout());
+      logger.w('Failed to schedule token refresh — will retry in 1 minute', error: e);
+      _refreshTimer = Timer(const Duration(minutes: 1), () async {
+        await refreshLogin(force: true);
+      });
     }
   }
 

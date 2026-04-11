@@ -7,7 +7,6 @@ import 'user.dart';
 import 'user_token.dart';
 
 part 'household.freezed.dart';
-
 part 'household.g.dart';
 
 @freezed

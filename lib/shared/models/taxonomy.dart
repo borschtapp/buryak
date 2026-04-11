@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'taxonomy.freezed.dart';
-
 part 'taxonomy.g.dart';
 
 @freezed

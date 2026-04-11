@@ -21,10 +21,7 @@ class RecipeTile extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recipeId = recipe.id;
-    final (:isSaved, :toggle) = useSavedRecipe(
-      recipeId: recipeId,
-      ref: ref,
-    );
+    final (:isSaved, :toggle) = savedRecipeState(ref, recipeId);
 
     final collections = useState(recipe.collections);
     useEffect(() {

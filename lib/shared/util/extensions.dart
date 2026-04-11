@@ -23,8 +23,6 @@ extension TypographyUtils on BuildContext {
 
   BorderRadius get shapeExtraLarge => ThemeProvider.shapeExtraLarge;
 
-  MediaQueryData get mediaQuery => MediaQuery.of(this);
-
   bool get isTablet => MediaQuery.widthOf(this) > AppBreakpoints.tablet;
 
   bool get isDesktop => MediaQuery.widthOf(this) > AppBreakpoints.desktop;
@@ -119,9 +117,9 @@ extension DoubleFormat on double? {
     final fraction = (self - integer).abs();
 
     // Try to find a matching fraction symbol
-    if (fraction > 0.001) {
+    if (fraction > 0.01) {
       for (final entry in _fractionsMap.entries) {
-        if ((entry.value - fraction).abs() < 0.001) {
+        if ((entry.value - fraction).abs() < 0.01) {
           return integer == 0 ? entry.key : '$integer ${entry.key}';
         }
       }
@@ -136,8 +134,8 @@ extension DoubleFormat on double? {
     final self = this;
     if (self == null) return '';
 
-    // Maintain high precision for very small numbers
-    if (self < 0.01) return self.toString();
+    // Limit precision for very small numbers to avoid 15-digit display
+    if (self < 0.01) return self.toStringAsFixed(4);
 
     // Show as integer if no decimal part
     if (self == self.truncateToDouble()) return self.truncate().toString();

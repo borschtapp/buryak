@@ -116,14 +116,6 @@ void main() {
       );
     });
 
-    test('filters out "null" strings', () {
-      final repo = _TestRepo();
-      expect(
-        repo.getUrlString(path: '/test', queryParams: {'q': 'null'}),
-        equals('http://localhost/api/test'),
-      );
-    });
-
     test('filters out mixed invalid values', () {
       final repo = _TestRepo();
       expect(
@@ -132,7 +124,7 @@ void main() {
           queryParams: {
             'q': 'borscht',
             'filter': null,
-            'sort': 'null',
+            'sort': '',
           },
         ),
         equals('http://localhost/api/test?q=borscht'),

@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'taxonomy.dart';
 
 part 'unit.freezed.dart';
-
 part 'unit.g.dart';
 
 @freezed

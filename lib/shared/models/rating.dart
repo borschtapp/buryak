@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'rating.freezed.dart';
-
 part 'rating.g.dart';
 
 @freezed

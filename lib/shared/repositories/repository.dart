@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -64,12 +65,31 @@ abstract class Repository {
 
     final cleanParams = {
       for (final MapEntry(:key, :value) in queryParams.entries)
-        if (value != null && value.toString().isNotEmpty && value.toString() != 'null') key: value.toString(),
+        if (value != null && value.toString().isNotEmpty) key: value.toString(),
     };
 
     if (cleanParams.isEmpty) return uri.toString();
 
     return uri.replace(queryParameters: cleanParams).toString();
+  }
+
+  /// Ensures a valid access token is available, refreshing if necessary.
+  /// Returns the current access token, or `null` when auth is not required.
+  /// Throws [GeneralApiException] if the refresh fails.
+  Future<String?> ensureAuthenticated({bool? authOverride}) async {
+    final bool effectiveAuth = authOverride ?? isAuth;
+    if (!effectiveAuth) return null;
+
+    final currentUser = ref.read(authProvider);
+    if (currentUser == null || !currentUser.isValidAccessToken()) {
+      final success = await ref.read(authProvider.notifier).refreshLogin();
+      if (!success) {
+        await ref.read(authProvider.notifier).logout();
+        throw GeneralApiException(message: 'Authentication session expired');
+      }
+    }
+
+    return ref.read(authProvider)?.accessToken;
   }
 
   /// Sends an HTTP request. [method] and [path] are per-call overrides.
@@ -83,20 +103,7 @@ abstract class Repository {
     ApiHeaderType? headersCustom,
   }) async {
     final bool effectiveAuth = authOverride ?? isAuth;
-
-    if (effectiveAuth) {
-      // Skip async refresh if the token is still valid
-      final currentUser = ref.read(authProvider);
-      if (currentUser == null || !currentUser.isValidAccessToken()) {
-        final success = await ref.read(authProvider.notifier).refreshLogin();
-        if (!success && isAuth) {
-          await ref.read(authProvider.notifier).logout();
-          throw GeneralApiException(message: 'Authentication session expired');
-        }
-      }
-    }
-
-    final String? token = effectiveAuth ? ref.read(authProvider)?.accessToken : null;
+    final String? token = await ensureAuthenticated(authOverride: authOverride);
 
     return RequestHandler.call(
       getUrlString(path: path, queryParams: queryParams),
@@ -155,6 +162,8 @@ extension MethodManager on RequestMethod {
 }
 
 class RequestHandler {
+  static final _rng = Random();
+
   /// The [urlString] is retrieved from api object.
   /// The [method] is obtained using object.value.method.
   /// For authorized requests, set [authorized] to true.
@@ -246,7 +255,8 @@ class RequestHandler {
       // Retry once on transient failures according to the retry policy.
       // By default: GET requests with no HTTP response (timeout, socket error).
       if (shouldRetry(method, e.statusCode)) {
-        await Future<void>.delayed(const Duration(seconds: 1));
+        final jitter = Duration(milliseconds: _rng.nextInt(500));
+        await Future<void>.delayed(const Duration(milliseconds: 800) + jitter);
         return await doAttempt();
       }
       rethrow;

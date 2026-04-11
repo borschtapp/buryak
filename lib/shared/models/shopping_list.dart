@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'shopping_item.dart';
 
 part 'shopping_list.freezed.dart';
-
 part 'shopping_list.g.dart';
 
 @freezed

@@ -16,7 +16,7 @@ class RecipePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveHeight = height ?? (context.isMobile ? min(context.mediaQuery.size.height * 0.4, 400.0) : 500.0);
+    final effectiveHeight = height ?? (context.isMobile ? min(MediaQuery.heightOf(context) * 0.4, 400.0) : 500.0);
 
     return Image.asset(
       'assets/images/recipe_placeholder.png',

@@ -9,9 +9,7 @@ class Validator {
   }
 
   static String? validatePassword(String value) {
-    final trimmed = value.trim();
-    final regex = RegExp(r'^.{8,}$');
-    if (!regex.hasMatch(trimmed)) {
+    if (value.length < 8) {
       return 'Password must be at least 8 characters.';
     }
     return null;

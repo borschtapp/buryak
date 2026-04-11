@@ -30,18 +30,9 @@ class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem
   @override
   Future<List<ShoppingItem>> build() async {
     resetPagination();
-    var listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
-    var lists = listsResponse.data;
+    _primaryListId = await ref.watch(primaryShoppingListIdProvider.future);
 
-    if (lists.isEmpty) {
-      _primaryListId = '';
-      return [];
-    }
-
-    final primaryList = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
-    _primaryListId = primaryList.id;
-
-    final itemsResponse = await ref.read(shoppingListRepositoryProvider).findItems(primaryList.id, limit: limit, offset: 0);
+    final itemsResponse = await ref.read(shoppingListRepositoryProvider).findItems(_primaryListId, limit: limit, offset: 0);
     return itemsResponse.data;
   }
 
@@ -115,10 +106,7 @@ class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem
   }
 
   Future<void> addItem(String name) async {
-    // Get the primary list ID from cache (or fetch if not cached)
-    final primaryListId = await ref.read(primaryShoppingListIdProvider.future);
-    _primaryListId = primaryListId;
-    final newItem = await ref.read(shoppingListRepositoryProvider).createItem(primaryListId, name);
+    final newItem = await ref.read(shoppingListRepositoryProvider).createItem(_primaryListId, name);
 
     if (state.value != null) {
       final items = [...state.value!];

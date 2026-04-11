@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../shared/models/recipe.dart';
+import '../../shared/route_names.dart';
 import '../../shared/util/extensions.dart';
 import 'section_cooking_complete.dart';
 import 'section_cooking_ingredients.dart';
@@ -53,10 +54,11 @@ class CookingScreen extends HookWidget {
                   CookingCompletePage(
                     recipe: recipe,
                     onDone: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      final messenger = ScaffoldMessenger.of(context);
+                      context.pop();
+                      messenger.showSnackBar(
                         const SnackBar(content: Text('Great job! Enjoy your meal!')),
                       );
-                      context.pop();
                     },
                   ),
                 ],
@@ -132,7 +134,7 @@ class _CookingTopBar extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.close),
             tooltip: 'Exit cooking mode',
-            onPressed: () => context.pop(),
+            onPressed: () => context.popOrGoNamed(RouteNames.feed),
           ),
         ],
       ),

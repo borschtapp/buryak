@@ -30,12 +30,11 @@ class Ingredients extends StatelessWidget {
           const Divider(),
         ],
         if (showHeader) _buildIngredientsHeader(context),
-        ListView.builder(
+        Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: ingredients.length,
-          itemBuilder: (context, index) => _buildIngredientRow(context, ingredients[index]),
+          child: Column(
+            children: ingredients.map((ingredient) => _buildIngredientRow(context, ingredient)).toList(),
+          ),
         ),
       ],
     );
@@ -43,7 +42,7 @@ class Ingredients extends StatelessWidget {
 
   Widget _buildEquipmentSection(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -176,7 +175,7 @@ class Ingredients extends StatelessWidget {
           fit: BoxFit.cover,
           errorWidget: (context, url, error) => Icon(
             Icons.shopping_basket_outlined,
-            color: context.colors.onSurfaceVariant.withValues(alpha: 150 / 255),
+            color: context.colors.onSurfaceVariant.withValues(alpha: 0.59),
             size: 18,
           ),
         ),

@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'paginated_list.freezed.dart';
-
 part 'paginated_list.g.dart';
 
 @JsonSerializable(genericArgumentFactories: true)

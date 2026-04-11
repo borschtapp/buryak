@@ -130,11 +130,12 @@ class LoginScreen extends HookConsumerWidget {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   hintText: '********',
-                  suffixIcon: GestureDetector(
-                    onTap: () {
+                  suffixIcon: IconButton(
+                    icon: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
+                    tooltip: showPassword.value ? 'Hide password' : 'Show password',
+                    onPressed: () {
                       showPassword.value = !showPassword.value;
                     },
-                    child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
                   ),
                 ),
               ),

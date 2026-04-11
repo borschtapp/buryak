@@ -4,7 +4,6 @@ import 'food.dart';
 import 'unit.dart';
 
 part 'shopping_item.freezed.dart';
-
 part 'shopping_item.g.dart';
 
 @freezed

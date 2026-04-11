@@ -23,36 +23,28 @@ class RecipeController extends _$RecipeController {
   }
 
   Future<void> toggleSaved() async {
-    final link = ref.keepAlive();
-    try {
-      final isSaved = ref.read(recipeIsSavedProvider(recipeId));
+    final isSaved = ref.read(recipeIsSavedProvider(recipeId));
 
-      if (!isSaved) {
-        await ref.read(recipeRepositoryProvider).save(recipeId);
+    if (!isSaved) {
+      await ref.read(recipeRepositoryProvider).save(recipeId);
+      ref.invalidate(savedRecipesProvider);
+    } else {
+      // Optimistic in-place removal
+      ref.read(savedRecipesProvider.notifier).remove(recipeId);
+      try {
+        await ref.read(recipeRepositoryProvider).unsave(recipeId);
+      } catch (e) {
+        // Revert on error by forcing a fresh fetch
         ref.invalidate(savedRecipesProvider);
-      } else {
-        // Optimistic in-place removal
-        ref.read(savedRecipesProvider.notifier).remove(recipeId);
-        try {
-          await ref.read(recipeRepositoryProvider).unsave(recipeId);
-        } catch (e) {
-          // Revert on error by forcing a fresh fetch
-          ref.invalidate(savedRecipesProvider);
-          rethrow;
-        }
+        rethrow;
       }
-    } finally {
-      link.close();
     }
   }
 }
 
 /// Returns the current saved state of a recipe and a toggle callback.
-/// Lightweight hook for recipe tiles that already have the recipe object.
-({bool isSaved, Future<void> Function() toggle}) useSavedRecipe({
-  required String recipeId,
-  required WidgetRef ref,
-}) {
+/// Lightweight helper for recipe tiles that already have the recipe object.
+({bool isSaved, Future<void> Function() toggle}) savedRecipeState(WidgetRef ref, String recipeId) {
   final isSaved = ref.watch(recipeIsSavedProvider(recipeId));
   return (
     isSaved: isSaved,
