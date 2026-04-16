@@ -20,46 +20,62 @@ class RecipeAuthorLine extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final name = recipe.author?.name ?? recipe.publisher?.name;
-    final url = recipe.author?.url ?? recipe.publisher?.url;
+    final authorName = recipe.author?.name;
+    final authorUrl = recipe.author?.url?.trim();
+    final publisherName = recipe.publisher?.name;
+    final publisherUrl = recipe.publisher?.url?.trim();
 
-    if (name == null) return const SizedBox.shrink();
+    if (authorName == null && publisherName == null) return const SizedBox.shrink();
 
     final textStyle = context.isMobile ? context.textTheme.bodySmall : context.textTheme.bodyMedium;
 
-    if (url != null && url.trim().isNotEmpty) {
+    Widget buildLink(String name, String? url) {
+      if (url != null && url.isNotEmpty) {
+        return InkWell(
+          onTap: () async {
+            try {
+              final success = await launchUrlString(url);
+              if (!success && context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Could not open source link')),
+                );
+              }
+            } catch (e) {
+              ref.handleException(e);
+            }
+          },
+          child: Text(
+            name,
+            style: textStyle?.copyWith(
+              color: context.colors.primary,
+              decoration: useUnderline ? TextDecoration.underline : null,
+            ),
+          ),
+        );
+      }
+      return Text(name, style: textStyle);
+    }
+
+    if (authorName != null && publisherName != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (showPrefix) Text('Published by ', style: textStyle?.copyWith(color: context.colors.onSurfaceVariant)),
-          InkWell(
-            onTap: () async {
-              try {
-                final success = await launchUrlString(url);
-                if (!success && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Could not open source link')),
-                  );
-                }
-              } catch (e) {
-                ref.handleException(e);
-              }
-            },
-            child: Text(
-              name,
-              style: textStyle?.copyWith(
-                color: context.colors.primary,
-                decoration: useUnderline ? TextDecoration.underline : null,
-              ),
-            ),
-          ),
+          buildLink(publisherName, publisherUrl),
+          Text(' · ', style: textStyle?.copyWith(color: context.colors.onSurfaceVariant)),
+          buildLink(authorName, authorUrl),
         ],
       );
     }
 
-    return Text(
-      name,
-      style: textStyle,
+    final name = authorName ?? publisherName!;
+    final url = (authorUrl?.isNotEmpty ?? false) ? authorUrl : publisherUrl;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showPrefix) Text('Published by ', style: textStyle?.copyWith(color: context.colors.onSurfaceVariant)),
+        buildLink(name, url),
+      ],
     );
   }
 }
