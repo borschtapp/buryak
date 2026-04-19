@@ -12,6 +12,7 @@ abstract class Taxonomy with _$Taxonomy {
     String? label,
     @JsonKey(name: 'parent_id') String? parentId,
     @JsonKey(name: 'canonical_id') String? canonicalId,
+    @JsonKey(name: 'total_recipes') int? totalRecipes,
 
     // Preload fields
     Taxonomy? parent,

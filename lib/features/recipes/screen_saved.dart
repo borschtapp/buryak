@@ -48,6 +48,7 @@ class SavedScreen extends HookConsumerWidget {
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
             child: RecipeSearchBar(
               filter: filter,
+              scope: 'saved',
               onChanged: (f) {
                 ref.read(savedRecipesFilterProvider.notifier).update(f);
                 ref.invalidate(savedRecipesProvider);

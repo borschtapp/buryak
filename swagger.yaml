@@ -188,7 +188,7 @@ definitions:
       is_bought:
         example: true
         type: boolean
-      name:
+      text:
         example: Organic Milk
         type: string
     type: object
@@ -248,6 +248,8 @@ definitions:
         items:
           $ref: '#/definitions/domain.Recipe'
         type: array
+      total_recipes:
+        type: integer
       url:
         type: string
     type: object
@@ -284,11 +286,15 @@ definitions:
         type: string
       slug:
         type: string
+      total_recipes:
+        type: integer
     type: object
   domain.Feed:
     properties:
       active:
         type: boolean
+      description:
+        type: string
       id:
         type: string
       last_sync_at:
@@ -752,6 +758,8 @@ definitions:
         type: string
       slug:
         type: string
+      total_recipes:
+        type: integer
       type:
         description: diet, category, cuisine, keyword
         type: string
@@ -856,6 +864,15 @@ definitions:
         type: string
       status:
         type: integer
+    type: object
+  types.ListResponse-domain_Author:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Author'
+        type: array
+      meta:
+        $ref: '#/definitions/types.Meta'
     type: object
   types.ListResponse-domain_Collection:
     properties:
@@ -1223,6 +1240,57 @@ paths:
       summary: Reset password using a token from email.
       tags:
         - auth
+  /api/v1/authors:
+    get:
+      consumes:
+        - '*/*'
+      description: List recipe authors stored in the database.
+      parameters:
+        - description: Text search
+          in: query
+          name: q
+          type: string
+        - description: 'Comma-separated extras to include: total_recipes'
+          in: query
+          name: preload
+          type: string
+        - description: 'Restrict results to recipes visible in a given screen: feeds,
+          saved (default: all household-visible recipes)'
+          in: query
+          name: scope
+          type: string
+        - description: 'Sort by field: id, name, created, total_recipes (default: id)'
+          in: query
+          name: sort
+          type: string
+        - description: 'Sort order: asc or desc (default: desc)'
+          in: query
+          name: order
+          type: string
+        - description: 'Number of records to skip (default: 0)'
+          in: query
+          name: offset
+          type: integer
+        - description: 'Maximum number of records to return (default: 10)'
+          in: query
+          name: limit
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_Author'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+        - ApiKeyAuth: [ ]
+      summary: List all recipe authors.
+      tags:
+        - authors
   /api/v1/collections:
     get:
       consumes:
@@ -1535,18 +1603,35 @@ paths:
     get:
       consumes:
         - '*/*'
-      description: Search for equipment by name or slug.
+      description: List all equipment stored in the database, with optional search
+        and filtering.
       parameters:
         - description: Search query (matches name or slug)
           in: query
           name: q
           type: string
+        - description: 'Comma-separated extras to include: total_recipes'
+          in: query
+          name: preload
+          type: string
+        - description: 'Restrict results to recipes visible in a given screen: feeds,
+          saved (default: all household-visible recipes)'
+          in: query
+          name: scope
+          type: string
+        - description: 'Sort by field: id, name, created, total_recipes (default: id)'
+          in: query
+          name: sort
+          type: string
+        - description: 'Sort order: asc or desc (default: desc)'
+          in: query
+          name: order
+          type: string
         - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10) (default:
-          20)'
+        - description: 'Maximum number of records to return (default: 20)'
           in: query
           name: limit
           type: integer
@@ -1563,7 +1648,7 @@ paths:
             $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
-      summary: Search equipment.
+      summary: List all equipment.
       tags:
         - equipment
   /api/v1/feeds:
@@ -1675,6 +1760,44 @@ paths:
       security:
         - ApiKeyAuth: [ ]
       summary: Unsubscribe from a feed
+      tags:
+        - feeds
+  /api/v1/feeds/{id}/sync:
+    post:
+      consumes:
+        - application/json
+      description: Trigger an immediate synchronization of the feed, importing any
+        new recipes. This call is synchronous and blocks until the sync completes.
+        If the connection drops, the sync continues server-side.
+      parameters:
+        - description: Feed ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+        - ApiKeyAuth: [ ]
+      summary: Sync a feed
       tags:
         - feeds
   /api/v1/feeds/stream:
@@ -2246,7 +2369,12 @@ paths:
           in: query
           name: preload
           type: string
-        - description: 'Sort by field: id, name, created (default: id)'
+        - description: 'Restrict results to recipes visible in a given screen: feeds,
+          saved (default: all household-visible recipes)'
+          in: query
+          name: scope
+          type: string
+        - description: 'Sort by field: id, name, created, total_recipes (default: id)'
           in: query
           name: sort
           type: string
@@ -2282,8 +2410,8 @@ paths:
     get:
       consumes:
         - '*/*'
-      description: Query user's recipes by text, tags. Supports full-text search on
-        name/description.
+      description: List recipes stored in the database, with optional search and filtering.
+        Supports pagination and sorting.
       parameters:
         - description: Text search
           in: query
@@ -2348,7 +2476,7 @@ paths:
             $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
-      summary: Search recipes.
+      summary: List stored recipes.
       tags:
         - recipes
     post:
@@ -3121,6 +3249,23 @@ paths:
           in: query
           name: type
           type: string
+        - description: 'Comma-separated extras to include: total_recipes'
+          in: query
+          name: preload
+          type: string
+        - description: 'Restrict results to recipes visible in a given screen: feeds,
+          saved (default: all household-visible recipes)'
+          in: query
+          name: scope
+          type: string
+        - description: 'Sort by field: id, name, created, total_recipes (default: id)'
+          in: query
+          name: sort
+          type: string
+        - description: 'Sort order: asc or desc (default: desc)'
+          in: query
+          name: order
+          type: string
         - description: 'Number of records to skip (default: 0)'
           in: query
           name: offset
@@ -3149,8 +3294,8 @@ paths:
     get:
       consumes:
         - '*/*'
-      description: Search for units by name or slug, optionally filtered by measurement
-        system.
+      description: List all the units stored in the database, with optional search
+        and filtering.
       parameters:
         - description: Search query (matches name or slug)
           in: query
@@ -3181,7 +3326,7 @@ paths:
             $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
-      summary: Search units.
+      summary: List all the units.
       tags:
         - units
   /api/v1/uploads:

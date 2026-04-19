@@ -4,23 +4,56 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/components/loading_with_message.dart';
 import '../../shared/models/equipment.dart';
+import '../../shared/models/publisher.dart';
 import '../../shared/models/recipe_filter.dart';
 import '../../shared/models/taxonomy.dart';
 import '../../shared/repositories/equipment_repository.dart';
+import '../../shared/repositories/publisher_repository.dart';
 import '../../shared/repositories/taxonomy_repository.dart';
 import '../../shared/util/extensions.dart';
 
 part 'section_recipe_filters.g.dart';
 
 @riverpod
-Future<List<Taxonomy>> _taxonomiesByType(Ref ref, String type) async {
-  final result = await ref.watch(taxonomyRepositoryProvider).findAll(type: type, limit: 100);
+Future<List<Taxonomy>> _taxonomiesByType(Ref ref, String type, String? scope) async {
+  final result = await ref
+      .watch(taxonomyRepositoryProvider)
+      .findAll(
+        type: type,
+        scope: scope,
+        preload: [TaxonomyPreload.total_recipes],
+        sort: 'total_recipes',
+        order: 'DESC',
+        limit: 10,
+      );
   return result.data;
 }
 
 @riverpod
-Future<List<Equipment>> _equipment(Ref ref) async {
-  final result = await ref.watch(equipmentRepositoryProvider).search(limit: 100);
+Future<List<Publisher>> _topPublishers(Ref ref, String? scope) async {
+  final result = await ref
+      .watch(publisherRepositoryProvider)
+      .findAll(
+        scope: scope,
+        preload: [PublisherPreload.total_recipes],
+        sort: 'total_recipes',
+        order: 'DESC',
+        limit: 10,
+      );
+  return result.data;
+}
+
+@riverpod
+Future<List<Equipment>> _equipment(Ref ref, String? scope) async {
+  final result = await ref
+      .watch(equipmentRepositoryProvider)
+      .findAll(
+        scope: scope,
+        preload: [EquipmentPreload.total_recipes],
+        sort: 'total_recipes',
+        order: 'DESC',
+        limit: 10,
+      );
   return result.data;
 }
 
@@ -35,6 +68,7 @@ const _sortOptions = [
 class RecipeFilters extends StatefulWidget {
   final RecipeFilter initialFilter;
   final bool showTaxonomyFilters;
+  final String? scope;
 
   /// Called when filter changes. On desktop, set this to apply changes live.
   /// On mobile, leave null to require explicit "Apply" tap.
@@ -44,6 +78,7 @@ class RecipeFilters extends StatefulWidget {
     super.key,
     required this.initialFilter,
     this.showTaxonomyFilters = true,
+    this.scope,
     this.onFilterChanged,
   });
 
@@ -60,45 +95,9 @@ class _RecipeFiltersState extends State<RecipeFilters> {
     _filter = widget.initialFilter;
   }
 
-  void _toggleTaxonomy(String id) {
-    final newIds = _filter.taxonomyIds.toggled(id);
-    final newFilter = _filter.copyWith(taxonomyIds: newIds);
-
-    setState(() {
-      _filter = newFilter;
-    });
-
-    widget.onFilterChanged?.call(newFilter);
-  }
-
-  void _toggleEquipment(String id) {
-    final newIds = _filter.equipmentIds.toggled(id);
-    final newFilter = _filter.copyWith(equipmentIds: newIds);
-
-    setState(() {
-      _filter = newFilter;
-    });
-
-    widget.onFilterChanged?.call(newFilter);
-  }
-
-  void _setSort(SortField field, SortOrder order) {
-    final newFilter = _filter.copyWith(sort: field, order: order);
-
-    setState(() {
-      _filter = newFilter;
-    });
-
-    widget.onFilterChanged?.call(newFilter);
-  }
-
-  void _setCookTimeMax(int? seconds) {
-    final newFilter = _filter.copyWith(cookTimeMax: seconds);
-
-    setState(() {
-      _filter = newFilter;
-    });
-
+  void _updateFilter(RecipeFilter Function(RecipeFilter) updater) {
+    final newFilter = updater(_filter);
+    setState(() => _filter = newFilter);
     widget.onFilterChanged?.call(newFilter);
   }
 
@@ -140,7 +139,7 @@ class _RecipeFiltersState extends State<RecipeFilters> {
                 return FilterChip(
                   label: Text(opt.label),
                   selected: isSelected,
-                  onSelected: (_) => _setSort(opt.field, opt.order),
+                  onSelected: (_) => _updateFilter((f) => f.copyWith(sort: opt.field, order: opt.order)),
                 );
               }).toList(),
             ),
@@ -161,40 +160,49 @@ class _RecipeFiltersState extends State<RecipeFilters> {
                   max: 3600,
                   divisions: 60,
                   value: _filter.cookTimeMax?.toDouble() ?? 0,
-                  onChanged: (value) {
-                    if (value == 0) {
-                      _setCookTimeMax(null);
-                    } else {
-                      _setCookTimeMax(value.toInt());
-                    }
-                  },
+                  onChanged: (value) => _updateFilter(
+                    (f) => f.copyWith(cookTimeMax: value == 0 ? null : value.toInt()),
+                  ),
                 ),
               ],
             ),
           ),
           if (widget.showTaxonomyFilters) ...[
-            _TaxonomySection(
+            _FilterSection<Taxonomy>(
               title: 'Cuisine',
-              type: 'cuisine',
+              provider: _taxonomiesByTypeProvider('cuisine', widget.scope),
+              itemMapper: (t) => (id: t.id, label: t.label ?? t.slug ?? t.id, count: t.totalRecipes),
               selectedIds: _filter.taxonomyIds,
-              onToggle: _toggleTaxonomy,
+              onToggle: (id) => _updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
             ),
-            _TaxonomySection(
+            _FilterSection<Taxonomy>(
               title: 'Diet',
-              type: 'diet',
+              provider: _taxonomiesByTypeProvider('diet', widget.scope),
+              itemMapper: (t) => (id: t.id, label: t.label ?? t.slug ?? t.id, count: t.totalRecipes),
               selectedIds: _filter.taxonomyIds,
-              onToggle: _toggleTaxonomy,
+              onToggle: (id) => _updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
             ),
-            _TaxonomySection(
+            _FilterSection<Taxonomy>(
               title: 'Category',
-              type: 'category',
+              provider: _taxonomiesByTypeProvider('category', widget.scope),
+              itemMapper: (t) => (id: t.id, label: t.label ?? t.slug ?? t.id, count: t.totalRecipes),
               selectedIds: _filter.taxonomyIds,
-              onToggle: _toggleTaxonomy,
+              onToggle: (id) => _updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
+            ),
+            _FilterSection<Publisher>(
+              title: 'Publisher',
+              provider: _topPublishersProvider(widget.scope),
+              itemMapper: (p) => (id: p.id, label: p.name, count: p.totalRecipes),
+              selectedIds: _filter.publisherIds,
+              onToggle: (id) => _updateFilter((f) => f.copyWith(publisherIds: f.publisherIds.toggled(id))),
             ),
           ],
-          _EquipmentSection(
+          _FilterSection<Equipment>(
+            title: 'Equipment',
+            provider: _equipmentProvider(widget.scope),
+            itemMapper: (e) => (id: e.id, label: e.name, count: e.totalRecipes),
             selectedIds: _filter.equipmentIds,
-            onToggle: _toggleEquipment,
+            onToggle: (id) => _updateFilter((f) => f.copyWith(equipmentIds: f.equipmentIds.toggled(id))),
           ),
           const SizedBox(height: 80), // space for bottom button
         ],
@@ -238,27 +246,29 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-class _TaxonomySection extends ConsumerWidget {
+class _FilterSection<T> extends ConsumerWidget {
   final String title;
-  final String type;
+  final ProviderListenable<AsyncValue<List<T>>> provider;
+  final ({String id, String label, int? count}) Function(T) itemMapper;
   final List<String> selectedIds;
-  final void Function(String id) onToggle;
+  final void Function(String) onToggle;
 
-  const _TaxonomySection({
+  const _FilterSection({
     required this.title,
-    required this.type,
+    required this.provider,
+    required this.itemMapper,
     required this.selectedIds,
     required this.onToggle,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(_taxonomiesByTypeProvider(type));
-
-    return async.when(
-      data: (taxonomies) {
-        if (taxonomies.isEmpty) return const SizedBox.shrink();
-        return Column(
+    return ref
+        .watch(provider)
+        .when(
+          data: (items) {
+            if (items.isEmpty) return const SizedBox.shrink();
+            return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _SectionHeader(title),
@@ -267,13 +277,14 @@ class _TaxonomySection extends ConsumerWidget {
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: taxonomies.map((t) {
-                  final label = t.label ?? t.slug ?? t.id;
-                  return FilterChip(
-                    label: Text(label),
-                    selected: selectedIds.contains(t.id),
-                    onSelected: (_) => onToggle(t.id),
-                  );
+                    children: items.map((item) {
+                      final mapped = itemMapper(item);
+                      final chipLabel = mapped.count != null ? '${mapped.label} (${mapped.count})' : mapped.label;
+                      return FilterChip(
+                        label: Text(chipLabel),
+                        selected: selectedIds.contains(mapped.id),
+                        onSelected: (_) => onToggle(mapped.id),
+                      );
                 }).toList(),
               ),
             ),
@@ -285,55 +296,6 @@ class _TaxonomySection extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: Text(
           'Failed to load $title',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
-        ),
-      ),
-    );
-  }
-}
-
-class _EquipmentSection extends ConsumerWidget {
-  final List<String> selectedIds;
-  final void Function(String id) onToggle;
-
-  const _EquipmentSection({
-    required this.selectedIds,
-    required this.onToggle,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(_equipmentProvider);
-
-    return async.when(
-      data: (equipment) {
-        if (equipment.isEmpty) return const SizedBox.shrink();
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _SectionHeader('Equipment'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: equipment.map((e) {
-                  return FilterChip(
-                    label: Text(e.name),
-                    selected: selectedIds.contains(e.id),
-                    onSelected: (_) => onToggle(e.id),
-                  );
-                }).toList(),
-              ),
-            ),
-          ],
-        );
-      },
-      loading: () => const LoadingWithMessage(message: 'Loading Equipment...'),
-      error: (e, s) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-        child: Text(
-          'Failed to load Equipment',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
         ),
       ),

@@ -17,6 +17,7 @@ class PublisherRepository extends Repository {
 
   Future<PaginatedList<Publisher>> findAll({
     List<PublisherPreload>? preload,
+    String? scope,
     String? q,
     String? sort,
     String? order,
@@ -27,6 +28,7 @@ class PublisherRepository extends Repository {
       method: .get,
       queryParams: {
         'preload': preload?.map((e) => e.name).join(','),
+        'scope': ?scope,
         'q': ?q,
         'sort': ?sort,
         'order': ?order,

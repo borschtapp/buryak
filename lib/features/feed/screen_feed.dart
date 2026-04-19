@@ -97,6 +97,7 @@ class FeedScreen extends HookConsumerWidget {
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
           child: RecipeSearchBar(
             filter: filter,
+            scope: 'feeds',
             onChanged: (newFilter) {
               ref.read(feedFilterProvider.notifier).update(newFilter);
             },

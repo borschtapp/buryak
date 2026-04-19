@@ -11,6 +11,7 @@ abstract class Equipment with _$Equipment {
     String? description,
     String? slug,
     @JsonKey(name: 'image_url') String? imageUrl,
+    @JsonKey(name: 'total_recipes') int? totalRecipes,
   }) = _Equipment;
 
   factory Equipment.fromJson(Map<String, dynamic> json) => _$EquipmentFromJson(json);

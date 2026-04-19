@@ -21,6 +21,9 @@ class RecipeSearchBar extends HookWidget {
   /// When false, the filter screen will not show taxonomy sections (Cuisine, Diet, Category).
   final bool showTaxonomyFilters;
 
+  /// Scope passed to the server when loading filter options (e.g. 'feeds', 'saved').
+  final String? scope;
+
   /// Called with true when filters are opened, false when closed.
   /// Useful for hiding UI elements like FAB behind the filter sheet.
   final ValueChanged<bool>? onFiltersOpenChanged;
@@ -30,6 +33,7 @@ class RecipeSearchBar extends HookWidget {
     required this.filter,
     required this.onChanged,
     this.showTaxonomyFilters = true,
+    this.scope,
     this.onFiltersOpenChanged,
   });
 
@@ -72,6 +76,7 @@ class RecipeSearchBar extends HookWidget {
             builder: (context) => RecipeFilters(
               initialFilter: filter,
               showTaxonomyFilters: showTaxonomyFilters,
+              scope: scope,
             ),
           );
         } else {
@@ -100,6 +105,7 @@ class RecipeSearchBar extends HookWidget {
                       child: RecipeFilters(
                         initialFilter: filter,
                         showTaxonomyFilters: showTaxonomyFilters,
+                        scope: scope,
                         onFilterChanged: onChanged,
                       ),
                     ),
