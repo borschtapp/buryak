@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../shared/components/empty_state.dart';
 import '../../shared/components/error_state.dart';
 import '../../shared/hooks.dart';
+import '../../shared/layouts/searchable_grid_scaffold.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
 import '../../shared/providers/paged_notifier_mixin.dart';
@@ -91,59 +92,53 @@ class FeedScreen extends HookConsumerWidget {
     final notifier = ref.read(feedStreamProvider.notifier);
     final filter = ref.watch(feedFilterProvider);
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-          child: RecipeSearchBar(
-            filter: filter,
-            scope: 'feeds',
-            onChanged: (newFilter) {
-              ref.read(feedFilterProvider.notifier).update(newFilter);
-            },
-            onFiltersOpenChanged: (isOpen) => isFiltersOpen.value = isOpen,
-          ),
+    return SearchableGridScaffold(
+      maxWidth: 1440,
+      searchBar: RecipeSearchBar(
+        filter: filter,
+        scope: 'feeds',
+        onChanged: (newFilter) {
+          ref.read(feedFilterProvider.notifier).update(newFilter);
+        },
+        onFiltersOpenChanged: (isOpen) => isFiltersOpen.value = isOpen,
+      ),
+      child: streamAsync.when(
+        data: (results) => results.isEmpty
+            ? EmptyState(
+                icon: Icons.explore_outlined,
+                title: filter.isEmpty ? 'No recipes found' : 'No results',
+                subtitle: filter.isEmpty
+                    ? 'Try adding a new feed or standardizing existing ones.'
+                    : 'Try adjusting your search or filters.',
+                action: filter.isEmpty
+                    ? TextButton.icon(
+                        onPressed: () => ref.invalidate(feedStreamProvider),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Refresh'),
+                      )
+                    : TextButton.icon(
+                        onPressed: () {
+                          ref.read(feedFilterProvider.notifier).update(const RecipeFilter());
+                        },
+                        icon: const Icon(Icons.filter_alt_off),
+                        label: const Text('Clear filters'),
+                      ),
+              )
+            : RefreshIndicator(
+                onRefresh: () async => ref.invalidate(feedStreamProvider),
+                child: RecipesGrid(
+                  results,
+                  onLoadMore: notifier.loadMore,
+                  isLoadingMore: notifier.isLoadingMore,
+                  hasMore: notifier.hasMore,
+                ),
+              ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => ErrorState(
+          message: err.toString(),
+          onRetry: () => ref.invalidate(feedStreamProvider),
         ),
-        Expanded(
-          child: streamAsync.when(
-            data: (results) => results.isEmpty
-                ? EmptyState(
-                    icon: Icons.explore_outlined,
-                    title: filter.isEmpty ? 'No recipes found' : 'No results',
-                    subtitle: filter.isEmpty
-                        ? 'Try adding a new feed or standardizing existing ones.'
-                        : 'Try adjusting your search or filters.',
-                    action: filter.isEmpty
-                        ? TextButton.icon(
-                            onPressed: () => ref.invalidate(feedStreamProvider),
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Refresh'),
-                          )
-                        : TextButton.icon(
-                            onPressed: () {
-                              ref.read(feedFilterProvider.notifier).update(const RecipeFilter());
-                            },
-                            icon: const Icon(Icons.filter_alt_off),
-                            label: const Text('Clear filters'),
-                          ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: () async => ref.invalidate(feedStreamProvider),
-                    child: RecipesGrid(
-                      results,
-                      onLoadMore: notifier.loadMore,
-                      isLoadingMore: notifier.isLoadingMore,
-                      hasMore: notifier.hasMore,
-                    ),
-                  ),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => ErrorState(
-              message: err.toString(),
-              onRetry: () => ref.invalidate(feedStreamProvider),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

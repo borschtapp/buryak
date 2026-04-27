@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/error_state.dart';
 import '../../shared/hooks.dart';
+import '../../shared/layouts/searchable_grid_scaffold.dart';
 import '../../shared/providers/saved.dart';
 import 'dialog_create_collection.dart';
 import 'dialog_import_recipe.dart';
@@ -33,20 +34,10 @@ class SavedScreen extends HookConsumerWidget {
 
     final filter = ref.read(savedRecipesFilterProvider);
 
-    return Column(
-      children: [
-        TabBar(
-          controller: tabController,
-          indicatorSize: TabBarIndicatorSize.label,
-          tabs: const [
-            Tab(text: 'Recipes'),
-            Tab(text: 'Cookbooks'),
-          ],
-        ),
-        if (tabController.index == 0)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-            child: RecipeSearchBar(
+    return SearchableGridScaffold(
+      maxWidth: 1440,
+      searchBar: tabController.index == 0
+          ? RecipeSearchBar(
               filter: filter,
               scope: 'saved',
               onChanged: (f) {
@@ -54,38 +45,43 @@ class SavedScreen extends HookConsumerWidget {
                 ref.invalidate(savedRecipesProvider);
               },
               onFiltersOpenChanged: (isOpen) => isFiltersOpen.value = isOpen,
+            )
+          : null,
+      topWidget: TabBar(
+        controller: tabController,
+        indicatorSize: TabBarIndicatorSize.label,
+        tabs: const [
+          Tab(text: 'Recipes'),
+          Tab(text: 'Cookbooks'),
+        ],
+      ),
+      child: TabBarView(
+        controller: tabController,
+        children: [
+          recipesAsync.when(
+            data: (recipes) => SavedTabs(
+              recipes: recipes,
+              filter: filter,
+              onLoadMore: recipesNotifier.loadMore,
+              isLoadingMore: recipesNotifier.isLoadingMore,
+              hasMore: recipesNotifier.hasMore,
             ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => ErrorState(message: err.toString()),
           ),
-        Expanded(
-          child: TabBarView(
-            controller: tabController,
-            children: [
-              recipesAsync.when(
-                data: (recipes) => SavedTabs(
-                  recipes: recipes,
-                  filter: filter,
-                  onLoadMore: recipesNotifier.loadMore,
-                  isLoadingMore: recipesNotifier.isLoadingMore,
-                  hasMore: recipesNotifier.hasMore,
-                ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => ErrorState(message: err.toString()),
-              ),
-              collectionsAsync.when(
-                data: (collections) => SavedCookbooksTab(
-                  collections: collections,
-                  onCreateCollection: () => showCreateCollectionDialog(context, ref),
-                  onLoadMore: collectionsNotifier.loadMore,
-                  isLoadingMore: collectionsNotifier.isLoadingMore,
-                  hasMore: collectionsNotifier.hasMore,
-                ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => ErrorState(message: err.toString()),
-              ),
-            ],
+          collectionsAsync.when(
+            data: (collections) => SavedCookbooksTab(
+              collections: collections,
+              onCreateCollection: () => showCreateCollectionDialog(context, ref),
+              onLoadMore: collectionsNotifier.loadMore,
+              isLoadingMore: collectionsNotifier.isLoadingMore,
+              hasMore: collectionsNotifier.hasMore,
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => ErrorState(message: err.toString()),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

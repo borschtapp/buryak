@@ -7,6 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/components/empty_state.dart';
 import '../../shared/components/error_state.dart';
+import '../../shared/layouts/content_frame.dart';
 import '../../shared/models/meal_plan.dart';
 import '../../shared/providers/date.dart';
 import '../../shared/repositories/meal_plan_repository.dart';
@@ -69,61 +70,64 @@ class PlannerScreen extends ConsumerWidget {
             ),
           );
         }
-        return RefreshIndicator(
-          onRefresh: () async => ref.invalidate(mealPlanWeekProvider),
-          child: ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: entries.length,
-            separatorBuilder: (context, _) => const Divider(),
-            itemBuilder: (context, index) {
-              final entry = entries[index];
-              return Dismissible(
-                key: ValueKey(entry.id),
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: const Icon(Icons.delete, color: Colors.white),
-                ),
-                direction: DismissDirection.endToStart,
-                onDismissed: (_) async {
-                  final itemName = entry.recipe?.name ?? entry.description ?? 'Meal plan';
-                  try {
-                    await ref.read(mealPlanWeekProvider.notifier).deletePlan(entry.id);
-                    if (context.mounted) {
-                      SemanticsService.sendAnnouncement(View.of(context), '$itemName removed', TextDirection.ltr);
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Failed to remove meal plan.')),
-                      );
-                    }
-                  }
-                },
-                child: ListTile(
-                  leading: const Icon(Icons.restaurant_menu),
-                  title: Text(entry.recipe?.name ?? entry.description ?? 'Meal'),
-                  subtitle: Text(
-                    '${DateFormat('MMM d').format(entry.date)} · ${entry.mealType.name.capitalize()}',
+        return ContentFrame(
+          maxWidth: 960,
+          child: RefreshIndicator(
+            onRefresh: () async => ref.invalidate(mealPlanWeekProvider),
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: entries.length,
+              separatorBuilder: (context, _) => const Divider(),
+              itemBuilder: (context, index) {
+                final entry = entries[index];
+                return Dismissible(
+                  key: ValueKey(entry.id),
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
-                  trailing: Text(
-                    (entry.servings ?? 1).pluralize('serving'),
-                    style: context.textTheme.bodySmall,
-                  ),
-                  onTap: entry.recipeId != null
-                      ? () => context.pushNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!})
-                      : null,
-                  onLongPress: () {
-                    showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) => PlanBottomSheet(plan: entry),
-                    );
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (_) async {
+                    final itemName = entry.recipe?.name ?? entry.description ?? 'Meal plan';
+                    try {
+                      await ref.read(mealPlanWeekProvider.notifier).deletePlan(entry.id);
+                      if (context.mounted) {
+                        SemanticsService.sendAnnouncement(View.of(context), '$itemName removed', TextDirection.ltr);
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Failed to remove meal plan.')),
+                        );
+                      }
+                    }
                   },
-                ),
-              );
-            },
+                  child: ListTile(
+                    leading: const Icon(Icons.restaurant_menu),
+                    title: Text(entry.recipe?.name ?? entry.description ?? 'Meal'),
+                    subtitle: Text(
+                      '${DateFormat('MMM d').format(entry.date)} · ${entry.mealType.name.capitalize()}',
+                    ),
+                    trailing: Text(
+                      (entry.servings ?? 1).pluralize('serving'),
+                      style: context.textTheme.bodySmall,
+                    ),
+                    onTap: entry.recipeId != null
+                        ? () => context.pushNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!})
+                        : null,
+                    onLongPress: () {
+                      showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (context) => PlanBottomSheet(plan: entry),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
           ),
         );
       },

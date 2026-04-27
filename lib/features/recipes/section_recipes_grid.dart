@@ -6,6 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../shared/models/recipe.dart';
+import '../../shared/util/breakpoints.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 import 'section_recipe_tile.dart';
@@ -39,6 +40,8 @@ class RecipesGrid extends HookWidget {
       builder: (context, constraints) {
         final newCount = constraints.isMobile
             ? max(1, constraints.maxWidth ~/ UIConstants.gridItemWidthMobile)
+            : constraints.maxWidth >= AppBreakpoints.wide
+            ? min(UIConstants.gridMaxColumnsWide, max(1, constraints.maxWidth ~/ UIConstants.gridItemWidthWide))
             : max(1, constraints.maxWidth ~/ UIConstants.gridItemWidthDesktop);
         final effectiveCount = crossAxisCount.value ?? newCount;
 

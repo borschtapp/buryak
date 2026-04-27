@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../shared/constants.dart';
 import '../../shared/layouts/article_content.dart';
+import '../../shared/layouts/content_frame.dart';
 import '../../shared/route_names.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -16,7 +17,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
         leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.account)),
       ),
       body: const SingleChildScrollView(
-        child: ArticleContent(
+        child: ContentFrame(
+          padding: EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

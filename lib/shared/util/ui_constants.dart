@@ -13,4 +13,10 @@ class UIConstants {
 
   /// Default item width for recipe grid on desktop.
   static const double gridItemWidthDesktop = 350.0;
+
+  /// Item width used for wide-screen grid (>= [AppBreakpoints.wide]).
+  static const double gridItemWidthWide = 320.0;
+
+  /// Maximum column count for the wide-screen grid.
+  static const int gridMaxColumnsWide = 5;
 }

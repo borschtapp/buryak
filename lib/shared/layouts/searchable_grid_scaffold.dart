@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+
+import 'content_frame.dart';
+
+class SearchableGridScaffold extends StatelessWidget {
+  const SearchableGridScaffold({
+    super.key,
+    this.searchBar,
+    required this.child,
+    this.topWidget,
+    this.maxWidth = 1440,
+  });
+
+  final Widget? searchBar;
+  final Widget child;
+  final Widget? topWidget;
+  final double maxWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentFrame(
+      maxWidth: maxWidth,
+      child: Column(
+        children: [
+          ?topWidget,
+          if (searchBar != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+              child: searchBar!,
+            ),
+          Expanded(child: child),
+        ],
+      ),
+    );
+  }
+}

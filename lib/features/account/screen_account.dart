@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../shared/components/dialog_confirm.dart';
 import '../../shared/components/loading_indicator.dart';
 import '../../shared/components/profile_details.dart';
+import '../../shared/layouts/content_frame.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/route_names.dart';
 import '../../shared/sections/app_version.dart';
@@ -42,76 +43,79 @@ class AccountScreen extends HookConsumerWidget {
     final image = profile.imageUrl;
     final errorColor = context.colors.error;
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          ProfileDetails(name: name, email: email, image: image),
-          const SizedBox(height: 16),
-          const HouseholdDetails(),
-          const SizedBox(height: 16),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.edit_document),
-            title: const Text('Terms of Use'),
-            trailing: const Icon(Icons.arrow_forward),
-            onTap: () => context.pushNamed(RouteNames.terms),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.privacy_tip),
-            title: const Text('Privacy Policy'),
-            trailing: const Icon(Icons.arrow_forward),
-            onTap: () => context.pushNamed(RouteNames.privacy),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
-            onTap: isDeleting.value
-                ? null
-                : () async {
-                    await ref.read(authProvider.notifier).logout();
-                    if (context.mounted) {
-                      context.goNamed(RouteNames.login);
-                    }
-                  },
-          ),
-          const Divider(),
-          ListTile(
-            leading: isDeleting.value ? const LoadingIndicator() : Icon(Icons.delete_forever, color: errorColor),
-            title: Text(
-              isDeleting.value ? 'Deleting Account...' : 'Delete Account',
-              style: TextStyle(color: errorColor),
+    return ContentFrame(
+      maxWidth: 720,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            ProfileDetails(name: name, email: email, image: image),
+            const SizedBox(height: 16),
+            const HouseholdDetails(),
+            const SizedBox(height: 16),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.edit_document),
+              title: const Text('Terms of Use'),
+              trailing: const Icon(Icons.arrow_forward),
+              onTap: () => context.pushNamed(RouteNames.terms),
             ),
-            onTap: isDeleting.value
-                ? null
-                : () async {
-                    final confirmed = await showConfirmDialog(
-                      context,
-                      title: 'Delete Account',
-                      content:
-                          'This will permanently delete your account and all associated data. '
-                          'This action cannot be undone.',
-                      confirmLabel: 'Delete',
-                      destructive: true,
-                    );
-                    if (confirmed && context.mounted) {
-                      isDeleting.value = true;
-                      try {
-                        await ref.read(authProvider.notifier).deleteAccount();
-                        if (context.mounted) {
-                          context.goNamed(RouteNames.login);
-                        }
-                      } catch (e) {
-                        ref.handleException(e);
-                      } finally {
-                        isDeleting.value = false;
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.privacy_tip),
+              title: const Text('Privacy Policy'),
+              trailing: const Icon(Icons.arrow_forward),
+              onTap: () => context.pushNamed(RouteNames.privacy),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: isDeleting.value
+                  ? null
+                  : () async {
+                      await ref.read(authProvider.notifier).logout();
+                      if (context.mounted) {
+                        context.goNamed(RouteNames.login);
                       }
-                    }
-                  },
-          ),
-          const AppVersionSection(),
-        ],
+                    },
+            ),
+            const Divider(),
+            ListTile(
+              leading: isDeleting.value ? const LoadingIndicator() : Icon(Icons.delete_forever, color: errorColor),
+              title: Text(
+                isDeleting.value ? 'Deleting Account...' : 'Delete Account',
+                style: TextStyle(color: errorColor),
+              ),
+              onTap: isDeleting.value
+                  ? null
+                  : () async {
+                      final confirmed = await showConfirmDialog(
+                        context,
+                        title: 'Delete Account',
+                        content:
+                            'This will permanently delete your account and all associated data. '
+                            'This action cannot be undone.',
+                        confirmLabel: 'Delete',
+                        destructive: true,
+                      );
+                      if (confirmed && context.mounted) {
+                        isDeleting.value = true;
+                        try {
+                          await ref.read(authProvider.notifier).deleteAccount();
+                          if (context.mounted) {
+                            context.goNamed(RouteNames.login);
+                          }
+                        } catch (e) {
+                          ref.handleException(e);
+                        } finally {
+                          isDeleting.value = false;
+                        }
+                      }
+                    },
+            ),
+            const AppVersionSection(),
+          ],
+        ),
       ),
     );
   }

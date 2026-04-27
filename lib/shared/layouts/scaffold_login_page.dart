@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../sections/app_version.dart';
 import '../util/breakpoints.dart';
+import 'two_pane_layout.dart';
 
 class ScaffoldWithSimpleLayout extends StatelessWidget {
   final Widget child;
@@ -39,29 +40,20 @@ class ScaffoldWithSimpleLayout extends StatelessWidget {
                   ),
                 );
               } else {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Image.asset(
-                        'assets/images/login_bg.png',
-                        fit: BoxFit.cover,
+                return TwoPaneLayout(
+                  leftPane: Image.asset(
+                    'assets/images/login_bg.png',
+                    fit: BoxFit.cover,
+                  ),
+                  rightPane: Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 360),
+                        child: child,
                       ),
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: Center(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 360),
-                            child: child,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 );
               }
             },

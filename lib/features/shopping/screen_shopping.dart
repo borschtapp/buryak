@@ -7,6 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../shared/components/empty_state.dart';
 import '../../shared/components/error_state.dart';
 import '../../shared/hooks.dart';
+import '../../shared/layouts/content_frame.dart';
 import '../../shared/models/shopping_item.dart';
 import '../../shared/providers/paged_notifier_mixin.dart';
 import '../../shared/providers/shopping.dart';
@@ -166,107 +167,110 @@ class ShoppingScreen extends HookConsumerWidget {
             ),
           );
         }
-        return RefreshIndicator(
-          onRefresh: () async => ref.invalidate(shoppingItemsProvider),
-          child: ListView.separated(
-            controller: scrollController,
-            padding: const EdgeInsets.all(16),
-            itemCount: items.length + (notifier.hasMore ? 1 : 0),
-            separatorBuilder: (context, index) {
-              if (index == items.length) return const SizedBox.shrink();
-              return const Divider(height: 1);
-            },
-            itemBuilder: (context, index) {
-              if (index == items.length) {
-                return notifier.isLoadingMore
-                    ? const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    : const SizedBox.shrink();
-              }
+        return ContentFrame(
+          maxWidth: 960,
+          child: RefreshIndicator(
+            onRefresh: () async => ref.invalidate(shoppingItemsProvider),
+            child: ListView.separated(
+              controller: scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: items.length + (notifier.hasMore ? 1 : 0),
+              separatorBuilder: (context, index) {
+                if (index == items.length) return const SizedBox.shrink();
+                return const Divider(height: 1);
+              },
+              itemBuilder: (context, index) {
+                if (index == items.length) {
+                  return notifier.isLoadingMore
+                      ? const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      : const SizedBox.shrink();
+                }
 
-              final item = items[index];
-              void openEditSheet() {
-                showModalBottomSheet<void>(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (context) => EditShoppingItemBottomSheet(item: item),
-                );
-              }
+                final item = items[index];
+                void openEditSheet() {
+                  showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) => EditShoppingItemBottomSheet(item: item),
+                  );
+                }
 
-              return Dismissible(
-                key: ValueKey(item.id),
-                background: Container(
-                  color: Colors.orange,
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: const Icon(Icons.edit, color: Colors.white),
-                ),
-                secondaryBackground: Container(
-                  color: Theme.of(context).colorScheme.error,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
-                ),
-                direction: DismissDirection.horizontal,
-                confirmDismiss: (direction) async {
-                  if (direction == DismissDirection.startToEnd) {
-                    openEditSheet();
-                    return false;
-                  }
-                  return true;
-                },
-                onDismissed: (_) async {
-                  final itemName = item.text ?? 'Item';
-                  try {
-                    await ref.read(shoppingItemsProvider.notifier).deleteItem(item.id);
-                    if (context.mounted) {
-                      SemanticsService.sendAnnouncement(View.of(context), '$itemName removed', TextDirection.ltr);
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Failed to delete item.')),
-                      );
-                    }
-                  }
-                },
-                child: ListTile(
-                  onLongPress: openEditSheet,
-                  leading: Checkbox(
-                    value: item.isBought ?? false,
-                    semanticLabel: 'Mark ${item.text ?? "item"} as bought',
-                    onChanged: (_) async {
-                      try {
-                        await ref.read(shoppingItemsProvider.notifier).toggleItem(item);
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Failed to update item.')),
-                          );
-                        }
-                      }
-                    },
+                return Dismissible(
+                  key: ValueKey(item.id),
+                  background: Container(
+                    color: Colors.orange,
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: const Icon(Icons.edit, color: Colors.white),
                   ),
-                  title: Text(
-                    item.text ?? '',
-                    style: (item.isBought ?? false)
-                        ? context.textTheme.bodyMedium?.copyWith(
-                            decoration: TextDecoration.lineThrough,
-                            color: context.colors.onSurfaceVariant,
+                  secondaryBackground: Container(
+                    color: Theme.of(context).colorScheme.error,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
+                  ),
+                  direction: DismissDirection.horizontal,
+                  confirmDismiss: (direction) async {
+                    if (direction == DismissDirection.startToEnd) {
+                      openEditSheet();
+                      return false;
+                    }
+                    return true;
+                  },
+                  onDismissed: (_) async {
+                    final itemName = item.text ?? 'Item';
+                    try {
+                      await ref.read(shoppingItemsProvider.notifier).deleteItem(item.id);
+                      if (context.mounted) {
+                        SemanticsService.sendAnnouncement(View.of(context), '$itemName removed', TextDirection.ltr);
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Failed to delete item.')),
+                        );
+                      }
+                    }
+                  },
+                  child: ListTile(
+                    onLongPress: openEditSheet,
+                    leading: Checkbox(
+                      value: item.isBought ?? false,
+                      semanticLabel: 'Mark ${item.text ?? "item"} as bought',
+                      onChanged: (_) async {
+                        try {
+                          await ref.read(shoppingItemsProvider.notifier).toggleItem(item);
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Failed to update item.')),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                    title: Text(
+                      item.text ?? '',
+                      style: (item.isBought ?? false)
+                          ? context.textTheme.bodyMedium?.copyWith(
+                              decoration: TextDecoration.lineThrough,
+                              color: context.colors.onSurfaceVariant,
+                            )
+                          : null,
+                    ),
+                    subtitle: item.amount != null
+                        ? Text(
+                            '${item.amount.displayAmount} ${item.unit?.name ?? ''}'.trim(),
+                            style: context.textTheme.bodySmall,
                           )
                         : null,
                   ),
-                  subtitle: item.amount != null
-                      ? Text(
-                          '${item.amount.displayAmount} ${item.unit?.name ?? ''}'.trim(),
-                          style: context.textTheme.bodySmall,
-                        )
-                      : null,
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         );
       },

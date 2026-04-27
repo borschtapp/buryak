@@ -27,7 +27,7 @@ class RootLayout extends StatelessWidget {
   final Widget? floatingActionButton;
   final bool extendBodyBehindAppBar;
   final bool contentScrollable;
-  static const _navigationRailKey = ValueKey('navigationRailKey');
+  static const _navigationRailKey = PageStorageKey('navigationRailKey');
 
   @override
   Widget build(BuildContext context) {
