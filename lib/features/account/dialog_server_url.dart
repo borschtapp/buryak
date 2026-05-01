@@ -16,7 +16,7 @@ class ServerUrlDialog extends HookConsumerWidget {
       title: const Text('Server URL'),
       content: TextField(
         controller: controller,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           labelText: 'Leave empty to use demo server',
           hintText: ServerUrl.defaultUrl,
         ),

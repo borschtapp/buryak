@@ -29,7 +29,7 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 
 # Create a .env file with your API base URL
-echo 'API_BASE_URL=http://localhost:8080' > .env
+echo 'API_BASE_URL=http://localhost:3000' > .env
 
 # Run with environment config
 flutter run --dart-define-from-file=.env
