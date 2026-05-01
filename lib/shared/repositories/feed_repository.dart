@@ -43,14 +43,6 @@ class FeedRepository extends Repository {
     );
   }
 
-  Future<Feed> subscribe(String url) async {
-    final response = await sendRequest(
-      method: .post,
-      body: {'url': url},
-    );
-    return Feed.fromJson(ensureMap(response));
-  }
-
   Future<void> unsubscribe(String id) async {
     await sendRequest(method: .delete, path: '/$id');
   }

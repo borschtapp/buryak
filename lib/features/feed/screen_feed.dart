@@ -13,9 +13,9 @@ import '../../shared/providers/paged_notifier_mixin.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/repositories/feed_repository.dart';
 import '../../shared/repositories/recipe_repository.dart';
+import '../recipes/dialog_import.dart';
 import '../recipes/section_recipe_search_bar.dart';
 import '../recipes/section_recipes_grid.dart';
-import 'dialog_add_feed.dart';
 
 part 'screen_feed.g.dart';
 
@@ -80,7 +80,7 @@ class FeedScreen extends HookConsumerWidget {
     final fab = useMemoized(
       () => FloatingActionButton(
         heroTag: 'feed_add_fab',
-        onPressed: () => showAddFeedDialog(context, ref),
+        onPressed: () => showImportDialog(context, ref),
         child: const Icon(Icons.add),
       ),
       [],

@@ -33,7 +33,7 @@ class FeedCard extends ConsumerWidget {
         mainAxisSize: .min,
         children: [
           Text(
-            Uri.tryParse(feed.url)?.host ?? feed.url,
+            feed.url,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: context.textTheme.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),

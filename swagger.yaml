@@ -48,6 +48,8 @@ definitions:
         type: boolean
       url:
         type: string
+      type:
+        type: string
     required:
       - url
     type: object
@@ -411,6 +413,15 @@ definitions:
         type: string
       width:
         type: integer
+    type: object
+  domain.ImportResult:
+    properties:
+      created:
+        type: boolean
+      feed:
+        $ref: '#/definitions/domain.Feed'
+      recipe:
+        $ref: '#/definitions/domain.Recipe'
     type: object
   domain.InviteInfo:
     properties:
@@ -1655,7 +1666,7 @@ paths:
     get:
       consumes:
         - application/json
-      description: ByIDWithRecipes all feeds the user is subscribed to.
+      description: Returns all feeds the user is subscribed to.
       parameters:
         - description: Text search
           in: query
@@ -1871,6 +1882,114 @@ paths:
       summary: List a timeline of recipes from subscribed feeds.
       tags:
         - feeds
+  /api/v1/food/{id}/price:
+    get:
+      description: Get paginated price history for food within the household.
+      parameters:
+        - description: Food UUID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ListResponse-domain_FoodPrice'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+        - ApiKeyAuth: [ ]
+      summary: Get price history for a food
+      tags:
+        - food
+    post:
+      consumes:
+        - application/json
+      description: 'Record a new price observation for food within the household.
+        Price is expressed as: Price <Currency> per Amount <Unit>. Example: 4.99 EUR
+        per 1 kg of chicken breast.'
+      parameters:
+        - description: Food UUID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Price observation
+          in: body
+          name: price
+          required: true
+          schema:
+            $ref: '#/definitions/api.recordPriceRequest'
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.FoodPrice'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+        - ApiKeyAuth: [ ]
+      summary: Record a new price observation for a food
+      tags:
+        - food
+  /api/v1/food/{id}/price/{priceId}:
+    delete:
+      parameters:
+        - description: Food UUID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: FoodPrice UUID
+          in: path
+          name: priceId
+          required: true
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+        - ApiKeyAuth: [ ]
+      summary: Delete a food price observation
+      tags:
+        - food
   /api/v1/households/{id}:
     get:
       consumes:
@@ -2103,11 +2222,6 @@ paths:
   /api/v1/households/invites/{code}:
     delete:
       parameters:
-        - description: Household ID
-          in: path
-          name: id
-          required: true
-          type: string
         - description: Invite code
           in: path
           name: code
@@ -2202,6 +2316,39 @@ paths:
       summary: Leave the current household.
       tags:
         - households
+  /api/v1/import:
+    post:
+      consumes:
+        - application/json
+      description: Detects whether the URL points to a single recipe or a feed/listing.
+        Returns the imported recipe or the feed subscription.
+      parameters:
+        - description: Import request
+          in: body
+          name: import
+          required: true
+          schema:
+            $ref: '#/definitions/api.ImportRequest'
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.ImportResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+      security:
+        - ApiKeyAuth: [ ]
+      summary: Import a recipe or subscribe to a feed from a URL.
+      tags:
+        - import
   /api/v1/mealplan:
     get:
       consumes:
@@ -2677,8 +2824,8 @@ paths:
       produces:
         - application/json
       responses:
-        "201":
-          description: Created
+        "204":
+          description: No Content
         "401":
           description: Unauthorized
           schema:
@@ -2738,8 +2885,8 @@ paths:
       produces:
         - application/json
       responses:
-        "201":
-          description: Created
+        "204":
+          description: No Content
         "401":
           description: Unauthorized
           schema:
@@ -3069,6 +3216,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/sentinels.Error'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
       summary: Import a recipe from URL.
@@ -3092,6 +3243,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/types.ListResponse-domain_ShoppingList'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
       summary: List all shopping lists for the household.
@@ -3114,6 +3269,14 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/domain.ShoppingList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
       summary: Create a new shopping list.
@@ -3130,6 +3293,14 @@ paths:
       responses:
         "204":
           description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
       summary: Delete a shopping list.
@@ -3143,6 +3314,10 @@ paths:
           name: id
           required: true
           type: string
+        - description: 'Number of records to skip (default: 0)'
+          in: query
+          name: offset
+          type: integer
         - description: 'Maximum number of records to return (default: 10)'
           in: query
           name: limit
@@ -3154,6 +3329,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/types.ListResponse-domain_ShoppingItem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
       summary: List items in a shopping list.
@@ -3181,6 +3360,14 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/domain.ShoppingItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
       summary: Add one or more items to a shopping list.
@@ -3202,6 +3389,14 @@ paths:
       responses:
         "204":
           description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
       summary: Remove a shopping list item.
@@ -3234,6 +3429,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/domain.ShoppingItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/sentinels.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/sentinels.Error'
       security:
         - ApiKeyAuth: [ ]
       summary: Update a shopping list item.
@@ -3462,78 +3669,6 @@ paths:
       summary: Update user by ID.
       tags:
         - users
-  /food/{id}/price:
-    get:
-      description: Get paginated price history for food within the household.
-      parameters:
-        - description: Food UUID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/types.ListResponse-domain_FoodPrice'
-      security:
-        - BearerAuth: [ ]
-      summary: Get price history for a food
-      tags:
-        - food
-    post:
-      consumes:
-        - application/json
-      description: 'Record a new price observation for food within the household.
-        Price is expressed as: Price <Currency> per Amount <Unit>. Example: 4.99 EUR
-        per 1 kg of chicken breast.'
-      parameters:
-        - description: Food UUID
-          in: path
-          name: id
-          required: true
-          type: string
-        - description: Price observation
-          in: body
-          name: price
-          required: true
-          schema:
-            $ref: '#/definitions/api.recordPriceRequest'
-      produces:
-        - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/domain.FoodPrice'
-      security:
-        - BearerAuth: [ ]
-      summary: Record a new price observation for a food
-      tags:
-        - food
-  /food/{id}/price/{priceId}:
-    delete:
-      parameters:
-        - description: Food UUID
-          in: path
-          name: id
-          required: true
-          type: string
-        - description: FoodPrice UUID
-          in: path
-          name: priceId
-          required: true
-          type: string
-      responses:
-        "204":
-          description: No Content
-      security:
-        - BearerAuth: [ ]
-      summary: Delete a food price observation
-      tags:
-        - food
 securityDefinitions:
   ApiKeyAuth:
     description: 'Bearer token authorization using JWT. Example: "Bearer {token}"'

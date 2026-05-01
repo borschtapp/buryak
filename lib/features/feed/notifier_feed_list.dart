@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/models/feed.dart';
 import '../../shared/repositories/feed_repository.dart';
+import '../../shared/repositories/import_repository.dart';
 import 'screen_feed.dart';
 
 part 'notifier_feed_list.g.dart';
@@ -41,7 +42,7 @@ class FeedList extends _$FeedList {
     if (_restoringUrls.contains(feed.url)) return;
     _restoringUrls.add(feed.url);
     try {
-      await ref.read(feedRepositoryProvider).subscribe(feed.url);
+      await ref.read(importRepositoryProvider).import(feed.url, type: 'feed');
       ref.invalidateSelf();
       ref.invalidate(feedStreamProvider);
     } finally {

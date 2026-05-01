@@ -66,15 +66,6 @@ class RecipeRepository extends Repository {
     await sendRequest(method: .delete, path: '/$id');
   }
 
-  Future<Recipe> import(String url, {bool update = false}) async {
-    final response = await sendRequest(
-      method: .post,
-      path: '/import',
-      body: {'url': url, 'update': update},
-    );
-    return Recipe.fromJson(ensureMap(response));
-  }
-
   Future<void> save(String recipeId) async {
     await sendRequest(method: .post, path: '/$recipeId/favorite');
   }

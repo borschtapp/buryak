@@ -104,23 +104,6 @@ void main() {
       expect(result.id, 'new-id');
     });
 
-    test('import returns the imported recipe', () async {
-      final recipeJson = fakeRecipeJson(id: 'imported-id');
-      final responseBody = jsonEncode(recipeJson);
-
-      when(
-        () => mockClient.post(
-          any(),
-          headers: any(named: 'headers'),
-          body: any(named: 'body'),
-        ),
-      ).thenAnswer((_) async => http.Response(responseBody, 201));
-
-      final result = await repository.import('https://example.com/recipe');
-
-      expect(result.id, 'imported-id');
-    });
-
     test('throws exception on error', () async {
       when(
         () => mockClient.get(any(), headers: any(named: 'headers')),

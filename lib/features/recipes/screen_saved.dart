@@ -7,7 +7,7 @@ import '../../shared/hooks.dart';
 import '../../shared/layouts/searchable_grid_scaffold.dart';
 import '../../shared/providers/saved.dart';
 import 'dialog_create_collection.dart';
-import 'dialog_import_recipe.dart';
+import 'dialog_import.dart';
 import 'section_recipe_search_bar.dart';
 import 'section_saved_tabs.dart';
 
@@ -89,7 +89,7 @@ class SavedScreen extends HookConsumerWidget {
     if (tabIndex == 0) {
       return FloatingActionButton(
         heroTag: 'saved_import_fab',
-        onPressed: () => showImportRecipeDialog(context, ref),
+        onPressed: () => showImportDialog(context, ref),
         child: const Icon(Icons.add),
       );
     } else {

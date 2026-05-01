@@ -49,7 +49,7 @@ class ErrorHandler extends _$ErrorHandler {
         401 => 'Your session expired. Please log in again.',
         403 => 'You don\'t have permission to do this.',
         404 => 'The requested item was not found.',
-        422 => 'There was a problem with your request. Please check and try again.',
+        422 => e.message.isNotEmpty ? e.message : 'There was a problem with your request. Please check and try again.',
         500 => 'Server error. Please try again later.',
         _ => e.message.isNotEmpty ? e.message : 'Something went wrong. Please try again.',
       };

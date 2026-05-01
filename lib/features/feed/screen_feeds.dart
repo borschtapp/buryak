@@ -8,7 +8,7 @@ import '../../shared/hooks.dart';
 import '../../shared/models/feed.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
-import 'dialog_add_feed.dart';
+import '../recipes/dialog_import.dart';
 import 'feed_card.dart';
 import 'notifier_feed_list.dart';
 
@@ -24,7 +24,7 @@ class FeedsScreen extends HookConsumerWidget {
       ref,
       FloatingActionButton(
         heroTag: 'feeds_add_fab',
-        onPressed: () => showAddFeedDialog(context, ref),
+        onPressed: () => showImportDialog(context, ref, isFeedOnly: true),
         child: const Icon(Icons.add),
       ),
     );
@@ -44,7 +44,7 @@ class FeedsScreen extends HookConsumerWidget {
             title: 'No feeds yet',
             subtitle: 'Add a feed URL to start discovering recipes from your favourite food blogs.',
             action: FilledButton.icon(
-              onPressed: () => showAddFeedDialog(context, ref),
+              onPressed: () => showImportDialog(context, ref, isFeedOnly: true),
               icon: const Icon(Icons.add),
               label: const Text('Add Feed'),
             ),

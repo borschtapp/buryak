@@ -40,4 +40,10 @@ class Validator {
     }
     return null;
   }
+
+  static String extractUrl(String text) {
+    final regex = RegExp(r'https?://[^\s]+');
+    final match = regex.firstMatch(text);
+    return match?.group(0) ?? text.trim();
+  }
 }

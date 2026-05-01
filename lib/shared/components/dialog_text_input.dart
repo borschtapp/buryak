@@ -79,7 +79,16 @@ class TextInputDialog extends HookConsumerWidget {
                 Expanded(
                   child: FilledButton(
                     onPressed: isLoading.value ? null : () => _handleSubmit(context, ref, controller, isLoading, validationError),
-                    child: Text(submitLabel),
+                    child: isLoading.value
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          )
+                        : Text(submitLabel),
                   ),
                 ),
               ],
