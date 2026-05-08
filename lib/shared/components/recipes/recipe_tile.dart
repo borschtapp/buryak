@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/components/recipes/author_line.dart';
-import '../../shared/components/recipes/placeholder.dart';
-import '../../shared/models/recipe.dart';
-import '../../shared/util/extensions.dart';
-import 'controller_recipe.dart';
+import '../../models/recipe.dart';
+import '../../providers/saved.dart';
+import '../../util/error_extensions.dart';
+import '../../util/extensions.dart';
+import '../icon_label.dart';
+import 'author_line.dart';
 import 'dialog_select_collections.dart';
+import 'placeholder.dart';
 
 class RecipeTile extends HookConsumerWidget {
   const RecipeTile({
@@ -21,7 +23,7 @@ class RecipeTile extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recipeId = recipe.id;
-    final (:isSaved, :toggle) = savedRecipeState(ref, recipeId);
+    final (:isSaved, :toggle) = ref.watch(savedRecipeStateProvider(recipeId));
 
     final collections = useState(recipe.collections);
     useEffect(() {
@@ -100,11 +102,7 @@ class RecipeTile extends HookConsumerWidget {
                           try {
                             await toggle();
                           } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Failed to update liked status')),
-                              );
-                            }
+                            ref.handleException(e);
                           }
                         },
                         icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline, color: Colors.white),
@@ -142,14 +140,13 @@ class RecipeTile extends HookConsumerWidget {
                   flex: 1,
                   child: Semantics(
                     label: 'Total time: ${recipe.totalTime.toFormattedDuration()}',
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const SizedBox(width: 10),
-                        const Icon(Icons.timer_outlined, semanticLabel: 'Time'),
-                        const SizedBox(width: 4),
-                        Text(recipe.totalTime.toFormattedDuration()),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: IconLabel(
+                        icon: Icons.timer_outlined,
+                        label: recipe.totalTime.toFormattedDuration(),
+                        iconSize: 16,
+                      ),
                     ),
                   ),
                 ),

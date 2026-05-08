@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../util/extensions.dart';
-import 'profile_avatar.dart';
+import 'standard_picture.dart';
 
 class ProfileDetails extends StatelessWidget {
   final String? name, email, image;
@@ -21,7 +21,11 @@ class ProfileDetails extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(top: 30, bottom: 20, left: 30, right: 30),
-            child: ProfileAvatar(image: image, name: name != null && name!.trim().isNotEmpty ? name! : email!),
+            child: StandardPicture(
+              imageUrl: image,
+              fallbackText: name != null && name!.trim().isNotEmpty ? name! : email!,
+              size: 140, // 70 radius * 2
+            ),
           ),
           if (name != null && name!.trim().isNotEmpty)
             Padding(

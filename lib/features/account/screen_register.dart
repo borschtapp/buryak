@@ -4,11 +4,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/components/loading_indicator.dart';
-import '../../shared/layouts/scaffold_login_page.dart';
+import '../../shared/layouts/standard_auth_form.dart';
 import '../../shared/providers/user.dart';
-import '../../shared/repositories/repository.dart';
 import '../../shared/route_names.dart';
+import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/validator.dart';
 
@@ -68,18 +67,9 @@ class RegisterScreen extends HookConsumerWidget {
             context.goNamed(RouteNames.feed);
           }
         } catch (e) {
+          ref.handleException(e);
           if (context.mounted) {
             isLoading.value = false;
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  e is GeneralApiException ? e.message : 'Registration failed. Please try again.',
-                  style: TextStyle(color: context.colors.onErrorContainer),
-                ),
-                backgroundColor: context.colors.errorContainer,
-              ),
-            );
           }
         }
       }
@@ -87,111 +77,88 @@ class RegisterScreen extends HookConsumerWidget {
 
     final textTheme = context.textTheme;
 
-    return ScaffoldWithSimpleLayout(
-      child: AutofillGroup(
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .stretch,
-            children: [
-              Text('Register an account', style: textTheme.titleLarge),
-              const SizedBox(height: 35),
-              TextFormField(
-                controller: nameController,
-                onFieldSubmitted: (_) => register(),
-                autofillHints: const [AutofillHints.name],
-                validator: (value) {
-                  return Validator.validateName(value ?? '');
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  hintText: 'Chef',
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: emailController,
-                onFieldSubmitted: (_) => register(),
-                autofillHints: const [AutofillHints.email],
-                keyboardType: .emailAddress,
-                validator: (value) {
-                  return Validator.validateEmail(value ?? '');
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'abc@example.com',
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                obscureText: !showPassword.value,
-                onFieldSubmitted: (_) => register(),
-                controller: passwordController,
-                autofillHints: const [AutofillHints.newPassword],
-                validator: (value) {
-                  return Validator.validatePassword(value ?? '');
-                },
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: '********',
-                  suffixIcon: GestureDetector(
-                    onTap: () {
-                      showPassword.value = !showPassword.value;
-                    },
-                    child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Checkbox(
-                    value: termsAccepted.value,
-                    onChanged: (v) => termsAccepted.value = v ?? false,
-                  ),
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        style: textTheme.bodyMedium,
-                        children: [
-                          const TextSpan(text: 'I have read and accept the '),
-                          TextSpan(
-                            text: 'Terms of Use',
-                            style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
-                            recognizer: termsRecognizer,
-                          ),
-                          const TextSpan(text: ' and '),
-                          TextSpan(
-                            text: 'Privacy Policy',
-                            style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
-                            recognizer: privacyRecognizer,
-                          ),
-                          const TextSpan(text: '.'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              ElevatedButton(
-                onPressed: isLoading.value ? null : register,
-                child: isLoading.value ? const LoadingIndicator() : const Text('Register'),
-              ),
-              const SizedBox(height: 15),
-              TextButton(
-                onPressed: () => context.goNamed(
-                  RouteNames.login,
-                  queryParameters: {'code': inviteCode ?? ''},
-                ),
-                child: const Text('Login'),
-              ),
-            ],
+    return StandardAuthForm(
+      title: 'Register an account',
+      formKey: formKey,
+      isLoading: isLoading.value,
+      onSubmit: register,
+      submitLabel: 'Register',
+      secondaryButton: TextButton(
+        onPressed: () => context.goNamed(
+          RouteNames.login,
+          queryParameters: {'code': inviteCode ?? ''},
+        ),
+        child: const Text('Login'),
+      ),
+      children: [
+        TextFormField(
+          controller: nameController,
+          onFieldSubmitted: (_) => register(),
+          autofillHints: const [AutofillHints.name],
+          validator: (value) => Validator.validateName(value ?? ''),
+          decoration: const InputDecoration(
+            labelText: 'Name',
+            hintText: 'Chef',
           ),
         ),
-      ),
+        TextFormField(
+          controller: emailController,
+          onFieldSubmitted: (_) => register(),
+          autofillHints: const [AutofillHints.email],
+          keyboardType: TextInputType.emailAddress,
+          validator: (value) => Validator.validateEmail(value ?? ''),
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            hintText: 'abc@example.com',
+          ),
+        ),
+        TextFormField(
+          obscureText: !showPassword.value,
+          onFieldSubmitted: (_) => register(),
+          controller: passwordController,
+          autofillHints: const [AutofillHints.newPassword],
+          validator: (value) => Validator.validatePassword(value ?? ''),
+          decoration: InputDecoration(
+            labelText: 'Password',
+            hintText: '********',
+            suffixIcon: GestureDetector(
+              onTap: () => showPassword.value = !showPassword.value,
+              child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
+            ),
+          ),
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Checkbox(
+              value: termsAccepted.value,
+              onChanged: (v) => termsAccepted.value = v ?? false,
+            ),
+            Expanded(
+              child: RichText(
+                text: TextSpan(
+                  style: textTheme.bodyMedium,
+                  children: [
+                    const TextSpan(text: 'I have read and accept the '),
+                    TextSpan(
+                      text: 'Terms of Use',
+                      style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
+                      recognizer: termsRecognizer,
+                    ),
+                    const TextSpan(text: ' and '),
+                    TextSpan(
+                      text: 'Privacy Policy',
+                      style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
+                      recognizer: privacyRecognizer,
+                    ),
+                    const TextSpan(text: '.'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

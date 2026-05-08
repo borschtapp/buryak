@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../util/extensions.dart';
 import 'content_frame.dart';
 
 class SearchableGridScaffold extends StatelessWidget {
@@ -22,12 +23,20 @@ class SearchableGridScaffold extends StatelessWidget {
       maxWidth: maxWidth,
       child: Column(
         children: [
-          ?topWidget,
-          if (searchBar != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-              child: searchBar!,
+          Material(
+            color: context.colors.surface,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ?topWidget,
+                if (searchBar != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                    child: searchBar!,
+                  ),
+              ],
             ),
+          ),
           Expanded(child: child),
         ],
       ),

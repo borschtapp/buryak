@@ -3,12 +3,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/components/loading_indicator.dart';
+import '../../shared/components/loading_button.dart';
+import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
 import '../../shared/util/error_extensions.dart';
-import '../../shared/util/extensions.dart';
-import 'screen_shopping.dart';
+import 'notifier_shopping.dart';
 
 class ShoppingBottomSheet extends HookConsumerWidget {
   final Recipe recipe;
@@ -29,7 +29,7 @@ class ShoppingBottomSheet extends HookConsumerWidget {
         final selectedIngredients = recipe.ingredients?.where((i) => selectedIngredientIds.value.contains(i.id)).toList();
 
         if (selectedIngredients != null) {
-          var listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
+          final listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
           var lists = listsResponse.data;
           if (lists.isEmpty) {
             final newList = await ref.read(shoppingListRepositoryProvider).create('Shopping List', isDefault: true);
@@ -75,53 +75,24 @@ class ShoppingBottomSheet extends HookConsumerWidget {
       [recipe.ingredients],
     );
 
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+    return StandardBottomSheet(
+      title: 'Add to shopping',
+      showDragHandle: true,
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: context.colors.onSurfaceVariant.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Add to shopping', style: context.textTheme.titleLarge),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => context.pop(),
-                ),
-              ],
-            ),
-          ),
-          const Divider(),
           if (ingredients.isEmpty)
-            const Expanded(
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text('No ingredients found for this recipe.'),
-                ),
-              ),
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Text('No ingredients found for this recipe.'),
             )
           else
-            Expanded(
+            Flexible(
               child: ListView.builder(
                 controller: scrollController,
+                shrinkWrap: true,
                 itemCount: ingredients.length,
                 itemBuilder: (context, index) {
                   final ingredient = ingredients[index];
@@ -143,10 +114,11 @@ class ShoppingBottomSheet extends HookConsumerWidget {
               ),
             ),
           Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + MediaQuery.paddingOf(context).bottom),
-            child: FilledButton(
-              onPressed: isSaving.value || selectedIngredientIds.value.isEmpty ? null : save,
-              child: isSaving.value ? const LoadingIndicator() : const Text('Add to list'),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.paddingOf(context).bottom),
+            child: LoadingButton(
+              isLoading: isSaving.value,
+              onPressed: selectedIngredientIds.value.isEmpty ? null : save,
+              child: const Text('Add to list'),
             ),
           ),
         ],

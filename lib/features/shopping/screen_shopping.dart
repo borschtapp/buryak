@@ -1,132 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../shared/components/dismissible_tile.dart';
 import '../../shared/components/empty_state.dart';
-import '../../shared/components/error_state.dart';
 import '../../shared/hooks.dart';
-import '../../shared/layouts/content_frame.dart';
+import '../../shared/layouts/app_list_scaffold.dart';
 import '../../shared/models/shopping_item.dart';
-import '../../shared/providers/paged_notifier_mixin.dart';
-import '../../shared/providers/shopping.dart';
-import '../../shared/repositories/shopping_list_repository.dart';
+import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import 'dialog_add_item.dart';
 import 'dialog_edit_item.dart';
-
-part 'screen_shopping.g.dart';
-
-@Riverpod(keepAlive: true)
-class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem> {
-  late String _primaryListId;
-
-  @override
-  int get limit => 20;
-
-  @override
-  List<ShoppingItem> Function(List<ShoppingItem>)? get sortItems => _sortItems;
-
-  @override
-  Future<List<ShoppingItem>> build() async {
-    resetPagination();
-    _primaryListId = await ref.watch(primaryShoppingListIdProvider.future);
-
-    final itemsResponse = await ref.read(shoppingListRepositoryProvider).findItems(_primaryListId, limit: limit, offset: 0);
-    return itemsResponse.data;
-  }
-
-  List<ShoppingItem> _sortItems(List<ShoppingItem> items) {
-    return [...items]..sort((a, b) {
-      if (a.isBought == b.isBought) return 0;
-      if (a.isBought ?? false) return 1;
-      return -1;
-    });
-  }
-
-  Future<void> loadMore() => loadNextPage((offset, pageLimit) {
-    return ref.read(shoppingListRepositoryProvider).findItems(_primaryListId, limit: pageLimit, offset: offset);
-  });
-
-  Future<void> toggleItem(ShoppingItem item) async {
-    final newValue = !(item.isBought ?? false);
-
-    // Optimistic update: find and toggle the item
-    final previousState = state;
-    if (state.value != null) {
-      final items = [...state.value!];
-      final index = items.indexWhere((i) => i.id == item.id);
-      if (index != -1) {
-        items[index] = items[index].copyWith(isBought: newValue);
-        state = AsyncData(_sortItems(items));
-      }
-    }
-
-    try {
-      await ref.read(shoppingListRepositoryProvider).updateItem(_primaryListId, item.id, isBought: newValue);
-    } catch (e) {
-      state = previousState;
-      rethrow;
-    }
-  }
-
-  Future<void> deleteItem(String id) async {
-    final previousState = state;
-
-    // Optimistic update: remove item from the current state list
-    state = state.whenData((items) => items.where((i) => i.id != id).toList());
-
-    try {
-      await ref.read(shoppingListRepositoryProvider).deleteItem(_primaryListId, id);
-    } catch (e) {
-      // Revert to previous state on failure
-      state = previousState;
-      rethrow;
-    }
-  }
-
-  Future<void> updateItem(ShoppingItem item, {String? text, double? amount}) async {
-    final previousState = state;
-
-    if (state.value != null) {
-      final items = [...state.value!];
-      final index = items.indexWhere((i) => i.id == item.id);
-      if (index != -1) {
-        items[index] = items[index].copyWith(text: text ?? items[index].text, amount: amount);
-        state = AsyncData(items);
-      }
-    }
-
-    try {
-      await ref.read(shoppingListRepositoryProvider).updateItem(_primaryListId, item.id, text: text, amount: amount);
-    } catch (e) {
-      state = previousState;
-      rethrow;
-    }
-  }
-
-  Future<void> addItem(String name) async {
-    final newItem = await ref.read(shoppingListRepositoryProvider).createItem(_primaryListId, name);
-
-    if (state.value != null) {
-      final items = [...state.value!];
-      // New items are not bought, so insert at beginning (before any bought items)
-      items.insert(0, newItem);
-      state = AsyncData(items);
-    } else {
-      state = AsyncData([newItem]);
-    }
-  }
-}
+import 'notifier_shopping.dart';
 
 class ShoppingScreen extends HookConsumerWidget {
   const ShoppingScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scrollController = useScrollController();
-
     useFab(
       ref,
       FloatingActionButton(
@@ -136,148 +26,82 @@ class ShoppingScreen extends HookConsumerWidget {
       ),
     );
 
-    useEffect(
-      () {
-        void onScroll() {
-          if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 500) {
-            ref.read(shoppingItemsProvider.notifier).loadMore();
-          }
-        }
-
-        scrollController.addListener(onScroll);
-        return () => scrollController.removeListener(onScroll);
-      },
-      [scrollController, ref],
-    );
-
     final itemsAsync = ref.watch(shoppingItemsProvider);
     final notifier = ref.read(shoppingItemsProvider.notifier);
 
-    return itemsAsync.when(
-      data: (List<ShoppingItem> items) {
-        if (items.isEmpty) {
-          return EmptyState(
-            icon: Icons.shopping_basket_outlined,
-            title: 'Your shopping list is empty',
-            subtitle: 'Tap the + button to add items you need for your recipes.',
-            action: TextButton.icon(
-              onPressed: () => ref.invalidate(shoppingItemsProvider),
-              icon: const Icon(Icons.refresh),
-              label: const Text('Refresh'),
+    return AppListScaffold<List<ShoppingItem>>(
+      value: itemsAsync,
+      onRefresh: () async => ref.invalidate(shoppingItemsProvider),
+      onLoadMore: notifier.loadMore,
+      isLoadingMore: notifier.isLoadingMore,
+      hasMore: notifier.hasMore,
+      isEmpty: (items) => items.isEmpty,
+      emptyState: EmptyState(
+        icon: Icons.shopping_basket_outlined,
+        title: 'Your shopping list is empty',
+        subtitle: 'Tap the + button to add items you need for your recipes.',
+        action: TextButton.icon(
+          onPressed: () => ref.invalidate(shoppingItemsProvider),
+          icon: const Icon(Icons.refresh),
+          label: const Text('Refresh'),
+        ),
+      ),
+      data: (items) => ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: items.length,
+        separatorBuilder: (context, index) => const Divider(height: 1),
+        itemBuilder: (context, index) {
+          final item = items[index];
+          void openEditSheet() {
+            showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) => EditShoppingItemBottomSheet(item: item),
+            );
+          }
+
+          return DismissibleTile(
+            key: ValueKey(item.id),
+            label: item.text ?? 'Item',
+            onEdit: openEditSheet,
+            onDelete: () async {
+              try {
+                await ref.read(shoppingItemsProvider.notifier).deleteItem(item.id);
+              } catch (e) {
+                ref.handleException(e);
+              }
+            },
+            child: ListTile(
+              onLongPress: openEditSheet,
+              leading: Checkbox(
+                value: item.isBought ?? false,
+                semanticLabel: 'Mark ${item.text ?? "item"} as bought',
+                onChanged: (_) async {
+                  try {
+                    await ref.read(shoppingItemsProvider.notifier).toggleItem(item);
+                  } catch (e) {
+                    ref.handleException(e);
+                  }
+                },
+              ),
+              title: Text(
+                item.text ?? '',
+                style: (item.isBought ?? false)
+                    ? context.textTheme.bodyMedium?.copyWith(
+                        decoration: TextDecoration.lineThrough,
+                        color: context.colors.onSurfaceVariant,
+                      )
+                    : null,
+              ),
+              subtitle: item.amount != null
+                  ? Text(
+                      '${item.amount.displayAmount} ${item.unit?.name ?? ''}'.trim(),
+                      style: context.textTheme.bodySmall,
+                    )
+                  : null,
             ),
           );
-        }
-        return ContentFrame(
-          maxWidth: 960,
-          child: RefreshIndicator(
-            onRefresh: () async => ref.invalidate(shoppingItemsProvider),
-            child: ListView.separated(
-              controller: scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: items.length + (notifier.hasMore ? 1 : 0),
-              separatorBuilder: (context, index) {
-                if (index == items.length) return const SizedBox.shrink();
-                return const Divider(height: 1);
-              },
-              itemBuilder: (context, index) {
-                if (index == items.length) {
-                  return notifier.isLoadingMore
-                      ? const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Center(child: CircularProgressIndicator()),
-                        )
-                      : const SizedBox.shrink();
-                }
-
-                final item = items[index];
-                void openEditSheet() {
-                  showModalBottomSheet<void>(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (context) => EditShoppingItemBottomSheet(item: item),
-                  );
-                }
-
-                return Dismissible(
-                  key: ValueKey(item.id),
-                  background: Container(
-                    color: Colors.orange,
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: const Icon(Icons.edit, color: Colors.white),
-                  ),
-                  secondaryBackground: Container(
-                    color: Theme.of(context).colorScheme.error,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
-                  ),
-                  direction: DismissDirection.horizontal,
-                  confirmDismiss: (direction) async {
-                    if (direction == DismissDirection.startToEnd) {
-                      openEditSheet();
-                      return false;
-                    }
-                    return true;
-                  },
-                  onDismissed: (_) async {
-                    final itemName = item.text ?? 'Item';
-                    try {
-                      await ref.read(shoppingItemsProvider.notifier).deleteItem(item.id);
-                      if (context.mounted) {
-                        SemanticsService.sendAnnouncement(View.of(context), '$itemName removed', TextDirection.ltr);
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Failed to delete item.')),
-                        );
-                      }
-                    }
-                  },
-                  child: ListTile(
-                    onLongPress: openEditSheet,
-                    leading: Checkbox(
-                      value: item.isBought ?? false,
-                      semanticLabel: 'Mark ${item.text ?? "item"} as bought',
-                      onChanged: (_) async {
-                        try {
-                          await ref.read(shoppingItemsProvider.notifier).toggleItem(item);
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Failed to update item.')),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                    title: Text(
-                      item.text ?? '',
-                      style: (item.isBought ?? false)
-                          ? context.textTheme.bodyMedium?.copyWith(
-                              decoration: TextDecoration.lineThrough,
-                              color: context.colors.onSurfaceVariant,
-                            )
-                          : null,
-                    ),
-                    subtitle: item.amount != null
-                        ? Text(
-                            '${item.amount.displayAmount} ${item.unit?.name ?? ''}'.trim(),
-                            style: context.textTheme.bodySmall,
-                          )
-                        : null,
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => ErrorState(
-        message: err.toString(),
-        onRetry: () => ref.invalidate(shoppingItemsProvider),
+        },
       ),
     );
   }

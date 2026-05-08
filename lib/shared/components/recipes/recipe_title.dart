@@ -33,19 +33,27 @@ class RecipeTitle extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(recipe.name, style: titleStyle),
-          const SizedBox(height: 8),
-          RecipeAuthorLine(
-            recipe: recipe,
-            showPrefix: compact,
-            useUnderline: compact,
-          ),
-          if (recipe.published != null) ...[
+          if (recipe.description != null) ...[
             const SizedBox(height: 4),
-            Text(
-              'Published: ${DateFormat.yMMMd().format(recipe.published!)}',
-              style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
-            ),
+            Text(recipe.description!),
           ],
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              RecipeAuthorLine(
+                recipe: recipe,
+                showPrefix: compact,
+                useUnderline: compact,
+              ),
+              if (recipe.published != null) ...[
+                Text(
+                  DateFormat.yMMMd().format(recipe.published!),
+                  style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
+                ),
+              ],
+            ],
+          ),
         ],
       ),
     );

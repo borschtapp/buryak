@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/components/dialog_text_input.dart';
-import '../../shared/providers/saved.dart';
-import '../../shared/repositories/import_repository.dart';
-import '../../shared/route_names.dart';
-import '../../shared/util/validator.dart';
-import '../feed/notifier_feed_list.dart';
-import '../feed/screen_feed.dart';
+import '../../../features/feed/notifier_feed.dart';
+import '../../../features/feed/notifier_feed_list.dart';
+import '../../providers/saved.dart';
+import '../../repositories/import_repository.dart';
+import '../../route_names.dart';
+import '../../util/validator.dart';
+import '../dialog_text_input.dart';
 
 void showImportDialog(BuildContext context, WidgetRef ref, {bool isFeedOnly = false}) {
   showDialog<void>(

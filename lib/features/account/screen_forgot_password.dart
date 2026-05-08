@@ -3,12 +3,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/components/loading_indicator.dart';
-import '../../shared/layouts/scaffold_login_page.dart';
+import '../../shared/layouts/standard_auth_form.dart';
 import '../../shared/repositories/auth_repository.dart';
-import '../../shared/repositories/repository.dart';
 import '../../shared/route_names.dart';
-import '../../shared/util/extensions.dart';
+import '../../shared/util/error_extensions.dart';
 import '../../shared/util/validator.dart';
 
 class ForgotPasswordScreen extends HookConsumerWidget {
@@ -28,74 +26,43 @@ class ForgotPasswordScreen extends HookConsumerWidget {
           await ref.read(authRepositoryProvider).forgotPassword(emailController.text);
 
           if (context.mounted) {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('If an account exists, a reset link has been sent.')),
             );
             context.goNamed(RouteNames.login);
           }
         } catch (e) {
-          if (context.mounted) {
-            isLoading.value = false;
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  e is GeneralApiException ? e.message : 'Request failed. Please try again.',
-                  style: TextStyle(color: context.colors.onErrorContainer),
-                ),
-                backgroundColor: context.colors.errorContainer,
-              ),
-            );
-          }
+          ref.handleException(e);
+        } finally {
+          if (context.mounted) isLoading.value = false;
         }
       }
     }
 
-    final textTheme = context.textTheme;
-
-    return ScaffoldWithSimpleLayout(
-      child: AutofillGroup(
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .stretch,
-            children: [
-              Text('Forgot Password', style: textTheme.titleLarge),
-              const SizedBox(height: 8),
-              Text(
-                'Enter your email address to receive a password reset link.',
-                style: textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 24),
-              TextFormField(
-                controller: emailController,
-                onFieldSubmitted: (_) => submit(),
-                autofillHints: const [AutofillHints.email],
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  return Validator.validateEmail(value ?? '');
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'abc@example.com',
-                ),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: isLoading.value ? null : submit,
-                child: isLoading.value ? const LoadingIndicator() : const Text('Send Reset Link'),
-              ),
-              const SizedBox(height: 15),
-              TextButton(
-                onPressed: () => context.goNamed(RouteNames.login),
-                child: const Text('Back to Login'),
-              ),
-            ],
+    return StandardAuthForm(
+      title: 'Forgot Password',
+      subtitle: 'Enter your email address to receive a password reset link.',
+      formKey: formKey,
+      isLoading: isLoading.value,
+      onSubmit: submit,
+      submitLabel: 'Send Link',
+      secondaryButton: TextButton(
+        onPressed: () => context.goNamed(RouteNames.login),
+        child: const Text('Back to Login'),
+      ),
+      children: [
+        TextFormField(
+          controller: emailController,
+          onFieldSubmitted: (_) => submit(),
+          autofillHints: const [AutofillHints.email],
+          keyboardType: TextInputType.emailAddress,
+          validator: (value) => Validator.validateEmail(value ?? ''),
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            hintText: 'abc@example.com',
           ),
         ),
-      ),
+      ],
     );
   }
 }

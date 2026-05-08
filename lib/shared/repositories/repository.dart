@@ -286,7 +286,7 @@ class FieldsApiException extends GeneralApiException {
 
   @override
   String toString() {
-    var first = fields.entries.first;
+    final first = fields.entries.first;
     return '${first.key}: ${first.value.first}';
   }
 }

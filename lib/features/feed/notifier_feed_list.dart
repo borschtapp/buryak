@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../shared/models/feed.dart';
 import '../../shared/repositories/feed_repository.dart';
 import '../../shared/repositories/import_repository.dart';
-import 'screen_feed.dart';
+import 'notifier_feed.dart';
 
 part 'notifier_feed_list.g.dart';
 

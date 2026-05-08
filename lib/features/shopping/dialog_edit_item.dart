@@ -4,11 +4,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/components/loading_indicator.dart';
+import '../../shared/components/loading_button.dart';
+import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/shopping_item.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
-import 'screen_shopping.dart';
+import 'notifier_shopping.dart';
 
 class EditShoppingItemBottomSheet extends HookConsumerWidget {
   final ShoppingItem item;
@@ -49,35 +50,11 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
       }
     }
 
-    return Padding(
-      padding: EdgeInsets.only(
-        top: 20,
-        left: 20,
-        right: 20,
-        bottom: MediaQuery.viewInsetsOf(context).bottom + 20,
-      ),
+    return StandardBottomSheet(
+      title: 'Edit item',
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  'Edit item',
-                  style: context.textTheme.titleLarge,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => context.pop(),
-              ),
-            ],
-          ),
-          const Divider(),
-          const SizedBox(height: 16),
           if (hasAmount) ...[
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,9 +107,10 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
               onSubmitted: (_) => save(),
             ),
           const SizedBox(height: 24),
-          FilledButton(
-            onPressed: isSaving.value ? null : save,
-            child: isSaving.value ? const LoadingIndicator() : const Text('Save changes'),
+          LoadingButton(
+            isLoading: isSaving.value,
+            onPressed: save,
+            child: const Text('Save changes'),
           ),
         ],
       ),

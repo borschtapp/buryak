@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/equipment.dart';
 import '../../models/recipe_ingredient.dart';
 import '../../util/extensions.dart';
+import '../standard_picture.dart';
 
 class Ingredients extends StatelessWidget {
   final List<RecipeIngredient> ingredients;
@@ -77,37 +77,15 @@ class Ingredients extends StatelessWidget {
   }
 
   Widget _buildEquipmentItem(BuildContext context, Equipment equipment) {
-    final imageUrl = equipment.imageUrl;
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            border: Border.all(color: context.colors.outline),
-            shape: BoxShape.circle,
-          ),
-          child: SizedBox(
-            width: 40,
-            height: 40,
-            child: imageUrl != null && imageUrl.trim().isNotEmpty
-                ? ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                      errorWidget: (context, url, error) => Icon(
-                        _getEquipmentIcon(equipment.name),
-                        color: context.colors.onSurfaceVariant,
-                      ),
-                    ),
-                  )
-                : Semantics(
-                    label: equipment.name,
-                    child: Icon(
-                      _getEquipmentIcon(equipment.name),
-                      color: context.colors.onSurfaceVariant,
-                    ),
-                  ),
-          ),
+        StandardPicture(
+          imageUrl: equipment.imageUrl,
+          fallbackIcon: _getEquipmentIcon(equipment.name),
+          size: 64,
+          shape: PictureShape.rounded,
+          backgroundColor: Colors.transparent,
+          border: Border.all(color: context.colors.outline),
         ),
         const SizedBox(height: 4),
         SizedBox(
@@ -141,14 +119,12 @@ class Ingredients extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: context.colors.surfaceContainerHighest,
-              shape: BoxShape.circle,
-            ),
-            child: _buildIngredientIcon(context, ingredient),
+          StandardPicture(
+            imageUrl: ingredient.food?.imageUrl,
+            fallbackIcon: Icons.shopping_basket_outlined,
+            size: 40,
+            shape: PictureShape.circle,
+            backgroundColor: Colors.transparent,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -163,29 +139,6 @@ class Ingredients extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildIngredientIcon(BuildContext context, RecipeIngredient ingredient) {
-    final icon = ingredient.food?.imageUrl;
-    if (icon != null && icon.trim().isNotEmpty) {
-      return ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: icon,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => Icon(
-            Icons.shopping_basket_outlined,
-            color: context.colors.onSurfaceVariant.withValues(alpha: 0.59),
-            size: 18,
-          ),
-        ),
-      );
-    }
-
-    return Icon(
-      Icons.shopping_basket_outlined,
-      color: context.colors.onSurfaceVariant.withValues(alpha: 150 / 255),
-      size: 20,
     );
   }
 }

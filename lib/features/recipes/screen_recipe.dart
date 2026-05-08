@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/components/error_state.dart';
+import '../../shared/components/standard_async_builder.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/extensions.dart';
@@ -28,15 +28,13 @@ class RecipeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final recipeAsync = ref.watch(recipeControllerProvider(recipeId));
 
-    return recipeAsync.when(
-      data: (recipe) => _buildContent(context, recipe, isLoading: false),
+    return StandardAsyncBuilder<Recipe>(
+      value: recipeAsync,
+      onRetry: () => ref.invalidate(recipeControllerProvider(recipeId)),
       loading: () => initialRecipe != null
           ? _buildContent(context, initialRecipe!, isLoading: true)
           : const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => ErrorState(
-        message: err.toString(),
-        onRetry: () => ref.invalidate(recipeControllerProvider(recipeId)),
-      ),
+      data: (recipe) => _buildContent(context, recipe, isLoading: false),
     );
   }
 

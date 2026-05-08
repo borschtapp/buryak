@@ -3,7 +3,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../shared/components/loading_indicator.dart';
+import '../../shared/components/icon_label.dart';
+import '../../shared/components/loading_button.dart';
 import '../../shared/constants.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/util/error_extensions.dart';
@@ -43,28 +44,26 @@ class DialogInviteUser extends HookConsumerWidget {
             keyboardType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 16),
-          FilledButton.icon(
-            onPressed: isEmailLoading.value
-                ? null
-                : () async {
-                    final email = emailController.text.trim();
-                    if (email.isEmpty) return;
+          LoadingButton(
+            isLoading: isEmailLoading.value,
+            onPressed: () async {
+              final email = emailController.text.trim();
+              if (email.isEmpty) return;
 
-                    isEmailLoading.value = true;
-                    try {
-                      await ref.read(householdProvider.notifier).inviteViaEmail(email);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invite sent!')));
-                        emailController.clear();
-                      }
-                    } catch (e) {
-                      ref.handleException(e);
-                    } finally {
-                      if (context.mounted) isEmailLoading.value = false;
-                    }
-                  },
-            icon: isEmailLoading.value ? const LoadingIndicator() : const Icon(Icons.email),
-            label: const Text('Send Email Invite'),
+              isEmailLoading.value = true;
+              try {
+                await ref.read(householdProvider.notifier).inviteViaEmail(email);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invite sent!')));
+                  emailController.clear();
+                }
+              } catch (e) {
+                ref.handleException(e);
+              } finally {
+                if (context.mounted) isEmailLoading.value = false;
+              }
+            },
+            child: const IconLabel(icon: Icons.email, label: 'Send Email Invite', iconSize: 24, spacing: 8),
           ),
           const SizedBox(height: 24),
           const Divider(),
@@ -97,24 +96,23 @@ class DialogInviteUser extends HookConsumerWidget {
               label: const Text('Share Link'),
             ),
           ] else ...[
-            OutlinedButton.icon(
-              onPressed: isLinkLoading.value
-                  ? null
-                  : () async {
-                      isLinkLoading.value = true;
-                      try {
-                        final token = await ref.read(householdProvider.notifier).generateInvite();
-                        if (context.mounted) {
-                          generatedCode.value = token.token; // "token" field contains the code
-                        }
-                      } catch (e) {
-                        ref.handleException(e);
-                      } finally {
-                        if (context.mounted) isLinkLoading.value = false;
-                      }
-                    },
-              icon: isLinkLoading.value ? const LoadingIndicator() : const Icon(Icons.link),
-              label: const Text('Generate Share Link'),
+            LoadingButton(
+              isLoading: isLinkLoading.value,
+              onPressed: () async {
+                isLinkLoading.value = true;
+                try {
+                  final token = await ref.read(householdProvider.notifier).generateInvite();
+                  if (context.mounted) {
+                    generatedCode.value = token.token; // "token" field contains the code
+                  }
+                } catch (e) {
+                  ref.handleException(e);
+                } finally {
+                  if (context.mounted) isLinkLoading.value = false;
+                }
+              },
+              type: LoadingButtonType.outlined,
+              child: const IconLabel(icon: Icons.link, label: 'Generate Share Link', iconSize: 24, spacing: 8),
             ),
           ],
         ],

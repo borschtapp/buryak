@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../shared/components/loading_with_message.dart';
-import '../../shared/models/equipment.dart';
-import '../../shared/models/publisher.dart';
-import '../../shared/models/recipe_filter.dart';
-import '../../shared/models/taxonomy.dart';
-import '../../shared/repositories/equipment_repository.dart';
-import '../../shared/repositories/publisher_repository.dart';
-import '../../shared/repositories/taxonomy_repository.dart';
-import '../../shared/util/extensions.dart';
+import '../../models/equipment.dart';
+import '../../models/publisher.dart';
+import '../../models/recipe_filter.dart';
+import '../../models/taxonomy.dart';
+import '../../repositories/equipment_repository.dart';
+import '../../repositories/publisher_repository.dart';
+import '../../repositories/taxonomy_repository.dart';
+import '../../util/extensions.dart';
+import '../loading_with_message.dart';
 
-part 'section_recipe_filters.g.dart';
+part 'recipe_filters.g.dart';
 
 @riverpod
 Future<List<Taxonomy>> _taxonomiesByType(Ref ref, String type, String? scope) async {
@@ -269,14 +269,14 @@ class _FilterSection<T> extends ConsumerWidget {
           data: (items) {
             if (items.isEmpty) return const SizedBox.shrink();
             return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _SectionHeader(title),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _SectionHeader(title),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
                     children: items.map((item) {
                       final mapped = itemMapper(item);
                       final chipLabel = mapped.count != null ? '${mapped.label} (${mapped.count})' : mapped.label;
@@ -285,20 +285,20 @@ class _FilterSection<T> extends ConsumerWidget {
                         selected: selectedIds.contains(mapped.id),
                         onSelected: (_) => onToggle(mapped.id),
                       );
-                }).toList(),
-              ),
+                    }).toList(),
+                  ),
+                ),
+              ],
+            );
+          },
+          loading: () => LoadingWithMessage(message: 'Loading $title...'),
+          error: (e, s) => Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: Text(
+              'Failed to load $title',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
-          ],
+          ),
         );
-      },
-      loading: () => LoadingWithMessage(message: 'Loading $title...'),
-      error: (e, s) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-        child: Text(
-          'Failed to load $title',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
-        ),
-      ),
-    );
   }
 }

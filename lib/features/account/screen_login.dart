@@ -4,12 +4,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/components/loading_indicator.dart';
-import '../../shared/layouts/scaffold_login_page.dart';
+import '../../shared/components/icon_label.dart';
+import '../../shared/layouts/standard_auth_form.dart';
 import '../../shared/providers/server_url.dart';
 import '../../shared/providers/user.dart';
-import '../../shared/repositories/repository.dart';
 import '../../shared/route_names.dart';
+import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/validator.dart';
 import 'dialog_server_url.dart';
@@ -46,18 +46,9 @@ class LoginScreen extends HookConsumerWidget {
             }
           }
         } catch (e) {
+          ref.handleException(e);
           if (context.mounted) {
             isLoading.value = false;
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  e is GeneralApiException ? e.message : 'Login failed. Please try again.',
-                  style: TextStyle(color: context.colors.onErrorContainer),
-                ),
-                backgroundColor: context.colors.errorContainer,
-              ),
-            );
           }
         }
       }
@@ -66,104 +57,77 @@ class LoginScreen extends HookConsumerWidget {
     final textTheme = context.textTheme;
     final serverUrl = ref.watch(serverUrlProvider);
 
-    return ScaffoldWithSimpleLayout(
-      child: AutofillGroup(
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .stretch,
-            children: [
-              Text('Welcome back', style: textTheme.titleSmall),
-              const SizedBox(height: 8),
-              Text('Login to your account', style: textTheme.titleLarge),
-              const SizedBox(height: 16),
-              InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () {
-                  showDialog<void>(
-                    context: context,
-                    builder: (context) => const ServerUrlDialog(),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.link, size: 16, color: context.colors.primary),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          serverUrl,
-                          style: textTheme.bodySmall?.copyWith(color: context.colors.primary),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Icon(Icons.edit, size: 16, color: context.colors.primary),
-                    ],
+    return StandardAuthForm(
+      eyebrow: 'Welcome back',
+      title: 'Login to your account',
+      formKey: formKey,
+      isLoading: isLoading.value,
+      onSubmit: login,
+      submitLabel: 'Login now',
+      secondaryButton: TextButton(
+        onPressed: () => context.goNamed(
+          RouteNames.register,
+          queryParameters: inviteCode != null ? {'code': inviteCode!} : const {},
+        ),
+        child: const Text('Register'),
+      ),
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: () => showServerUrlDialog(context, ref),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: IconLabel(
+                    icon: Icons.link,
+                    label: serverUrl,
+                    color: context.colors.primary,
+                    iconSize: 16,
+                    textStyle: textTheme.bodySmall,
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              TextFormField(
-                controller: emailController,
-                onFieldSubmitted: (_) => login(),
-                autofillHints: const [AutofillHints.email],
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  return Validator.validateEmail(value ?? '');
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'abc@example.com',
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                obscureText: !showPassword.value,
-                onFieldSubmitted: (_) => login(),
-                controller: passwordController,
-                autofillHints: const [AutofillHints.password],
-                validator: (value) {
-                  return Validator.validatePassword(value ?? '');
-                },
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: '********',
-                  suffixIcon: IconButton(
-                    icon: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
-                    tooltip: showPassword.value ? 'Hide password' : 'Show password',
-                    onPressed: () {
-                      showPassword.value = !showPassword.value;
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => context.goNamed(RouteNames.forgotPassword),
-                  child: const Text('Forgot password?'),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: isLoading.value ? null : login,
-                child: isLoading.value ? const LoadingIndicator() : const Text('Login now'),
-              ),
-              const SizedBox(height: 15),
-              TextButton(
-                onPressed: () => context.goNamed(
-                  RouteNames.register,
-                  queryParameters: inviteCode != null ? {'code': inviteCode!} : const {},
-                ),
-                child: const Text('Register'),
-              ),
-            ],
+                Icon(Icons.edit, size: 16, color: context.colors.primary),
+              ],
+            ),
           ),
         ),
-      ),
+        TextFormField(
+          controller: emailController,
+          onFieldSubmitted: (_) => login(),
+          autofillHints: const [AutofillHints.email],
+          keyboardType: TextInputType.emailAddress,
+          validator: (value) => Validator.validateEmail(value ?? ''),
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            hintText: 'abc@example.com',
+          ),
+        ),
+        TextFormField(
+          obscureText: !showPassword.value,
+          onFieldSubmitted: (_) => login(),
+          controller: passwordController,
+          autofillHints: const [AutofillHints.password],
+          validator: (value) => Validator.validatePassword(value ?? ''),
+          decoration: InputDecoration(
+            labelText: 'Password',
+            hintText: '********',
+            suffixIcon: IconButton(
+              icon: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
+              tooltip: showPassword.value ? 'Hide password' : 'Show password',
+              onPressed: () => showPassword.value = !showPassword.value,
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: () => context.goNamed(RouteNames.forgotPassword),
+            child: const Text('Forgot password?'),
+          ),
+        ),
+      ],
     );
   }
 }

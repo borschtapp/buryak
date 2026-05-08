@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+import '../../shared/components/icon_label.dart';
 import '../../shared/components/recipes/hero_image.dart';
 import '../../shared/components/recipes/ingredients.dart';
 import '../../shared/components/recipes/instructions.dart';
@@ -224,16 +225,12 @@ class _RatingBadge extends StatelessWidget {
         color: Colors.black.withValues(alpha: 0.59),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.star, color: context.colors.primary, size: 18),
-          const SizedBox(width: 4),
-          Text(
-            rating.toStringAsFixed(1),
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-        ],
+      child: IconLabel(
+        icon: Icons.star,
+        label: rating.toStringAsFixed(1),
+        color: context.colors.primary,
+        iconSize: 18,
+        textStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
     );
   }

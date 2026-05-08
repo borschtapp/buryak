@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/recipe.dart';
 import '../../util/extensions.dart';
+import '../icon_label.dart';
 
 /// Metadata row + taxonomy chips for a recipe.
 ///
@@ -32,17 +33,24 @@ class RecipeMetaRow extends StatelessWidget {
             spacing: 20,
             runSpacing: 8,
             children: [
-              if (showTime) _MetaItem(icon: Icons.timer_outlined, label: recipe.totalTime.toFormattedDuration()),
-              if (recipe.yield != null && recipe.yield! > 0) _MetaItem(icon: Icons.restaurant_outlined, label: '${recipe.yield} servings'),
+              if (showTime)
+                IconLabel(
+                  icon: Icons.timer_outlined,
+                  label: recipe.totalTime.toFormattedDuration(),
+                  color: context.colors.onSurfaceVariant,
+                ),
+              if (recipe.yield != null && recipe.yield! > 0)
+                IconLabel(icon: Icons.restaurant_outlined, label: '${recipe.yield} servings', color: context.colors.onSurfaceVariant),
               if (recipe.difficulty != null && recipe.difficulty!.isNotEmpty)
-                _MetaItem(icon: Icons.signal_cellular_alt_outlined, label: recipe.difficulty!),
+                IconLabel(icon: Icons.signal_cellular_alt_outlined, label: recipe.difficulty!, color: context.colors.onSurfaceVariant),
               if (recipe.method != null && recipe.method!.isNotEmpty)
-                _MetaItem(icon: Icons.local_fire_department_outlined, label: recipe.method!),
+                IconLabel(icon: Icons.local_fire_department_outlined, label: recipe.method!, color: context.colors.onSurfaceVariant),
               if (recipe.rating?.value != null && recipe.rating!.value! > 0)
-                _MetaItem(
+                IconLabel(
                   icon: Icons.star_outline_rounded,
                   label: recipe.rating!.value!.toStringAsFixed(1),
-                  iconColor: Colors.amber,
+                  color: Colors.amber,
+                  iconSize: 16,
                 ),
             ],
           ),
@@ -79,25 +87,5 @@ class RecipeMetaRow extends StatelessWidget {
           ),
         )
         .toList();
-  }
-}
-
-class _MetaItem extends StatelessWidget {
-  const _MetaItem({required this.icon, required this.label, this.iconColor});
-
-  final IconData icon;
-  final String label;
-  final Color? iconColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 16, color: iconColor ?? context.colors.onSurfaceVariant),
-        const SizedBox(width: 4),
-        Text(label, style: context.textTheme.bodyMedium?.copyWith(color: context.colors.onSurfaceVariant)),
-      ],
-    );
   }
 }

@@ -1,43 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/util/error_extensions.dart';
-import 'screen_shopping.dart';
+import '../../shared/components/dialog_text_input.dart';
+import 'notifier_shopping.dart';
 
 Future<void> showAddItemDialog(BuildContext context, WidgetRef ref) async {
-  final name = await showDialog<String>(
+  return showDialog<void>(
     context: context,
-    builder: (context) => const _AddItemDialog(),
+    builder: (context) => TextInputDialog(
+      title: 'Add Item',
+      hintText: 'e.g. Milk',
+      labelText: 'Product Name',
+      submitLabel: 'Add',
+      onSubmit: (value, context) async {
+        await ref.read(shoppingItemsProvider.notifier).addItem(value);
+        if (context.mounted) Navigator.pop(context);
+      },
+    ),
   );
-
-  if (name != null && name.trim().isNotEmpty) {
-    try {
-      await ref.read(shoppingItemsProvider.notifier).addItem(name.trim());
-    } catch (e) {
-      ref.handleException(e);
-    }
-  }
-}
-
-class _AddItemDialog extends HookConsumerWidget {
-  const _AddItemDialog();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final controller = useTextEditingController();
-    return AlertDialog(
-      title: const Text('Add Item'),
-      content: TextField(
-        controller: controller,
-        autofocus: true,
-        decoration: const InputDecoration(labelText: 'Product Name', hintText: 'e.g. Milk'),
-        onSubmitted: (val) => Navigator.pop(context, val),
-      ),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-        TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Add')),
-      ],
-    );
-  }
 }

@@ -19,6 +19,7 @@ class TextInputDialog extends HookConsumerWidget {
   /// Optional inline validation function.
   /// Returns an error message if validation fails, null if valid.
   final String? Function(String)? validator;
+  final String? initialText;
 
   /// Callback invoked when user submits.
   /// Responsible for navigation (pop or replace).
@@ -32,12 +33,13 @@ class TextInputDialog extends HookConsumerWidget {
     this.labelText,
     this.helperText,
     this.validator,
+    this.initialText,
     required this.onSubmit,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = useTextEditingController();
+    final controller = useTextEditingController(text: initialText);
     final isLoading = useState(false);
     final validationError = useState<String?>(null);
 

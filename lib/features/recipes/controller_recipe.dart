@@ -1,4 +1,3 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/models/collection.dart';
@@ -40,14 +39,4 @@ class RecipeController extends _$RecipeController {
       }
     }
   }
-}
-
-/// Returns the current saved state of a recipe and a toggle callback.
-/// Lightweight helper for recipe tiles that already have the recipe object.
-({bool isSaved, Future<void> Function() toggle}) savedRecipeState(WidgetRef ref, String recipeId) {
-  final isSaved = ref.watch(recipeIsSavedProvider(recipeId));
-  return (
-    isSaved: isSaved,
-    toggle: () => ref.read(recipeControllerProvider(recipeId).notifier).toggleSaved(),
-  );
 }

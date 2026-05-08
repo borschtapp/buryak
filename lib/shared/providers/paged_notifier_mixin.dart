@@ -66,7 +66,7 @@ mixin PagedNotifierMixin<Item> {
     _isLoadingMore = true;
     try {
       final result = await fetch(current.length, limit);
-      var next = result.data;
+      final next = result.data;
 
       _hasMore = (result.meta.offset + next.length) < result.meta.total;
       var combined = [...current, ...next];

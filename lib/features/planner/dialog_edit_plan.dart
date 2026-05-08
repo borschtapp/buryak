@@ -4,13 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../shared/components/loading_indicator.dart';
+import '../../shared/components/loading_button.dart';
+import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/meal_plan.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/meal_plan_repository.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
-import 'screen_planner.dart';
+import 'notifier_planner.dart';
 
 class PlanBottomSheet extends HookConsumerWidget {
   final Recipe? recipe;
@@ -95,26 +96,11 @@ class PlanBottomSheet extends HookConsumerWidget {
     final title = isEditing ? 'Edit ${plan!.recipe?.name ?? plan!.description ?? 'Meal'}' : 'Add to plan';
     final buttonText = isEditing ? 'Save changes' : 'Add to plan';
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+    return StandardBottomSheet(
+      title: title,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(title, style: context.textTheme.titleLarge, overflow: TextOverflow.ellipsis),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => context.pop(),
-              ),
-            ],
-          ),
-          const Divider(),
-          const SizedBox(height: 16),
           Focus(
             autofocus: true,
             child: ListTile(
@@ -153,9 +139,10 @@ class PlanBottomSheet extends HookConsumerWidget {
             ],
           ),
           const SizedBox(height: 32),
-          FilledButton(
-            onPressed: isSaving.value ? null : save,
-            child: isSaving.value ? const LoadingIndicator() : Text(buttonText),
+          LoadingButton(
+            isLoading: isSaving.value,
+            onPressed: save,
+            child: Text(buttonText),
           ),
         ],
       ),

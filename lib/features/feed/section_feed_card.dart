@@ -1,8 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/components/icon_label.dart';
+import '../../shared/components/loading_button.dart';
+import '../../shared/components/standard_picture.dart';
 import '../../shared/models/feed.dart';
 import '../../shared/repositories/feed_repository.dart';
 import '../../shared/util/error_extensions.dart';
@@ -29,8 +31,8 @@ class FeedCard extends ConsumerWidget {
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Column(
-        crossAxisAlignment: .start,
-        mainAxisSize: .min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             feed.url,
@@ -43,7 +45,7 @@ class FeedCard extends ConsumerWidget {
         ],
       ),
       trailing: Row(
-        mainAxisSize: .min,
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (feed.totalRecipes != null)
             Padding(
@@ -52,8 +54,8 @@ class FeedCard extends ConsumerWidget {
                 label: Text(feed.totalRecipes!.pluralize('recipe')),
                 padding: EdgeInsets.zero,
                 labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-                shape: const RoundedSuperellipseBorder(borderRadius: .all(.circular(8))),
-                visualDensity: .compact,
+                shape: const RoundedSuperellipseBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                visualDensity: VisualDensity.compact,
               ),
             ),
           _ResyncButton(feedId: feed.id),
@@ -71,17 +73,12 @@ class _FeedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = feed.publisher?.imageUrl;
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      return CachedNetworkImage(
-        imageUrl: imageUrl,
-        width: 24,
-        height: 24,
-        errorWidget: (_, _, _) => Icon(Icons.rss_feed, size: 24, color: context.colors.primary),
-      );
-    }
-
-    return Icon(Icons.rss_feed, size: 24, color: context.colors.primary);
+    return StandardPicture(
+      imageUrl: feed.publisher?.imageUrl,
+      fallbackIcon: Icons.rss_feed,
+      size: 40,
+      shape: PictureShape.rounded,
+    );
   }
 }
 
@@ -93,13 +90,11 @@ class _SyncStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (icon, label, color) = _resolveStatus(context);
-    return Row(
-      mainAxisSize: .min,
-      children: [
-        Icon(icon, size: 14, color: color),
-        const SizedBox(width: 4),
-        Text(label, style: context.textTheme.labelSmall?.copyWith(color: color)),
-      ],
+    return IconLabel(
+      icon: icon,
+      label: label,
+      color: color,
+      textStyle: context.textTheme.labelSmall,
     );
   }
 
@@ -141,16 +136,18 @@ class _ResyncButton extends HookConsumerWidget {
       } catch (e) {
         ref.handleException(e);
       } finally {
-        loading.value = false;
+        if (context.mounted) {
+          loading.value = false;
+        }
       }
     }
 
-    return IconButton(
-      icon: loading.value
-          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-          : const Icon(Icons.sync),
-      tooltip: 'Resync feed',
-      onPressed: loading.value ? null : handleResync,
+    return LoadingButton(
+      isLoading: loading.value,
+      onPressed: handleResync,
+      type: LoadingButtonType.text,
+      spinnerSize: 18,
+      child: const Icon(Icons.sync),
     );
   }
 }

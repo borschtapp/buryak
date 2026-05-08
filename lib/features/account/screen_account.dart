@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/dialog_confirm.dart';
-import '../../shared/components/loading_indicator.dart';
 import '../../shared/components/profile_details.dart';
+import '../../shared/components/settings_list.dart';
 import '../../shared/layouts/content_frame.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/route_names.dart';
@@ -25,7 +25,7 @@ class AccountScreen extends HookConsumerWidget {
     useEffect(() {
       if (joinCode != null && joinCode!.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          showJoinHouseholdDialog(context, initialCode: joinCode);
+          showJoinHouseholdDialog(context, ref, initialCode: joinCode);
         });
       }
       return null;
@@ -51,69 +51,74 @@ class AccountScreen extends HookConsumerWidget {
             ProfileDetails(name: name, email: email, image: image),
             const SizedBox(height: 16),
             const HouseholdDetails(),
-            const SizedBox(height: 16),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.edit_document),
-              title: const Text('Terms of Use'),
-              trailing: const Icon(Icons.arrow_forward),
-              onTap: () => context.pushNamed(RouteNames.terms),
+            const SizedBox(height: 8),
+            SettingsSection(
+              children: [
+                SettingsTile(
+                  leading: const Icon(Icons.edit_document),
+                  title: 'Terms of Use',
+                  onTap: () => context.pushNamed(RouteNames.terms),
+                ),
+                SettingsTile(
+                  leading: const Icon(Icons.privacy_tip),
+                  title: 'Privacy Policy',
+                  onTap: () => context.pushNamed(RouteNames.privacy),
+                ),
+              ],
             ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.privacy_tip),
-              title: const Text('Privacy Policy'),
-              trailing: const Icon(Icons.arrow_forward),
-              onTap: () => context.pushNamed(RouteNames.privacy),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: isDeleting.value
-                  ? null
-                  : () async {
+            SettingsSection(
+              children: [
+                SettingsTile(
+                  leading: const Icon(Icons.logout),
+                  title: 'Logout',
+                  trailing: null,
+                  isLoading: isDeleting.value,
+                  onTap: () async {
+                    try {
                       await ref.read(authProvider.notifier).logout();
                       if (context.mounted) {
                         context.goNamed(RouteNames.login);
                       }
-                    },
-            ),
-            const Divider(),
-            ListTile(
-              leading: isDeleting.value ? const LoadingIndicator() : Icon(Icons.delete_forever, color: errorColor),
-              title: Text(
-                isDeleting.value ? 'Deleting Account...' : 'Delete Account',
-                style: TextStyle(color: errorColor),
-              ),
-              onTap: isDeleting.value
-                  ? null
-                  : () async {
-                      final confirmed = await showConfirmDialog(
-                        context,
-                        title: 'Delete Account',
-                        content:
-                            'This will permanently delete your account and all associated data. '
-                            'This action cannot be undone.',
-                        confirmLabel: 'Delete',
-                        destructive: true,
-                      );
-                      if (confirmed && context.mounted) {
-                        isDeleting.value = true;
-                        try {
-                          await ref.read(authProvider.notifier).deleteAccount();
-                          if (context.mounted) {
-                            context.goNamed(RouteNames.login);
-                          }
-                        } catch (e) {
-                          ref.handleException(e);
-                        } finally {
-                          isDeleting.value = false;
+                    } catch (e) {
+                      ref.handleException(e);
+                    }
+                  },
+                ),
+                SettingsTile(
+                  leading: Icon(Icons.delete_forever, color: errorColor),
+                  foregroundColor: errorColor,
+                  title: isDeleting.value ? 'Deleting Account...' : 'Delete Account',
+                  trailing: null,
+                  isLoading: isDeleting.value,
+                  onTap: () async {
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: 'Delete Account',
+                      content:
+                          'This will permanently delete your account and all associated data. '
+                          'This action cannot be undone.',
+                      confirmLabel: 'Delete',
+                      destructive: true,
+                    );
+                    if (confirmed && context.mounted) {
+                      isDeleting.value = true;
+                      try {
+                        await ref.read(authProvider.notifier).deleteAccount();
+                        if (context.mounted) {
+                          context.goNamed(RouteNames.login);
                         }
+                      } catch (e) {
+                        ref.handleException(e);
+                      } finally {
+                        isDeleting.value = false;
                       }
-                    },
+                    }
+                  },
+                ),
+              ],
             ),
             const AppVersionSection(),
+            const SizedBox(height: 32),
           ],
         ),
       ),

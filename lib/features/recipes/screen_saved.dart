@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../shared/components/error_state.dart';
+import '../../shared/components/recipes/dialog_import.dart';
+import '../../shared/components/recipes/recipe_search_bar.dart';
 import '../../shared/hooks.dart';
 import '../../shared/layouts/searchable_grid_scaffold.dart';
 import '../../shared/providers/saved.dart';
 import 'dialog_create_collection.dart';
-import 'dialog_import.dart';
-import 'section_recipe_search_bar.dart';
 import 'section_saved_tabs.dart';
 
 class SavedScreen extends HookConsumerWidget {
@@ -58,27 +57,21 @@ class SavedScreen extends HookConsumerWidget {
       child: TabBarView(
         controller: tabController,
         children: [
-          recipesAsync.when(
-            data: (recipes) => SavedTabs(
-              recipes: recipes,
-              filter: filter,
-              onLoadMore: recipesNotifier.loadMore,
-              isLoadingMore: recipesNotifier.isLoadingMore,
-              hasMore: recipesNotifier.hasMore,
-            ),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => ErrorState(message: err.toString()),
+          SavedTabs(
+            value: recipesAsync,
+            filter: filter,
+            onLoadMore: recipesNotifier.loadMore,
+            isLoadingMore: recipesNotifier.isLoadingMore,
+            hasMore: recipesNotifier.hasMore,
+            onRefresh: () async => ref.invalidate(savedRecipesProvider),
           ),
-          collectionsAsync.when(
-            data: (collections) => SavedCookbooksTab(
-              collections: collections,
-              onCreateCollection: () => showCreateCollectionDialog(context, ref),
-              onLoadMore: collectionsNotifier.loadMore,
-              isLoadingMore: collectionsNotifier.isLoadingMore,
-              hasMore: collectionsNotifier.hasMore,
-            ),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => ErrorState(message: err.toString()),
+          SavedCookbooksTab(
+            value: collectionsAsync,
+            onCreateCollection: () => showCreateCollectionDialog(context, ref),
+            onLoadMore: collectionsNotifier.loadMore,
+            isLoadingMore: collectionsNotifier.isLoadingMore,
+            hasMore: collectionsNotifier.hasMore,
+            onRefresh: () async => ref.invalidate(savedCollectionsProvider),
           ),
         ],
       ),
