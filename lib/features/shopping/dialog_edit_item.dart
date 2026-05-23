@@ -9,6 +9,7 @@ import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/shopping_item.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import 'notifier_shopping.dart';
 
 class EditShoppingItemBottomSheet extends HookConsumerWidget {
@@ -87,7 +88,7 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: UIConstants.paddingMedium),
             TextField(
               controller: nameController,
               decoration: const InputDecoration(
@@ -106,7 +107,7 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
               ),
               onSubmitted: (_) => save(),
             ),
-          const SizedBox(height: 24),
+          const SizedBox(height: UIConstants.paddingLarge),
           LoadingButton(
             isLoading: isSaving.value,
             onPressed: save,

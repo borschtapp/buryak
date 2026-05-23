@@ -17,6 +17,7 @@ import '../../shared/repositories/collection_repository.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 
 enum _CollectionAction { delete }
 
@@ -115,7 +116,7 @@ class SavedCookbooksTab extends ConsumerWidget {
         ),
       ),
       data: (data) => GridView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(UIConstants.paddingMedium),
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 300,
           mainAxisSpacing: 16,

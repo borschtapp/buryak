@@ -5,6 +5,7 @@ import '../../shared/constants.dart';
 import '../../shared/layouts/article_content.dart';
 import '../../shared/layouts/content_frame.dart';
 import '../../shared/route_names.dart';
+import '../../shared/util/ui_constants.dart';
 
 class TermsOfUseScreen extends StatelessWidget {
   const TermsOfUseScreen({super.key});
@@ -18,7 +19,7 @@ class TermsOfUseScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: ContentFrame(
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.all(UIConstants.paddingMedium),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -30,7 +31,7 @@ class TermsOfUseScreen extends StatelessWidget {
               const Text(AppConstants.contactAddress),
               const Text(AppConstants.contactCity),
               const Text(AppConstants.contactEmail),
-              const SizedBox(height: 8),
+              const SizedBox(height: UIConstants.paddingSmall),
 
               const Paragraph(
                 'By using the Borscht app, you agree to these Terms of Use. Borscht is developed '

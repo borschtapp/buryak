@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../util/error_extensions.dart';
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 
 /// A reusable dialog widget for collecting single text input from users.
 ///
@@ -46,7 +47,7 @@ class TextInputDialog extends HookConsumerWidget {
     return Dialog(
       constraints: const BoxConstraints(maxWidth: 560),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(UIConstants.paddingLarge),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,7 +56,7 @@ class TextInputDialog extends HookConsumerWidget {
               title,
               style: context.textTheme.headlineSmall,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: UIConstants.paddingLarge),
             TextField(
               controller: controller,
               autofocus: true,
@@ -68,7 +69,7 @@ class TextInputDialog extends HookConsumerWidget {
               ),
               onSubmitted: isLoading.value ? null : (_) => _handleSubmit(context, ref, controller, isLoading, validationError),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: UIConstants.paddingLarge),
             Row(
               children: [
                 Expanded(
@@ -77,7 +78,7 @@ class TextInputDialog extends HookConsumerWidget {
                     child: const Text('Cancel'),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: UIConstants.paddingSmall),
                 Expanded(
                   child: FilledButton(
                     onPressed: isLoading.value ? null : () => _handleSubmit(context, ref, controller, isLoading, validationError),
@@ -87,7 +88,7 @@ class TextInputDialog extends HookConsumerWidget {
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Theme.of(context).colorScheme.onPrimary,
+                              color: context.colors.onPrimary,
                             ),
                           )
                         : Text(submitLabel),

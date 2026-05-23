@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../shared/models/recipe_instruction.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 
 class CookingStepPage extends StatelessWidget {
   const CookingStepPage({super.key, required this.instruction});
@@ -12,7 +13,10 @@ class CookingStepPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.paddingLarge,
+        vertical: UIConstants.paddingMedium,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

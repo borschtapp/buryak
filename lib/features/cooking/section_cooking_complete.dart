@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../shared/models/recipe.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 
 class CookingCompletePage extends StatelessWidget {
   const CookingCompletePage({
@@ -18,7 +19,10 @@ class CookingCompletePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        padding: const EdgeInsets.symmetric(
+          horizontal: UIConstants.paddingLarge,
+          vertical: 32,
+        ),
         child: Column(
           children: [
             if (recipe.imageUrl case final imageUrl?) ...[
@@ -46,7 +50,7 @@ class CookingCompletePage extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: UIConstants.paddingSmall),
             Text(
               recipe.name,
               style: context.textTheme.titleMedium?.copyWith(
@@ -61,7 +65,7 @@ class CookingCompletePage extends StatelessWidget {
               icon: const Icon(Icons.check_circle_outline),
               label: const Text('Made it'),
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: UIConstants.paddingMedium),
                 textStyle: context.textTheme.titleMedium,
               ),
             ),

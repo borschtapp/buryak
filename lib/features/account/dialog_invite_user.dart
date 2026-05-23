@@ -9,6 +9,7 @@ import '../../shared/constants.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 
 Future<void> showInviteUserDialog(BuildContext context) async {
   return showDialog(
@@ -34,7 +35,7 @@ class DialogInviteUser extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text('Send an invite directly via email:'),
-          const SizedBox(height: 8),
+          const SizedBox(height: UIConstants.paddingSmall),
           TextField(
             controller: emailController,
             decoration: const InputDecoration(
@@ -43,7 +44,7 @@ class DialogInviteUser extends HookConsumerWidget {
             ),
             keyboardType: TextInputType.emailAddress,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.paddingMedium),
           LoadingButton(
             isLoading: isEmailLoading.value,
             onPressed: () async {
@@ -65,11 +66,11 @@ class DialogInviteUser extends HookConsumerWidget {
             },
             child: const IconLabel(icon: Icons.email, label: 'Send Email Invite', iconSize: 24, spacing: 8),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: UIConstants.paddingLarge),
           const Divider(),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.paddingMedium),
           const Text('Or generate a link to share via other apps:'),
-          const SizedBox(height: 8),
+          const SizedBox(height: UIConstants.paddingSmall),
           if (generatedCode.value != null) ...[
             Container(
               padding: const EdgeInsets.all(12),
@@ -83,7 +84,7 @@ class DialogInviteUser extends HookConsumerWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: UIConstants.paddingMedium),
             FilledButton.icon(
               onPressed: () {
                 SharePlus.instance.share(

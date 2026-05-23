@@ -56,14 +56,14 @@ class RecipeDesktopView extends HookWidget {
                     icon: const Icon(Icons.local_fire_department, size: 18),
                     label: const Text('Start Cooking'),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: UIConstants.paddingSmall),
                 ],
                 OutlinedButton.icon(
                   onPressed: () => _showPlanSheet(context),
                   icon: const Icon(Icons.calendar_today, size: 18),
                   label: const Text('Plan'),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: UIConstants.paddingSmall),
                 OutlinedButton.icon(
                   onPressed: () => _showShoppingSheet(context, recipe),
                   icon: const Icon(Icons.shopping_basket, size: 18),
@@ -71,7 +71,7 @@ class RecipeDesktopView extends HookWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: UIConstants.paddingLarge),
             // Row 1: full-width title
             Text(
               recipe.name,
@@ -90,7 +90,7 @@ class RecipeDesktopView extends HookWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: UIConstants.paddingMedium),
             // Row 4: meta items (left) + icon actions (right)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +188,7 @@ class _ContentSection extends StatelessWidget {
             if (trailing != null) ...[const Spacer(), trailing!],
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: UIConstants.paddingMedium),
         child,
       ],
     );

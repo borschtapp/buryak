@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../util/extensions.dart';
 
 enum LoadingButtonType { filled, elevated, outlined, text }
 
@@ -29,7 +30,7 @@ class LoadingButton extends StatelessWidget {
               width: spinnerSize,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: type == LoadingButtonType.filled ? Theme.of(context).colorScheme.onPrimary : null,
+                color: type == LoadingButtonType.filled ? context.colors.onPrimary : null,
               ),
             )
           : child,

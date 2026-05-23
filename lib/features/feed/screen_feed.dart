@@ -11,6 +11,7 @@ import '../../shared/layouts/app_list_scaffold.dart';
 import '../../shared/layouts/searchable_grid_scaffold.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
+import '../../shared/util/ui_constants.dart';
 import 'notifier_feed.dart';
 
 class FeedScreen extends HookConsumerWidget {
@@ -35,7 +36,7 @@ class FeedScreen extends HookConsumerWidget {
     final filter = ref.watch(feedFilterProvider);
 
     return SearchableGridScaffold(
-      maxWidth: 1440,
+      maxWidth: UIConstants.defaultMaxWidth,
       searchBar: RecipeSearchBar(
         filter: filter,
         scope: 'feeds',

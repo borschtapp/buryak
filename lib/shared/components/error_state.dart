@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../util/ui_constants.dart';
 
 import '../util/extensions.dart';
 
@@ -18,7 +19,7 @@ class ErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(UIConstants.paddingLarge),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -27,7 +28,7 @@ class ErrorState extends StatelessWidget {
               size: 64,
               color: context.colors.error,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: UIConstants.paddingMedium),
             Text(
               title,
               style: context.textTheme.titleLarge?.copyWith(
@@ -35,7 +36,7 @@ class ErrorState extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: UIConstants.paddingSmall),
             Text(
               message,
               style: context.textTheme.bodyMedium?.copyWith(
@@ -44,7 +45,7 @@ class ErrorState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: UIConstants.paddingLarge),
               FilledButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),

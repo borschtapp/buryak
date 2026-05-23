@@ -8,6 +8,7 @@ import '../../shared/layouts/app_list_scaffold.dart';
 import '../../shared/models/shopping_item.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import 'dialog_add_item.dart';
 import 'dialog_edit_item.dart';
 import 'notifier_shopping.dart';
@@ -47,7 +48,7 @@ class ShoppingScreen extends HookConsumerWidget {
         ),
       ),
       data: (items) => ListView.separated(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(UIConstants.paddingMedium),
         itemCount: items.length,
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {

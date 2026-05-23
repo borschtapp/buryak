@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/equipment.dart';
 import '../../models/recipe_ingredient.dart';
 import '../../util/extensions.dart';
+import '../../util/ui_constants.dart';
 import '../standard_picture.dart';
 
 class Ingredients extends StatelessWidget {
@@ -31,9 +32,9 @@ class Ingredients extends StatelessWidget {
         ],
         if (showHeader) _buildIngredientsHeader(context),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingContent),
           child: Column(
-            children: ingredients.map((ingredient) => _buildIngredientRow(context, ingredient)).toList(),
+            children: [for (final ingredient in ingredients) _buildIngredientRow(context, ingredient)],
           ),
         ),
       ],
@@ -42,7 +43,10 @@ class Ingredients extends StatelessWidget {
 
   Widget _buildEquipmentSection(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20),
+      padding: const EdgeInsets.symmetric(
+        vertical: UIConstants.paddingMedium,
+        horizontal: UIConstants.paddingContent,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -52,9 +56,9 @@ class Ingredients extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            children: equipment!.map((e) => _buildEquipmentItem(context, e)).toList(),
+            spacing: UIConstants.paddingMedium,
+            runSpacing: UIConstants.paddingMedium,
+            children: [for (final e in equipment!) _buildEquipmentItem(context, e)],
           ),
         ],
       ),
@@ -63,7 +67,10 @@ class Ingredients extends StatelessWidget {
 
   Widget _buildIngredientsHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20),
+      padding: const EdgeInsets.symmetric(
+        vertical: UIConstants.paddingMedium,
+        horizontal: UIConstants.paddingContent,
+      ),
       child: Row(
         children: [
           Text('Ingredients', style: context.textTheme.titleMedium),
@@ -116,7 +123,7 @@ class Ingredients extends StatelessWidget {
 
   Widget _buildIngredientRow(BuildContext context, RecipeIngredient ingredient) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingSmall),
       child: Row(
         children: [
           StandardPicture(
@@ -126,7 +133,7 @@ class Ingredients extends StatelessWidget {
             shape: PictureShape.circle,
             backgroundColor: Colors.transparent,
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: UIConstants.paddingMedium),
           Expanded(
             child: Text(
               ingredient.displayName,

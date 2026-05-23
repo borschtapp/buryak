@@ -54,12 +54,22 @@ class RecipeMobileView extends HookWidget {
               RecipeTitle(
                 recipe: recipe,
                 compact: true,
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
+                padding: const EdgeInsets.fromLTRB(
+                  UIConstants.paddingContent,
+                  UIConstants.paddingContent,
+                  UIConstants.paddingContent,
+                  4,
+                ),
               ),
               RecipeMetaRow(
                 recipe: recipe,
                 showTime: false,
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                padding: const EdgeInsets.fromLTRB(
+                  UIConstants.paddingContent,
+                  0,
+                  UIConstants.paddingContent,
+                  UIConstants.paddingMedium,
+                ),
               ),
             ],
           ),
@@ -183,7 +193,7 @@ class _RecipeSliverAppBar extends HookWidget {
       ),
       actions: [
         RecipeActions(recipeId: recipe.id),
-        const SizedBox(width: 8),
+        const SizedBox(width: UIConstants.paddingSmall),
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(

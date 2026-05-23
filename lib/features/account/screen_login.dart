@@ -11,6 +11,7 @@ import '../../shared/providers/user.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import '../../shared/util/validator.dart';
 import 'dialog_server_url.dart';
 
@@ -76,7 +77,10 @@ class LoginScreen extends HookConsumerWidget {
           borderRadius: BorderRadius.circular(8),
           onTap: () => showServerUrlDialog(context, ref),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: UIConstants.paddingSmall,
+              horizontal: 4.0,
+            ),
             child: Row(
               children: [
                 Expanded(

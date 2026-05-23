@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/recipe_nutrition.dart';
 import '../../util/extensions.dart';
+import '../../util/ui_constants.dart';
 
 class Nutrition extends StatelessWidget {
   final RecipeNutrition? nutrition;
@@ -15,12 +16,15 @@ class Nutrition extends StatelessWidget {
     }
 
     return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.paddingContent,
+        vertical: UIConstants.paddingMedium,
+      ),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
         _buildNutritionHeader(context),
-        const SizedBox(height: 16),
+        const SizedBox(height: UIConstants.paddingMedium),
         _buildNutritionGrid(context),
       ],
     );

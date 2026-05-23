@@ -6,11 +6,12 @@ import '../../shared/components/standard_async_builder.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import '../planner/dialog_edit_plan.dart';
 import '../shopping/dialog_add_from_recipe.dart';
 import 'controller_recipe.dart';
-import 'section_recipe_desktop.dart';
-import 'section_recipe_mobile.dart';
+import 'view_recipe_desktop.dart';
+import 'view_recipe_mobile.dart';
 
 class RecipeScreen extends ConsumerWidget {
   const RecipeScreen({
@@ -67,7 +68,7 @@ class _MobileBottomActionBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colors.surface,
         border: Border(
-          top: BorderSide(color: context.colors.secondary.withValues(alpha: 0.2)),
+          top: BorderSide(color: context.colors.outlineVariant),
         ),
       ),
       child: Row(
@@ -84,27 +85,27 @@ class _MobileBottomActionBar extends StatelessWidget {
               icon: const Icon(Icons.local_fire_department, size: 18),
               label: const Text('Cook'),
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: UIConstants.paddingSmall),
           Expanded(
             child: OutlinedButton(
               onPressed: () => _showPlanSheet(context),
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
                 side: BorderSide(color: context.colors.primary),
               ),
               child: const Text('Plan'),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: UIConstants.paddingSmall),
           Expanded(
             child: OutlinedButton(
               onPressed: () => _showShoppingSheet(context),
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
                 side: BorderSide(color: context.colors.primary),
               ),
               child: const Text('Shop'),

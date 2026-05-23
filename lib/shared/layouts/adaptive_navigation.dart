@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../providers/theme.dart';
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 import 'content_frame.dart';
 
 class AdaptiveNavigation extends StatelessWidget {
@@ -142,7 +143,7 @@ class TabletAppBar extends StatelessWidget {
     final title = appBarTitle != null ? Text(appBarTitle!, style: context.textTheme.headlineSmall) : appBar?.title;
 
     final content = ContentFrame(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(UIConstants.paddingMedium),
       child: Column(
         crossAxisAlignment: .start,
         mainAxisAlignment: .start,

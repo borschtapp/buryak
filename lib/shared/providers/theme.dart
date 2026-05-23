@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 
 class NoAnimationPageTransitionsBuilder extends PageTransitionsBuilder {
   const NoAnimationPageTransitionsBuilder();
@@ -147,7 +148,7 @@ class ThemeProvider {
 
     return InputDecorationTheme(
       isDense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.all(UIConstants.paddingMedium),
       border: border,
       enabledBorder: border,
       focusedBorder: focusedBorder,

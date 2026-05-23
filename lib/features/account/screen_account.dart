@@ -12,6 +12,7 @@ import '../../shared/route_names.dart';
 import '../../shared/sections/app_version.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import 'dialog_join_household.dart';
 import 'section_household_details.dart';
 
@@ -49,9 +50,9 @@ class AccountScreen extends HookConsumerWidget {
         child: Column(
           children: [
             ProfileDetails(name: name, email: email, image: image),
-            const SizedBox(height: 16),
+            const SizedBox(height: UIConstants.paddingMedium),
             const HouseholdDetails(),
-            const SizedBox(height: 8),
+            const SizedBox(height: UIConstants.paddingSmall),
             SettingsSection(
               children: [
                 SettingsTile(

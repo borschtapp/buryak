@@ -1,4 +1,13 @@
 class UIConstants {
+  /// Standard spacing/padding values.
+  static const double paddingSmall = 8.0;
+  static const double paddingMedium = 16.0;
+  static const double paddingContent = 20.0;
+  static const double paddingLarge = 24.0;
+
+  /// Default maximum width for centralized content frames.
+  static const double defaultMaxWidth = 1440.0;
+
   /// Threshold in pixels to trigger pagination when scrolling near the end.
   static const double scrollThreshold = 300.0;
 

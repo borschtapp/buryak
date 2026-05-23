@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 
 /// A wrapper around [Dismissible] that provides consistent backgrounds and logic
 /// for swipe-to-edit and swipe-to-delete actions.
@@ -36,14 +37,14 @@ class DismissibleTile extends StatelessWidget {
           ? Container(
               color: editColor ?? Colors.orange,
               alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingLarge),
               child: const Icon(Icons.edit, color: Colors.white),
             )
           : null,
       secondaryBackground: Container(
         color: deleteColor ?? context.colors.error,
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingLarge),
         child: Icon(Icons.delete, color: context.colors.onError),
       ),
       confirmDismiss: (direction) async {

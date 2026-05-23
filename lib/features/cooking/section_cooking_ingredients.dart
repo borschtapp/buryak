@@ -4,6 +4,7 @@ import '../../shared/components/recipes/ingredients.dart';
 import '../../shared/components/recipes/scale_control.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 
 class CookingIngredientsPage extends StatelessWidget {
   const CookingIngredientsPage({super.key, required this.recipe, required this.scale, required this.onScaleChanged});
@@ -15,7 +16,7 @@ class CookingIngredientsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -29,7 +30,7 @@ class CookingIngredientsPage extends StatelessWidget {
                   style: context.textTheme.headlineSmall,
                 ),
                 if (recipe.cookTime != null || recipe.totalTime != null) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: UIConstants.paddingSmall),
                   Row(
                     children: [
                       Icon(
@@ -50,7 +51,7 @@ class CookingIngredientsPage extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.paddingMedium),
 
           Ingredients(
             recipe.ingredients ?? [],

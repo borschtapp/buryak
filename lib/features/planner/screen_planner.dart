@@ -10,6 +10,7 @@ import '../../shared/models/meal_plan.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import 'dialog_edit_plan.dart';
 import 'notifier_planner.dart';
 
@@ -34,7 +35,7 @@ class PlannerScreen extends ConsumerWidget {
         ),
       ),
       data: (entries) => ListView.separated(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(UIConstants.paddingMedium),
         itemCount: entries.length,
         separatorBuilder: (context, _) => const Divider(),
         itemBuilder: (context, index) {

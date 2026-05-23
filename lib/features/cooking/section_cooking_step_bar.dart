@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 
 class CookingStepBar extends HookWidget {
   const CookingStepBar({
@@ -51,7 +52,7 @@ class CookingStepBar extends HookWidget {
           ),
         ),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingSmall, horizontal: 4),
       child: SafeArea(
         top: false,
         child: Row(

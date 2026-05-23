@@ -11,6 +11,7 @@ import '../../shared/models/recipe.dart';
 import '../../shared/repositories/meal_plan_repository.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import 'notifier_planner.dart';
 
 class PlanBottomSheet extends HookConsumerWidget {
@@ -110,9 +111,9 @@ class PlanBottomSheet extends HookConsumerWidget {
               onTap: selectDate,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.paddingMedium),
           Text('Meal Type', style: context.textTheme.titleSmall),
-          const SizedBox(height: 8),
+          const SizedBox(height: UIConstants.paddingSmall),
           SegmentedButton<MealType>(
             segments: _mealTypeSegments,
             selected: {selectedMealType.value},
@@ -120,7 +121,7 @@ class PlanBottomSheet extends HookConsumerWidget {
               selectedMealType.value = newSelection.first;
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: UIConstants.paddingLarge),
           Row(
             children: [
               Text('Servings', style: context.textTheme.titleSmall),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/recipe_instruction.dart';
 import '../../util/extensions.dart';
+import '../../util/ui_constants.dart';
 
 class Instructions extends StatelessWidget {
   final List<RecipeInstruction> instructions;
@@ -23,7 +24,7 @@ class Instructions extends StatelessWidget {
       itemBuilder: (context, index) {
         final step = sortedItems[index];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 24.0),
+          padding: const EdgeInsets.only(bottom: UIConstants.paddingLarge),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -34,7 +35,7 @@ class Instructions extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: UIConstants.paddingSmall),
               if (step.imageUrl != null && step.imageUrl!.trim().isNotEmpty) ...[
                 ClipRRect(
                   borderRadius: context.shapeMedium,

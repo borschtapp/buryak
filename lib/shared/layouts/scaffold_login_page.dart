@@ -47,7 +47,7 @@ class ScaffoldWithSimpleLayout extends StatelessWidget {
                   ),
                   rightPane: Center(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+                      padding: const EdgeInsets.all(50),
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 360),
                         child: child,

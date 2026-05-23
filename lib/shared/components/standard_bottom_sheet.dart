@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 
 /// A structural wrapper for bottom sheets that provides a standard header,
 /// consistent padding, and handles keyboard safety.
@@ -30,7 +31,13 @@ class StandardBottomSheet extends StatelessWidget {
         bottom: MediaQuery.viewInsetsOf(context).bottom,
       ),
       child: Padding(
-        padding: padding ?? const EdgeInsets.fromLTRB(20, 20, 20, 24),
+        padding: padding ??
+            const EdgeInsets.fromLTRB(
+              UIConstants.paddingContent,
+              UIConstants.paddingContent,
+              UIConstants.paddingContent,
+              UIConstants.paddingLarge,
+            ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

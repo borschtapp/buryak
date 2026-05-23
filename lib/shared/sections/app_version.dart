@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../constants.dart';
 import '../providers/update.dart';
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 import 'dialog_update.dart';
 
 class AppVersionText extends HookWidget {
@@ -68,7 +69,7 @@ class AppVersionSection extends HookConsumerWidget {
     }, [release]);
 
     return const AppVersionText(
-      padding: EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
     );
   }
 }

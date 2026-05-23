@@ -5,6 +5,7 @@ import '../../shared/constants.dart';
 import '../../shared/layouts/article_content.dart';
 import '../../shared/layouts/content_frame.dart';
 import '../../shared/route_names.dart';
+import '../../shared/util/ui_constants.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
@@ -18,7 +19,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
       ),
       body: const SingleChildScrollView(
         child: ContentFrame(
-          padding: EdgeInsets.all(15),
+          padding: EdgeInsets.all(UIConstants.paddingMedium),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

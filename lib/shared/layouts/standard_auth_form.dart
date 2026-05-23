@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../components/loading_button.dart';
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 import 'scaffold_login_page.dart';
 
 /// A standard form layout for authentication and account-related screens.
@@ -47,12 +48,12 @@ class StandardAuthForm extends StatelessWidget {
               ],
               Text(title, style: textTheme.titleLarge),
               if (subtitle != null) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: UIConstants.paddingSmall),
                 Text(subtitle!, style: textTheme.bodyMedium),
               ],
-              const SizedBox(height: 24),
-              ...children.expand((widget) => [widget, const SizedBox(height: 16)]),
-              const SizedBox(height: 8),
+              const SizedBox(height: UIConstants.paddingLarge),
+              ...children.expand((widget) => [widget, const SizedBox(height: UIConstants.paddingMedium)]),
+              const SizedBox(height: UIConstants.paddingSmall),
               LoadingButton(
                 isLoading: isLoading,
                 onPressed: onSubmit,

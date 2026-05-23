@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 import 'standard_card.dart';
 
 /// A standard section for settings-like screens, grouping related tiles together.
@@ -21,12 +22,20 @@ class SettingsSection extends StatelessWidget {
     return StandardCard(
       title: title,
       padding: EdgeInsets.zero,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(
+        horizontal: UIConstants.paddingMedium,
+        vertical: UIConstants.paddingSmall,
+      ),
       child: Column(
         children: [
           for (var i = 0; i < children.length; i++) ...[
             children[i],
-            if (showDividers && i < children.length - 1) const Divider(height: 1, indent: 16, endIndent: 16),
+            if (showDividers && i < children.length - 1)
+              const Divider(
+                height: 1,
+                indent: UIConstants.paddingMedium,
+                endIndent: UIConstants.paddingMedium,
+              ),
           ],
         ],
       ),

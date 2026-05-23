@@ -9,6 +9,7 @@ import '../../shared/hooks.dart';
 import '../../shared/layouts/app_list_scaffold.dart';
 import '../../shared/models/feed.dart';
 import '../../shared/util/error_extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import 'notifier_feed_list.dart';
 import 'section_feed_card.dart';
 
@@ -43,7 +44,7 @@ class FeedsScreen extends HookConsumerWidget {
         ),
       ),
       data: (feeds) => ListView.separated(
-        padding: const EdgeInsets.only(top: 8, bottom: 80),
+        padding: const EdgeInsets.only(top: UIConstants.paddingSmall, bottom: 80),
         itemCount: feeds.length,
         separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {

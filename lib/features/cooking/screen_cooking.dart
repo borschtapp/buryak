@@ -7,6 +7,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import 'section_cooking_complete.dart';
 import 'section_cooking_ingredients.dart';
 import 'section_cooking_step.dart';
@@ -100,7 +101,10 @@ class _CookingTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: UIConstants.paddingSmall,
+      ),
       child: Row(
         children: [
           if (recipe.imageUrl case final imageUrl?) ...[

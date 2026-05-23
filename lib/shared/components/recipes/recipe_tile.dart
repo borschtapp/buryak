@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../models/collection.dart';
 import '../../models/recipe.dart';
 import '../../providers/saved.dart';
 import '../../util/error_extensions.dart';
 import '../../util/extensions.dart';
+import '../../util/ui_constants.dart';
 import '../icon_label.dart';
 import 'author_line.dart';
 import 'dialog_select_collections.dart';
@@ -25,16 +27,16 @@ class RecipeTile extends HookConsumerWidget {
     final recipeId = recipe.id;
     final (:isSaved, :toggle) = ref.watch(savedRecipeStateProvider(recipeId));
 
-    final collections = useState(recipe.collections);
+    final collectionsOverride = useState<List<Collection>?>(null);
     useEffect(() {
-      collections.value = recipe.collections;
+      collectionsOverride.value = null;
       return null;
-    }, [recipe.collections]);
+    }, [recipe.id]);
 
-    final isCollected = collections.value?.isNotEmpty ?? false;
+    final isCollected = (collectionsOverride.value ?? recipe.collections)?.isNotEmpty ?? false;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      padding: const EdgeInsets.all(UIConstants.paddingMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -53,7 +55,7 @@ class RecipeTile extends HookConsumerWidget {
                         foregroundDecoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.black.withValues(alpha: 200 / 255),
+                              Colors.black.withValues(alpha: 0.78),
                               Colors.transparent,
                             ],
                             begin: Alignment.topCenter,
@@ -86,9 +88,9 @@ class RecipeTile extends HookConsumerWidget {
                             context,
                             ref,
                             recipeId: recipeId,
-                            initialCollections: collections.value,
+                            initialCollections: collectionsOverride.value ?? recipe.collections,
                           );
-                          if (updated != null) collections.value = updated;
+                          if (updated != null) collectionsOverride.value = updated;
                         },
                         icon: Icon(
                           isCollected ? Icons.collections_bookmark : Icons.bookmark_add_outlined,

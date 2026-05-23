@@ -9,6 +9,7 @@ import '../../shared/models/household.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import 'dialog_invite_user.dart';
 import 'dialog_join_household.dart';
 import 'dialog_rename_household.dart';
@@ -35,7 +36,7 @@ class HouseholdDetails extends HookConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text('You are not currently part of a household.'),
-                const SizedBox(height: 16),
+                const SizedBox(height: UIConstants.paddingMedium),
                 FilledButton.icon(
                   onPressed: () => showJoinHouseholdDialog(context, ref),
                   icon: const Icon(Icons.login),
@@ -69,9 +70,9 @@ class HouseholdDetails extends HookConsumerWidget {
                     ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: UIConstants.paddingMedium),
               Text('Members:', style: context.textTheme.labelLarge),
-              const SizedBox(height: 8),
+              const SizedBox(height: UIConstants.paddingSmall),
               if (household.members != null)
                 ...household.members!.map((member) {
                   final isMe = member.id == currentUserId;
@@ -105,10 +106,10 @@ class HouseholdDetails extends HookConsumerWidget {
                         : null,
                   );
                 }),
-              const SizedBox(height: 16),
+              const SizedBox(height: UIConstants.paddingMedium),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: UIConstants.paddingSmall,
+                runSpacing: UIConstants.paddingSmall,
                 children: [
                   if (isOwner)
                     FilledButton.icon(

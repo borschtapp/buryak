@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 
 /// A standard card container for grouping related content with an optional header.
 class StandardCard extends StatelessWidget {
@@ -31,7 +32,12 @@ class StandardCard extends StatelessWidget {
       children: [
         if (hasHeader)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              UIConstants.paddingMedium,
+              UIConstants.paddingLarge,
+              UIConstants.paddingMedium,
+              UIConstants.paddingSmall,
+            ),
             child: Row(
               children: [
                 if (title != null)
@@ -63,10 +69,14 @@ class StandardCard extends StatelessWidget {
             ),
           ),
         Card(
-          margin: margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          margin: margin ??
+              const EdgeInsets.symmetric(
+                horizontal: UIConstants.paddingMedium,
+                vertical: UIConstants.paddingSmall,
+              ),
           clipBehavior: Clip.antiAlias,
           child: Padding(
-            padding: padding ?? const EdgeInsets.all(16),
+            padding: padding ?? const EdgeInsets.all(UIConstants.paddingMedium),
             child: child,
           ),
         ),

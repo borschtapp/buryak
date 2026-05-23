@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../util/ui_constants.dart';
 
 import '../util/extensions.dart';
 
@@ -27,9 +28,9 @@ class EmptyState extends StatelessWidget {
             Icon(
               icon,
               size: 80,
-              color: context.colors.primary.withValues(alpha: 100 / 255),
+              color: context.colors.primary.withValues(alpha: 0.4),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: UIConstants.paddingLarge),
             Text(
               title,
               style: context.textTheme.titleLarge?.copyWith(
@@ -48,7 +49,7 @@ class EmptyState extends StatelessWidget {
               ),
             ],
             if (action != null) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: UIConstants.paddingLarge),
               action!,
             ],
           ],

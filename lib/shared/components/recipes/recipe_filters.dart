@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -10,6 +11,7 @@ import '../../repositories/equipment_repository.dart';
 import '../../repositories/publisher_repository.dart';
 import '../../repositories/taxonomy_repository.dart';
 import '../../util/extensions.dart';
+import '../../util/ui_constants.dart';
 import '../loading_with_message.dart';
 
 part 'recipe_filters.g.dart';
@@ -65,7 +67,7 @@ const _sortOptions = [
   (label: 'Name Z–A', field: SortField.name, order: SortOrder.desc),
 ];
 
-class RecipeFilters extends StatefulWidget {
+class RecipeFilters extends HookConsumerWidget {
   final RecipeFilter initialFilter;
   final bool showTaxonomyFilters;
   final String? scope;
@@ -83,26 +85,15 @@ class RecipeFilters extends StatefulWidget {
   });
 
   @override
-  State<RecipeFilters> createState() => _RecipeFiltersState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filter = useState(initialFilter);
 
-class _RecipeFiltersState extends State<RecipeFilters> {
-  late RecipeFilter _filter;
+    void updateFilter(RecipeFilter Function(RecipeFilter) updater) {
+      final newFilter = updater(filter.value);
+      filter.value = newFilter;
+      onFilterChanged?.call(newFilter);
+    }
 
-  @override
-  void initState() {
-    super.initState();
-    _filter = widget.initialFilter;
-  }
-
-  void _updateFilter(RecipeFilter Function(RecipeFilter) updater) {
-    final newFilter = updater(_filter);
-    setState(() => _filter = newFilter);
-    widget.onFilterChanged?.call(newFilter);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     final scaffold = Scaffold(
       appBar: AppBar(
         title: const Text('Filters'),
@@ -114,95 +105,101 @@ class _RecipeFiltersState extends State<RecipeFilters> {
               ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: UIConstants.paddingMedium),
             child: TextButton(
-              onPressed: () => setState(() {
-                _filter = const RecipeFilter();
-                widget.onFilterChanged?.call(_filter);
-              }),
+              onPressed: () {
+                filter.value = const RecipeFilter();
+                onFilterChanged?.call(filter.value);
+              },
               child: const Text('Clear all'),
             ),
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingSmall),
         children: [
           const _SectionHeader('Sort by'),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: UIConstants.paddingMedium,
+              vertical: UIConstants.paddingSmall,
+            ),
             child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _sortOptions.map((opt) {
-                final isSelected = _filter.sort == opt.field && _filter.order == opt.order;
-                return FilterChip(
-                  label: Text(opt.label),
-                  selected: isSelected,
-                  onSelected: (_) => _updateFilter((f) => f.copyWith(sort: opt.field, order: opt.order)),
-                );
-              }).toList(),
+              spacing: UIConstants.paddingSmall,
+              runSpacing: UIConstants.paddingSmall,
+              children: [
+                for (final opt in _sortOptions)
+                  FilterChip(
+                    label: Text(opt.label),
+                    selected: filter.value.sort == opt.field && filter.value.order == opt.order,
+                    onSelected: (_) => updateFilter((f) => f.copyWith(sort: opt.field, order: opt.order)),
+                  ),
+              ],
             ),
           ),
           const _SectionHeader('Cook Time'),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: UIConstants.paddingMedium,
+              vertical: UIConstants.paddingSmall,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _filter.cookTimeMax == null ? 'Any time' : 'Up to ${(_filter.cookTimeMax! / 60).round()} minutes',
-                  style: Theme.of(context).textTheme.bodySmall,
+                  filter.value.cookTimeMax == null ? 'Any time' : 'Up to ${(filter.value.cookTimeMax! / 60).round()} minutes',
+                  style: context.textTheme.bodySmall,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: UIConstants.paddingSmall),
                 Slider(
                   min: 0,
                   max: 3600,
                   divisions: 60,
-                  value: _filter.cookTimeMax?.toDouble() ?? 0,
-                  onChanged: (value) => _updateFilter(
+                  value: filter.value.cookTimeMax?.toDouble() ?? 0,
+                  onChanged: (value) => updateFilter(
                     (f) => f.copyWith(cookTimeMax: value == 0 ? null : value.toInt()),
                   ),
                 ),
               ],
             ),
           ),
-          if (widget.showTaxonomyFilters) ...[
+          if (showTaxonomyFilters) ...[
             _FilterSection<Taxonomy>(
               title: 'Cuisine',
-              provider: _taxonomiesByTypeProvider('cuisine', widget.scope),
+              provider: _taxonomiesByTypeProvider('cuisine', scope),
               itemMapper: (t) => (id: t.id, label: t.label ?? t.slug ?? t.id, count: t.totalRecipes),
-              selectedIds: _filter.taxonomyIds,
-              onToggle: (id) => _updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
+              selectedIds: filter.value.taxonomyIds,
+              onToggle: (id) => updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
             ),
             _FilterSection<Taxonomy>(
               title: 'Diet',
-              provider: _taxonomiesByTypeProvider('diet', widget.scope),
+              provider: _taxonomiesByTypeProvider('diet', scope),
               itemMapper: (t) => (id: t.id, label: t.label ?? t.slug ?? t.id, count: t.totalRecipes),
-              selectedIds: _filter.taxonomyIds,
-              onToggle: (id) => _updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
+              selectedIds: filter.value.taxonomyIds,
+              onToggle: (id) => updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
             ),
             _FilterSection<Taxonomy>(
               title: 'Category',
-              provider: _taxonomiesByTypeProvider('category', widget.scope),
+              provider: _taxonomiesByTypeProvider('category', scope),
               itemMapper: (t) => (id: t.id, label: t.label ?? t.slug ?? t.id, count: t.totalRecipes),
-              selectedIds: _filter.taxonomyIds,
-              onToggle: (id) => _updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
+              selectedIds: filter.value.taxonomyIds,
+              onToggle: (id) => updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
             ),
             _FilterSection<Publisher>(
               title: 'Publisher',
-              provider: _topPublishersProvider(widget.scope),
+              provider: _topPublishersProvider(scope),
               itemMapper: (p) => (id: p.id, label: p.name, count: p.totalRecipes),
-              selectedIds: _filter.publisherIds,
-              onToggle: (id) => _updateFilter((f) => f.copyWith(publisherIds: f.publisherIds.toggled(id))),
+              selectedIds: filter.value.publisherIds,
+              onToggle: (id) => updateFilter((f) => f.copyWith(publisherIds: f.publisherIds.toggled(id))),
             ),
           ],
           _FilterSection<Equipment>(
             title: 'Equipment',
-            provider: _equipmentProvider(widget.scope),
+            provider: _equipmentProvider(scope),
             itemMapper: (e) => (id: e.id, label: e.name, count: e.totalRecipes),
-            selectedIds: _filter.equipmentIds,
-            onToggle: (id) => _updateFilter((f) => f.copyWith(equipmentIds: f.equipmentIds.toggled(id))),
+            selectedIds: filter.value.equipmentIds,
+            onToggle: (id) => updateFilter((f) => f.copyWith(equipmentIds: f.equipmentIds.toggled(id))),
           ),
           const SizedBox(height: 80), // space for bottom button
         ],
@@ -210,9 +207,9 @@ class _RecipeFiltersState extends State<RecipeFilters> {
       bottomNavigationBar: context.isMobile
           ? SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(UIConstants.paddingMedium),
                 child: FilledButton(
-                  onPressed: () => Navigator.pop(context, _filter),
+                  onPressed: () => Navigator.pop(context, filter.value),
                   child: const Text('Apply'),
                 ),
               ),
@@ -240,7 +237,12 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      padding: const EdgeInsets.fromLTRB(
+        UIConstants.paddingMedium,
+        UIConstants.paddingMedium,
+        UIConstants.paddingMedium,
+        4,
+      ),
       child: Text(title, style: context.textTheme.titleSmall),
     );
   }
@@ -273,10 +275,13 @@ class _FilterSection<T> extends ConsumerWidget {
               children: [
                 _SectionHeader(title),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: UIConstants.paddingMedium,
+                    vertical: UIConstants.paddingSmall,
+                  ),
                   child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: UIConstants.paddingSmall,
+                    runSpacing: UIConstants.paddingSmall,
                     children: items.map((item) {
                       final mapped = itemMapper(item);
                       final chipLabel = mapped.count != null ? '${mapped.label} (${mapped.count})' : mapped.label;
@@ -293,10 +298,13 @@ class _FilterSection<T> extends ConsumerWidget {
           },
           loading: () => LoadingWithMessage(message: 'Loading $title...'),
           error: (e, s) => Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: UIConstants.paddingMedium,
+              vertical: UIConstants.paddingSmall,
+            ),
             child: Text(
               'Failed to load $title',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+              style: context.textTheme.bodySmall?.copyWith(color: context.colors.error),
             ),
           ),
         );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 import 'loading_indicator.dart';
 
 /// A loading indicator with an optional message displayed beside it.
@@ -21,7 +23,7 @@ class LoadingWithMessage extends StatelessWidget {
     this.indicatorStrokeWidth = 2,
     this.indicatorColor,
     this.messageStyle,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(UIConstants.paddingMedium),
   });
 
   @override
@@ -49,7 +51,7 @@ class LoadingWithMessage extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           message!,
-          style: messageStyle ?? Theme.of(context).textTheme.bodySmall,
+          style: messageStyle ?? context.textTheme.bodySmall,
         ),
       ],
     );
