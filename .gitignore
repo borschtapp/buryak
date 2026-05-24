@@ -35,6 +35,7 @@ migrate_working_dir/
 /build/
 dotenv
 .env
+lib/l10n/app_localizations*.dart
 
 .serena/
 .agents/
