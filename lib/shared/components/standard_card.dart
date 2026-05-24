@@ -64,7 +64,7 @@ class StandardCard extends StatelessWidget {
                   )
                 else
                   const Spacer(),
-                if (actions != null) ...actions!,
+                ...?actions,
               ],
             ),
           ),

@@ -21,7 +21,7 @@ class NoAnimationPageTransitionsBuilder extends PageTransitionsBuilder {
 }
 
 class ThemeProvider {
-  static const pageTransitionsTheme = PageTransitionsTheme(
+  static final pageTransitionsTheme = PageTransitionsTheme(
     builders: <TargetPlatform, PageTransitionsBuilder>{
       TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
       TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),

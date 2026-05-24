@@ -63,7 +63,7 @@ class StandardBottomSheet extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (actions != null) ...actions!,
+                ...?actions,
                 if (showCloseButton)
                   IconButton(
                     icon: const Icon(Icons.close),
