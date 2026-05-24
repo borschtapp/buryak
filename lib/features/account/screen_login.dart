@@ -59,18 +59,18 @@ class LoginScreen extends HookConsumerWidget {
     final serverUrl = ref.watch(serverUrlProvider);
 
     return StandardAuthForm(
-      eyebrow: 'Welcome back',
-      title: 'Login to your account',
+      eyebrow: context.l10n.loginWelcomeBack,
+      title: context.l10n.loginTitle,
       formKey: formKey,
       isLoading: isLoading.value,
       onSubmit: login,
-      submitLabel: 'Login now',
+      submitLabel: context.l10n.loginSubmit,
       secondaryButton: TextButton(
         onPressed: () => context.goNamed(
           RouteNames.register,
           queryParameters: inviteCode != null ? {'code': inviteCode!} : const {},
         ),
-        child: const Text('Register'),
+        child: Text(context.l10n.loginRegisterCta),
       ),
       children: [
         InkWell(
@@ -102,10 +102,10 @@ class LoginScreen extends HookConsumerWidget {
           onFieldSubmitted: (_) => login(),
           autofillHints: const [AutofillHints.email],
           keyboardType: TextInputType.emailAddress,
-          validator: (value) => Validator.validateEmail(value ?? ''),
-          decoration: const InputDecoration(
-            labelText: 'Email',
-            hintText: 'abc@example.com',
+          validator: (value) => Validator.validateEmail(value ?? '', context.l10n),
+          decoration: InputDecoration(
+            labelText: context.l10n.loginEmail,
+            hintText: context.l10n.loginEmailHint,
           ),
         ),
         TextFormField(
@@ -113,13 +113,13 @@ class LoginScreen extends HookConsumerWidget {
           onFieldSubmitted: (_) => login(),
           controller: passwordController,
           autofillHints: const [AutofillHints.password],
-          validator: (value) => Validator.validatePassword(value ?? ''),
+          validator: (value) => Validator.validatePassword(value ?? '', context.l10n),
           decoration: InputDecoration(
-            labelText: 'Password',
-            hintText: '********',
+            labelText: context.l10n.loginPassword,
+            hintText: context.l10n.loginPasswordHint,
             suffixIcon: IconButton(
               icon: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
-              tooltip: showPassword.value ? 'Hide password' : 'Show password',
+              tooltip: showPassword.value ? context.l10n.loginHidePassword : context.l10n.loginShowPassword,
               onPressed: () => showPassword.value = !showPassword.value,
             ),
           ),
@@ -128,7 +128,7 @@ class LoginScreen extends HookConsumerWidget {
           alignment: Alignment.centerRight,
           child: TextButton(
             onPressed: () => context.goNamed(RouteNames.forgotPassword),
-            child: const Text('Forgot password?'),
+            child: Text(context.l10n.loginForgotPassword),
           ),
         ),
       ],

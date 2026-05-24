@@ -36,11 +36,15 @@ class RecipeMetaRow extends StatelessWidget {
               if (showTime)
                 IconLabel(
                   icon: Icons.timer_outlined,
-                  label: recipe.totalTime.toFormattedDuration(),
+                  label: recipe.totalTime.toFormattedDuration(context),
                   color: context.colors.onSurfaceVariant,
                 ),
               if (recipe.yield != null && recipe.yield! > 0)
-                IconLabel(icon: Icons.restaurant_outlined, label: '${recipe.yield} servings', color: context.colors.onSurfaceVariant),
+                IconLabel(
+                  icon: Icons.restaurant_outlined,
+                  label: context.l10n.recipeYieldServings(recipe.yield!),
+                  color: context.colors.onSurfaceVariant,
+                ),
               if (recipe.difficulty != null && recipe.difficulty!.isNotEmpty)
                 IconLabel(icon: Icons.signal_cellular_alt_outlined, label: recipe.difficulty!, color: context.colors.onSurfaceVariant),
               if (recipe.method != null && recipe.method!.isNotEmpty)

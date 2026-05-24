@@ -7,6 +7,7 @@ import '../../models/collection.dart';
 import '../../providers/saved.dart';
 import '../../repositories/collection_repository.dart';
 import '../../util/error_extensions.dart';
+import '../../util/extensions.dart';
 import '../loading_button.dart';
 import '../standard_async_builder.dart';
 import '../standard_bottom_sheet.dart';
@@ -59,9 +60,9 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
       onRetry: () => ref.invalidate(savedCollectionsProvider),
       data: (collections) {
         if (collections.isEmpty) {
-          return const SizedBox(
+          return SizedBox(
             height: 200,
-            child: Center(child: Text('No cookbooks found. Create one in Saved.')),
+            child: Center(child: Text('${context.l10n.recipesCookbookEmptyTitle}. ${context.l10n.recipesCookbookEmptySubtitle}')),
           );
         }
 
@@ -102,7 +103,7 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
 
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Cookbooks updated')),
+                        SnackBar(content: Text(context.l10n.recipesCookbooksUpdated)),
                       );
                       Navigator.pop(context, updatedCollections);
                     }
@@ -112,7 +113,7 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                     isSaving.value = false;
                   }
                 },
-                child: const Text('Save'),
+                child: Text(context.l10n.save),
               ),
           ],
           child: Flexible(
@@ -134,7 +135,9 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                     color: isInCollection ? Colors.green : null,
                   ),
                   title: Text(collection.name),
-                  trailing: isInCollection ? const Text('Selected', style: TextStyle(color: Colors.green, fontSize: 12)) : null,
+                  trailing: isInCollection
+                      ? Text(context.l10n.recipesCollectionSelected, style: const TextStyle(color: Colors.green, fontSize: 12))
+                      : null,
                   onTap: isSaving.value
                       ? null
                       : () {

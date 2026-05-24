@@ -37,7 +37,7 @@ class RecipeAuthorLine extends ConsumerWidget {
               final success = await launchUrlString(url);
               if (!success && context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Could not open source link')),
+                  SnackBar(content: Text(context.l10n.authorSourceLinkError)),
                 );
               }
             } catch (e) {
@@ -73,7 +73,7 @@ class RecipeAuthorLine extends ConsumerWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (showPrefix) Text('Published by ', style: textStyle?.copyWith(color: context.colors.onSurfaceVariant)),
+        if (showPrefix) Text(context.l10n.authorPublishedBy, style: textStyle?.copyWith(color: context.colors.onSurfaceVariant)),
         buildLink(name, url),
       ],
     );

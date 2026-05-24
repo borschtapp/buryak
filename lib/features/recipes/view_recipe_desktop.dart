@@ -54,20 +54,20 @@ class RecipeDesktopView extends HookWidget {
                       );
                     },
                     icon: const Icon(Icons.local_fire_department, size: 18),
-                    label: const Text('Start Cooking'),
+                    label: Text(context.l10n.recipesStartCooking),
                   ),
                   const SizedBox(width: UIConstants.paddingSmall),
                 ],
                 OutlinedButton.icon(
                   onPressed: () => _showPlanSheet(context),
                   icon: const Icon(Icons.calendar_today, size: 18),
-                  label: const Text('Plan'),
+                  label: Text(context.l10n.recipePlan),
                 ),
                 const SizedBox(width: UIConstants.paddingSmall),
                 OutlinedButton.icon(
                   onPressed: () => _showShoppingSheet(context, recipe),
                   icon: const Icon(Icons.shopping_basket, size: 18),
-                  label: const Text('Shop'),
+                  label: Text(context.l10n.recipeShop),
                 ),
               ],
             ),
@@ -85,7 +85,7 @@ class RecipeDesktopView extends HookWidget {
                 const Spacer(),
                 if (recipe.published != null)
                   Text(
-                    'Published: ${DateFormat.yMMMd().format(recipe.published!)}',
+                    context.l10n.recipesPublishedDate(DateFormat.yMMMd(context.l10n.localeName).format(recipe.published!)),
                     style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
                   ),
               ],
@@ -105,7 +105,7 @@ class RecipeDesktopView extends HookWidget {
               children: [
                 Expanded(
                   child: _ContentSection(
-                    title: 'Ingredients',
+                    title: context.l10n.recipesIngredients,
                     trailing: ScaleControl(
                       recipe: recipe,
                       initialScale: scale.value,
@@ -122,7 +122,7 @@ class RecipeDesktopView extends HookWidget {
                 const SizedBox(width: 48),
                 Expanded(
                   child: _ContentSection(
-                    title: 'Preparation',
+                    title: context.l10n.recipesPreparation,
                     child: Instructions(recipe.instructions ?? []),
                   ),
                 ),

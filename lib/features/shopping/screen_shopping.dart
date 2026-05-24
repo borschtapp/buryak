@@ -39,12 +39,12 @@ class ShoppingScreen extends HookConsumerWidget {
       isEmpty: (items) => items.isEmpty,
       emptyState: EmptyState(
         icon: Icons.shopping_basket_outlined,
-        title: 'Your shopping list is empty',
-        subtitle: 'Tap the + button to add items you need for your recipes.',
+        title: context.l10n.shoppingEmptyTitle,
+        subtitle: context.l10n.shoppingEmptySubtitle,
         action: TextButton.icon(
           onPressed: () => ref.invalidate(shoppingItemsProvider),
           icon: const Icon(Icons.refresh),
-          label: const Text('Refresh'),
+          label: Text(context.l10n.refresh),
         ),
       ),
       data: (items) => ListView.separated(

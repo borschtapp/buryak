@@ -39,7 +39,7 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
         if (context.mounted) {
           context.pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Item updated')),
+            SnackBar(content: Text(context.l10n.shoppingItemUpdated)),
           );
         }
       } catch (e) {
@@ -52,7 +52,7 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
     }
 
     return StandardBottomSheet(
-      title: 'Edit item',
+      title: context.l10n.shoppingEditItem,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -67,9 +67,9 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
                     autofocus: true,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))],
-                    decoration: const InputDecoration(
-                      labelText: 'Amount',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.shoppingItemAmount,
+                      border: const OutlineInputBorder(),
                     ),
                     onSubmitted: (_) => save(),
                   ),
@@ -78,9 +78,9 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
                 if (item.unit != null)
                   Expanded(
                     child: InputDecorator(
-                      decoration: const InputDecoration(
-                        labelText: 'Unit',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: context.l10n.shoppingItemUnit,
+                        border: const OutlineInputBorder(),
                         enabled: false,
                       ),
                       child: Text(item.unit!.name),
@@ -91,9 +91,9 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
             const SizedBox(height: UIConstants.paddingMedium),
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: context.l10n.shoppingItemName,
+                border: const OutlineInputBorder(),
               ),
               onSubmitted: (_) => save(),
             ),
@@ -101,9 +101,9 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
             TextField(
               controller: nameController,
               autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Item',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: context.l10n.shoppingItemField,
+                border: const OutlineInputBorder(),
               ),
               onSubmitted: (_) => save(),
             ),
@@ -111,7 +111,7 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
           LoadingButton(
             isLoading: isSaving.value,
             onPressed: save,
-            child: const Text('Save changes'),
+            child: Text(context.l10n.saveChanges),
           ),
         ],
       ),

@@ -30,6 +30,13 @@ class DismissibleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final deleteBackground = Container(
+      color: deleteColor ?? context.colors.error,
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingLarge),
+      child: Icon(Icons.delete, color: context.colors.onError),
+    );
+
     return Dismissible(
       key: _key,
       direction: onEdit != null ? DismissDirection.horizontal : DismissDirection.endToStart,
@@ -40,13 +47,8 @@ class DismissibleTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingLarge),
               child: const Icon(Icons.edit, color: Colors.white),
             )
-          : null,
-      secondaryBackground: Container(
-        color: deleteColor ?? context.colors.error,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingLarge),
-        child: Icon(Icons.delete, color: context.colors.onError),
-      ),
+          : deleteBackground,
+      secondaryBackground: onEdit != null ? deleteBackground : null,
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
           onEdit?.call();

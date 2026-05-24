@@ -35,13 +35,13 @@ class Nutrition extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Nutrition Facts',
+          context.l10n.recipesNutritionTitle,
           style: context.textTheme.titleMedium,
         ),
         if (nutrition?.servingSize != null && nutrition!.servingSize!.isNotEmpty) ...[
           const SizedBox(height: 4),
           Text(
-            'Per serving: ${nutrition!.servingSize}',
+            context.l10n.recipesNutritionPerServing(nutrition!.servingSize!),
             style: context.textTheme.bodySmall?.copyWith(
               color: context.colors.onSurfaceVariant,
             ),
@@ -52,7 +52,7 @@ class Nutrition extends StatelessWidget {
   }
 
   Widget _buildNutritionGrid(BuildContext context) {
-    final items = _getNutritionItems();
+    final items = _getNutritionItems(context);
     final rows = <Widget>[];
     for (var i = 0; i < items.length; i += 2) {
       rows.add(
@@ -101,39 +101,40 @@ class Nutrition extends StatelessWidget {
     );
   }
 
-  List<NutritionItem> _getNutritionItems() {
+  List<NutritionItem> _getNutritionItems(BuildContext context) {
+    final l10n = context.l10n;
     final items = <NutritionItem>[];
 
     if (nutrition?.calories != null) {
-      items.add(NutritionItem('Calories', '${nutrition!.calories!.toInt()} kcal'));
+      items.add(NutritionItem(l10n.recipesNutritionCalories, '${nutrition!.calories!.toInt()} kcal'));
     }
 
     if (nutrition?.protein != null) {
-      items.add(NutritionItem('Protein', '${nutrition!.protein!.toStringAsFixed(1)}g'));
+      items.add(NutritionItem(l10n.recipesNutritionProtein, '${nutrition!.protein!.toStringAsFixed(1)}g'));
     }
 
     if (nutrition?.fat != null) {
-      items.add(NutritionItem('Fat', '${nutrition!.fat!.toStringAsFixed(1)}g'));
+      items.add(NutritionItem(l10n.recipesNutritionFat, '${nutrition!.fat!.toStringAsFixed(1)}g'));
     }
 
     if (nutrition?.carbs != null) {
-      items.add(NutritionItem('Carbs', '${nutrition!.carbs!.toStringAsFixed(1)}g'));
+      items.add(NutritionItem(l10n.recipesNutritionCarbs, '${nutrition!.carbs!.toStringAsFixed(1)}g'));
     }
 
     if (nutrition?.fatSaturated != null) {
-      items.add(NutritionItem('Saturated Fat', '${nutrition!.fatSaturated!.toStringAsFixed(1)}g'));
+      items.add(NutritionItem(l10n.recipesNutritionSaturatedFat, '${nutrition!.fatSaturated!.toStringAsFixed(1)}g'));
     }
 
     if (nutrition?.carbsFiber != null) {
-      items.add(NutritionItem('Fiber', '${nutrition!.carbsFiber!.toStringAsFixed(1)}g'));
+      items.add(NutritionItem(l10n.recipesNutritionFiber, '${nutrition!.carbsFiber!.toStringAsFixed(1)}g'));
     }
 
     if (nutrition?.carbsSugar != null) {
-      items.add(NutritionItem('Sugar', '${nutrition!.carbsSugar!.toStringAsFixed(1)}g'));
+      items.add(NutritionItem(l10n.recipesNutritionSugar, '${nutrition!.carbsSugar!.toStringAsFixed(1)}g'));
     }
 
     if (nutrition?.sodium != null) {
-      items.add(NutritionItem('Sodium', '${nutrition!.sodium!.toStringAsFixed(0)}mg'));
+      items.add(NutritionItem(l10n.recipesNutritionSodium, '${nutrition!.sodium!.toStringAsFixed(0)}mg'));
     }
 
     return items;

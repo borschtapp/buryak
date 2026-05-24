@@ -73,7 +73,7 @@ class Ingredients extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text('Ingredients', style: context.textTheme.titleMedium),
+          Text(context.l10n.recipesIngredients, style: context.textTheme.titleMedium),
           if (headerTrailing != null) ...[
             const Spacer(),
             headerTrailing!,

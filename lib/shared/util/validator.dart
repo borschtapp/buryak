@@ -1,42 +1,44 @@
+import '../../l10n/app_localizations.dart';
+
 class Validator {
-  static String? validateEmail(String value) {
+  static String? validateEmail(String value, [AppLocalizations? l10n]) {
     final trimmed = value.trim();
     final regex = RegExp(r'^[\w\-\.\+]+@([\w\-\.]+\.)+[\w\-\.]{2,}$');
     if (!regex.hasMatch(trimmed)) {
-      return 'Please enter a valid email address.';
+      return l10n?.validatorEmail ?? 'Please enter a valid email address.';
     }
     return null;
   }
 
-  static String? validatePassword(String value) {
+  static String? validatePassword(String value, [AppLocalizations? l10n]) {
     if (value.length < 8) {
-      return 'Password must be at least 8 characters.';
+      return l10n?.validatorPasswordLength ?? 'Password must be at least 8 characters.';
     }
     return null;
   }
 
-  static String? validateName(String value) {
+  static String? validateName(String value, [AppLocalizations? l10n]) {
     if (value.trim().length < 3) {
-      return 'Name must be at least 3 characters.';
+      return l10n?.validatorNameLength ?? 'Name must be at least 3 characters.';
     }
     return null;
   }
 
-  static String? validateUrl(String value) {
+  static String? validateUrl(String value, [AppLocalizations? l10n]) {
     final trimmed = value.trim();
     final uri = Uri.tryParse(trimmed);
     if (uri == null || !uri.hasScheme || !uri.hasAuthority) {
-      return 'Please enter a valid URL.';
+      return l10n?.validatorUrl ?? 'Please enter a valid URL.';
     }
     if (uri.scheme != 'http' && uri.scheme != 'https') {
-      return 'Please enter a valid URL.';
+      return l10n?.validatorUrl ?? 'Please enter a valid URL.';
     }
     return null;
   }
 
-  static String? validateText(String value) {
+  static String? validateText(String value, [AppLocalizations? l10n]) {
     if (value.trim().isEmpty) {
-      return 'Text is too short.';
+      return l10n?.validatorText ?? 'Text is too short.';
     }
     return null;
   }

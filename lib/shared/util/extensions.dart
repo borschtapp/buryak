@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../models/meal_plan.dart';
 import '../providers/theme.dart';
 import 'breakpoints.dart';
 
@@ -70,19 +72,38 @@ extension IntPluralize on int {
 }
 
 extension SecondsToDuration on int? {
-  String toFormattedDuration() {
-    if (this == null || this == 0) return 'n/a';
+  String toFormattedDuration([BuildContext? context]) {
+    if (this == null || this == 0) {
+      return context != null ? AppLocalizations.of(context).durationNotAvailable : 'n/a';
+    }
     final duration = Duration(seconds: this!);
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
 
+    if (context != null) {
+      final l10n = AppLocalizations.of(context);
+      if (hours > 0 && minutes > 0) return l10n.durationHoursMinutes(hours, minutes);
+      if (hours > 0) return l10n.durationHours(hours);
+      return l10n.durationMinutes(minutes);
+    }
+
     if (hours > 0) {
-      if (minutes > 0) {
-        return '${hours}h ${minutes}m';
-      }
+      if (minutes > 0) return '${hours}h ${minutes}m';
       return '${hours}h';
     }
     return '${minutes}m';
+  }
+}
+
+extension MealTypeL10n on MealType {
+  String toLocalizedLabel(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return switch (this) {
+      MealType.breakfast => l10n.mealTypeBreakfast,
+      MealType.lunch => l10n.mealTypeLunch,
+      MealType.dinner => l10n.mealTypeDinner,
+      MealType.snack => l10n.mealTypeSnack,
+    };
   }
 }
 
@@ -143,6 +164,10 @@ extension DoubleFormat on double? {
     // Otherwise, round to at most 2 decimal places
     return ((self * 100).round() / 100).toString();
   }
+}
+
+extension L10nContext on BuildContext {
+  AppLocalizations get l10n => AppLocalizations.of(this);
 }
 
 extension ListToggle<T> on List<T> {

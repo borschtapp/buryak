@@ -7,6 +7,7 @@ import '../../shared/layouts/standard_auth_form.dart';
 import '../../shared/repositories/auth_repository.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/error_extensions.dart';
+import '../../shared/util/extensions.dart';
 import '../../shared/util/validator.dart';
 
 class ForgotPasswordScreen extends HookConsumerWidget {
@@ -27,7 +28,7 @@ class ForgotPasswordScreen extends HookConsumerWidget {
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('If an account exists, a reset link has been sent.')),
+              SnackBar(content: Text(context.l10n.forgotPasswordSuccess)),
             );
             context.goNamed(RouteNames.login);
           }
@@ -40,15 +41,15 @@ class ForgotPasswordScreen extends HookConsumerWidget {
     }
 
     return StandardAuthForm(
-      title: 'Forgot Password',
-      subtitle: 'Enter your email address to receive a password reset link.',
+      title: context.l10n.forgotPasswordTitle,
+      subtitle: context.l10n.forgotPasswordSubtitle,
       formKey: formKey,
       isLoading: isLoading.value,
       onSubmit: submit,
-      submitLabel: 'Send Link',
+      submitLabel: context.l10n.forgotPasswordSubmit,
       secondaryButton: TextButton(
         onPressed: () => context.goNamed(RouteNames.login),
-        child: const Text('Back to Login'),
+        child: Text(context.l10n.forgotPasswordBackToLogin),
       ),
       children: [
         TextFormField(
@@ -56,10 +57,10 @@ class ForgotPasswordScreen extends HookConsumerWidget {
           onFieldSubmitted: (_) => submit(),
           autofillHints: const [AutofillHints.email],
           keyboardType: TextInputType.emailAddress,
-          validator: (value) => Validator.validateEmail(value ?? ''),
-          decoration: const InputDecoration(
-            labelText: 'Email',
-            hintText: 'abc@example.com',
+          validator: (value) => Validator.validateEmail(value ?? '', context.l10n),
+          decoration: InputDecoration(
+            labelText: context.l10n.loginEmail,
+            hintText: context.l10n.loginEmailHint,
           ),
         ),
       ],

@@ -7,6 +7,7 @@ import '../../shared/components/recipes/recipe_search_bar.dart';
 import '../../shared/hooks.dart';
 import '../../shared/layouts/searchable_grid_scaffold.dart';
 import '../../shared/providers/saved.dart';
+import '../../shared/util/extensions.dart';
 import 'dialog_create_collection.dart';
 import 'section_saved_tabs.dart';
 
@@ -49,9 +50,9 @@ class SavedScreen extends HookConsumerWidget {
       topWidget: TabBar(
         controller: tabController,
         indicatorSize: TabBarIndicatorSize.label,
-        tabs: const [
-          Tab(text: 'Recipes'),
-          Tab(text: 'Cookbooks'),
+        tabs: [
+          Tab(text: context.l10n.savedTabRecipes),
+          Tab(text: context.l10n.savedTabCookbooks),
         ],
       ),
       child: TabBarView(

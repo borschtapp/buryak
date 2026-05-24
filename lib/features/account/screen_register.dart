@@ -78,27 +78,27 @@ class RegisterScreen extends HookConsumerWidget {
     final textTheme = context.textTheme;
 
     return StandardAuthForm(
-      title: 'Register an account',
+      title: context.l10n.registerTitle,
       formKey: formKey,
       isLoading: isLoading.value,
       onSubmit: register,
-      submitLabel: 'Register',
+      submitLabel: context.l10n.registerSubmit,
       secondaryButton: TextButton(
         onPressed: () => context.goNamed(
           RouteNames.login,
           queryParameters: {'code': inviteCode ?? ''},
         ),
-        child: const Text('Login'),
+        child: Text(context.l10n.registerLoginCta),
       ),
       children: [
         TextFormField(
           controller: nameController,
           onFieldSubmitted: (_) => register(),
           autofillHints: const [AutofillHints.name],
-          validator: (value) => Validator.validateName(value ?? ''),
-          decoration: const InputDecoration(
-            labelText: 'Name',
-            hintText: 'Chef',
+          validator: (value) => Validator.validateName(value ?? '', context.l10n),
+          decoration: InputDecoration(
+            labelText: context.l10n.registerName,
+            hintText: context.l10n.registerNameHint,
           ),
         ),
         TextFormField(
@@ -106,10 +106,10 @@ class RegisterScreen extends HookConsumerWidget {
           onFieldSubmitted: (_) => register(),
           autofillHints: const [AutofillHints.email],
           keyboardType: TextInputType.emailAddress,
-          validator: (value) => Validator.validateEmail(value ?? ''),
-          decoration: const InputDecoration(
-            labelText: 'Email',
-            hintText: 'abc@example.com',
+          validator: (value) => Validator.validateEmail(value ?? '', context.l10n),
+          decoration: InputDecoration(
+            labelText: context.l10n.loginEmail,
+            hintText: context.l10n.loginEmailHint,
           ),
         ),
         TextFormField(
@@ -117,10 +117,10 @@ class RegisterScreen extends HookConsumerWidget {
           onFieldSubmitted: (_) => register(),
           controller: passwordController,
           autofillHints: const [AutofillHints.newPassword],
-          validator: (value) => Validator.validatePassword(value ?? ''),
+          validator: (value) => Validator.validatePassword(value ?? '', context.l10n),
           decoration: InputDecoration(
-            labelText: 'Password',
-            hintText: '********',
+            labelText: context.l10n.loginPassword,
+            hintText: context.l10n.loginPasswordHint,
             suffixIcon: GestureDetector(
               onTap: () => showPassword.value = !showPassword.value,
               child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),

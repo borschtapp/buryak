@@ -133,7 +133,7 @@ class RecipeSearchBar extends HookWidget {
             controller: controller,
             onChanged: onTextChanged,
             decoration: InputDecoration(
-              hintText: 'Search recipes…',
+              hintText: context.l10n.recipesSearchHint,
               prefixIcon: const Icon(Icons.search),
               suffixIcon: controller.text.isNotEmpty
                   ? IconButton(
@@ -159,7 +159,7 @@ class RecipeSearchBar extends HookWidget {
           isLabelVisible: nonSearchActiveCount > 0,
           child: IconButton.filledTonal(
             icon: const Icon(Icons.filter_alt),
-            tooltip: 'Filters',
+            tooltip: context.l10n.recipesFilterTooltip,
             onPressed: openFilters,
           ),
         ),

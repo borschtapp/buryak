@@ -31,16 +31,16 @@ class HouseholdDetails extends HookConsumerWidget {
       data: (household) {
         if (household == null) {
           return StandardCard(
-            title: 'Household',
+            title: context.l10n.householdTitle,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('You are not currently part of a household.'),
+                Text(context.l10n.householdNotMember),
                 const SizedBox(height: UIConstants.paddingMedium),
                 FilledButton.icon(
                   onPressed: () => showJoinHouseholdDialog(context, ref),
                   icon: const Icon(Icons.login),
-                  label: const Text('Join Household'),
+                  label: Text(context.l10n.householdJoinHousehold),
                 ),
               ],
             ),
@@ -50,7 +50,7 @@ class HouseholdDetails extends HookConsumerWidget {
         final isOwner = household.ownerId == currentUserId;
 
         return StandardCard(
-          title: 'Household',
+          title: context.l10n.householdTitle,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -66,12 +66,12 @@ class HouseholdDetails extends HookConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () => showRenameHouseholdDialog(context, ref),
-                      tooltip: 'Rename Household',
+                      tooltip: context.l10n.householdRenameHousehold,
                     ),
                 ],
               ),
               const SizedBox(height: UIConstants.paddingMedium),
-              Text('Members:', style: context.textTheme.labelLarge),
+              Text(context.l10n.householdMembersTitle, style: context.textTheme.labelLarge),
               const SizedBox(height: UIConstants.paddingSmall),
               if (household.members != null)
                 ...household.members!.map((member) {
@@ -85,17 +85,17 @@ class HouseholdDetails extends HookConsumerWidget {
                       fallbackText: member.name,
                       size: 40,
                     ),
-                    title: Text('${member.name}${isMe ? ' (You)' : ''}'),
-                    subtitle: Text(isMemberOwner ? 'Owner' : 'Member'),
+                    title: Text('${member.name}${isMe ? ' (${context.l10n.householdYou})' : ''}'),
+                    subtitle: Text(isMemberOwner ? context.l10n.householdOwnerLabel : context.l10n.householdMemberLabel),
                     trailing: (isOwner && !isMe)
                         ? IconButton(
                             icon: const Icon(Icons.person_remove),
                             onPressed: () async {
                               final confirm = await showConfirmDialog(
                                 context,
-                                title: 'Remove Member',
-                                content: 'Remove ${member.name} from the household?',
-                                confirmLabel: 'Remove',
+                                title: context.l10n.householdRemoveMemberTitle,
+                                content: context.l10n.householdRemoveMemberContent(member.name),
+                                confirmLabel: context.l10n.householdRemoveMemberConfirm,
                                 destructive: true,
                               );
                               if (confirm) {
@@ -115,12 +115,12 @@ class HouseholdDetails extends HookConsumerWidget {
                     FilledButton.icon(
                       onPressed: () => showInviteUserDialog(context),
                       icon: const Icon(Icons.person_add),
-                      label: const Text('Invite Member'),
+                      label: Text(context.l10n.householdInviteUser),
                     ),
                   OutlinedButton.icon(
                     onPressed: () => showJoinHouseholdDialog(context, ref),
                     icon: const Icon(Icons.login),
-                    label: const Text('Join Another'),
+                    label: Text(context.l10n.householdJoinHousehold),
                   ),
                   if (!isOwner)
                     OutlinedButton.icon(
@@ -128,9 +128,9 @@ class HouseholdDetails extends HookConsumerWidget {
                       onPressed: () async {
                         final confirm = await showConfirmDialog(
                           context,
-                          title: 'Leave Household',
-                          content: 'Are you sure you want to leave this household?',
-                          confirmLabel: 'Leave',
+                          title: context.l10n.householdLeave,
+                          content: context.l10n.householdLeaveContent,
+                          confirmLabel: context.l10n.householdLeaveConfirm,
                           destructive: true,
                         );
                         if (confirm) {
@@ -138,7 +138,7 @@ class HouseholdDetails extends HookConsumerWidget {
                         }
                       },
                       icon: const Icon(Icons.exit_to_app),
-                      label: const Text('Leave Household'),
+                      label: Text(context.l10n.householdLeave),
                     ),
                 ],
               ),

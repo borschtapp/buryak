@@ -141,12 +141,12 @@ class RecipeTile extends HookConsumerWidget {
                 Flexible(
                   flex: 1,
                   child: Semantics(
-                    label: 'Total time: ${recipe.totalTime.toFormattedDuration()}',
+                    label: context.l10n.recipeTotalTimeLabel(recipe.totalTime.toFormattedDuration(context)),
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: IconLabel(
                         icon: Icons.timer_outlined,
-                        label: recipe.totalTime.toFormattedDuration(),
+                        label: recipe.totalTime.toFormattedDuration(context),
                         iconSize: 16,
                       ),
                     ),

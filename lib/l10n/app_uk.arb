@@ -1,0 +1,333 @@
+{
+  "@@locale": "uk",
+  "appTitle": "Борщ",
+  "navFeed": "Стрічка",
+  "navSaved": "Збережені",
+  "navMealPlan": "Меню",
+  "navShopping": "Покупки",
+  "navAccount": "Акаунт",
+  "errorSomethingWentWrong": "Щось пішло не так",
+  "errorTryAgain": "Спробувати знову",
+  "cancel": "Скасувати",
+  "save": "Зберегти",
+  "confirm": "Підтвердити",
+  "delete": "Видалити",
+  "close": "Закрити",
+  "refresh": "Оновити",
+  "loading": "Завантаження…",
+  "saveChanges": "Зберегти зміни",
+  "validatorEmail": "Введіть дійсну адресу електронної пошти.",
+  "validatorPasswordLength": "Пароль має містити щонайменше 8 символів.",
+  "validatorNameLength": "Ім'я має містити щонайменше 3 символи.",
+  "validatorUrl": "Введіть дійсну URL-адресу.",
+  "validatorText": "Текст надто короткий.",
+  "validatorFieldRequired": "Це поле є обов'язковим.",
+  "loginWelcomeBack": "З поверненням",
+  "loginTitle": "Увійдіть до свого акаунту",
+  "loginEmail": "Електронна пошта",
+  "loginEmailHint": "abc@приклад.ua",
+  "loginPassword": "Пароль",
+  "loginPasswordHint": "••••••••",
+  "loginShowPassword": "Показати пароль",
+  "loginHidePassword": "Приховати пароль",
+  "loginForgotPassword": "Забули пароль?",
+  "loginSubmit": "Увійти",
+  "loginRegisterCta": "Зареєструватись",
+  "registerTitle": "Створити акаунт",
+  "registerName": "Ім'я",
+  "registerNameHint": "Кухар",
+  "registerSubmit": "Зареєструватись",
+  "registerLoginCta": "Увійти",
+  "forgotPasswordTitle": "Забули пароль",
+  "forgotPasswordSubtitle": "Введіть свою адресу електронної пошти для отримання посилання для скидання.",
+  "forgotPasswordSubmit": "Надіслати посилання для скидання",
+  "forgotPasswordBackToLogin": "Назад до входу",
+  "forgotPasswordSuccess": "Якщо акаунт існує, посилання для скидання було надіслано.",
+  "resetPasswordTitle": "Скинути пароль",
+  "resetPasswordSubtitle": "Введіть свій новий пароль нижче.",
+  "resetPasswordSubmit": "Скинути пароль",
+  "resetPasswordBackToLogin": "Назад до входу",
+  "resetPasswordSuccess": "Пароль успішно оновлено.",
+  "resetPasswordNewPassword": "Новий пароль",
+  "accountTermsOfUse": "Умови використання",
+  "accountPrivacyPolicy": "Політика конфіденційності",
+  "accountLogout": "Вийти",
+  "accountDeleteAccount": "Видалити акаунт",
+  "accountDeletingAccount": "Видалення акаунту…",
+  "accountDeleteTitle": "Видалити акаунт",
+  "accountDeleteContent": "Це остаточно видалить ваш акаунт і всі пов'язані дані. Цю дію неможливо скасувати.",
+  "accountUserNotFound": "Користувача не знайдено. Будь ласка, увійдіть знову.",
+  "householdTitle": "Домогосподарство",
+  "householdNotMember": "Ви наразі не є учасником жодного домогосподарства.",
+  "householdMembersTitle": "Учасники:",
+  "householdYou": "Ви",
+  "householdOwnerLabel": "Власник",
+  "householdMemberLabel": "Учасник",
+  "householdRemoveMemberTitle": "Видалити учасника",
+  "householdRemoveMemberContent": "Видалити {name} з домогосподарства?",
+  "@householdRemoveMemberContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "householdRemoveMemberConfirm": "Видалити",
+  "householdLeaveContent": "Ви впевнені, що хочете покинути це домогосподарство?",
+  "householdLeaveConfirm": "Покинути",
+  "householdInviteUser": "Запросити користувача",
+  "householdJoinHousehold": "Приєднатись до домогосподарства",
+  "householdJoinInviteCode": "Код запрошення",
+  "householdJoinInviteCodeHint": "ABCD-1234",
+  "householdJoinHelper": "Введіть код запрошення, яким поділились з вами, щоб приєднатись до домогосподарства.",
+  "householdJoinSubmit": "Приєднатись",
+  "householdJoinCodeRequired": "Код є обов'язковим",
+  "householdJoinSuccess": "Успішно приєднались до домогосподарства!",
+  "householdRenameHousehold": "Перейменувати домогосподарство",
+  "householdRenameName": "Назва домогосподарства",
+  "householdRenameNameHint": "Моя кухня",
+  "householdRenameNameRequired": "Назва є обов'язковою",
+  "householdLeave": "Покинути домогосподарство",
+  "householdNoHousehold": "Немає домогосподарства",
+  "serverUrlTitle": "URL сервера",
+  "serverUrlLabel": "Залиште порожнім для демо-сервера",
+  "feedEmptyTitle": "Рецептів не знайдено",
+  "feedEmptySubtitle": "Спробуйте додати нову стрічку або стандартизувати наявні.",
+  "feedFilterEmptyTitle": "Немає результатів",
+  "feedFilterEmptySubtitle": "Спробуйте змінити пошук або фільтри.",
+  "feedClearFilters": "Очистити фільтри",
+  "feedsEmptyTitle": "Поки що немає стрічок",
+  "feedsEmptySubtitle": "Додайте URL стрічки, щоб відкривати рецепти з улюблених кулінарних блогів.",
+  "feedsRemoveFeedTitle": "Видалити стрічку",
+  "feedsRemoveFeedConfirm": "Видалити",
+  "feedsUndo": "Скасувати",
+  "importFromUrl": "Імпортувати з URL",
+  "importAddFeed": "Додати стрічку",
+  "importRecipeFeedUrl": "URL рецепту або стрічки",
+  "importFeedUrl": "URL стрічки",
+  "importSubmit": "Імпортувати",
+  "importAddSubmit": "Додати",
+  "importHelperRecipe": "Вставте посилання на рецепт або блог для імпорту.",
+  "importHelperFeed": "Вставте посилання на блог для підписки.",
+  "importSuccessRecipe": "Рецепт імпортовано.",
+  "importSuccessFeed": "Стрічку додано! Рецепти з'являться незабаром.",
+  "recipesCookbookEmptyTitle": "Книг рецептів не знайдено",
+  "recipesCookbookEmptySubtitle": "Створіть одну в розділі «Збережені».",
+  "recipesCookbooksUpdated": "Книги рецептів оновлено",
+  "recipesCollectionSelected": "Вибрано",
+  "recipesFilterTitle": "Фільтри",
+  "recipesFilterClearAll": "Очистити все",
+  "recipesFilterApply": "Застосувати",
+  "recipesSearchHint": "Пошук рецептів…",
+  "recipesFilterTooltip": "Фільтри",
+  "recipesFilterSortBy": "Сортувати за",
+  "recipesFilterSortNewest": "Найновіші",
+  "recipesFilterSortOldest": "Найстаріші",
+  "recipesFilterSortNameAZ": "Назва А–Я",
+  "recipesFilterSortNameZA": "Назва Я–А",
+  "recipesFilterCookTime": "Час приготування",
+  "recipesFilterAnyTime": "Будь-який час",
+  "recipesFilterUpToMinutes": "До {minutes} хвилин",
+  "@recipesFilterUpToMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "recipesFilterCuisine": "Кухня",
+  "recipesFilterDiet": "Дієта",
+  "recipesFilterCategory": "Категорія",
+  "recipesFilterPublisher": "Видавець",
+  "recipesFilterEquipment": "Обладнання",
+  "recipesFilterLoading": "Завантаження {title}…",
+  "@recipesFilterLoading": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "recipesFilterLoadError": "Не вдалося завантажити {title}",
+  "@recipesFilterLoadError": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "recipesIngredients": "Інгредієнти",
+  "recipesInstructions": "Інструкції",
+  "recipesPreparation": "Приготування",
+  "recipesStartCooking": "Почати готувати",
+  "recipesNutritionTitle": "Харчова цінність",
+  "recipesNutritionFacts": "Цінність",
+  "recipesNutritionPerServing": "На порцію: {size}",
+  "@recipesNutritionPerServing": {
+    "placeholders": {
+      "size": { "type": "String" }
+    }
+  },
+  "recipesNutritionCalories": "Калорії",
+  "recipesNutritionProtein": "Білки",
+  "recipesNutritionFat": "Жири",
+  "recipesNutritionCarbs": "Вуглеводи",
+  "recipesNutritionSaturatedFat": "Насичені жири",
+  "recipesNutritionFiber": "Клітковина",
+  "recipesNutritionSugar": "Цукор",
+  "recipesNutritionSodium": "Натрій",
+  "recipesPublishedDate": "Опубліковано: {date}",
+  "@recipesPublishedDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "recipeCook": "Готувати",
+  "recipePlan": "Планувати",
+  "recipeShop": "Купити",
+  "recipeShareTooltip": "Поділитись",
+  "recipeSaveTooltip": "Зберегти",
+  "recipeUnsaveTooltip": "Видалити",
+  "recipeLikeTooltip": "Подобається",
+  "recipeDislikeTooltip": "Не подобається",
+  "recipeLikeFailed": "Не вдалося оновити статус",
+  "cookingComplete": "Готово",
+  "cookingStepOf": "Крок {current} з {total}",
+  "@cookingStepOf": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "cookingExitTooltip": "Вийти з режиму приготування",
+  "cookingEnjoyMeal": "Смачного!",
+  "cookingMadeIt": "Готово",
+  "plannerEmptyTitle": "Страв не заплановано",
+  "plannerEmptySubtitle": "Додайте рецепти до свого меню.",
+  "plannerDate": "Дата",
+  "plannerMealType": "Тип прийому їжі",
+  "plannerServings": "Порції",
+  "plannerDecreaseServings": "Зменшити порції",
+  "plannerIncreaseServings": "Збільшити порції",
+  "plannerMealUpdated": "План харчування оновлено",
+  "plannerMealAdded": "Додано до плану харчування",
+  "plannerAddToPlan": "Додати до плану",
+  "shoppingEmptyTitle": "Список покупок порожній",
+  "shoppingEmptySubtitle": "Натисніть +, щоб додати товари.",
+  "shoppingAddItem": "Додати товар",
+  "shoppingAddItemTitle": "Додати товар",
+  "shoppingAddItemHint": "напр. Молоко",
+  "shoppingAddItemLabel": "Назва продукту",
+  "shoppingEditItem": "Редагувати товар",
+  "shoppingItemUpdated": "Товар оновлено",
+  "shoppingItemAmount": "Кількість",
+  "shoppingItemUnit": "Одиниця",
+  "shoppingItemName": "Назва",
+  "shoppingItemField": "Товар",
+  "shoppingAddToShoppingTitle": "Додати до покупок",
+  "shoppingNoIngredients": "Інгредієнтів для цього рецепту не знайдено.",
+  "shoppingAddToList": "Додати до списку",
+  "shoppingAllIngredientsAdded": "Всі інгредієнти додано до списку покупок",
+  "shoppingPartialIngredientsAdded": "Додано {count} з {total} інгредієнтів",
+  "@shoppingPartialIngredientsAdded": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "authorPublishedBy": "Опубліковано: ",
+  "authorSourceLinkError": "Не вдалося відкрити посилання на джерело",
+  "updateAvailableTitle": "Доступне оновлення",
+  "updateAvailableContent": "Доступна нова версія. Оновіть, щоб продовжити.",
+  "updateVersionAvailable": "Версія {version} доступна",
+  "@updateVersionAvailable": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "updateDownloading": "Завантаження оновлення…",
+  "updateDownloadFailed": "Завантаження не вдалося. Спробуйте ще раз.",
+  "updateReadyToInstall": "Нова версія Борщу готова до встановлення.",
+  "updateNow": "Оновити",
+  "updateLater": "Пізніше",
+  "appVersion": "Версія {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "settingsLanguage": "Мова",
+  "settingsLanguageSystem": "Системна",
+  "manageFeedsTitle": "Керування стрічками",
+  "cookbookDefaultTitle": "Книга рецептів",
+  "savedTabRecipes": "Рецепти",
+  "savedTabCookbooks": "Книги рецептів",
+  "plannerServingsCount": "{count, plural, =1{1 порція} few{{count} порції} many{{count} порцій} other{{count} порції}}",
+  "@plannerServingsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mealTypeBreakfast": "Сніданок",
+  "mealTypeLunch": "Обід",
+  "mealTypeDinner": "Вечеря",
+  "mealTypeSnack": "Перекус",
+  "inviteToHousehold": "Запросити до домогосподарства",
+  "inviteSendEmailDescription": "Надіслати запрошення на електронну пошту:",
+  "inviteEmailAddress": "Електронна адреса",
+  "inviteEmailHint": "друг@приклад.ua",
+  "inviteSent": "Запрошення надіслано!",
+  "inviteOrGenerateLink": "Або згенеруйте посилання для поширення:",
+  "inviteShareLink": "Поділитися посиланням",
+  "inviteSendEmailButton": "Надіслати запрошення на пошту",
+  "inviteGenerateShareLink": "Створити посилання для запрошення",
+  "inviteShareText": "Приєднуйся до мого домогосподарства у Smetana: {url}",
+  "@inviteShareText": {
+    "placeholders": {
+      "url": { "type": "String" }
+    }
+  },
+  "cookingPrepareToCook": "Підготовка до приготування",
+  "cookingCookTimeLabel": "Час приготування: {duration}",
+  "@cookingCookTimeLabel": {
+    "placeholders": {
+      "duration": { "type": "String" }
+    }
+  },
+  "cookingPreviousStep": "Попередній крок",
+  "cookingNextStep": "Наступний крок",
+  "collectionEmptyTitle": "Рецептів ще немає",
+  "collectionEmptySubtitle": "Ця книга рецептів порожня. Додайте рецепти з вашої бібліотеки або імпортуйте нові.",
+  "plannerMealFallback": "Страва",
+  "plannerMealPlanFallback": "Планування харчування",
+  "plannerEditMeal": "Редагувати {name}",
+  "@plannerEditMeal": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipeYieldServings": "{count} порцій",
+  "@recipeYieldServings": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipeTotalTimeLabel": "Загальний час: {duration}",
+  "@recipeTotalTimeLabel": {
+    "placeholders": {
+      "duration": { "type": "String" }
+    }
+  },
+  "durationHoursMinutes": "{hours} год {minutes} хв",
+  "@durationHoursMinutes": {
+    "placeholders": {
+      "hours": { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+  "durationHours": "{hours} год",
+  "@durationHours": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "durationMinutes": "{minutes} хв",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "durationNotAvailable": "н/д"
+}

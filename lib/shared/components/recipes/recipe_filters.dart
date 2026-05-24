@@ -59,13 +59,6 @@ Future<List<Equipment>> _equipment(Ref ref, String? scope) async {
   return result.data;
 }
 
-/// Sort options for recipe lists.
-const _sortOptions = [
-  (label: 'Newest', field: SortField.id, order: SortOrder.desc),
-  (label: 'Oldest', field: SortField.id, order: SortOrder.asc),
-  (label: 'Name A–Z', field: SortField.name, order: SortOrder.asc),
-  (label: 'Name Z–A', field: SortField.name, order: SortOrder.desc),
-];
 
 class RecipeFilters extends HookConsumerWidget {
   final RecipeFilter initialFilter;
@@ -86,6 +79,14 @@ class RecipeFilters extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final sortOptions = [
+      (label: l10n.recipesFilterSortNewest, field: SortField.id, order: SortOrder.desc),
+      (label: l10n.recipesFilterSortOldest, field: SortField.id, order: SortOrder.asc),
+      (label: l10n.recipesFilterSortNameAZ, field: SortField.name, order: SortOrder.asc),
+      (label: l10n.recipesFilterSortNameZA, field: SortField.name, order: SortOrder.desc),
+    ];
+
     final filter = useState(initialFilter);
 
     void updateFilter(RecipeFilter Function(RecipeFilter) updater) {
@@ -96,7 +97,7 @@ class RecipeFilters extends HookConsumerWidget {
 
     final scaffold = Scaffold(
       appBar: AppBar(
-        title: const Text('Filters'),
+        title: Text(context.l10n.recipesFilterTitle),
         leading: context.isMobile
             ? null
             : IconButton(
@@ -111,7 +112,7 @@ class RecipeFilters extends HookConsumerWidget {
                 filter.value = const RecipeFilter();
                 onFilterChanged?.call(filter.value);
               },
-              child: const Text('Clear all'),
+              child: Text(context.l10n.recipesFilterClearAll),
             ),
           ),
         ],
@@ -119,7 +120,7 @@ class RecipeFilters extends HookConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingSmall),
         children: [
-          const _SectionHeader('Sort by'),
+          _SectionHeader(l10n.recipesFilterSortBy),
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: UIConstants.paddingMedium,
@@ -129,7 +130,7 @@ class RecipeFilters extends HookConsumerWidget {
               spacing: UIConstants.paddingSmall,
               runSpacing: UIConstants.paddingSmall,
               children: [
-                for (final opt in _sortOptions)
+                for (final opt in sortOptions)
                   FilterChip(
                     label: Text(opt.label),
                     selected: filter.value.sort == opt.field && filter.value.order == opt.order,
@@ -138,7 +139,7 @@ class RecipeFilters extends HookConsumerWidget {
               ],
             ),
           ),
-          const _SectionHeader('Cook Time'),
+          _SectionHeader(l10n.recipesFilterCookTime),
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: UIConstants.paddingMedium,
@@ -148,7 +149,9 @@ class RecipeFilters extends HookConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  filter.value.cookTimeMax == null ? 'Any time' : 'Up to ${(filter.value.cookTimeMax! / 60).round()} minutes',
+                  filter.value.cookTimeMax == null
+                      ? l10n.recipesFilterAnyTime
+                      : l10n.recipesFilterUpToMinutes((filter.value.cookTimeMax! / 60).round()),
                   style: context.textTheme.bodySmall,
                 ),
                 const SizedBox(height: UIConstants.paddingSmall),
@@ -166,28 +169,28 @@ class RecipeFilters extends HookConsumerWidget {
           ),
           if (showTaxonomyFilters) ...[
             _FilterSection<Taxonomy>(
-              title: 'Cuisine',
+              title: l10n.recipesFilterCuisine,
               provider: _taxonomiesByTypeProvider('cuisine', scope),
               itemMapper: (t) => (id: t.id, label: t.label ?? t.slug ?? t.id, count: t.totalRecipes),
               selectedIds: filter.value.taxonomyIds,
               onToggle: (id) => updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
             ),
             _FilterSection<Taxonomy>(
-              title: 'Diet',
+              title: l10n.recipesFilterDiet,
               provider: _taxonomiesByTypeProvider('diet', scope),
               itemMapper: (t) => (id: t.id, label: t.label ?? t.slug ?? t.id, count: t.totalRecipes),
               selectedIds: filter.value.taxonomyIds,
               onToggle: (id) => updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
             ),
             _FilterSection<Taxonomy>(
-              title: 'Category',
+              title: l10n.recipesFilterCategory,
               provider: _taxonomiesByTypeProvider('category', scope),
               itemMapper: (t) => (id: t.id, label: t.label ?? t.slug ?? t.id, count: t.totalRecipes),
               selectedIds: filter.value.taxonomyIds,
               onToggle: (id) => updateFilter((f) => f.copyWith(taxonomyIds: f.taxonomyIds.toggled(id))),
             ),
             _FilterSection<Publisher>(
-              title: 'Publisher',
+              title: l10n.recipesFilterPublisher,
               provider: _topPublishersProvider(scope),
               itemMapper: (p) => (id: p.id, label: p.name, count: p.totalRecipes),
               selectedIds: filter.value.publisherIds,
@@ -195,7 +198,7 @@ class RecipeFilters extends HookConsumerWidget {
             ),
           ],
           _FilterSection<Equipment>(
-            title: 'Equipment',
+            title: l10n.recipesFilterEquipment,
             provider: _equipmentProvider(scope),
             itemMapper: (e) => (id: e.id, label: e.name, count: e.totalRecipes),
             selectedIds: filter.value.equipmentIds,
@@ -210,7 +213,7 @@ class RecipeFilters extends HookConsumerWidget {
                 padding: const EdgeInsets.all(UIConstants.paddingMedium),
                 child: FilledButton(
                   onPressed: () => Navigator.pop(context, filter.value),
-                  child: const Text('Apply'),
+                  child: Text(context.l10n.recipesFilterApply),
                 ),
               ),
             )
@@ -296,14 +299,14 @@ class _FilterSection<T> extends ConsumerWidget {
               ],
             );
           },
-          loading: () => LoadingWithMessage(message: 'Loading $title...'),
+          loading: () => LoadingWithMessage(message: context.l10n.recipesFilterLoading(title)),
           error: (e, s) => Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: UIConstants.paddingMedium,
               vertical: UIConstants.paddingSmall,
             ),
             child: Text(
-              'Failed to load $title',
+              context.l10n.recipesFilterLoadError(title),
               style: context.textTheme.bodySmall?.copyWith(color: context.colors.error),
             ),
           ),

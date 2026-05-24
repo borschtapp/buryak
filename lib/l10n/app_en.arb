@@ -1,0 +1,333 @@
+{
+  "@@locale": "en",
+  "appTitle": "Borscht",
+  "navFeed": "Feed",
+  "navSaved": "Saved",
+  "navMealPlan": "Meal Plan",
+  "navShopping": "Shopping",
+  "navAccount": "Account",
+  "errorSomethingWentWrong": "Something went wrong",
+  "errorTryAgain": "Try Again",
+  "cancel": "Cancel",
+  "save": "Save",
+  "confirm": "Confirm",
+  "delete": "Delete",
+  "close": "Close",
+  "refresh": "Refresh",
+  "loading": "Loading…",
+  "saveChanges": "Save changes",
+  "validatorEmail": "Please enter a valid email address.",
+  "validatorPasswordLength": "Password must be at least 8 characters.",
+  "validatorNameLength": "Name must be at least 3 characters.",
+  "validatorUrl": "Please enter a valid URL.",
+  "validatorText": "Text is too short.",
+  "validatorFieldRequired": "This field is required.",
+  "loginWelcomeBack": "Welcome back",
+  "loginTitle": "Login to your account",
+  "loginEmail": "Email",
+  "loginEmailHint": "abc@example.com",
+  "loginPassword": "Password",
+  "loginPasswordHint": "••••••••",
+  "loginShowPassword": "Show password",
+  "loginHidePassword": "Hide password",
+  "loginForgotPassword": "Forgot password?",
+  "loginSubmit": "Login now",
+  "loginRegisterCta": "Register",
+  "registerTitle": "Create an account",
+  "registerName": "Name",
+  "registerNameHint": "Chef",
+  "registerSubmit": "Register",
+  "registerLoginCta": "Login",
+  "forgotPasswordTitle": "Forgot password",
+  "forgotPasswordSubtitle": "Enter your email address to receive a password reset link.",
+  "forgotPasswordSubmit": "Send reset link",
+  "forgotPasswordBackToLogin": "Back to Login",
+  "forgotPasswordSuccess": "If an account exists, a reset link has been sent.",
+  "resetPasswordTitle": "Reset password",
+  "resetPasswordSubtitle": "Enter your new password below.",
+  "resetPasswordSubmit": "Reset password",
+  "resetPasswordBackToLogin": "Back to Login",
+  "resetPasswordSuccess": "Password updated successfully.",
+  "resetPasswordNewPassword": "New Password",
+  "accountTermsOfUse": "Terms of Use",
+  "accountPrivacyPolicy": "Privacy Policy",
+  "accountLogout": "Logout",
+  "accountDeleteAccount": "Delete Account",
+  "accountDeletingAccount": "Deleting Account…",
+  "accountDeleteTitle": "Delete Account",
+  "accountDeleteContent": "This will permanently delete your account and all associated data. This action cannot be undone.",
+  "accountUserNotFound": "User not found. Please log in again.",
+  "householdTitle": "Household",
+  "householdNotMember": "You are not currently part of a household.",
+  "householdMembersTitle": "Members:",
+  "householdYou": "You",
+  "householdOwnerLabel": "Owner",
+  "householdMemberLabel": "Member",
+  "householdRemoveMemberTitle": "Remove Member",
+  "householdRemoveMemberContent": "Remove {name} from the household?",
+  "@householdRemoveMemberContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "householdRemoveMemberConfirm": "Remove",
+  "householdLeaveContent": "Are you sure you want to leave this household?",
+  "householdLeaveConfirm": "Leave",
+  "householdInviteUser": "Invite User",
+  "householdJoinHousehold": "Join Household",
+  "householdJoinInviteCode": "Invite Code",
+  "householdJoinInviteCodeHint": "ABCD-1234",
+  "householdJoinHelper": "Enter the invite code shared with you to join their household.",
+  "householdJoinSubmit": "Join",
+  "householdJoinCodeRequired": "Code is required",
+  "householdJoinSuccess": "Successfully joined household!",
+  "householdRenameHousehold": "Rename Household",
+  "householdRenameName": "Household Name",
+  "householdRenameNameHint": "My Kitchen",
+  "householdRenameNameRequired": "Name is required",
+  "householdLeave": "Leave Household",
+  "householdNoHousehold": "No household",
+  "serverUrlTitle": "Server URL",
+  "serverUrlLabel": "Leave empty to use demo server",
+  "feedEmptyTitle": "No recipes found",
+  "feedEmptySubtitle": "Try adding a new feed or standardizing existing ones.",
+  "feedFilterEmptyTitle": "No results",
+  "feedFilterEmptySubtitle": "Try adjusting your search or filters.",
+  "feedClearFilters": "Clear filters",
+  "feedsEmptyTitle": "No feeds yet",
+  "feedsEmptySubtitle": "Add a feed URL to start discovering recipes from your favourite food blogs.",
+  "feedsRemoveFeedTitle": "Remove Feed",
+  "feedsRemoveFeedConfirm": "Remove",
+  "feedsUndo": "Undo",
+  "importFromUrl": "Import from URL",
+  "importAddFeed": "Add Feed",
+  "importRecipeFeedUrl": "Recipe or Feed URL",
+  "importFeedUrl": "Feed URL",
+  "importSubmit": "Import",
+  "importAddSubmit": "Add",
+  "importHelperRecipe": "Paste a link to a recipe or a blog feed to import it.",
+  "importHelperFeed": "Paste a link to a blog feed to subscribe to it.",
+  "importSuccessRecipe": "Recipe imported.",
+  "importSuccessFeed": "Feed added! Recipes will appear shortly.",
+  "recipesCookbookEmptyTitle": "No cookbooks found",
+  "recipesCookbookEmptySubtitle": "Create one in Saved.",
+  "recipesCookbooksUpdated": "Cookbooks updated",
+  "recipesCollectionSelected": "Selected",
+  "recipesFilterTitle": "Filters",
+  "recipesFilterClearAll": "Clear all",
+  "recipesFilterApply": "Apply",
+  "recipesSearchHint": "Search recipes…",
+  "recipesFilterTooltip": "Filters",
+  "recipesFilterSortBy": "Sort by",
+  "recipesFilterSortNewest": "Newest",
+  "recipesFilterSortOldest": "Oldest",
+  "recipesFilterSortNameAZ": "Name A–Z",
+  "recipesFilterSortNameZA": "Name Z–A",
+  "recipesFilterCookTime": "Cook Time",
+  "recipesFilterAnyTime": "Any time",
+  "recipesFilterUpToMinutes": "Up to {minutes} minutes",
+  "@recipesFilterUpToMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "recipesFilterCuisine": "Cuisine",
+  "recipesFilterDiet": "Diet",
+  "recipesFilterCategory": "Category",
+  "recipesFilterPublisher": "Publisher",
+  "recipesFilterEquipment": "Equipment",
+  "recipesFilterLoading": "Loading {title}…",
+  "@recipesFilterLoading": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "recipesFilterLoadError": "Failed to load {title}",
+  "@recipesFilterLoadError": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "recipesIngredients": "Ingredients",
+  "recipesInstructions": "Instructions",
+  "recipesPreparation": "Preparation",
+  "recipesStartCooking": "Start Cooking",
+  "recipesNutritionTitle": "Nutrition Facts",
+  "recipesNutritionFacts": "Facts",
+  "recipesNutritionPerServing": "Per serving: {size}",
+  "@recipesNutritionPerServing": {
+    "placeholders": {
+      "size": { "type": "String" }
+    }
+  },
+  "recipesNutritionCalories": "Calories",
+  "recipesNutritionProtein": "Protein",
+  "recipesNutritionFat": "Fat",
+  "recipesNutritionCarbs": "Carbs",
+  "recipesNutritionSaturatedFat": "Saturated Fat",
+  "recipesNutritionFiber": "Fiber",
+  "recipesNutritionSugar": "Sugar",
+  "recipesNutritionSodium": "Sodium",
+  "recipesPublishedDate": "Published: {date}",
+  "@recipesPublishedDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "recipeCook": "Cook",
+  "recipePlan": "Plan",
+  "recipeShop": "Shop",
+  "recipeShareTooltip": "Share",
+  "recipeSaveTooltip": "Save",
+  "recipeUnsaveTooltip": "Unsave",
+  "recipeLikeTooltip": "Like",
+  "recipeDislikeTooltip": "Dislike",
+  "recipeLikeFailed": "Failed to update liked status",
+  "cookingComplete": "Complete",
+  "cookingStepOf": "Step {current} of {total}",
+  "@cookingStepOf": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "cookingExitTooltip": "Exit cooking mode",
+  "cookingEnjoyMeal": "Enjoy your meal!",
+  "cookingMadeIt": "Made it",
+  "plannerEmptyTitle": "No meals planned",
+  "plannerEmptySubtitle": "Add recipes to your plan.",
+  "plannerDate": "Date",
+  "plannerMealType": "Meal Type",
+  "plannerServings": "Servings",
+  "plannerDecreaseServings": "Decrease servings",
+  "plannerIncreaseServings": "Increase servings",
+  "plannerMealUpdated": "Meal plan updated",
+  "plannerMealAdded": "Added to meal plan",
+  "plannerAddToPlan": "Add to plan",
+  "shoppingEmptyTitle": "Your shopping list is empty",
+  "shoppingEmptySubtitle": "Tap the + button to add items you need for your recipes.",
+  "shoppingAddItem": "Add item",
+  "shoppingAddItemTitle": "Add Item",
+  "shoppingAddItemHint": "e.g. Milk",
+  "shoppingAddItemLabel": "Product Name",
+  "shoppingEditItem": "Edit item",
+  "shoppingItemUpdated": "Item updated",
+  "shoppingItemAmount": "Amount",
+  "shoppingItemUnit": "Unit",
+  "shoppingItemName": "Name",
+  "shoppingItemField": "Item",
+  "shoppingAddToShoppingTitle": "Add to shopping",
+  "shoppingNoIngredients": "No ingredients found for this recipe.",
+  "shoppingAddToList": "Add to list",
+  "shoppingAllIngredientsAdded": "All ingredients added to shopping list",
+  "shoppingPartialIngredientsAdded": "Added {count} of {total} ingredients",
+  "@shoppingPartialIngredientsAdded": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "authorPublishedBy": "Published by ",
+  "authorSourceLinkError": "Could not open source link",
+  "updateAvailableTitle": "Update Available",
+  "updateAvailableContent": "A new version is available. Please update to continue.",
+  "updateVersionAvailable": "Version {version} available",
+  "@updateVersionAvailable": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "updateDownloading": "Downloading update…",
+  "updateDownloadFailed": "Download failed. Please try again.",
+  "updateReadyToInstall": "A new version of Borscht is ready to install.",
+  "updateNow": "Update",
+  "updateLater": "Later",
+  "appVersion": "Version {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "settingsLanguage": "Language",
+  "settingsLanguageSystem": "System",
+  "manageFeedsTitle": "Manage Feeds",
+  "cookbookDefaultTitle": "Cookbook",
+  "savedTabRecipes": "Recipes",
+  "savedTabCookbooks": "Cookbooks",
+  "plannerServingsCount": "{count, plural, =1{1 serving} other{{count} servings}}",
+  "@plannerServingsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mealTypeBreakfast": "Breakfast",
+  "mealTypeLunch": "Lunch",
+  "mealTypeDinner": "Dinner",
+  "mealTypeSnack": "Snack",
+  "inviteToHousehold": "Invite to Household",
+  "inviteSendEmailDescription": "Send an invite directly via email:",
+  "inviteEmailAddress": "Email Address",
+  "inviteEmailHint": "friend@example.com",
+  "inviteSent": "Invite sent!",
+  "inviteOrGenerateLink": "Or generate a link to share via other apps:",
+  "inviteShareLink": "Share Link",
+  "inviteSendEmailButton": "Send Email Invite",
+  "inviteGenerateShareLink": "Generate Share Link",
+  "inviteShareText": "Join my household on Smetana: {url}",
+  "@inviteShareText": {
+    "placeholders": {
+      "url": { "type": "String" }
+    }
+  },
+  "cookingPrepareToCook": "Prepare to cook",
+  "cookingCookTimeLabel": "Cook: {duration}",
+  "@cookingCookTimeLabel": {
+    "placeholders": {
+      "duration": { "type": "String" }
+    }
+  },
+  "cookingPreviousStep": "Previous step",
+  "cookingNextStep": "Next step",
+  "collectionEmptyTitle": "No recipes yet",
+  "collectionEmptySubtitle": "This cookbook is empty. Add recipes from your library or import new ones.",
+  "plannerMealFallback": "Meal",
+  "plannerMealPlanFallback": "Meal plan",
+  "plannerEditMeal": "Edit {name}",
+  "@plannerEditMeal": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipeYieldServings": "{count} servings",
+  "@recipeYieldServings": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipeTotalTimeLabel": "Total time: {duration}",
+  "@recipeTotalTimeLabel": {
+    "placeholders": {
+      "duration": { "type": "String" }
+    }
+  },
+  "durationHoursMinutes": "{hours}h {minutes}m",
+  "@durationHoursMinutes": {
+    "placeholders": {
+      "hours": { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+  "durationHours": "{hours}h",
+  "@durationHours": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "durationMinutes": "{minutes}m",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "durationNotAvailable": "n/a"
+}

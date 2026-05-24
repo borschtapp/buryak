@@ -28,19 +28,21 @@ class DialogInviteUser extends HookConsumerWidget {
     final isLinkLoading = useState(false);
     final generatedCode = useState<String?>(null);
 
+    final l10n = context.l10n;
+
     return AlertDialog(
-      title: const Text('Invite to Household'),
+      title: Text(l10n.inviteToHousehold),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Send an invite directly via email:'),
+          Text(l10n.inviteSendEmailDescription),
           const SizedBox(height: UIConstants.paddingSmall),
           TextField(
             controller: emailController,
-            decoration: const InputDecoration(
-              labelText: 'Email Address',
-              hintText: 'friend@example.com',
+            decoration: InputDecoration(
+              labelText: l10n.inviteEmailAddress,
+              hintText: l10n.inviteEmailHint,
             ),
             keyboardType: TextInputType.emailAddress,
           ),
@@ -55,7 +57,7 @@ class DialogInviteUser extends HookConsumerWidget {
               try {
                 await ref.read(householdProvider.notifier).inviteViaEmail(email);
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invite sent!')));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.inviteSent)));
                   emailController.clear();
                 }
               } catch (e) {
@@ -64,12 +66,12 @@ class DialogInviteUser extends HookConsumerWidget {
                 if (context.mounted) isEmailLoading.value = false;
               }
             },
-            child: const IconLabel(icon: Icons.email, label: 'Send Email Invite', iconSize: 24, spacing: 8),
+            child: IconLabel(icon: Icons.email, label: l10n.inviteSendEmailButton, iconSize: 24, spacing: 8),
           ),
           const SizedBox(height: UIConstants.paddingLarge),
           const Divider(),
           const SizedBox(height: UIConstants.paddingMedium),
-          const Text('Or generate a link to share via other apps:'),
+          Text(l10n.inviteOrGenerateLink),
           const SizedBox(height: UIConstants.paddingSmall),
           if (generatedCode.value != null) ...[
             Container(
@@ -89,12 +91,12 @@ class DialogInviteUser extends HookConsumerWidget {
               onPressed: () {
                 SharePlus.instance.share(
                   ShareParams(
-                    text: 'Join my household on Smetana: ${AppConstants.baseUrl}/join?code=${generatedCode.value}',
+                    text: l10n.inviteShareText('${AppConstants.baseUrl}/join?code=${generatedCode.value}'),
                   ),
                 );
               },
               icon: const Icon(Icons.share),
-              label: const Text('Share Link'),
+              label: Text(l10n.inviteShareLink),
             ),
           ] else ...[
             LoadingButton(
@@ -113,7 +115,7 @@ class DialogInviteUser extends HookConsumerWidget {
                 }
               },
               type: LoadingButtonType.outlined,
-              child: const IconLabel(icon: Icons.link, label: 'Generate Share Link', iconSize: 24, spacing: 8),
+              child: IconLabel(icon: Icons.link, label: l10n.inviteGenerateShareLink, iconSize: 24, spacing: 8),
             ),
           ],
         ],
@@ -121,7 +123,7 @@ class DialogInviteUser extends HookConsumerWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
+          child: Text(context.l10n.close),
         ),
       ],
     );

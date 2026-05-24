@@ -7,6 +7,7 @@ import '../../shared/layouts/standard_auth_form.dart';
 import '../../shared/repositories/auth_repository.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/error_extensions.dart';
+import '../../shared/util/extensions.dart';
 import '../../shared/util/validator.dart';
 
 class ResetPasswordScreen extends HookConsumerWidget {
@@ -30,7 +31,7 @@ class ResetPasswordScreen extends HookConsumerWidget {
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Password updated successfully.')),
+              SnackBar(content: Text(context.l10n.resetPasswordSuccess)),
             );
             context.goNamed(RouteNames.login);
           }
@@ -43,15 +44,15 @@ class ResetPasswordScreen extends HookConsumerWidget {
     }
 
     return StandardAuthForm(
-      title: 'Reset Password',
-      subtitle: 'Enter your new password below.',
+      title: context.l10n.resetPasswordTitle,
+      subtitle: context.l10n.resetPasswordSubtitle,
       formKey: formKey,
       isLoading: isLoading.value,
       onSubmit: submit,
-      submitLabel: 'Reset Password',
+      submitLabel: context.l10n.resetPasswordSubmit,
       secondaryButton: TextButton(
         onPressed: () => context.goNamed(RouteNames.login),
-        child: const Text('Back to Login'),
+        child: Text(context.l10n.resetPasswordBackToLogin),
       ),
       children: [
         TextFormField(
@@ -59,10 +60,10 @@ class ResetPasswordScreen extends HookConsumerWidget {
           onFieldSubmitted: (_) => submit(),
           controller: passwordController,
           autofillHints: const [AutofillHints.newPassword],
-          validator: (value) => Validator.validatePassword(value ?? ''),
+          validator: (value) => Validator.validatePassword(value ?? '', context.l10n),
           decoration: InputDecoration(
-            labelText: 'New Password',
-            hintText: '********',
+            labelText: context.l10n.resetPasswordNewPassword,
+            hintText: context.l10n.loginPasswordHint,
             suffixIcon: GestureDetector(
               onTap: () => showPassword.value = !showPassword.value,
               child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),

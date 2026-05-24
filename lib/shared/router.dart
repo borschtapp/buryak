@@ -19,50 +19,52 @@ import '../features/recipes/screen_collection.dart';
 import '../features/recipes/screen_recipe.dart';
 import '../features/recipes/screen_saved.dart';
 import '../features/shopping/screen_shopping.dart';
+import '../l10n/app_localizations.dart';
 import 'layouts/root_layout.dart';
 import 'models/recipe.dart';
 import 'providers/saved.dart';
 import 'providers/shell.dart';
 import 'providers/user.dart';
 import 'route_names.dart';
+import 'util/extensions.dart';
 
 part 'router.g.dart';
 
-const List<AppDestination> destinations = [
+final List<AppDestination> destinations = [
   AppDestination(
-    label: 'Feed',
+    label: (l10n) => l10n.navFeed,
     route: '/',
     name: RouteNames.feed,
-    icon: Icon(Icons.explore_outlined),
-    selectedIcon: Icon(Icons.explore),
+    icon: const Icon(Icons.explore_outlined),
+    selectedIcon: const Icon(Icons.explore),
   ),
   AppDestination(
-    label: 'Saved',
+    label: (l10n) => l10n.navSaved,
     route: '/saved',
     name: RouteNames.saved,
-    icon: Icon(Icons.menu_book_outlined),
-    selectedIcon: Icon(Icons.menu_book),
+    icon: const Icon(Icons.menu_book_outlined),
+    selectedIcon: const Icon(Icons.menu_book),
   ),
   AppDestination(
-    label: 'Meal Plan',
+    label: (l10n) => l10n.navMealPlan,
     route: '/planner',
     name: RouteNames.planner,
-    icon: Icon(Icons.today_outlined),
-    selectedIcon: Icon(Icons.today),
+    icon: const Icon(Icons.today_outlined),
+    selectedIcon: const Icon(Icons.today),
   ),
   AppDestination(
-    label: 'Shopping',
+    label: (l10n) => l10n.navShopping,
     route: '/shopping',
     name: RouteNames.shopping,
-    icon: Icon(Icons.shopping_basket_outlined),
-    selectedIcon: Icon(Icons.shopping_basket),
+    icon: const Icon(Icons.shopping_basket_outlined),
+    selectedIcon: const Icon(Icons.shopping_basket),
   ),
   AppDestination(
-    label: 'Account',
+    label: (l10n) => l10n.navAccount,
     route: '/account',
     name: RouteNames.account,
-    icon: Icon(Icons.manage_accounts_outlined),
-    selectedIcon: Icon(Icons.manage_accounts),
+    icon: const Icon(Icons.manage_accounts_outlined),
+    selectedIcon: const Icon(Icons.manage_accounts),
   ),
 ];
 
@@ -78,7 +80,7 @@ class AppDestination {
 
   final String route;
   final String name;
-  final String label;
+  final String Function(AppLocalizations) label;
   final Icon icon;
   final Icon selectedIcon;
   final Widget? child;
@@ -142,7 +144,7 @@ const Map<String, _RouteConfig> _routeConfigs = {
 List<Widget> _buildFeedTabActions(BuildContext context) => [
   IconButton(
     icon: const Icon(Icons.dashboard_customize),
-    tooltip: 'Manage Feeds',
+    tooltip: context.l10n.manageFeedsTitle,
     onPressed: () => context.pushNamed(RouteNames.feeds),
   ),
 ];
@@ -439,7 +441,7 @@ AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? rou
       title: Consumer(
         builder: (context, ref, _) {
           final collectionAsync = ref.watch(collectionDetailsProvider(collectionId));
-          return Text(collectionAsync.whenOrNull(data: (c) => c.name) ?? 'Cookbook');
+          return Text(collectionAsync.whenOrNull(data: (c) => c.name) ?? context.l10n.cookbookDefaultTitle);
         },
       ),
       leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.saved)),
@@ -447,7 +449,7 @@ AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? rou
   }
   if (routeName == RouteNames.feeds) {
     return AppBar(
-      title: const Text('Manage Feeds'),
+      title: Text(context.l10n.manageFeedsTitle),
       leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.feed)),
       actions: [
         PopupMenuButton<String>(

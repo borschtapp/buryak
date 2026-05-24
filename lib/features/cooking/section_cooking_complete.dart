@@ -44,7 +44,7 @@ class CookingCompletePage extends StatelessWidget {
             ],
 
             Text(
-              'Enjoy your meal!',
+              context.l10n.cookingEnjoyMeal,
               style: context.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -63,7 +63,7 @@ class CookingCompletePage extends StatelessWidget {
             FilledButton.icon(
               onPressed: onDone,
               icon: const Icon(Icons.check_circle_outline),
-              label: const Text('Made it'),
+              label: Text(context.l10n.cookingMadeIt),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: UIConstants.paddingMedium),
                 textStyle: context.textTheme.titleMedium,

@@ -91,7 +91,7 @@ class RecipeMobileView extends HookWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text('${recipe.ingredients?.length ?? 0}', style: context.textTheme.titleMedium),
-                      Text('Ingredients', style: context.textTheme.labelSmall),
+                      Text(context.l10n.recipesIngredients, style: context.textTheme.labelSmall),
                     ],
                   ),
                 ),
@@ -99,8 +99,8 @@ class RecipeMobileView extends HookWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(recipe.totalTime.toFormattedDuration(), style: context.textTheme.titleMedium),
-                      Text('Instructions', style: context.textTheme.labelSmall),
+                      Text(recipe.totalTime.toFormattedDuration(context), style: context.textTheme.titleMedium),
+                      Text(context.l10n.recipesInstructions, style: context.textTheme.labelSmall),
                     ],
                   ),
                 ),
@@ -110,7 +110,7 @@ class RecipeMobileView extends HookWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Icon(Icons.restaurant_menu_outlined, size: 18),
-                        Text('Facts', style: context.textTheme.labelSmall),
+                        Text(context.l10n.recipesNutritionFacts, style: context.textTheme.labelSmall),
                       ],
                     ),
                   ),

@@ -26,7 +26,7 @@ class CookingIngredientsPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Prepare to cook',
+                  context.l10n.cookingPrepareToCook,
                   style: context.textTheme.headlineSmall,
                 ),
                 if (recipe.cookTime != null || recipe.totalTime != null) ...[
@@ -40,7 +40,7 @@ class CookingIngredientsPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Cook: ${(recipe.cookTime ?? recipe.totalTime).toFormattedDuration()}',
+                        context.l10n.cookingCookTimeLabel((recipe.cookTime ?? recipe.totalTime).toFormattedDuration(context)),
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: context.colors.onSurfaceVariant,
                         ),

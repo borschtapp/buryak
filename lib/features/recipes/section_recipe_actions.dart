@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../shared/components/recipes/dialog_select_collections.dart';
 import '../../shared/providers/saved.dart';
+import '../../shared/util/extensions.dart';
 import 'controller_recipe.dart';
 
 class RecipeActions extends HookConsumerWidget {
@@ -19,6 +20,7 @@ class RecipeActions extends HookConsumerWidget {
     final isSaved = ref.watch(recipeIsSavedProvider(recipeId));
     final recipe = ref.watch(recipeControllerProvider(recipeId)).value;
     final isCollected = recipe?.collections?.isNotEmpty ?? false;
+    final l10n = context.l10n;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -26,7 +28,7 @@ class RecipeActions extends HookConsumerWidget {
         IconButton(
           visualDensity: VisualDensity.compact,
           icon: const Icon(Icons.share),
-          tooltip: 'Share',
+          tooltip: l10n.recipeShareTooltip,
           onPressed: recipe == null
               ? null
               : () {
@@ -37,7 +39,7 @@ class RecipeActions extends HookConsumerWidget {
         IconButton(
           visualDensity: VisualDensity.compact,
           icon: Icon(isCollected ? Icons.collections_bookmark : Icons.bookmark_add_outlined),
-          tooltip: isCollected ? 'Unsave' : 'Save',
+          tooltip: isCollected ? l10n.recipeUnsaveTooltip : l10n.recipeSaveTooltip,
           onPressed: recipe == null
               ? null
               : () async {
@@ -55,14 +57,14 @@ class RecipeActions extends HookConsumerWidget {
         IconButton(
           visualDensity: VisualDensity.compact,
           icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline),
-          tooltip: isSaved ? 'Dislike' : 'Like',
+          tooltip: isSaved ? l10n.recipeDislikeTooltip : l10n.recipeLikeTooltip,
           onPressed: () async {
             try {
               await ref.read(recipeControllerProvider(recipeId).notifier).toggleSaved();
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Failed to update liked status')),
+                  SnackBar(content: Text(context.l10n.recipeLikeFailed)),
                 );
               }
             }

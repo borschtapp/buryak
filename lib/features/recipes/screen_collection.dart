@@ -6,6 +6,7 @@ import '../../shared/components/recipes/recipes_grid.dart';
 import '../../shared/layouts/app_list_scaffold.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/providers/saved.dart';
+import '../../shared/util/extensions.dart';
 
 class CollectionScreen extends ConsumerWidget {
   final String collectionId;
@@ -22,10 +23,10 @@ class CollectionScreen extends ConsumerWidget {
       value: recipesAsync,
       onRefresh: () async => ref.invalidate(provider),
       isEmpty: (data) => data.isEmpty,
-      emptyState: const EmptyState(
+      emptyState: EmptyState(
         icon: Icons.auto_stories_outlined,
-        title: 'No recipes yet',
-        subtitle: 'This cookbook is empty. Add recipes from your library or import new ones.',
+        title: context.l10n.collectionEmptyTitle,
+        subtitle: context.l10n.collectionEmptySubtitle,
       ),
       data: (recipes) => RecipesGrid(
         recipes,

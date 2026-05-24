@@ -27,11 +27,12 @@ class PlannerScreen extends ConsumerWidget {
       isEmpty: (data) => data.isEmpty,
       emptyState: EmptyState(
         icon: Icons.calendar_today_outlined,
-        title: 'No meals planned this week.',
+        title: context.l10n.plannerEmptyTitle,
+        subtitle: context.l10n.plannerEmptySubtitle,
         action: TextButton.icon(
           onPressed: () => ref.invalidate(mealPlanWeekProvider),
           icon: const Icon(Icons.refresh),
-          label: const Text('Refresh'),
+          label: Text(context.l10n.refresh),
         ),
       ),
       data: (entries) => ListView.separated(
@@ -42,7 +43,7 @@ class PlannerScreen extends ConsumerWidget {
           final entry = entries[index];
           return DismissibleTile(
             key: ValueKey(entry.id),
-            label: entry.recipe?.name ?? entry.description ?? 'Meal plan',
+            label: entry.recipe?.name ?? entry.description ?? context.l10n.plannerMealPlanFallback,
             onDelete: () async {
               try {
                 await ref.read(mealPlanWeekProvider.notifier).deletePlan(entry.id);
@@ -52,12 +53,12 @@ class PlannerScreen extends ConsumerWidget {
             },
             child: ListTile(
               leading: const Icon(Icons.restaurant_menu),
-              title: Text(entry.recipe?.name ?? entry.description ?? 'Meal'),
+              title: Text(entry.recipe?.name ?? entry.description ?? context.l10n.plannerMealFallback),
               subtitle: Text(
-                '${DateFormat('MMM d').format(entry.date)} · ${entry.mealType.name.capitalize()}',
+                '${DateFormat('MMM d', context.l10n.localeName).format(entry.date)} · ${entry.mealType.toLocalizedLabel(context)}',
               ),
               trailing: Text(
-                (entry.servings ?? 1).pluralize('serving'),
+                context.l10n.plannerServingsCount(entry.servings ?? 1),
                 style: context.textTheme.bodySmall,
               ),
               onTap: entry.recipeId != null ? () => context.pushNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!}) : null,

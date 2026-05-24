@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
 import '../models/release_info.dart';
+import '../util/extensions.dart';
 import '../util/logger.dart';
 
 enum _UpdateState { idle, downloading, error }
@@ -92,29 +93,29 @@ class UpdateDialog extends HookWidget {
 
     return AlertDialog(
       icon: const Icon(Icons.system_update),
-      title: Text('Version ${release.version} available'),
+      title: Text(context.l10n.updateVersionAvailable(release.version)),
       content: isDownloading
           ? Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Downloading update…'),
+                Text(context.l10n.updateDownloading),
                 const SizedBox(height: 12),
                 LinearProgressIndicator(value: progress.value > 0 ? progress.value : null),
               ],
             )
           : Text(
-              state.value == _UpdateState.error ? 'Download failed. Please try again.' : 'A new version of Borscht is ready to install.',
+              state.value == _UpdateState.error ? context.l10n.updateDownloadFailed : context.l10n.updateReadyToInstall,
             ),
       actions: [
         if (!isDownloading) ...[
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Later'),
+            child: Text(context.l10n.updateLater),
           ),
           FilledButton(
             onPressed: onUpdate,
-            child: const Text('Update'),
+            child: Text(context.l10n.updateNow),
           ),
         ],
       ],

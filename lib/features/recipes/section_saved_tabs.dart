@@ -66,7 +66,7 @@ class SavedTabs extends ConsumerWidget {
                   ref.invalidate(savedRecipesProvider);
                 },
                 icon: const Icon(Icons.filter_alt_off),
-                label: const Text('Clear filters'),
+                label: Text(context.l10n.feedClearFilters),
               ),
       ),
       data: (recipes) => RecipesGrid(

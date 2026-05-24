@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../router.dart' as router;
+import '../util/extensions.dart';
 import 'adaptive_navigation.dart';
 
 class RootLayout extends StatelessWidget {
@@ -53,7 +54,7 @@ class RootLayout extends StatelessWidget {
           floatingActionButton: floatingActionButton,
           extendBodyBehindAppBar: extendBodyBehindAppBar,
           destinations: router.destinations
-              .map((e) => NavigationDestination(icon: e.icon, selectedIcon: e.selectedIcon, label: e.label))
+              .map((e) => NavigationDestination(icon: e.icon, selectedIcon: e.selectedIcon, label: e.label(context.l10n)))
               .toList(),
           selectedIndex: currentIndex,
           onDestinationSelected: onSelected,

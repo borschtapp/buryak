@@ -8,6 +8,7 @@ import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
 import '../../shared/util/error_extensions.dart';
+import '../../shared/util/extensions.dart';
 import 'notifier_shopping.dart';
 
 class ShoppingBottomSheet extends HookConsumerWidget {
@@ -55,9 +56,10 @@ class ShoppingBottomSheet extends HookConsumerWidget {
 
           if (context.mounted) {
             context.pop();
+            final l10n = context.l10n;
             final message = successCount == selectedIngredients.length
-                ? 'All ingredients added to shopping list'
-                : 'Added $successCount of ${selectedIngredients.length} ingredients';
+                ? l10n.shoppingAllIngredientsAdded
+                : l10n.shoppingPartialIngredientsAdded(successCount, selectedIngredients.length);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(message)),
             );
@@ -76,7 +78,7 @@ class ShoppingBottomSheet extends HookConsumerWidget {
     );
 
     return StandardBottomSheet(
-      title: 'Add to shopping',
+      title: context.l10n.shoppingAddToShoppingTitle,
       showDragHandle: true,
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       child: Column(
@@ -84,9 +86,9 @@ class ShoppingBottomSheet extends HookConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (ingredients.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text('No ingredients found for this recipe.'),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(context.l10n.shoppingNoIngredients),
             )
           else
             Flexible(
@@ -118,7 +120,7 @@ class ShoppingBottomSheet extends HookConsumerWidget {
             child: LoadingButton(
               isLoading: isSaving.value,
               onPressed: selectedIngredientIds.value.isEmpty ? null : save,
-              child: const Text('Add to list'),
+              child: Text(context.l10n.shoppingAddToList),
             ),
           ),
         ],

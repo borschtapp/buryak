@@ -9,6 +9,7 @@ import '../../shared/hooks.dart';
 import '../../shared/layouts/app_list_scaffold.dart';
 import '../../shared/models/feed.dart';
 import '../../shared/util/error_extensions.dart';
+import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 import 'notifier_feed_list.dart';
 import 'section_feed_card.dart';
@@ -35,12 +36,12 @@ class FeedsScreen extends HookConsumerWidget {
       isEmpty: (data) => data.isEmpty,
       emptyState: EmptyState(
         icon: Icons.rss_feed_outlined,
-        title: 'No feeds yet',
-        subtitle: 'Add a feed URL to start discovering recipes from your favourite food blogs.',
+        title: context.l10n.feedsEmptyTitle,
+        subtitle: context.l10n.feedsEmptySubtitle,
         action: FilledButton.icon(
           onPressed: () => showImportDialog(context, ref, isFeedOnly: true),
           icon: const Icon(Icons.add),
-          label: const Text('Add Feed'),
+          label: Text(context.l10n.importAddFeed),
         ),
       ),
       data: (feeds) => ListView.separated(
@@ -54,9 +55,9 @@ class FeedsScreen extends HookConsumerWidget {
             label: feed.name,
             onConfirmDelete: () => showConfirmDialog(
               context,
-              title: 'Remove Feed',
+              title: context.l10n.feedsRemoveFeedTitle,
               content: 'Remove "${feed.name}" and all its imported recipes from your feed?',
-              confirmLabel: 'Remove',
+              confirmLabel: context.l10n.feedsRemoveFeedConfirm,
               destructive: true,
             ),
             onDelete: () => _deleteFeed(ref, context, feed),
@@ -80,7 +81,7 @@ class FeedsScreen extends HookConsumerWidget {
           SnackBar(
             content: Text('"${feed.name}" removed'),
             action: SnackBarAction(
-              label: 'Undo',
+              label: context.l10n.feedsUndo,
               onPressed: () async {
                 try {
                   await ref.read(feedListProvider.notifier).restoreFeed(feed);

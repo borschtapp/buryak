@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import '../util/ui_constants.dart';
 
 import '../util/extensions.dart';
+import '../util/ui_constants.dart';
 
 class ErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
-  final String title;
+  final String? title;
 
   const ErrorState({
     super.key,
     required this.message,
     this.onRetry,
-    this.title = 'Something went wrong',
+    this.title,
   });
 
   @override
@@ -30,7 +30,7 @@ class ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: UIConstants.paddingMedium),
             Text(
-              title,
+              title ?? context.l10n.errorSomethingWentWrong,
               style: context.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -49,7 +49,7 @@ class ErrorState extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Try Again'),
+                label: Text(context.l10n.errorTryAgain),
               ),
             ],
           ],

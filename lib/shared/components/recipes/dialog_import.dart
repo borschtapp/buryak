@@ -7,19 +7,21 @@ import '../../../features/feed/notifier_feed_list.dart';
 import '../../providers/saved.dart';
 import '../../repositories/import_repository.dart';
 import '../../route_names.dart';
+import '../../util/extensions.dart';
 import '../../util/validator.dart';
 import '../dialog_text_input.dart';
 
 void showImportDialog(BuildContext context, WidgetRef ref, {bool isFeedOnly = false}) {
+  final l10n = context.l10n;
   showDialog<void>(
     context: context,
     useRootNavigator: true,
     builder: (dialogContext) => TextInputDialog(
-      title: isFeedOnly ? 'Add Feed' : 'Import from URL',
-      hintText: isFeedOnly ? 'Feed URL' : 'Recipe or Feed URL',
-      helperText: isFeedOnly ? 'Paste a link to a blog feed to subscribe to it.' : 'Paste a link to a recipe or a blog feed to import it.',
-      submitLabel: isFeedOnly ? 'Add' : 'Import',
-      validator: (value) => Validator.validateUrl(Validator.extractUrl(value)),
+      title: isFeedOnly ? l10n.importAddFeed : l10n.importFromUrl,
+      hintText: isFeedOnly ? l10n.importFeedUrl : l10n.importRecipeFeedUrl,
+      helperText: isFeedOnly ? l10n.importHelperFeed : l10n.importHelperRecipe,
+      submitLabel: isFeedOnly ? l10n.importAddSubmit : l10n.importSubmit,
+      validator: (value) => Validator.validateUrl(Validator.extractUrl(value), l10n),
       onSubmit: (url, ctx) async {
         try {
           final cleanUrl = Validator.extractUrl(url);
@@ -39,7 +41,7 @@ void showImportDialog(BuildContext context, WidgetRef ref, {bool isFeedOnly = fa
             Navigator.pop(ctx);
             ScaffoldMessenger.of(ctx).showSnackBar(
               SnackBar(
-                content: Text(result.recipe != null ? 'Recipe imported.' : 'Feed added! Recipes will appear shortly.'),
+                content: Text(result.recipe != null ? l10n.importSuccessRecipe : l10n.importSuccessFeed),
                 backgroundColor: Colors.green,
               ),
             );

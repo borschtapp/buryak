@@ -20,11 +20,11 @@ class PlanBottomSheet extends HookConsumerWidget {
 
   const PlanBottomSheet({super.key, this.recipe, this.plan}) : assert(recipe != null || plan != null, 'Must provide either recipe or plan');
 
-  static final List<ButtonSegment<MealType>> _mealTypeSegments = MealType.values
+  List<ButtonSegment<MealType>> _mealTypeSegments(BuildContext context) => MealType.values
       .map(
         (type) => ButtonSegment<MealType>(
           value: type,
-          label: Text(type.name.capitalize()),
+          label: Text(type.toLocalizedLabel(context)),
         ),
       )
       .toList();
@@ -82,7 +82,7 @@ class PlanBottomSheet extends HookConsumerWidget {
         if (context.mounted) {
           context.pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(isEditing ? 'Meal plan updated' : 'Added to meal plan')),
+            SnackBar(content: Text(isEditing ? context.l10n.plannerMealUpdated : context.l10n.plannerMealAdded)),
           );
         }
       } catch (e) {
@@ -94,8 +94,11 @@ class PlanBottomSheet extends HookConsumerWidget {
       }
     }
 
-    final title = isEditing ? 'Edit ${plan!.recipe?.name ?? plan!.description ?? 'Meal'}' : 'Add to plan';
-    final buttonText = isEditing ? 'Save changes' : 'Add to plan';
+    final l10n = context.l10n;
+    final title = isEditing
+        ? l10n.plannerEditMeal(plan!.recipe?.name ?? plan!.description ?? l10n.plannerMealFallback)
+        : l10n.plannerAddToPlan;
+    final buttonText = isEditing ? l10n.saveChanges : l10n.plannerAddToPlan;
 
     return StandardBottomSheet(
       title: title,
@@ -105,17 +108,17 @@ class PlanBottomSheet extends HookConsumerWidget {
           Focus(
             autofocus: true,
             child: ListTile(
-              title: const Text('Date'),
+              title: Text(l10n.plannerDate),
               subtitle: Text(DateFormat('EEEE, MMMM d, yyyy').format(selectedDate.value)),
               trailing: const Icon(Icons.calendar_today),
               onTap: selectDate,
             ),
           ),
           const SizedBox(height: UIConstants.paddingMedium),
-          Text('Meal Type', style: context.textTheme.titleSmall),
+          Text(l10n.plannerMealType, style: context.textTheme.titleSmall),
           const SizedBox(height: UIConstants.paddingSmall),
           SegmentedButton<MealType>(
-            segments: _mealTypeSegments,
+            segments: _mealTypeSegments(context),
             selected: {selectedMealType.value},
             onSelectionChanged: (Set<MealType> newSelection) {
               selectedMealType.value = newSelection.first;
@@ -124,18 +127,18 @@ class PlanBottomSheet extends HookConsumerWidget {
           const SizedBox(height: UIConstants.paddingLarge),
           Row(
             children: [
-              Text('Servings', style: context.textTheme.titleSmall),
+              Text(l10n.plannerServings, style: context.textTheme.titleSmall),
               const Spacer(),
               IconButton(
                 onPressed: servings.value > 1 ? () => servings.value-- : null,
                 icon: const Icon(Icons.remove),
-                tooltip: 'Decrease servings',
+                tooltip: l10n.plannerDecreaseServings,
               ),
               Text('${servings.value}', style: context.textTheme.titleMedium),
               IconButton(
                 onPressed: servings.value < 99 ? () => servings.value++ : null,
                 icon: const Icon(Icons.add),
-                tooltip: 'Increase servings',
+                tooltip: l10n.plannerIncreaseServings,
               ),
             ],
           ),

@@ -6,8 +6,8 @@ Future<bool> showConfirmDialog(
   BuildContext context, {
   required String title,
   required String content,
-  String confirmLabel = 'Confirm',
-  String cancelLabel = 'Cancel',
+  String? confirmLabel,
+  String? cancelLabel,
   bool destructive = false,
 }) async {
   final result = await showDialog<bool>(
@@ -18,12 +18,12 @@ Future<bool> showConfirmDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx, false),
-          child: Text(cancelLabel),
+          child: Text(cancelLabel ?? context.l10n.cancel),
         ),
         TextButton(
           onPressed: () => Navigator.pop(ctx, true),
           style: destructive ? TextButton.styleFrom(foregroundColor: ctx.colors.error) : null,
-          child: Text(confirmLabel),
+          child: Text(confirmLabel ?? context.l10n.confirm),
         ),
       ],
     ),

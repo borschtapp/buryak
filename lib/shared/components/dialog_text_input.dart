@@ -75,7 +75,7 @@ class TextInputDialog extends HookConsumerWidget {
                 Expanded(
                   child: TextButton(
                     onPressed: isLoading.value ? null : () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(context.l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: UIConstants.paddingSmall),

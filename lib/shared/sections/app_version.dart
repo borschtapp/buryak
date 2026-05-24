@@ -33,7 +33,7 @@ class AppVersionText extends HookWidget {
       child: Padding(
         padding: padding,
         child: Text(
-          'Version $version',
+          context.l10n.appVersion(version),
           style: context.textTheme.bodySmall?.copyWith(
             color: context.colors.outline,
           ),

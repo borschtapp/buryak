@@ -83,7 +83,7 @@ class _MobileBottomActionBar extends StatelessWidget {
                     )
                   : null,
               icon: const Icon(Icons.local_fire_department, size: 18),
-              label: const Text('Cook'),
+              label: Text(context.l10n.recipeCook),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
               ),
@@ -97,7 +97,7 @@ class _MobileBottomActionBar extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
                 side: BorderSide(color: context.colors.primary),
               ),
-              child: const Text('Plan'),
+              child: Text(context.l10n.recipePlan),
             ),
           ),
           const SizedBox(width: UIConstants.paddingSmall),
@@ -108,7 +108,7 @@ class _MobileBottomActionBar extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
                 side: BorderSide(color: context.colors.primary),
               ),
-              child: const Text('Shop'),
+              child: Text(context.l10n.recipeShop),
             ),
           ),
         ],

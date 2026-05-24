@@ -11,6 +11,7 @@ import '../../shared/layouts/app_list_scaffold.dart';
 import '../../shared/layouts/searchable_grid_scaffold.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
+import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 import 'notifier_feed.dart';
 
@@ -54,20 +55,20 @@ class FeedScreen extends HookConsumerWidget {
         isEmpty: (results) => results.isEmpty,
         emptyState: EmptyState(
           icon: Icons.explore_outlined,
-          title: filter.isEmpty ? 'No recipes found' : 'No results',
-          subtitle: filter.isEmpty ? 'Try adding a new feed or standardizing existing ones.' : 'Try adjusting your search or filters.',
+          title: filter.isEmpty ? context.l10n.feedEmptyTitle : context.l10n.feedFilterEmptyTitle,
+          subtitle: filter.isEmpty ? context.l10n.feedEmptySubtitle : context.l10n.feedFilterEmptySubtitle,
           action: filter.isEmpty
               ? TextButton.icon(
                   onPressed: () => ref.invalidate(feedStreamProvider),
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Refresh'),
+                  label: Text(context.l10n.refresh),
                 )
               : TextButton.icon(
                   onPressed: () {
                     ref.read(feedFilterProvider.notifier).update(const RecipeFilter());
                   },
                   icon: const Icon(Icons.filter_alt_off),
-                  label: const Text('Clear filters'),
+                  label: Text(context.l10n.feedClearFilters),
                 ),
         ),
         data: (results) => RecipesGrid(

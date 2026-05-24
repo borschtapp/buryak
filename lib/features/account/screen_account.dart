@@ -7,6 +7,7 @@ import '../../shared/components/dialog_confirm.dart';
 import '../../shared/components/profile_details.dart';
 import '../../shared/components/settings_list.dart';
 import '../../shared/layouts/content_frame.dart';
+import '../../shared/providers/locale.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/route_names.dart';
 import '../../shared/sections/app_version.dart';
@@ -35,7 +36,7 @@ class AccountScreen extends HookConsumerWidget {
     final userState = ref.watch(authProvider);
     final isDeleting = useState(false);
     if (userState == null) {
-      return const Center(child: Text('User not found. Please log in again.'));
+      return Center(child: Text(context.l10n.accountUserNotFound));
     }
 
     final profile = userState;
@@ -56,13 +57,39 @@ class AccountScreen extends HookConsumerWidget {
             SettingsSection(
               children: [
                 SettingsTile(
+                  leading: const Icon(Icons.language),
+                  title: context.l10n.settingsLanguage,
+                  trailing: DropdownButton<Locale?>(
+                    value: ref.watch(localeProvider),
+                    underline: const SizedBox.shrink(),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(context.l10n.settingsLanguageSystem)),
+                      const DropdownMenuItem(value: Locale('en'), child: Text('English')),
+                      const DropdownMenuItem(value: Locale('de'), child: Text('Deutsch')),
+                      const DropdownMenuItem(value: Locale('uk'), child: Text('Українська')),
+                    ],
+                    onChanged: (locale) {
+                      if (locale == null) {
+                        ref.read(localeProvider.notifier).clearLocale();
+                      } else {
+                        ref.read(localeProvider.notifier).setLocale(locale);
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: UIConstants.paddingSmall),
+            SettingsSection(
+              children: [
+                SettingsTile(
                   leading: const Icon(Icons.edit_document),
-                  title: 'Terms of Use',
+                  title: context.l10n.accountTermsOfUse,
                   onTap: () => context.pushNamed(RouteNames.terms),
                 ),
                 SettingsTile(
                   leading: const Icon(Icons.privacy_tip),
-                  title: 'Privacy Policy',
+                  title: context.l10n.accountPrivacyPolicy,
                   onTap: () => context.pushNamed(RouteNames.privacy),
                 ),
               ],
@@ -71,7 +98,7 @@ class AccountScreen extends HookConsumerWidget {
               children: [
                 SettingsTile(
                   leading: const Icon(Icons.logout),
-                  title: 'Logout',
+                  title: context.l10n.accountLogout,
                   trailing: null,
                   isLoading: isDeleting.value,
                   onTap: () async {
@@ -88,17 +115,15 @@ class AccountScreen extends HookConsumerWidget {
                 SettingsTile(
                   leading: Icon(Icons.delete_forever, color: errorColor),
                   foregroundColor: errorColor,
-                  title: isDeleting.value ? 'Deleting Account...' : 'Delete Account',
+                  title: isDeleting.value ? context.l10n.accountDeletingAccount : context.l10n.accountDeleteAccount,
                   trailing: null,
                   isLoading: isDeleting.value,
                   onTap: () async {
                     final confirmed = await showConfirmDialog(
                       context,
-                      title: 'Delete Account',
-                      content:
-                          'This will permanently delete your account and all associated data. '
-                          'This action cannot be undone.',
-                      confirmLabel: 'Delete',
+                      title: context.l10n.accountDeleteTitle,
+                      content: context.l10n.accountDeleteContent,
+                      confirmLabel: context.l10n.delete,
                       destructive: true,
                     );
                     if (confirmed && context.mounted) {

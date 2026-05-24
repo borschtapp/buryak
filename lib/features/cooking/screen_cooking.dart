@@ -58,7 +58,7 @@ class CookingScreen extends HookWidget {
                       final messenger = ScaffoldMessenger.of(context);
                       context.pop();
                       messenger.showSnackBar(
-                        const SnackBar(content: Text('Great job! Enjoy your meal!')),
+                        SnackBar(content: Text(context.l10n.cookingEnjoyMeal)),
                       );
                     },
                   ),
@@ -137,7 +137,7 @@ class _CookingTopBar extends StatelessWidget {
 
           IconButton(
             icon: const Icon(Icons.close),
-            tooltip: 'Exit cooking mode',
+            tooltip: context.l10n.cookingExitTooltip,
             onPressed: () => context.popOrGoNamed(RouteNames.feed),
           ),
         ],

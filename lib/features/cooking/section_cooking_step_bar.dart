@@ -60,7 +60,7 @@ class CookingStepBar extends HookWidget {
             IconButton(
               icon: const Icon(Icons.chevron_left),
               onPressed: onPrevious,
-              tooltip: 'Previous step',
+              tooltip: context.l10n.cookingPreviousStep,
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -101,7 +101,7 @@ class CookingStepBar extends HookWidget {
             IconButton(
               icon: const Icon(Icons.chevron_right),
               onPressed: onNext,
-              tooltip: 'Next step',
+              tooltip: context.l10n.cookingNextStep,
             ),
           ],
         ),
