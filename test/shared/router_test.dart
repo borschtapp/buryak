@@ -1,5 +1,6 @@
 import 'package:buryak/features/account/screen_account.dart';
 import 'package:buryak/features/feed/screen_feed.dart';
+import 'package:buryak/l10n/app_localizations.dart';
 import 'package:buryak/shared/models/household.dart';
 import 'package:buryak/shared/models/paginated_list.dart';
 import 'package:buryak/shared/models/user.dart';
@@ -77,6 +78,7 @@ void main() {
               final router = ref.watch(routerProvider);
               return MaterialApp.router(
                 routerConfig: router,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
               );
             },
           ),
@@ -102,6 +104,7 @@ void main() {
               final router = ref.watch(routerProvider);
               return MaterialApp.router(
                 routerConfig: router,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
               );
             },
           ),
@@ -129,6 +132,7 @@ void main() {
           container: container,
           child: MaterialApp.router(
             routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
           ),
         ),
       );
@@ -178,7 +182,10 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp.router(routerConfig: goRouter),
+          child: MaterialApp.router(
+            routerConfig: goRouter,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -208,7 +215,10 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp.router(routerConfig: goRouter),
+          child: MaterialApp.router(
+            routerConfig: goRouter,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -233,7 +243,10 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp.router(routerConfig: goRouter),
+          child: MaterialApp.router(
+            routerConfig: goRouter,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
         ),
       );
       await tester.pumpAndSettle();

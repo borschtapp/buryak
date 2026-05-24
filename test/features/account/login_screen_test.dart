@@ -1,4 +1,5 @@
 import 'package:buryak/features/account/screen_login.dart';
+import 'package:buryak/l10n/app_localizations.dart';
 import 'package:buryak/shared/layouts/error_snackbar_listener.dart';
 import 'package:buryak/shared/models/user.dart';
 import 'package:buryak/shared/repositories/auth_repository.dart';
@@ -27,6 +28,7 @@ void main() {
         authRepositoryProvider.overrideWithValue(mockAuthRepository),
       ],
       child: const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: Scaffold(
           body: ErrorSnackBarListener(
             child: LoginScreen(),

@@ -1,3 +1,4 @@
+import 'package:buryak/l10n/app_localizations.dart';
 import 'package:buryak/shared/components/recipes/recipe_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +18,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: ThemeData(useMaterial3: true),
             home: Scaffold(
               body: Center(

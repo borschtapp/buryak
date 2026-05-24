@@ -1,4 +1,5 @@
 import 'package:buryak/features/feed/screen_feed.dart';
+import 'package:buryak/l10n/app_localizations.dart';
 import 'package:buryak/shared/models/paginated_list.dart';
 import 'package:buryak/shared/models/recipe.dart';
 import 'package:buryak/shared/models/user.dart';
@@ -54,6 +55,7 @@ void main() {
     return UncontrolledProviderScope(
       container: container,
       child: const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: Scaffold(body: FeedScreen()),
       ),
     );
