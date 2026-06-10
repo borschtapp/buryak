@@ -52,13 +52,13 @@ class SavedTabs extends ConsumerWidget {
       isEmpty: (recipes) => recipes.isEmpty,
       emptyState: EmptyState(
         icon: Icons.menu_book_outlined,
-        title: _isFilterEmpty ? 'No recipes yet.' : 'No results',
-        subtitle: _isFilterEmpty ? null : 'Try adjusting your search or filters.',
+        title: _isFilterEmpty ? context.l10n.recipesNoRecipesYet : context.l10n.feedFilterEmptyTitle,
+        subtitle: _isFilterEmpty ? null : context.l10n.feedFilterEmptySubtitle,
         action: _isFilterEmpty
             ? TextButton.icon(
                 onPressed: () => ref.invalidate(savedRecipesProvider),
                 icon: const Icon(Icons.refresh),
-                label: const Text('Refresh'),
+                label: Text(context.l10n.refresh),
               )
             : TextButton.icon(
                 onPressed: () {
@@ -108,11 +108,11 @@ class SavedCookbooksTab extends ConsumerWidget {
       isEmpty: (data) => data.isEmpty,
       emptyState: EmptyState(
         icon: Icons.collections_bookmark_outlined,
-        title: 'No cookbooks yet.',
+        title: context.l10n.recipesNoCookbooksYet,
         action: TextButton.icon(
           onPressed: () => ref.invalidate(savedCollectionsProvider),
           icon: const Icon(Icons.refresh),
-          label: const Text('Refresh'),
+          label: Text(context.l10n.refresh),
         ),
       ),
       data: (data) => GridView.builder(
@@ -171,7 +171,7 @@ class SavedCookbooksTab extends ConsumerWidget {
                           ),
                         ),
                         Text(
-                          '${collection.totalRecipes ?? 0} recipes',
+                          context.l10n.recipesRecipesCount(collection.totalRecipes ?? 0),
                           style: context.textTheme.bodySmall?.copyWith(color: Colors.white70),
                         ),
                       ],
@@ -182,14 +182,14 @@ class SavedCookbooksTab extends ConsumerWidget {
                     right: 8,
                     child: PopupMenuButton<_CollectionAction>(
                       icon: const Icon(Icons.more_horiz, color: Colors.white),
-                      tooltip: 'More options',
+                      tooltip: context.l10n.recipesMoreOptionsTooltip,
                       onSelected: (value) async {
                         if (value == _CollectionAction.delete) {
                           final confirmed = await showConfirmDialog(
                             context,
-                            title: 'Delete Cookbook?',
-                            content: 'Are you sure you want to delete "${collection.name}"?',
-                            confirmLabel: 'Delete',
+                            title: context.l10n.recipesDeleteCookbookTitle,
+                            content: context.l10n.recipesDeleteCookbookContent(collection.name),
+                            confirmLabel: context.l10n.delete,
                             destructive: true,
                           );
 
@@ -205,11 +205,11 @@ class SavedCookbooksTab extends ConsumerWidget {
                         }
                       },
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: _CollectionAction.delete,
                           child: IconLabel(
                             icon: Icons.delete_outline,
-                            label: 'Delete',
+                            label: context.l10n.delete,
                             color: Colors.red,
                             iconSize: 24,
                             spacing: 8,

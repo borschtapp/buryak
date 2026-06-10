@@ -135,7 +135,7 @@
   "recipesFilterDiet": "Diet",
   "recipesFilterCategory": "Category",
   "recipesFilterPublisher": "Publisher",
-  "recipesFilterEquipment": "Equipment",
+  "recipesEquipment": "Equipment",
   "recipesFilterLoading": "Loading {title}…",
   "@recipesFilterLoading": {
     "placeholders": {
@@ -184,6 +184,12 @@
   "recipeDislikeTooltip": "Dislike",
   "recipeLikeFailed": "Failed to update liked status",
   "cookingComplete": "Complete",
+  "cookingStep": "Step {current}",
+  "@cookingStep": {
+    "placeholders": {
+      "current": { "type": "int" }
+    }
+  },
   "cookingStepOf": "Step {current} of {total}",
   "@cookingStepOf": {
     "placeholders": {
@@ -329,5 +335,111 @@
       "minutes": { "type": "int" }
     }
   },
-  "durationNotAvailable": "n/a"
+  "durationNotAvailable": "n/a",
+  "recipesNoRecipesYet": "No recipes yet.",
+  "recipesNoCookbooksYet": "No cookbooks yet.",
+  "recipesRecipesCount": "{count, plural, =1{1 recipe} other{{count} recipes}}",
+  "@recipesRecipesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipesDeleteCookbookTitle": "Delete Cookbook?",
+  "recipesDeleteCookbookContent": "Are you sure you want to delete \"{name}\"?",
+  "@recipesDeleteCookbookContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipesMoreOptionsTooltip": "More options",
+  "feedsRemoveFeedContent": "Remove \"{name}\" and all its imported recipes from your feed?",
+  "@feedsRemoveFeedContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "feedsFeedRemoved": "\"{name}\" removed",
+  "@feedsFeedRemoved": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "registerAcceptTermsSubtitle": "Please accept the Terms of Use and Privacy Policy to continue.",
+  "registerTermsAccept": "I have read and accept the {termsLink} and {privacyLink}.",
+  "@registerTermsAccept": {
+    "placeholders": {
+      "termsLink": {
+        "type": "String"
+      },
+      "privacyLink": {
+        "type": "String"
+      }
+    }
+  },
+  "feedSyncNeverSynced": "Never synced",
+  "feedSyncedAgo": "Synced {when}",
+  "@feedSyncedAgo": {
+    "placeholders": {
+      "when": { "type": "String" }
+    }
+  },
+  "feedSyncFailed": "Sync failed",
+  "feedResyncPending": "Sync is taking longer than expected. It will continue in the background.",
+  "feedResyncNoRecipes": "No recipes found.",
+  "feedResyncImported": "Imported {count, plural, =1{1 new recipe} other{{count} new recipes}}.",
+  "@feedResyncImported": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "feedResyncNoNewRecipes": "No new recipes found.",
+  "cookbookCreateTitle": "New Cookbook",
+  "cookbookCreateNameLabel": "Name",
+  "cookbookCreateNameHint": "My Favorite Recipes",
+  "cookbookCreateSubmit": "Create",
+  "cookbookCreateNameRequired": "Name cannot be empty",
+  "timeAgoJustNow": "Just now",
+  "timeAgoMinutes": "{minutes}m ago",
+  "@timeAgoMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "timeAgoHours": "{hours}h ago",
+  "@timeAgoHours": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "timeAgoDays": "{days}d ago",
+  "@timeAgoDays": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "dateShort": "{date}",
+  "@dateShort": {
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMd"
+      }
+    }
+  },
+  "dismissFilters": "Dismiss filters",
+  "recipesAddToCookbook": "Add to Cookbook",
+  "recipesCollectionSemanticsRemoved": "Removed from {name}",
+  "@recipesCollectionSemanticsRemoved": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipesCollectionSemanticsAdded": "Added to {name}",
+  "@recipesCollectionSemanticsAdded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "decreaseServings": "Decrease servings",
+  "increaseServings": "Increase servings"
 }

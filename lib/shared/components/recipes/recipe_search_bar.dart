@@ -84,7 +84,7 @@ class RecipeSearchBar extends HookWidget {
           result = await showGeneralDialog<RecipeFilter>(
             context: ctx,
             barrierDismissible: true,
-            barrierLabel: 'Dismiss filters',
+            barrierLabel: ctx.l10n.dismissFilters,
             barrierColor: Colors.black54,
             pageBuilder: (ctx, animation, dismissAnimation) {
               return const SizedBox.shrink();

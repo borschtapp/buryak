@@ -3,7 +3,7 @@
   "appTitle": "Borscht",
   "navFeed": "Feed",
   "navSaved": "Gespeichert",
-  "navMealPlan": "Mahlzeitenplan",
+  "navMealPlan": "Plan",
   "navShopping": "Einkaufen",
   "navAccount": "Konto",
   "errorSomethingWentWrong": "Etwas ist schiefgelaufen",
@@ -135,7 +135,7 @@
   "recipesFilterDiet": "Diät",
   "recipesFilterCategory": "Kategorie",
   "recipesFilterPublisher": "Herausgeber",
-  "recipesFilterEquipment": "Ausrüstung",
+  "recipesEquipment": "Ausrüstung",
   "recipesFilterLoading": "{title} wird geladen…",
   "@recipesFilterLoading": {
     "placeholders": {
@@ -184,6 +184,12 @@
   "recipeDislikeTooltip": "Gefällt mir nicht",
   "recipeLikeFailed": "Status konnte nicht aktualisiert werden",
   "cookingComplete": "Fertig",
+  "cookingStep": "Schritt {current}",
+  "@cookingStep": {
+    "placeholders": {
+      "current": { "type": "int" }
+    }
+  },
   "cookingStepOf": "Schritt {current} von {total}",
   "@cookingStepOf": {
     "placeholders": {
@@ -329,5 +335,111 @@
       "minutes": { "type": "int" }
     }
   },
-  "durationNotAvailable": "k. A."
+  "durationNotAvailable": "k. A.",
+  "recipesNoRecipesYet": "Noch keine Rezepte.",
+  "recipesNoCookbooksYet": "Noch keine Kochbücher.",
+  "recipesRecipesCount": "{count, plural, =1{1 Rezept} other{{count} Rezepte}}",
+  "@recipesRecipesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipesDeleteCookbookTitle": "Kochbuch löschen?",
+  "recipesDeleteCookbookContent": "Möchtest du \"{name}\" wirklich löschen?",
+  "@recipesDeleteCookbookContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipesMoreOptionsTooltip": "Weitere Optionen",
+  "feedsRemoveFeedContent": "Entferne \"{name}\" und alle importierten Rezepte aus deinem Feed?",
+  "@feedsRemoveFeedContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "feedsFeedRemoved": "\"{name}\" entfernt",
+  "@feedsFeedRemoved": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "registerAcceptTermsSubtitle": "Bitte akzeptiere die Nutzungsbedingungen und die Datenschutzerklärung, um fortzufahren.",
+  "registerTermsAccept": "Ich habe die {termsLink} und die {privacyLink} gelesen und akzeptiere sie.",
+  "@registerTermsAccept": {
+    "placeholders": {
+      "termsLink": {
+        "type": "String"
+      },
+      "privacyLink": {
+        "type": "String"
+      }
+    }
+  },
+  "feedSyncNeverSynced": "Nie synchronisiert",
+  "feedSyncedAgo": "Synchronisiert {when}",
+  "@feedSyncedAgo": {
+    "placeholders": {
+      "when": { "type": "String" }
+    }
+  },
+  "feedSyncFailed": "Synchronisierung fehlgeschlagen",
+  "feedResyncPending": "Synchronisierung dauert länger als erwartet. Sie wird im Hintergrund fortgesetzt.",
+  "feedResyncNoRecipes": "Keine Rezepte gefunden.",
+  "feedResyncImported": "Importiert {count, plural, =1{1 neues Rezept} other{{count} neue Rezepte}}.",
+  "@feedResyncImported": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "feedResyncNoNewRecipes": "Keine neuen Rezepte gefunden.",
+  "cookbookCreateTitle": "Neues Kochbuch",
+  "cookbookCreateNameLabel": "Name",
+  "cookbookCreateNameHint": "Meine Lieblingsrezepte",
+  "cookbookCreateSubmit": "Erstellen",
+  "cookbookCreateNameRequired": "Name darf nicht leer sein",
+  "timeAgoJustNow": "Gerade eben",
+  "timeAgoMinutes": "vor {minutes}m",
+  "@timeAgoMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "timeAgoHours": "vor {hours}h",
+  "@timeAgoHours": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "timeAgoDays": "vor {days}d",
+  "@timeAgoDays": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "dateShort": "{date}",
+  "@dateShort": {
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMd"
+      }
+    }
+  },
+  "dismissFilters": "Filter schließen",
+  "recipesAddToCookbook": "Zum Kochbuch hinzufügen",
+  "recipesCollectionSemanticsRemoved": "Aus {name} entfernt",
+  "@recipesCollectionSemanticsRemoved": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipesCollectionSemanticsAdded": "Zu {name} hinzugefügt",
+  "@recipesCollectionSemanticsAdded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "decreaseServings": "Portionen verringern",
+  "increaseServings": "Portionen erhöhen"
 }

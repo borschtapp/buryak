@@ -135,7 +135,7 @@
   "recipesFilterDiet": "Дієта",
   "recipesFilterCategory": "Категорія",
   "recipesFilterPublisher": "Видавець",
-  "recipesFilterEquipment": "Обладнання",
+  "recipesEquipment": "Обладнання",
   "recipesFilterLoading": "Завантаження {title}…",
   "@recipesFilterLoading": {
     "placeholders": {
@@ -184,6 +184,12 @@
   "recipeDislikeTooltip": "Не подобається",
   "recipeLikeFailed": "Не вдалося оновити статус",
   "cookingComplete": "Готово",
+  "cookingStep": "Крок {current}",
+  "@cookingStep": {
+    "placeholders": {
+      "current": { "type": "int" }
+    }
+  },
   "cookingStepOf": "Крок {current} з {total}",
   "@cookingStepOf": {
     "placeholders": {
@@ -329,5 +335,111 @@
       "minutes": { "type": "int" }
     }
   },
-  "durationNotAvailable": "н/д"
+  "durationNotAvailable": "н/д",
+  "recipesNoRecipesYet": "Рецептів ще немає.",
+  "recipesNoCookbooksYet": "Книг рецептів ще немає.",
+  "recipesRecipesCount": "{count, plural, =1{1 рецепт} few{{count} рецепти} many{{count} рецептів} other{{count} рецепти}}",
+  "@recipesRecipesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipesDeleteCookbookTitle": "Видалити книгу рецептів?",
+  "recipesDeleteCookbookContent": "Ви впевнені, що хочете видалити \"{name}\"?",
+  "@recipesDeleteCookbookContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipesMoreOptionsTooltip": "Більше опцій",
+  "feedsRemoveFeedContent": "Видалити \"{name}\" та всі імпортовані рецепти зі стрічки?",
+  "@feedsRemoveFeedContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "feedsFeedRemoved": "\"{name}\" видалено",
+  "@feedsFeedRemoved": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "registerAcceptTermsSubtitle": "Будь ласка, прийміть Умови використання та Політику конфіденційності, щоб продовжити.",
+  "registerTermsAccept": "Я прочитав та приймаю {termsLink} та {privacyLink}.",
+  "@registerTermsAccept": {
+    "placeholders": {
+      "termsLink": {
+        "type": "String"
+      },
+      "privacyLink": {
+        "type": "String"
+      }
+    }
+  },
+  "feedSyncNeverSynced": "Ніколи не синхронізовано",
+  "feedSyncedAgo": "Синхронізовано {when}",
+  "@feedSyncedAgo": {
+    "placeholders": {
+      "when": { "type": "String" }
+    }
+  },
+  "feedSyncFailed": "Синхронізація не вдалася",
+  "feedResyncPending": "Синхронізація займає більше часу, ніж очікувалось. Вона продовжиться у фоновому режимі.",
+  "feedResyncNoRecipes": "Рецептів не знайдено.",
+  "feedResyncImported": "Імпортовано {count, plural, =1{1 новий рецепт} few{{count} нові рецепти} many{{count} нових рецептів} other{{count} нових рецепти}}.",
+  "@feedResyncImported": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "feedResyncNoNewRecipes": "Нових рецептів не знайдено.",
+  "cookbookCreateTitle": "Нова книга рецептів",
+  "cookbookCreateNameLabel": "Назва",
+  "cookbookCreateNameHint": "Мої улюблені рецепти",
+  "cookbookCreateSubmit": "Створити",
+  "cookbookCreateNameRequired": "Назва не може бути порожньою",
+  "timeAgoJustNow": "Щойно",
+  "timeAgoMinutes": "{minutes}хв тому",
+  "@timeAgoMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "timeAgoHours": "{hours}год тому",
+  "@timeAgoHours": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "timeAgoDays": "{days}д тому",
+  "@timeAgoDays": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "dateShort": "{date}",
+  "@dateShort": {
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMd"
+      }
+    }
+  },
+  "dismissFilters": "Закрити фільтри",
+  "recipesAddToCookbook": "Додати до книги рецептів",
+  "recipesCollectionSemanticsRemoved": "Вилучено з {name}",
+  "@recipesCollectionSemanticsRemoved": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipesCollectionSemanticsAdded": "Додано до {name}",
+  "@recipesCollectionSemanticsAdded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "decreaseServings": "Зменшити порції",
+  "increaseServings": "Збільшити порції"
 }

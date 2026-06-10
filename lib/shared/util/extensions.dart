@@ -53,58 +53,48 @@ extension StringExtensions on String {
     return '${this[0].toUpperCase()}${substring(1)}';
   }
 
-  String timeAgo() {
+  String? timeAgo(AppLocalizations l10n, {DateTime? now}) {
     final dt = DateTime.tryParse(this);
-    if (dt == null) return '';
-    final diff = DateTime.now().difference(dt);
-    if (diff.isNegative || diff.inSeconds < 60) return 'Just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    return '${diff.inDays}d ago';
+    if (dt == null) return null;
+    return dt.timeAgo(l10n, now: now);
   }
 }
 
-extension IntPluralize on int {
-  /// Formats a count with a noun, handling singular/plural forms.
-  /// Example: 1.pluralize('serving') → "1 serving"
-  ///          2.pluralize('serving') → "2 servings"
-  String pluralize(String singular, [String? plural]) => this == 1 ? '$this $singular' : '$this ${plural ?? '${singular}s'}';
+extension RelativeTimeFormatting on DateTime {
+  String timeAgo(AppLocalizations l10n, {DateTime? now}) {
+    final diff = (now ?? DateTime.now()).difference(this);
+
+    if (diff.isNegative || diff.inSeconds < 60) return l10n.timeAgoJustNow;
+    if (diff.inMinutes < 60) return l10n.timeAgoMinutes(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.timeAgoHours(diff.inHours);
+    if (diff.inDays < 7) return l10n.timeAgoDays(diff.inDays);
+
+    return l10n.dateShort(this);
+  }
 }
 
 extension SecondsToDuration on int? {
-  String toFormattedDuration([BuildContext? context]) {
-    if (this == null || this == 0) {
-      return context != null ? AppLocalizations.of(context).durationNotAvailable : 'n/a';
-    }
-    final duration = Duration(seconds: this!);
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes % 60;
+  Duration? get asDuration => (this == null || this! <= 0) ? null : Duration(seconds: this!);
+}
 
-    if (context != null) {
-      final l10n = AppLocalizations.of(context);
-      if (hours > 0 && minutes > 0) return l10n.durationHoursMinutes(hours, minutes);
-      if (hours > 0) return l10n.durationHours(hours);
-      return l10n.durationMinutes(minutes);
-    }
+extension DurationFormatting on Duration {
+  String localized(AppLocalizations l10n) {
+    final hours = inHours;
+    final minutes = inMinutes % 60;
 
-    if (hours > 0) {
-      if (minutes > 0) return '${hours}h ${minutes}m';
-      return '${hours}h';
-    }
-    return '${minutes}m';
+    if (hours > 0 && minutes > 0) return l10n.durationHoursMinutes(hours, minutes);
+    if (hours > 0) return l10n.durationHours(hours);
+    return l10n.durationMinutes(inMinutes);
   }
 }
 
 extension MealTypeL10n on MealType {
-  String toLocalizedLabel(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return switch (this) {
-      MealType.breakfast => l10n.mealTypeBreakfast,
-      MealType.lunch => l10n.mealTypeLunch,
-      MealType.dinner => l10n.mealTypeDinner,
-      MealType.snack => l10n.mealTypeSnack,
-    };
-  }
+  String localized(AppLocalizations l10n) => switch (this) {
+    MealType.breakfast => l10n.mealTypeBreakfast,
+    MealType.lunch => l10n.mealTypeLunch,
+    MealType.dinner => l10n.mealTypeDinner,
+    MealType.snack => l10n.mealTypeSnack,
+  };
 }
 
 const _fractionsMap = {
@@ -168,6 +158,35 @@ extension DoubleFormat on double? {
 
 extension L10nContext on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
+
+  /// Splits a template string like "Accept {termsLink} and {privacyLink}."
+  /// into a list of InlineSpans, replacing named tokens with styled spans.
+  List<InlineSpan> buildSpans(
+    String template,
+    Map<String, InlineSpan> replacements,
+  ) {
+    final spans = <InlineSpan>[];
+    final pattern = RegExp(r'\{(\w+)\}');
+    int cursor = 0;
+
+    for (final match in pattern.allMatches(template)) {
+      if (match.start > cursor) {
+        spans.add(TextSpan(text: template.substring(cursor, match.start)));
+      }
+      final key = match.group(1)!;
+      final replacement = replacements[key];
+      if (replacement != null) {
+        spans.add(replacement);
+      }
+      cursor = match.end;
+    }
+
+    if (cursor < template.length) {
+      spans.add(TextSpan(text: template.substring(cursor)));
+    }
+
+    return spans;
+  }
 }
 
 extension ListToggle<T> on List<T> {

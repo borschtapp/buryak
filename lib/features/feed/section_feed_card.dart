@@ -51,7 +51,7 @@ class FeedCard extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(right: 4),
               child: Chip(
-                label: Text(feed.totalRecipes!.pluralize('recipe')),
+                label: Text(context.l10n.recipesRecipesCount(feed.totalRecipes!)),
                 padding: EdgeInsets.zero,
                 labelPadding: const EdgeInsets.symmetric(horizontal: 8),
                 shape: const RoundedSuperellipseBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
@@ -100,13 +100,13 @@ class _SyncStatusBadge extends StatelessWidget {
 
   (IconData, String, Color) _resolveStatus(BuildContext context) {
     if (feed.lastSyncSuccess == null) {
-      return (Icons.sync_disabled, 'Never synced', context.colors.tertiary);
+      return (Icons.sync_disabled, context.l10n.feedSyncNeverSynced, context.colors.tertiary);
     }
     if (feed.lastSyncSuccess == true) {
-      final when = feed.lastSyncAt?.timeAgo() ?? '';
-      return (Icons.check_circle_outline, 'Synced $when', Colors.green);
+      final when = feed.lastSyncAt?.timeAgo(context.l10n) ?? '';
+      return (Icons.check_circle_outline, context.l10n.feedSyncedAgo(when), Colors.green);
     }
-    return (Icons.error_outline, 'Sync failed', context.colors.error);
+    return (Icons.error_outline, context.l10n.feedSyncFailed, context.colors.error);
   }
 }
 
@@ -125,11 +125,12 @@ class _ResyncButton extends HookConsumerWidget {
         final result = await ref.read(feedRepositoryProvider).sync(feedId);
         ref.invalidate(feedListProvider);
         if (context.mounted) {
+          final l10n = context.l10n;
           final String message = switch (result) {
-            null => 'Sync is taking longer than expected. It will continue in the background.',
-            (0, _) => 'No recipes found.',
-            (_, final imported) when imported > 0 => 'Imported ${imported.pluralize('new recipe')}.',
-            _ => 'No new recipes found.',
+            null => l10n.feedResyncPending,
+            (0, _) => l10n.feedResyncNoRecipes,
+            (_, final imported) when imported > 0 => l10n.feedResyncImported(imported),
+            _ => l10n.feedResyncNoNewRecipes,
           };
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
         }

@@ -48,7 +48,7 @@ class RecipeTitle extends StatelessWidget {
               ),
               if (recipe.published != null) ...[
                 Text(
-                  DateFormat.yMMMd().format(recipe.published!),
+                  DateFormat.yMMMd(context.l10n.localeName).format(recipe.published!),
                   style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
                 ),
               ],

@@ -48,7 +48,7 @@ class _YieldStepper extends HookWidget {
                 }
               : null,
           visualDensity: VisualDensity.compact,
-          tooltip: 'Decrease servings',
+          tooltip: context.l10n.decreaseServings,
         ),
         SizedBox(
           width: 32,
@@ -65,7 +65,7 @@ class _YieldStepper extends HookWidget {
             onScaleChanged(servings.value / baseYield);
           },
           visualDensity: VisualDensity.compact,
-          tooltip: 'Increase servings',
+          tooltip: context.l10n.increaseServings,
         ),
       ],
     );

@@ -40,7 +40,7 @@ class CookingIngredientsPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        context.l10n.cookingCookTimeLabel((recipe.cookTime ?? recipe.totalTime).toFormattedDuration(context)),
+                        context.l10n.cookingCookTimeLabel((recipe.cookTime ?? recipe.totalTime).asDuration!.localized(context.l10n)),
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: context.colors.onSurfaceVariant,
                         ),

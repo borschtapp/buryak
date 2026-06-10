@@ -59,7 +59,6 @@ Future<List<Equipment>> _equipment(Ref ref, String? scope) async {
   return result.data;
 }
 
-
 class RecipeFilters extends HookConsumerWidget {
   final RecipeFilter initialFilter;
   final bool showTaxonomyFilters;
@@ -198,7 +197,7 @@ class RecipeFilters extends HookConsumerWidget {
             ),
           ],
           _FilterSection<Equipment>(
-            title: l10n.recipesFilterEquipment,
+            title: l10n.recipesEquipment,
             provider: _equipmentProvider(scope),
             itemMapper: (e) => (id: e.id, label: e.name, count: e.totalRecipes),
             selectedIds: filter.value.equipmentIds,

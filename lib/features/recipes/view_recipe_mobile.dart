@@ -99,7 +99,7 @@ class RecipeMobileView extends HookWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(recipe.totalTime.toFormattedDuration(context), style: context.textTheme.titleMedium),
+                      Text(recipe.totalTime?.asDuration?.localized(context.l10n) ?? '-', style: context.textTheme.titleMedium),
                       Text(context.l10n.recipesInstructions, style: context.textTheme.labelSmall),
                     ],
                   ),

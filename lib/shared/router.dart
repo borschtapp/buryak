@@ -454,7 +454,7 @@ AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? rou
       actions: [
         PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert),
-          tooltip: 'More options',
+          tooltip: context.l10n.recipesMoreOptionsTooltip,
           itemBuilder: (_) => [
             _opmlMenuItem(Icons.upload_file, 'Import OPML (Coming soon)'),
             _opmlMenuItem(Icons.download, 'Export OPML (Coming soon)'),

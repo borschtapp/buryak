@@ -71,7 +71,7 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
         final hasChanges = localAddedIds.value.isNotEmpty || localRemovedIds.value.isNotEmpty;
 
         return StandardBottomSheet(
-          title: 'Add to Cookbook',
+          title: context.l10n.recipesAddToCookbook,
           padding: const EdgeInsets.symmetric(vertical: 16),
           actions: [
             if (hasChanges)
@@ -141,10 +141,12 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                   onTap: isSaving.value
                       ? null
                       : () {
-                          final action = isInCollection ? 'Removed from' : 'Added to';
+                          final announcement = isInCollection
+                              ? context.l10n.recipesCollectionSemanticsRemoved(collection.name)
+                              : context.l10n.recipesCollectionSemanticsAdded(collection.name);
                           SemanticsService.sendAnnouncement(
                             View.of(context),
-                            '$action ${collection.name}',
+                            announcement,
                             TextDirection.ltr,
                           );
                           if (isInCollection) {

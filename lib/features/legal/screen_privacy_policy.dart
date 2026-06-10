@@ -5,6 +5,7 @@ import '../../shared/constants.dart';
 import '../../shared/layouts/article_content.dart';
 import '../../shared/layouts/content_frame.dart';
 import '../../shared/route_names.dart';
+import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -14,7 +15,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Privacy Policy'),
+        title: Text(context.l10n.accountPrivacyPolicy),
         leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.account)),
       ),
       body: const SingleChildScrollView(

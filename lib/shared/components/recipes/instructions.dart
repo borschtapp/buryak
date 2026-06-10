@@ -29,7 +29,7 @@ class Instructions extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Step ${index + 1}',
+                context.l10n.cookingStep(index + 1),
                 style: context.textTheme.bodyLarge?.copyWith(
                   color: context.colors.onSurfaceVariant,
                   fontWeight: FontWeight.bold,

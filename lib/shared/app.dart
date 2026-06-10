@@ -7,6 +7,7 @@ import 'layouts/error_snackbar_listener.dart';
 import 'providers/locale.dart';
 import 'providers/theme.dart';
 import 'router.dart';
+import 'util/extensions.dart';
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
@@ -17,7 +18,7 @@ class MyApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Borscht',
+      onGenerateTitle: (context) => context.l10n.appTitle,
       theme: ThemeProvider.themeLight(),
       darkTheme: ThemeProvider.themeDark(),
       themeMode: ThemeMode.system,

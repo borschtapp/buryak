@@ -31,7 +31,8 @@ class StandardBottomSheet extends StatelessWidget {
         bottom: MediaQuery.viewInsetsOf(context).bottom,
       ),
       child: Padding(
-        padding: padding ??
+        padding:
+            padding ??
             const EdgeInsets.fromLTRB(
               UIConstants.paddingContent,
               UIConstants.paddingContent,
@@ -68,7 +69,7 @@ class StandardBottomSheet extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => context.pop(),
-                    tooltip: 'Close',
+                    tooltip: context.l10n.close,
                   ),
               ],
             ),

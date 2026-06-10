@@ -24,7 +24,7 @@ class PlanBottomSheet extends HookConsumerWidget {
       .map(
         (type) => ButtonSegment<MealType>(
           value: type,
-          label: Text(type.toLocalizedLabel(context)),
+          label: Text(type.localized(context.l10n)),
         ),
       )
       .toList();
@@ -109,7 +109,7 @@ class PlanBottomSheet extends HookConsumerWidget {
             autofocus: true,
             child: ListTile(
               title: Text(l10n.plannerDate),
-              subtitle: Text(DateFormat('EEEE, MMMM d, yyyy').format(selectedDate.value)),
+              subtitle: Text(DateFormat('EEEE, MMMM d, yyyy', context.l10n.localeName).format(selectedDate.value)),
               trailing: const Icon(Icons.calendar_today),
               onTap: selectDate,
             ),

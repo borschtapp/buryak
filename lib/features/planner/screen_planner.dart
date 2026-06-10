@@ -55,7 +55,7 @@ class PlannerScreen extends ConsumerWidget {
               leading: const Icon(Icons.restaurant_menu),
               title: Text(entry.recipe?.name ?? entry.description ?? context.l10n.plannerMealFallback),
               subtitle: Text(
-                '${DateFormat('MMM d', context.l10n.localeName).format(entry.date)} · ${entry.mealType.toLocalizedLabel(context)}',
+                '${DateFormat('MMM d', context.l10n.localeName).format(entry.date)} · ${entry.mealType.localized(context.l10n)}',
               ),
               trailing: Text(
                 context.l10n.plannerServingsCount(entry.servings ?? 1),

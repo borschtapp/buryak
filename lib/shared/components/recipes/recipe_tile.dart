@@ -96,7 +96,7 @@ class RecipeTile extends HookConsumerWidget {
                           isCollected ? Icons.collections_bookmark : Icons.bookmark_add_outlined,
                           color: Colors.white,
                         ),
-                        tooltip: isCollected ? 'Unsave' : 'Save',
+                        tooltip: isCollected ? context.l10n.recipeUnsaveTooltip : context.l10n.recipeSaveTooltip,
                       ),
                       const SizedBox(width: 12),
                       IconButton(
@@ -108,7 +108,7 @@ class RecipeTile extends HookConsumerWidget {
                           }
                         },
                         icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline, color: Colors.white),
-                        tooltip: isSaved ? 'Dislike' : 'Like',
+                        tooltip: isSaved ? context.l10n.recipeLikeTooltip : context.l10n.recipeDislikeTooltip,
                       ),
                     ],
                   ),
@@ -141,12 +141,12 @@ class RecipeTile extends HookConsumerWidget {
                 Flexible(
                   flex: 1,
                   child: Semantics(
-                    label: context.l10n.recipeTotalTimeLabel(recipe.totalTime.toFormattedDuration(context)),
+                    label: context.l10n.recipeTotalTimeLabel(recipe.totalTime.asDuration?.localized(context.l10n) ?? '-'),
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: IconLabel(
                         icon: Icons.timer_outlined,
-                        label: recipe.totalTime.toFormattedDuration(context),
+                        label: recipe.totalTime.asDuration?.localized(context.l10n) ?? '-',
                         iconSize: 16,
                       ),
                     ),

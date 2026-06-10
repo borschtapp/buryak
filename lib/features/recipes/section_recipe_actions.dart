@@ -29,12 +29,9 @@ class RecipeActions extends HookConsumerWidget {
           visualDensity: VisualDensity.compact,
           icon: const Icon(Icons.share),
           tooltip: l10n.recipeShareTooltip,
-          onPressed: recipe == null
+          onPressed: recipe == null || recipe.sourceUrl == null
               ? null
-              : () {
-                  final text = 'Check out this recipe: ${recipe.name}\n${recipe.url ?? ""}';
-                  SharePlus.instance.share(ShareParams(text: text));
-                },
+              : () => SharePlus.instance.share(ShareParams(uri: Uri.parse(recipe.sourceUrl!))),
         ),
         IconButton(
           visualDensity: VisualDensity.compact,

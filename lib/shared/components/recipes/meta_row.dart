@@ -36,7 +36,7 @@ class RecipeMetaRow extends StatelessWidget {
               if (showTime)
                 IconLabel(
                   icon: Icons.timer_outlined,
-                  label: recipe.totalTime.toFormattedDuration(context),
+                  label: recipe.totalTime.asDuration?.localized(context.l10n) ?? '-',
                   color: context.colors.onSurfaceVariant,
                 ),
               if (recipe.yield != null && recipe.yield! > 0)

@@ -46,7 +46,7 @@ class RegisterScreen extends HookConsumerWidget {
       if (!termsAccepted.value) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please accept the Terms of Use and Privacy Policy to continue.')),
+          SnackBar(content: Text(context.l10n.registerAcceptTermsSubtitle)),
         );
         return;
       }
@@ -138,21 +138,21 @@ class RegisterScreen extends HookConsumerWidget {
               child: RichText(
                 text: TextSpan(
                   style: textTheme.bodyMedium,
-                  children: [
-                    const TextSpan(text: 'I have read and accept the '),
-                    TextSpan(
-                      text: 'Terms of Use',
-                      style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
-                      recognizer: termsRecognizer,
-                    ),
-                    const TextSpan(text: ' and '),
-                    TextSpan(
-                      text: 'Privacy Policy',
-                      style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
-                      recognizer: privacyRecognizer,
-                    ),
-                    const TextSpan(text: '.'),
-                  ],
+                  children: context.buildSpans(
+                    context.l10n.registerTermsAccept('{termsLink}', '{privacyLink}'),
+                    {
+                      'termsLink': TextSpan(
+                        text: context.l10n.accountTermsOfUse,
+                        style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
+                        recognizer: termsRecognizer,
+                      ),
+                      'privacyLink': TextSpan(
+                        text: context.l10n.accountPrivacyPolicy,
+                        style: TextStyle(color: context.colors.primary, decoration: TextDecoration.underline),
+                        recognizer: privacyRecognizer,
+                      ),
+                    },
+                  ),
                 ),
               ),
             ),

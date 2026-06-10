@@ -51,7 +51,7 @@ class Ingredients extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Equipment',
+            context.l10n.recipesEquipment,
             style: context.textTheme.titleMedium?.copyWith(color: context.colors.onSurfaceVariant),
           ),
           const SizedBox(height: 12),

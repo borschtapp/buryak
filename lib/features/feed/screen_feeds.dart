@@ -56,7 +56,7 @@ class FeedsScreen extends HookConsumerWidget {
             onConfirmDelete: () => showConfirmDialog(
               context,
               title: context.l10n.feedsRemoveFeedTitle,
-              content: 'Remove "${feed.name}" and all its imported recipes from your feed?',
+              content: context.l10n.feedsRemoveFeedContent(feed.name),
               confirmLabel: context.l10n.feedsRemoveFeedConfirm,
               destructive: true,
             ),
@@ -79,7 +79,7 @@ class FeedsScreen extends HookConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('"${feed.name}" removed'),
+            content: Text(context.l10n.feedsFeedRemoved(feed.name)),
             action: SnackBarAction(
               label: context.l10n.feedsUndo,
               onPressed: () async {

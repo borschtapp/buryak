@@ -5,6 +5,7 @@ import '../../shared/constants.dart';
 import '../../shared/layouts/article_content.dart';
 import '../../shared/layouts/content_frame.dart';
 import '../../shared/route_names.dart';
+import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 
 class TermsOfUseScreen extends StatelessWidget {
@@ -14,7 +15,7 @@ class TermsOfUseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Terms of Use'),
+        title: Text(context.l10n.accountTermsOfUse),
         leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.account)),
       ),
       body: SingleChildScrollView(
