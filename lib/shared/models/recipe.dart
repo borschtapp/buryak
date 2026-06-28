@@ -8,6 +8,7 @@ import 'rating.dart';
 import 'recipe_ingredient.dart';
 import 'recipe_instruction.dart';
 import 'recipe_nutrition.dart';
+import 'recipe_saved_user.dart';
 import 'taxonomy.dart';
 import 'video.dart';
 
@@ -38,7 +39,7 @@ abstract class Recipe with _$Recipe {
     Video? video,
     DateTime? published,
     @JsonKey(name: 'feed_id') String? feedId,
-    @JsonKey(name: 'is_saved') bool? isSaved,
+    @JsonKey(name: 'saved_by') List<RecipeSavedUser>? savedBy,
     @JsonKey(name: 'user_id') String? userId,
     @JsonKey(name: 'source_url') String? sourceUrl,
 
@@ -56,4 +57,5 @@ abstract class Recipe with _$Recipe {
 
 extension RecipeCooking on Recipe {
   bool get hasCookableInstructions => instructions?.isNotEmpty ?? false;
+  bool get hasFoodIngredients => (ingredients ?? []).any((i) => i.foodId != null);
 }

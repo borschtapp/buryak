@@ -41,16 +41,17 @@ class HouseholdNotifier extends _$HouseholdNotifier {
     await future;
   }
 
-  Future<void> rename(String newName) async {
+  Future<void> updateHousehold({String? name, String? currency}) async {
     final current = state.value;
     if (current == null) return;
 
     final repo = ref.read(householdRepositoryProvider);
-    final updated = await repo.update(current.id, newName);
+    final updated = await repo.update(current.id, name: name ?? current.name, currency: currency);
 
     state = AsyncValue.data(
       current.copyWith(
         name: updated.name,
+        currency: updated.currency,
       ),
     );
   }

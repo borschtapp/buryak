@@ -15,6 +15,7 @@ abstract class Household with _$Household {
     required String id,
     @JsonKey(name: 'owner_id') required String ownerId,
     required String name,
+    String? currency,
 
     // Preload fields
     List<User>? members,

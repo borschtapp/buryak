@@ -10,6 +10,7 @@ import '../../shared/providers/household.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
+import 'dialog_change_currency.dart';
 import 'dialog_invite_user.dart';
 import 'dialog_join_household.dart';
 import 'dialog_rename_household.dart';
@@ -68,6 +69,26 @@ class HouseholdDetails extends HookConsumerWidget {
                       onPressed: () => showRenameHouseholdDialog(context, ref),
                       tooltip: context.l10n.householdRenameHousehold,
                     ),
+                ],
+              ),
+              const SizedBox(height: UIConstants.paddingSmall),
+              Row(
+                children: [
+                  Icon(Icons.currency_exchange, size: 16, color: context.colors.onSurfaceVariant),
+                  const SizedBox(width: 6),
+                  Text(
+                    household.currency ?? context.l10n.householdCurrencyNone,
+                    style: context.textTheme.bodyMedium?.copyWith(color: context.colors.onSurfaceVariant),
+                  ),
+                  if (isOwner) ...[
+                    const Spacer(),
+                    TextButton.icon(
+                      onPressed: () => showChangeCurrencyDialog(context, household.currency),
+                      icon: const Icon(Icons.edit, size: 16),
+                      label: Text(context.l10n.householdChangeCurrency),
+                      style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
+                    ),
+                  ],
                 ],
               ),
               const SizedBox(height: UIConstants.paddingMedium),

@@ -18,7 +18,7 @@ Future<void> showRenameHouseholdDialog(BuildContext context, WidgetRef ref) asyn
       initialText: currentName,
       validator: (value) => value.trim().isEmpty ? l10n.householdRenameNameRequired : null,
       onSubmit: (value, context) async {
-        await ref.read(householdProvider.notifier).rename(value.trim());
+        await ref.read(householdProvider.notifier).updateHousehold(name: value.trim());
         if (context.mounted) Navigator.pop(context);
       },
     ),

@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../models/food.dart';
 import '../models/food_price.dart';
 import '../models/paginated_list.dart';
 import 'repository.dart';
@@ -11,6 +12,49 @@ FoodRepository foodRepository(Ref ref) => FoodRepository(ref: ref, client: ref.w
 
 class FoodRepository extends Repository {
   const FoodRepository({required super.ref, super.client}) : super(module: '/api/v1/food');
+
+  Future<PaginatedList<Food>> findAll({String? q, int? limit, int? offset}) async {
+    final response = await sendRequest(
+      method: .get,
+      queryParams: {
+        'q': ?q,
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    return PaginatedList<Food>.fromJson(
+      ensureMap(response),
+      (json) => Food.fromJson(ensureMap(json)),
+    );
+  }
+
+  Future<Food> update(
+    String foodId, {
+    String? name,
+    String? description,
+    String? defaultUnitId,
+    bool? pantry,
+  }) async {
+    final response = await sendRequest(
+      method: .patch,
+      path: '/$foodId',
+      body: {
+        'name': ?name,
+        'description': ?description,
+        'default_unit_id': ?defaultUnitId,
+        'pantry': ?pantry,
+      },
+    );
+    return Food.fromJson(ensureMap(response));
+  }
+
+  Future<void> merge(String foodId, String mergeIntoId) async {
+    await sendRequest(
+      method: .post,
+      path: '/$foodId/merge',
+      body: {'merge_into': mergeIntoId},
+    );
+  }
 
   Future<PaginatedList<FoodPrice>> findPrices(String foodId, {int? limit, int? offset}) async {
     final response = await sendRequest(

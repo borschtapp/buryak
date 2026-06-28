@@ -8,6 +8,7 @@ import '../../shared/components/recipes/hero_image.dart';
 import '../../shared/components/recipes/ingredients.dart';
 import '../../shared/components/recipes/instructions.dart';
 import '../../shared/components/recipes/meta_row.dart';
+import '../../shared/components/recipes/recipe_cost.dart';
 import '../../shared/components/recipes/scale_control.dart';
 import '../../shared/layouts/content_frame.dart';
 import '../../shared/models/recipe.dart';
@@ -16,6 +17,9 @@ import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 import '../planner/dialog_edit_plan.dart';
 import '../shopping/dialog_add_from_recipe.dart';
+import 'dialog_edit_food.dart';
+import 'dialog_edit_ingredient.dart';
+import 'dialog_food_price.dart';
 import 'section_recipe_actions.dart';
 
 class RecipeDesktopView extends HookWidget {
@@ -116,6 +120,18 @@ class RecipeDesktopView extends HookWidget {
                       equipment: recipe.equipment,
                       scale: scale.value,
                       showHeader: false,
+                      onIngredientTap: (ingredient) {
+                        EditIngredientBottomSheet.show(
+                          context,
+                          recipeId: recipe.id,
+                          ingredient: ingredient,
+                        );
+                      },
+                      onIngredientLongPress: (ingredient) {
+                        final food = ingredient.food;
+                        if (food == null) return;
+                        EditFoodBottomSheet.show(context, food: food, recipeId: recipe.id);
+                      },
                     ),
                   ),
                 ),
@@ -128,6 +144,32 @@ class RecipeDesktopView extends HookWidget {
                 ),
               ],
             ),
+            if (recipe.hasFoodIngredients) ...[
+              const SizedBox(height: 48),
+              const Divider(),
+              RecipeCost(
+                recipeId: recipe.id,
+                ingredients: recipe.ingredients ?? [],
+                onAddPrice: (ingredient) => FoodPriceBottomSheet.show(
+                  context,
+                  food: ingredient.food!,
+                  recipeId: recipe.id,
+                  ingredient: ingredient,
+                ),
+                onIngredientTap: (ingredient) {
+                  EditIngredientBottomSheet.show(
+                    context,
+                    recipeId: recipe.id,
+                    ingredient: ingredient,
+                  );
+                },
+                onIngredientLongPress: (ingredient) {
+                  final food = ingredient.food;
+                  if (food == null) return;
+                  EditFoodBottomSheet.show(context, food: food, recipeId: recipe.id);
+                },
+              ),
+            ],
           ],
         ),
       ),

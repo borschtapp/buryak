@@ -11,6 +11,7 @@ abstract class Unit with _$Unit {
     required String id,
     required String slug,
     required String name,
+    @JsonKey(name: 'canonical_unit_id') String? canonicalUnitId,
 
     // Preload fields
     List<Taxonomy>? taxonomies,

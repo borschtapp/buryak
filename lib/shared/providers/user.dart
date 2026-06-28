@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/user.dart';
@@ -174,7 +173,7 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
   void _scheduleTokenRefresh(User user) {
     _cancelTokenRefresh();
     try {
-      final jwtData = JwtDecoder.decode(user.accessToken!);
+      final jwtData = User.decodeJwt(user.accessToken!);
       final exp = (jwtData['exp'] as int) * 1000;
       final now = DateTime.now().millisecondsSinceEpoch;
 

@@ -41,7 +41,8 @@ class RecipeSearchBar extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final controller = useTextEditingController(text: filter.q ?? '');
-    final debounce = useRef<Timer?>(null);
+    final queryText = useState(filter.q ?? '');
+    final debouncedQuery = useDebounced(queryText.value, const Duration(milliseconds: 400));
 
     // Sync controller if filter is cleared externally (e.g. "Clear filters")
     useEffect(() {
@@ -49,19 +50,23 @@ class RecipeSearchBar extends HookWidget {
       if (controller.text != newText) {
         controller.text = newText;
         controller.selection = TextSelection.collapsed(offset: newText.length);
+        queryText.value = newText;
       }
       return null;
     }, [filter.q]);
 
-    void onTextChanged(String value) {
-      debounce.value?.cancel();
-      if (value.trim().isEmpty) {
-        onChanged(filter.copyWith(q: null));
-        return;
+    useEffect(() {
+      if (debouncedQuery == null) return null;
+      final trimmed = debouncedQuery.trim();
+      final currentQ = filter.q ?? '';
+      if (trimmed != currentQ) {
+        onChanged(filter.copyWith(q: trimmed.isEmpty ? null : trimmed));
       }
-      debounce.value = Timer(const Duration(milliseconds: 400), () {
-        onChanged(filter.copyWith(q: value.trim()));
-      });
+      return null;
+    }, [debouncedQuery]);
+
+    void onTextChanged(String value) {
+      queryText.value = value;
     }
 
     Future<void> openFilters() async {

@@ -21,6 +21,7 @@
   "validatorNameLength": "Name must be at least 3 characters.",
   "validatorUrl": "Please enter a valid URL.",
   "validatorText": "Text is too short.",
+  "validatorPositiveNumber": "Please enter a valid positive number.",
   "validatorFieldRequired": "This field is required.",
   "loginWelcomeBack": "Welcome back",
   "loginTitle": "Login to your account",
@@ -87,6 +88,9 @@
   "householdRenameNameRequired": "Name is required",
   "householdLeave": "Leave Household",
   "householdNoHousehold": "No household",
+  "householdCurrency": "Currency",
+  "householdChangeCurrency": "Change Currency",
+  "householdCurrencyNone": "No currency set",
   "serverUrlTitle": "Server URL",
   "serverUrlLabel": "Leave empty to use demo server",
   "feedEmptyTitle": "No recipes found",
@@ -218,6 +222,8 @@
   "shoppingAddItemLabel": "Product Name",
   "shoppingEditItem": "Edit item",
   "shoppingItemUpdated": "Item updated",
+  "shoppingItemMergeFood": "Merge with another food…",
+  "shoppingItemMerged": "Foods merged",
   "shoppingItemAmount": "Amount",
   "shoppingItemUnit": "Unit",
   "shoppingItemName": "Name",
@@ -441,5 +447,80 @@
     }
   },
   "decreaseServings": "Decrease servings",
-  "increaseServings": "Increase servings"
+  "increaseServings": "Increase servings",
+  "recipeCostFacts": "Cost",
+  "recipeCostTitle": "Recipe Cost",
+  "recipeCostTotal": "Total",
+  "recipeCostPerServing": "Per Serving",
+  "recipeCostIncomplete": "{count, plural, =1{1 ingredient missing price} other{{count} ingredients missing prices}}",
+  "@recipeCostIncomplete": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipeCostTabMissing": "{count} missing",
+  "@recipeCostTabMissing": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipeCostAddPrice": "Add Price",
+  "recipeCostSkip": "Skip",
+  "recipeCostNoPrices": "No prices recorded yet",
+  "recipeCostNoPricesSubtitle": "Tap an ingredient to add its price.",
+  "foodPriceTitle": "Prices for {name}",
+  "@foodPriceTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "foodPriceAddTitle": "Record Price",
+  "foodPricePrice": "Price",
+  "foodPricePriceHint": "4.99",
+  "foodPriceAmount": "Amount",
+  "foodPriceAmountHint": "1",
+  "foodPriceHistory": "Price History",
+  "foodPriceHistoryEmpty": "No prices recorded",
+  "foodPriceUnit": "Unit",
+  "foodPriceUnitSearch": "Search units…",
+  "foodPricePerAmountUnit": "per {amount} {unit}",
+  "@foodPricePerAmountUnit": {
+    "placeholders": {
+      "amount": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "editIngredientTitle": "Edit Ingredient",
+  "editIngredientName": "Name",
+  "editIngredientMaxAmount": "Max",
+  "editIngredientNotes": "Notes",
+  "editIngredientFood": "Food",
+  "editIngredientFoodSearch": "Search foods…",
+  "editIngredientFoodSearchHint": "Type at least 2 characters to search",
+  "editFoodTitle": "Edit Food",
+  "editFoodDefaultUnit": "Default Unit",
+  "editFoodMerge": "Merge into…",
+  "editFoodMergeTitle": "Merge Food",
+  "editFoodMergeMessage": "Replace \"{source}\" with \"{target}\" everywhere? All recipes, shopping items, and saved prices using \"{source}\" will switch to \"{target}\". This can't be undone.",
+  "@editFoodMergeMessage": {
+    "placeholders": {
+      "source": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "editFoodMergeConfirm": "Merge",
+  "editFoodPantry": "Pantry staple",
+  "editFoodPantryHint": "Pantry staples are left off shopping lists",
+  "editUnitTitle": "Edit Unit",
+  "editUnitName": "Name",
+  "editUnitMerge": "Merge into…",
+  "editUnitMergeTitle": "Merge Unit",
+  "editUnitMergeMessage": "Replace \"{source}\" with \"{target}\" everywhere? All recipes, shopping items, and saved prices using \"{source}\" will switch to \"{target}\". This can't be undone.",
+  "@editUnitMergeMessage": {
+    "placeholders": {
+      "source": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "editUnitMergeConfirm": "Merge"
 }

@@ -16,6 +16,7 @@ abstract class Food with _$Food {
     @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'default_unit_id') String? defaultUnitId,
     bool? pantry,
+    @JsonKey(name: 'canonical_food_id') String? canonicalFoodId,
 
     // Preload fields
     List<Taxonomy>? taxonomies,

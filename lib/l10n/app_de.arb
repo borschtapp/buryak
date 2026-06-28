@@ -21,6 +21,7 @@
   "validatorNameLength": "Der Name muss mindestens 3 Zeichen lang sein.",
   "validatorUrl": "Bitte gib eine gültige URL ein.",
   "validatorText": "Der Text ist zu kurz.",
+  "validatorPositiveNumber": "Bitte geben Sie eine gültige positive Zahl ein.",
   "validatorFieldRequired": "Dieses Feld ist erforderlich.",
   "loginWelcomeBack": "Willkommen zurück",
   "loginTitle": "In dein Konto einloggen",
@@ -87,6 +88,9 @@
   "householdRenameNameRequired": "Name ist erforderlich",
   "householdLeave": "Haushalt verlassen",
   "householdNoHousehold": "Kein Haushalt",
+  "householdCurrency": "Währung",
+  "householdChangeCurrency": "Währung ändern",
+  "householdCurrencyNone": "Keine Währung festgelegt",
   "serverUrlTitle": "Server-URL",
   "serverUrlLabel": "Leer lassen für Demo-Server",
   "feedEmptyTitle": "Keine Rezepte gefunden",
@@ -218,6 +222,8 @@
   "shoppingAddItemLabel": "Produktname",
   "shoppingEditItem": "Artikel bearbeiten",
   "shoppingItemUpdated": "Artikel aktualisiert",
+  "shoppingItemMergeFood": "Mit anderem Lebensmittel zusammenführen…",
+  "shoppingItemMerged": "Lebensmittel zusammengeführt",
   "shoppingItemAmount": "Menge",
   "shoppingItemUnit": "Einheit",
   "shoppingItemName": "Name",
@@ -441,5 +447,80 @@
     }
   },
   "decreaseServings": "Portionen verringern",
-  "increaseServings": "Portionen erhöhen"
+  "increaseServings": "Portionen erhöhen",
+  "recipeCostFacts": "Kosten",
+  "recipeCostTitle": "Rezeptkosten",
+  "recipeCostTotal": "Gesamt",
+  "recipeCostPerServing": "Pro Portion",
+  "recipeCostIncomplete": "{count, plural, =1{1 Zutat ohne Preis} other{{count} Zutaten ohne Preise}}",
+  "@recipeCostIncomplete": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipeCostTabMissing": "{count} fehlen",
+  "@recipeCostTabMissing": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipeCostAddPrice": "Preis hinzufügen",
+  "recipeCostSkip": "Überspringen",
+  "recipeCostNoPrices": "Noch keine Preise erfasst",
+  "recipeCostNoPricesSubtitle": "Tippe auf eine Zutat, um ihren Preis hinzuzufügen.",
+  "foodPriceTitle": "Preise für {name}",
+  "@foodPriceTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "foodPriceAddTitle": "Preis erfassen",
+  "foodPricePrice": "Preis",
+  "foodPricePriceHint": "4,99",
+  "foodPriceAmount": "Menge",
+  "foodPriceAmountHint": "1",
+  "foodPriceHistory": "Preisverlauf",
+  "foodPriceHistoryEmpty": "Keine Preise erfasst",
+  "foodPriceUnit": "Einheit",
+  "foodPriceUnitSearch": "Einheiten suchen…",
+  "foodPricePerAmountUnit": "pro {amount} {unit}",
+  "@foodPricePerAmountUnit": {
+    "placeholders": {
+      "amount": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "editIngredientTitle": "Zutat bearbeiten",
+  "editIngredientName": "Name",
+  "editIngredientMaxAmount": "Max",
+  "editIngredientNotes": "Notizen",
+  "editIngredientFood": "Lebensmittel",
+  "editIngredientFoodSearch": "Lebensmittel suchen…",
+  "editIngredientFoodSearchHint": "Mindestens 2 Zeichen eingeben",
+  "editFoodTitle": "Lebensmittel bearbeiten",
+  "editFoodDefaultUnit": "Standardeinheit",
+  "editFoodMerge": "Zusammenführen mit…",
+  "editFoodMergeTitle": "Lebensmittel zusammenführen",
+  "editFoodMergeMessage": "\"{source}\" überall durch \"{target}\" ersetzen? Alle Rezepte, Einkaufsartikel und gespeicherten Preise, die \"{source}\" verwenden, wechseln zu \"{target}\". Dies kann nicht rückgängig gemacht werden.",
+  "@editFoodMergeMessage": {
+    "placeholders": {
+      "source": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "editFoodMergeConfirm": "Zusammenführen",
+  "editFoodPantry": "Vorratsartikel",
+  "editFoodPantryHint": "Vorratsartikel werden nicht auf Einkaufslisten gesetzt",
+  "editUnitTitle": "Einheit bearbeiten",
+  "editUnitName": "Name",
+  "editUnitMerge": "Zusammenführen mit…",
+  "editUnitMergeTitle": "Einheit zusammenführen",
+  "editUnitMergeMessage": "\"{source}\" überall durch \"{target}\" ersetzen? Alle Rezepte, Einkaufsartikel und gespeicherten Preise, die \"{source}\" verwenden, wechseln zu \"{target}\". Dies kann nicht rückgängig gemacht werden.",
+  "@editUnitMergeMessage": {
+    "placeholders": {
+      "source": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "editUnitMergeConfirm": "Zusammenführen"
 }

@@ -12,13 +12,17 @@ definitions:
       image_url:
         type: string
       name:
+        minLength: 2
         type: string
       recipes:
         items:
-          $ref: '#/definitions/domain.Recipe'
+          $ref: "#/definitions/domain.Recipe"
         type: array
       refresh_token:
         type: string
+    required:
+      - email
+      - name
     type: object
   api.CollectionForm:
     properties:
@@ -44,11 +48,16 @@ definitions:
     type: object
   api.ImportRequest:
     properties:
+      type:
+        description: '"auto", "recipe", "feed"'
+        enum:
+          - auto
+          - recipe
+          - feed
+        type: string
       update:
         type: boolean
       url:
-        type: string
-      type:
         type: string
     required:
       - url
@@ -213,6 +222,13 @@ definitions:
         minLength: 8
         type: string
     type: object
+  api.mergeRequest:
+    properties:
+      merge_into:
+        type: string
+    required:
+      - merge_into
+    type: object
   api.recordPriceRequest:
     properties:
       amount:
@@ -226,6 +242,20 @@ definitions:
       - price
       - unit_id
     type: object
+  api.updateFoodRequest:
+    properties:
+      default_unit_id:
+        type: string
+      description:
+        maxLength: 1000
+        type: string
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+      pantry:
+        type: boolean
+    type: object
   api.updateHouseholdForm:
     properties:
       currency:
@@ -236,45 +266,63 @@ definitions:
     required:
       - name
     type: object
+  api.updateUnitRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+    type: object
   domain.Author:
     properties:
       description:
+        maxLength: 1000
         type: string
       id:
         type: string
       image_url:
         type: string
       name:
+        maxLength: 255
+        minLength: 2
         type: string
       recipes:
         items:
-          $ref: '#/definitions/domain.Recipe'
+          $ref: "#/definitions/domain.Recipe"
         type: array
       total_recipes:
         type: integer
       url:
         type: string
+    required:
+      - name
     type: object
   domain.Collection:
     properties:
       description:
+        maxLength: 1000
         type: string
       id:
         type: string
       name:
+        maxLength: 255
+        minLength: 2
         type: string
       recipes:
         items:
-          $ref: '#/definitions/domain.Recipe'
+          $ref: "#/definitions/domain.Recipe"
         type: array
       total_recipes:
         type: integer
       user_id:
         type: string
+    required:
+      - name
     type: object
   domain.Equipment:
     properties:
       description:
+        maxLength: 1000
         type: string
       id:
         type: string
@@ -282,20 +330,28 @@ definitions:
         type: string
       images:
         items:
-          $ref: '#/definitions/domain.Image'
+          $ref: "#/definitions/domain.Image"
         type: array
       name:
+        maxLength: 255
+        minLength: 1
         type: string
       slug:
+        maxLength: 255
+        minLength: 1
         type: string
       total_recipes:
         type: integer
+    required:
+      - name
+      - slug
     type: object
   domain.Feed:
     properties:
       active:
         type: boolean
       description:
+        maxLength: 1000
         type: string
       id:
         type: string
@@ -304,44 +360,60 @@ definitions:
       last_sync_success:
         type: boolean
       name:
+        maxLength: 255
+        minLength: 2
         type: string
       publisher:
-        $ref: '#/definitions/domain.Publisher'
+        $ref: "#/definitions/domain.Publisher"
       publisher_id:
         type: string
       recipes:
         items:
-          $ref: '#/definitions/domain.Recipe'
+          $ref: "#/definitions/domain.Recipe"
         type: array
       total_recipes:
         type: integer
       url:
         type: string
+    required:
+      - name
+      - url
     type: object
   domain.Food:
     properties:
+      canonical_food_id:
+        type: string
       default_unit:
-        $ref: '#/definitions/domain.Unit'
+        $ref: "#/definitions/domain.Unit"
       default_unit_id:
         type: string
       description:
+        maxLength: 1000
         type: string
       id:
         type: string
       image_url:
         type: string
       name:
+        maxLength: 255
+        minLength: 1
         type: string
       pantry:
-        description: Whether this food is always available (e.g. salt, oil) and should
+        description:
+          Whether this food is always available (e.g. salt, oil) and should
           be excluded from shopping lists
         type: boolean
       slug:
+        maxLength: 255
+        minLength: 1
         type: string
       taxonomies:
         items:
-          $ref: '#/definitions/domain.Taxonomy'
+          $ref: "#/definitions/domain.Taxonomy"
         type: array
+    required:
+      - name
+      - slug
     type: object
   domain.FoodPrice:
     properties:
@@ -350,7 +422,7 @@ definitions:
       created:
         type: string
       food:
-        $ref: '#/definitions/domain.Food'
+        $ref: "#/definitions/domain.Food"
       food_id:
         type: string
       household_id:
@@ -360,40 +432,48 @@ definitions:
       price:
         type: number
       unit:
-        $ref: '#/definitions/domain.Unit'
+        $ref: "#/definitions/domain.Unit"
       unit_id:
         type: string
+    required:
+      - amount
+      - price
     type: object
   domain.Household:
     properties:
       collections:
         items:
-          $ref: '#/definitions/domain.Collection'
+          $ref: "#/definitions/domain.Collection"
         type: array
       currency:
         type: string
       feeds:
         items:
-          $ref: '#/definitions/domain.Feed'
+          $ref: "#/definitions/domain.Feed"
         type: array
       id:
         type: string
       invites:
         items:
-          $ref: '#/definitions/domain.UserToken'
+          $ref: "#/definitions/domain.UserToken"
         type: array
       members:
         items:
-          $ref: '#/definitions/domain.User'
+          $ref: "#/definitions/domain.User"
         type: array
       name:
+        maxLength: 255
+        minLength: 2
         type: string
       owner_id:
         type: string
       shopping_lists:
         items:
-          $ref: '#/definitions/domain.ShoppingList'
+          $ref: "#/definitions/domain.ShoppingList"
         type: array
+    required:
+      - currency
+      - name
     type: object
   domain.Image:
     properties:
@@ -419,9 +499,9 @@ definitions:
       created:
         type: boolean
       feed:
-        $ref: '#/definitions/domain.Feed'
+        $ref: "#/definitions/domain.Feed"
       recipe:
-        $ref: '#/definitions/domain.Recipe'
+        $ref: "#/definitions/domain.Recipe"
     type: object
   domain.InviteInfo:
     properties:
@@ -442,7 +522,7 @@ definitions:
         description: breakfast, lunch, dinner
         type: string
       recipe:
-        $ref: '#/definitions/domain.Recipe'
+        $ref: "#/definitions/domain.Recipe"
       recipe_id:
         type: string
       servings:
@@ -451,58 +531,69 @@ definitions:
   domain.Publisher:
     properties:
       description:
+        maxLength: 1000
         type: string
       feeds:
         items:
-          $ref: '#/definitions/domain.Feed'
+          $ref: "#/definitions/domain.Feed"
         type: array
       id:
         type: string
       image_url:
         type: string
       name:
+        maxLength: 255
+        minLength: 2
         type: string
       recipes:
         items:
-          $ref: '#/definitions/domain.Recipe'
+          $ref: "#/definitions/domain.Recipe"
         type: array
       total_recipes:
         type: integer
       url:
         type: string
+    required:
+      - name
     type: object
   domain.Rating:
     properties:
       count:
+        minimum: 0
         type: integer
       reviews:
+        minimum: 0
         type: integer
       value:
+        maximum: 5
+        minimum: 0
         type: number
     type: object
   domain.Recipe:
     properties:
       author:
-        $ref: '#/definitions/domain.Author'
+        $ref: "#/definitions/domain.Author"
       author_id:
         type: string
       collections:
         items:
-          $ref: '#/definitions/domain.Collection'
+          $ref: "#/definitions/domain.Collection"
         type: array
       cook_time:
         example: 1200
         type: integer
       description:
-        example: A classic Italian pasta dish made with eggs, cheese, pancetta, and
+        example:
+          A classic Italian pasta dish made with eggs, cheese, pancetta, and
           pepper.
+        maxLength: 10000
         type: string
       difficulty:
         example: Medium
         type: string
       equipment:
         items:
-          $ref: '#/definitions/domain.Equipment'
+          $ref: "#/definitions/domain.Equipment"
         type: array
       feed_id:
         type: string
@@ -512,18 +603,16 @@ definitions:
         type: string
       images:
         items:
-          $ref: '#/definitions/domain.Image'
+          $ref: "#/definitions/domain.Image"
         type: array
       ingredients:
         items:
-          $ref: '#/definitions/domain.RecipeIngredient'
+          $ref: "#/definitions/domain.RecipeIngredient"
         type: array
       instructions:
         items:
-          $ref: '#/definitions/domain.RecipeInstruction'
+          $ref: "#/definitions/domain.RecipeInstruction"
         type: array
-      is_saved:
-        type: boolean
       language:
         example: en
         type: string
@@ -532,9 +621,11 @@ definitions:
         type: string
       name:
         example: Spaghetti Carbonara
+        maxLength: 255
+        minLength: 2
         type: string
       nutrition:
-        $ref: '#/definitions/domain.RecipeNutrition'
+        $ref: "#/definitions/domain.RecipeNutrition"
       prep_time:
         example: 900
         type: integer
@@ -542,31 +633,46 @@ definitions:
         format: date-time
         type: string
       publisher:
-        $ref: '#/definitions/domain.Publisher'
+        $ref: "#/definitions/domain.Publisher"
       publisher_id:
         type: string
       rating:
-        $ref: '#/definitions/domain.Rating'
+        $ref: "#/definitions/domain.Rating"
+      saved_by:
+        items:
+          $ref: "#/definitions/domain.RecipeSavedUser"
+        type: array
       source_url:
         type: string
       taxonomies:
         items:
-          $ref: '#/definitions/domain.Taxonomy'
+          $ref: "#/definitions/domain.Taxonomy"
         type: array
       text:
         type: string
       total_time:
         example: 2100
         type: integer
-      url:
-        type: string
       user_id:
         type: string
       video:
-        $ref: '#/definitions/domain.Video'
+        $ref: "#/definitions/domain.Video"
       yield:
         example: 4
         type: integer
+    required:
+      - name
+    type: object
+  domain.RecipeCostEstimate:
+    properties:
+      items:
+        items:
+          $ref: "#/definitions/domain.RecipeIngredientCost"
+        type: array
+      per_serving:
+        type: number
+      total:
+        type: number
     type: object
   domain.RecipeIngredient:
     properties:
@@ -574,15 +680,19 @@ definitions:
         description: nil when unquantified (e.g. "to taste", "a pinch of")
         type: number
       category:
-        description: Category groups ingredients into named sections within a recipe
+        description:
+          Category groups ingredients into named sections within a recipe
           (e.g. "For the sauce", "For the dough").
+        maxLength: 255
         type: string
       description:
-        description: Description holds preparation notes extracted from the ingredient
+        description:
+          Description holds preparation notes extracted from the ingredient
           string (e.g. "finely diced", "at room temperature").
+        maxLength: 1000
         type: string
       food:
-        $ref: '#/definitions/domain.Food'
+        $ref: "#/definitions/domain.Food"
       food_id:
         type: string
       id:
@@ -594,14 +704,35 @@ definitions:
         description: |-
           Name is the ingredient name as written in this recipe (e.g. "carrots", "all-purpose flour").
           May differ from Food.Name, which holds the deduplicated canonical form (e.g. "carrot").
+        maxLength: 255
+        minLength: 1
         type: string
       raw_text:
-        description: RawText is the original unparsed ingredient string from the source
+        description:
+          RawText is the original unparsed ingredient string from the source
           (e.g. "2 large carrots, diced").
         type: string
       unit:
-        $ref: '#/definitions/domain.Unit'
+        $ref: "#/definitions/domain.Unit"
       unit_id:
+        type: string
+    required:
+      - raw_text
+    type: object
+  domain.RecipeIngredientCost:
+    properties:
+      cost:
+        description: cost for this ingredient in the recipe (nil if not calculated)
+        type: number
+      food_price:
+        allOf:
+          - $ref: "#/definitions/domain.FoodPrice"
+        description: the price used (nil if not calculated)
+      ingredient_id:
+        description: references Recipe.Ingredients[].ID
+        type: string
+      status:
+        description: '"calculated" | "pantry" | "missing_price" | "incompatible_unit"'
         type: string
     type: object
   domain.RecipeInstruction:
@@ -612,119 +743,140 @@ definitions:
         type: string
       images:
         items:
-          $ref: '#/definitions/domain.Image'
+          $ref: "#/definitions/domain.Image"
         type: array
       order:
+        minimum: 0
         type: integer
       parent:
-        $ref: '#/definitions/domain.RecipeInstruction'
+        $ref: "#/definitions/domain.RecipeInstruction"
       parent_id:
         type: string
       text:
         type: string
       title:
+        maxLength: 255
         type: string
       url:
         type: string
       video_url:
         type: string
+    required:
+      - text
     type: object
   domain.RecipeNutrition:
     properties:
       calcium:
         description: The number of milligrams of calcium.
+        minimum: 0
         type: number
       calories:
         description: The number of calories.
         example: 450.5
+        minimum: 0
         type: number
       carbs:
         description: The number of grams of carbohydrates.
         example: 60
+        minimum: 0
         type: number
       carbs_fiber:
         description: The number of grams of fiber.
         example: 4.5
+        minimum: 0
         type: number
       carbs_sugar:
         description: The number of grams of sugar.
         example: 10
+        minimum: 0
         type: number
       cholesterol:
         description: The number of milligrams of cholesterol.
         example: 35
+        minimum: 0
         type: number
       copper:
         description: The number of milligrams of copper.
+        minimum: 0
         type: number
       fat:
         description: The number of grams of fat.
         example: 15.2
+        minimum: 0
         type: number
       fat_saturated:
         description: The number of grams of saturated fat.
         example: 5.1
+        minimum: 0
         type: number
       fat_trans:
         description: The number of grams of trans fat.
         example: 0.1
+        minimum: 0
         type: number
       iron:
         description: The number of milligrams of iron.
+        minimum: 0
         type: number
       magnesium:
         description: The number of milligrams of magnesium.
+        minimum: 0
         type: number
       manganese:
         description: The number of milligrams of manganese.
+        minimum: 0
         type: number
       phosphorus:
         description: The number of milligrams of phosphorus.
+        minimum: 0
         type: number
       potassium:
         description: The number of milligrams of potassium.
+        minimum: 0
         type: number
       protein:
         description: The number of grams of protein.
         example: 22
+        minimum: 0
         type: number
       salt:
         description: The number of grams of salt.
+        minimum: 0
         type: number
       selenium:
         description: The number of micrograms of selenium.
+        minimum: 0
         type: number
       serving_size:
         description: The serving size, in terms of the number of volume or mass.
         example: 1 plate
+        maxLength: 255
         type: string
       sodium:
         description: The number of milligrams of sodium.
         example: 250
+        minimum: 0
         type: number
       zinc:
         description: The number of milligrams of zinc.
+        minimum: 0
         type: number
     type: object
-  domain.RecipePriceEstimate:
+  domain.RecipeSavedUser:
     properties:
-      missing_prices:
-        description: food IDs with no recorded price
-        items:
-          type: string
-        type: array
-      per_serving:
-        description: nil if recipe has no yield
-        type: number
-      total:
-        type: number
+      id:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
     type: object
   domain.ShoppingItem:
     properties:
       amount:
         type: number
       food:
-        $ref: '#/definitions/domain.Food'
+        $ref: "#/definitions/domain.Food"
       food_id:
         type: string
       id:
@@ -733,11 +885,15 @@ definitions:
         type: boolean
       text:
         description: raw user input
+        maxLength: 255
+        minLength: 1
         type: string
       unit:
-        $ref: '#/definitions/domain.Unit'
+        $ref: "#/definitions/domain.Unit"
       unit_id:
         type: string
+    required:
+      - text
     type: object
   domain.ShoppingList:
     properties:
@@ -747,33 +903,50 @@ definitions:
         type: boolean
       items:
         items:
-          $ref: '#/definitions/domain.ShoppingItem'
+          $ref: "#/definitions/domain.ShoppingItem"
         type: array
       name:
+        maxLength: 255
+        minLength: 2
         type: string
+    required:
+      - name
     type: object
   domain.Taxonomy:
     properties:
       canonical:
-        $ref: '#/definitions/domain.Taxonomy'
+        $ref: "#/definitions/domain.Taxonomy"
       canonical_id:
         description: For merging/aliases
         type: string
       id:
         type: string
       label:
+        maxLength: 255
+        minLength: 1
         type: string
       parent:
-        $ref: '#/definitions/domain.Taxonomy'
+        $ref: "#/definitions/domain.Taxonomy"
       parent_id:
         type: string
       slug:
+        maxLength: 255
+        minLength: 1
         type: string
       total_recipes:
         type: integer
       type:
         description: diet, category, cuisine, keyword
+        enum:
+          - diet
+          - category
+          - cuisine
+          - keyword
         type: string
+    required:
+      - label
+      - slug
+      - type
     type: object
   domain.Unit:
     properties:
@@ -781,21 +954,30 @@ definitions:
         description: BaseFactor is the multiplier to convert amounts to the base unit.
         type: number
       base_unit:
-        $ref: '#/definitions/domain.Unit'
+        $ref: "#/definitions/domain.Unit"
       base_unit_id:
+        type: string
+      canonical_unit_id:
         type: string
       id:
         type: string
       imperial:
         type: boolean
       name:
+        maxLength: 255
+        minLength: 1
         type: string
       slug:
+        maxLength: 255
+        minLength: 1
         type: string
       taxonomies:
         items:
-          $ref: '#/definitions/domain.Taxonomy'
+          $ref: "#/definitions/domain.Taxonomy"
         type: array
+    required:
+      - name
+      - slug
     type: object
   domain.UploadedImage:
     properties:
@@ -821,11 +1003,15 @@ definitions:
       image_url:
         type: string
       name:
+        minLength: 2
         type: string
       recipes:
         items:
-          $ref: '#/definitions/domain.Recipe'
+          $ref: "#/definitions/domain.Recipe"
         type: array
+    required:
+      - email
+      - name
     type: object
   domain.UserToken:
     properties:
@@ -836,19 +1022,28 @@ definitions:
       token:
         type: string
       type:
+        enum:
+          - refresh
+          - household_invite
+          - password_reset
         type: string
       user_id:
         type: string
+    required:
+      - token
+      - type
     type: object
   domain.Video:
     properties:
       content_url:
         type: string
       description:
+        maxLength: 2000
         type: string
       embed_url:
         type: string
       name:
+        minLength: 2
         type: string
       thumbnail_url:
         type: string
@@ -880,118 +1075,127 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.Author'
+          $ref: "#/definitions/domain.Author"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_Collection:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.Collection'
+          $ref: "#/definitions/domain.Collection"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_Equipment:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.Equipment'
+          $ref: "#/definitions/domain.Equipment"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_Feed:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.Feed'
+          $ref: "#/definitions/domain.Feed"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
+    type: object
+  types.ListResponse-domain_Food:
+    properties:
+      data:
+        items:
+          $ref: "#/definitions/domain.Food"
+        type: array
+      meta:
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_FoodPrice:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.FoodPrice'
+          $ref: "#/definitions/domain.FoodPrice"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_MealPlan:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.MealPlan'
+          $ref: "#/definitions/domain.MealPlan"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_Publisher:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.Publisher'
+          $ref: "#/definitions/domain.Publisher"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_Recipe:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.Recipe'
+          $ref: "#/definitions/domain.Recipe"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_ShoppingItem:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.ShoppingItem'
+          $ref: "#/definitions/domain.ShoppingItem"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_ShoppingList:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.ShoppingList'
+          $ref: "#/definitions/domain.ShoppingList"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_Taxonomy:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.Taxonomy'
+          $ref: "#/definitions/domain.Taxonomy"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_Unit:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.Unit'
+          $ref: "#/definitions/domain.Unit"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.ListResponse-domain_User:
     properties:
       data:
         items:
-          $ref: '#/definitions/domain.User'
+          $ref: "#/definitions/domain.User"
         type: array
       meta:
-        $ref: '#/definitions/types.Meta'
+        $ref: "#/definitions/types.Meta"
     type: object
   types.Meta:
     properties:
@@ -1003,7 +1207,7 @@ definitions:
         type: integer
     type: object
 info:
-  contact: { }
+  contact: {}
   description: The backend API for Borscht app.
   license:
     name: MIT license
@@ -1014,7 +1218,7 @@ paths:
   /_health:
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       description: get the status of server.
       produces:
         - application/json
@@ -1022,14 +1226,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.SuccessMessage'
+            $ref: "#/definitions/handlers.SuccessMessage"
       summary: Show the status of server.
       tags:
         - root
   /_version:
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       description: get the current app version and latest available version from GitHub.
       produces:
         - application/json
@@ -1037,7 +1241,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.versionResponse'
+            $ref: "#/definitions/handlers.versionResponse"
       summary: Show the app version.
       tags:
         - root
@@ -1045,7 +1249,8 @@ paths:
     post:
       consumes:
         - application/json
-      description: Sends a password reset link to the given email address. Always
+      description:
+        Sends a password reset link to the given email address. Always
         returns 202 to prevent user enumeration.
       parameters:
         - description: Email address
@@ -1053,18 +1258,18 @@ paths:
           name: body
           required: true
           schema:
-            $ref: '#/definitions/api.ForgotPasswordForm'
+            $ref: "#/definitions/api.ForgotPasswordForm"
       responses:
         "202":
           description: Accepted
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       summary: Request a password reset email.
       tags:
         - auth
@@ -1072,7 +1277,8 @@ paths:
     post:
       consumes:
         - application/json
-      description: Authenticate user by email and password, returning access and refresh
+      description:
+        Authenticate user by email and password, returning access and refresh
         tokens.
       parameters:
         - description: Login credentials
@@ -1080,22 +1286,22 @@ paths:
           name: login
           required: true
           schema:
-            $ref: '#/definitions/api.LoginForm'
+            $ref: "#/definitions/api.LoginForm"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.AuthResponse'
+            $ref: "#/definitions/api.AuthResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       summary: Authenticate user and return tokens.
       tags:
         - auth
@@ -1110,7 +1316,7 @@ paths:
           name: logout
           required: true
           schema:
-            $ref: '#/definitions/api.RenewForm'
+            $ref: "#/definitions/api.RenewForm"
       produces:
         - application/json
       responses:
@@ -1119,13 +1325,14 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       summary: Logout user.
       tags:
         - auth
   /api/v1/auth/oidc/callback:
     get:
-      description: Handles the callback from the identity provider, returning local
+      description:
+        Handles the callback from the identity provider, returning local
         access and refresh tokens.
       parameters:
         - description: CSRF State
@@ -1142,15 +1349,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.AuthResponse'
+            $ref: "#/definitions/api.AuthResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       summary: OIDC Consumer.
       tags:
         - auth
@@ -1167,7 +1374,8 @@ paths:
     post:
       consumes:
         - application/json
-      description: Refresh tokens using a valid refresh token, returning new access
+      description:
+        Refresh tokens using a valid refresh token, returning new access
         and refresh tokens.
       parameters:
         - description: Refresh token
@@ -1175,22 +1383,22 @@ paths:
           name: refresh
           required: true
           schema:
-            $ref: '#/definitions/api.RenewForm'
+            $ref: "#/definitions/api.RenewForm"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.AuthResponse'
+            $ref: "#/definitions/api.AuthResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       summary: Refresh tokens.
       tags:
         - auth
@@ -1198,7 +1406,8 @@ paths:
     post:
       consumes:
         - application/json
-      description: Register a new user with name, email, and password, returning access
+      description:
+        Register a new user with name, email, and password, returning access
         and refresh tokens. If invite_code is provided and valid, the user joins the
         associated household.
       parameters:
@@ -1207,22 +1416,22 @@ paths:
           name: user
           required: true
           schema:
-            $ref: '#/definitions/api.RegisterForm'
+            $ref: "#/definitions/api.RegisterForm"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/api.AuthResponse'
+            $ref: "#/definitions/api.AuthResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       summary: Create a new user.
       tags:
         - auth
@@ -1236,53 +1445,54 @@ paths:
           name: body
           required: true
           schema:
-            $ref: '#/definitions/api.ResetPasswordForm'
+            $ref: "#/definitions/api.ResetPasswordForm"
       responses:
         "204":
           description: No Content
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       summary: Reset password using a token from email.
       tags:
         - auth
   /api/v1/authors:
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       description: List recipe authors stored in the database.
       parameters:
         - description: Text search
           in: query
           name: q
           type: string
-        - description: 'Comma-separated extras to include: total_recipes'
+        - description: "Comma-separated extras to include: total_recipes"
           in: query
           name: preload
           type: string
-        - description: 'Restrict results to recipes visible in a given screen: feeds,
-          saved (default: all household-visible recipes)'
+        - description:
+            "Restrict results to recipes visible in a given screen: feeds,
+            saved (default: all household-visible recipes)"
           in: query
           name: scope
           type: string
-        - description: 'Sort by field: id, name, created, total_recipes (default: id)'
+        - description: "Sort by field: id, name, created, total_recipes (default: id)"
           in: query
           name: sort
           type: string
-        - description: 'Sort order: asc or desc (default: desc)'
+        - description: "Sort order: asc or desc (default: desc)"
           in: query
           name: order
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -1292,43 +1502,43 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Author'
+            $ref: "#/definitions/types.ListResponse-domain_Author"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List all recipe authors.
       tags:
         - authors
   /api/v1/collections:
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Returns collections associated with the user's household.
       parameters:
         - description: Text search
           in: query
           name: q
           type: string
-        - description: 'Comma-separated extras to include: last3_recipes and total_recipes'
+        - description: "Comma-separated extras to include: last3_recipes and total_recipes"
           in: query
           name: preload
           type: string
-        - description: 'Sort by field: id, name, created, updated (default: id)'
+        - description: "Sort by field: id, name, created, updated (default: id)"
           in: query
           name: sort
           type: string
-        - description: 'Sort order: asc or desc (default: desc)'
+        - description: "Sort order: asc or desc (default: desc)"
           in: query
           name: order
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -1338,13 +1548,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Collection'
+            $ref: "#/definitions/types.ListResponse-domain_Collection"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List user's collections.
       tags:
         - collections
@@ -1358,31 +1568,31 @@ paths:
           name: collection
           required: true
           schema:
-            $ref: '#/definitions/api.CollectionForm'
+            $ref: "#/definitions/api.CollectionForm"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.Collection'
+            $ref: "#/definitions/domain.Collection"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Create a new collection.
       tags:
         - collections
   /api/v1/collections/{id}:
     delete:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Delete a collection.
       parameters:
         - description: Collection ID
@@ -1398,23 +1608,23 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Delete collection.
       tags:
         - collections
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       parameters:
         - description: Collection ID
           in: path
@@ -1427,21 +1637,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.Collection'
+            $ref: "#/definitions/domain.Collection"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Returns a collection with all its recipes.
       tags:
         - collections
@@ -1460,32 +1670,32 @@ paths:
           name: collection
           required: true
           schema:
-            $ref: '#/definitions/api.UpdateCollectionForm'
+            $ref: "#/definitions/api.UpdateCollectionForm"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.Collection'
+            $ref: "#/definitions/domain.Collection"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Update collection.
       tags:
         - collections
@@ -1493,31 +1703,33 @@ paths:
     get:
       consumes:
         - application/json
-      description: Returns recipes in a collection with optional search, pagination
+      description:
+        Returns recipes in a collection with optional search, pagination
         and extras.
       parameters:
         - description: Text search
           in: query
           name: q
           type: string
-        - description: 'Comma-separated extras to include: publisher, feed, images,
-          ingredients, instructions, taxonomies, collections and saved'
+        - description:
+            "Comma-separated extras to include: publisher, feed, images,
+            ingredients, instructions, taxonomies, collections and saved"
           in: query
           name: preload
           type: string
-        - description: 'Sort by field: id, name, created, updated (default: id)'
+        - description: "Sort by field: id, name, created, updated (default: id)"
           in: query
           name: sort
           type: string
-        - description: 'Sort order: asc or desc (default: desc)'
+        - description: "Sort order: asc or desc (default: desc)"
           in: query
           name: order
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -1527,13 +1739,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Recipe'
+            $ref: "#/definitions/types.ListResponse-domain_Recipe"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List recipes in a collection.
       tags:
         - collections
@@ -1556,21 +1768,21 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Remove a recipe from a collection.
       tags:
         - collections
@@ -1592,57 +1804,59 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Add a recipe to a collection.
       tags:
         - collections
   /api/v1/equipment:
     get:
       consumes:
-        - '*/*'
-      description: List all equipment stored in the database, with optional search
+        - "*/*"
+      description:
+        List all equipment stored in the database, with optional search
         and filtering.
       parameters:
         - description: Search query (matches name or slug)
           in: query
           name: q
           type: string
-        - description: 'Comma-separated extras to include: total_recipes'
+        - description: "Comma-separated extras to include: total_recipes"
           in: query
           name: preload
           type: string
-        - description: 'Restrict results to recipes visible in a given screen: feeds,
-          saved (default: all household-visible recipes)'
+        - description:
+            "Restrict results to recipes visible in a given screen: feeds,
+            saved (default: all household-visible recipes)"
           in: query
           name: scope
           type: string
-        - description: 'Sort by field: id, name, created, total_recipes (default: id)'
+        - description: "Sort by field: id, name, created, total_recipes (default: id)"
           in: query
           name: sort
           type: string
-        - description: 'Sort order: asc or desc (default: desc)'
+        - description: "Sort order: asc or desc (default: desc)"
           in: query
           name: order
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 20)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -1652,13 +1866,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Equipment'
+            $ref: "#/definitions/types.ListResponse-domain_Equipment"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List all equipment.
       tags:
         - equipment
@@ -1672,24 +1886,25 @@ paths:
           in: query
           name: q
           type: string
-        - description: 'Comma-separated extras to include: publisher, last3_recipes
-          and total_recipes'
+        - description:
+            "Comma-separated extras to include: publisher, last3_recipes
+            and total_recipes"
           in: query
           name: preload
           type: string
-        - description: 'Sort by field: id, name, created, updated (default: id)'
+        - description: "Sort by field: id, name, created, updated (default: id)"
           in: query
           name: sort
           type: string
-        - description: 'Sort order: asc or desc (default: desc)'
+        - description: "Sort order: asc or desc (default: desc)"
           in: query
           name: order
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -1699,13 +1914,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Feed'
+            $ref: "#/definitions/types.ListResponse-domain_Feed"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List subscriptions
       tags:
         - feeds
@@ -1719,24 +1934,24 @@ paths:
           name: request
           required: true
           schema:
-            $ref: '#/definitions/api.SubscribeRequest'
+            $ref: "#/definitions/api.SubscribeRequest"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.Feed'
+            $ref: "#/definitions/domain.Feed"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Subscribe to an RSS feed
       tags:
         - feeds
@@ -1759,17 +1974,17 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Unsubscribe from a feed
       tags:
         - feeds
@@ -1777,7 +1992,8 @@ paths:
     post:
       consumes:
         - application/json
-      description: Trigger an immediate synchronization of the feed, importing any
+      description:
+        Trigger an immediate synchronization of the feed, importing any
         new recipes. This call is synchronous and blocks until the sync completes.
         If the connection drops, the sync continues server-side.
       parameters:
@@ -1797,17 +2013,17 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Sync a feed
       tags:
         - feeds
@@ -1844,25 +2060,26 @@ paths:
           in: query
           name: total_time_max
           type: integer
-        - description: 'Comma-separated extras to include: publisher, author, feed,
-          images, ingredients, equipment, instructions, nutrition, taxonomies, collections
-          and saved'
+        - description:
+            "Comma-separated extras to include: publisher, author, feed,
+            images, ingredients, equipment, instructions, nutrition, taxonomies, collections
+            and saved"
           in: query
           name: preload
           type: string
-        - description: 'Sort by field: id, name, created, updated (default: id)'
+        - description: "Sort by field: id, name, created, updated (default: id)"
           in: query
           name: sort
           type: string
-        - description: 'Sort order: asc or desc (default: desc)'
+        - description: "Sort order: asc or desc (default: desc)"
           in: query
           name: order
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -1872,16 +2089,133 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Recipe'
+            $ref: "#/definitions/types.ListResponse-domain_Recipe"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List a timeline of recipes from subscribed feeds.
       tags:
         - feeds
+  /api/v1/food:
+    get:
+      description: Search canonical foods by name or slug with pagination.
+      parameters:
+        - description: Search query (matches name or slug)
+          in: query
+          name: q
+          type: string
+        - description: "Number of records to skip (default: 0)"
+          in: query
+          name: offset
+          type: integer
+        - description: "Maximum number of records to return (default: 10)"
+          in: query
+          name: limit
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/types.ListResponse-domain_Food"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Search foods by name
+      tags:
+        - food
+  /api/v1/food/{id}:
+    patch:
+      consumes:
+        - application/json
+      description:
+        Update name, description, default unit, or pantry status of a food.
+        Only provided fields are changed.
+      parameters:
+        - description: Food UUID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Fields to update
+          in: body
+          name: food
+          required: true
+          schema:
+            $ref: "#/definitions/api.updateFoodRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/domain.Food"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Update a food
+      tags:
+        - food
+  /api/v1/food/{id}/merge:
+    post:
+      consumes:
+        - application/json
+      description:
+        Reassigns all ingredients, shopping items, and prices from the
+        food at {id} to merge_into, then marks {id} as an alias so future imports
+        resolve correctly.
+      parameters:
+        - description: Food UUID to merge away (becomes alias)
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Target food to keep
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/api.mergeRequest"
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Merge two food items
+      tags:
+        - food
   /api/v1/food/{id}/price:
     get:
       description: Get paginated price history for food within the household.
@@ -1897,30 +2231,31 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_FoodPrice'
+            $ref: "#/definitions/types.ListResponse-domain_FoodPrice"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Get price history for a food
       tags:
         - food
     post:
       consumes:
         - application/json
-      description: 'Record a new price observation for food within the household.
+      description:
+        "Record a new price observation for food within the household.
         Price is expressed as: Price <Currency> per Amount <Unit>. Example: 4.99 EUR
-        per 1 kg of chicken breast.'
+        per 1 kg of chicken breast."
       parameters:
         - description: Food UUID
           in: path
@@ -1932,28 +2267,28 @@ paths:
           name: price
           required: true
           schema:
-            $ref: '#/definitions/api.recordPriceRequest'
+            $ref: "#/definitions/api.recordPriceRequest"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.FoodPrice'
+            $ref: "#/definitions/domain.FoodPrice"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Record a new price observation for a food
       tags:
         - food
@@ -1976,31 +2311,31 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Delete a food price observation
       tags:
         - food
   /api/v1/households/{id}:
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       parameters:
         - description: Household ID
           in: path
           name: id
           required: true
           type: string
-        - description: 'Comma-separated extras to include: members, invites'
+        - description: "Comma-separated extras to include: members, invites"
           in: query
           name: preload
           type: string
@@ -2010,21 +2345,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.Household'
+            $ref: "#/definitions/domain.Household"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Returns the details of a specific household.
       tags:
         - households
@@ -2043,28 +2378,28 @@ paths:
           name: household
           required: true
           schema:
-            $ref: '#/definitions/api.updateHouseholdForm'
+            $ref: "#/definitions/api.updateHouseholdForm"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.Household'
+            $ref: "#/definitions/domain.Household"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Update household by ID, owner only.
       tags:
         - households
@@ -2083,25 +2418,26 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/domain.UserToken'
+              $ref: "#/definitions/domain.UserToken"
             type: array
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List active invite codes for the household.
       tags:
         - households
     post:
       consumes:
         - application/json
-      description: Generates a single-use 8-character invite code valid for 7 days.
+      description:
+        Generates a single-use 8-character invite code valid for 7 days.
         If email is provided, a join link is sent to that address.
       parameters:
         - description: Household ID
@@ -2113,35 +2449,35 @@ paths:
           in: body
           name: body
           schema:
-            $ref: '#/definitions/api.CreateInviteForm'
+            $ref: "#/definitions/api.CreateInviteForm"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.UserToken'
+            $ref: "#/definitions/domain.UserToken"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Create an invite code for the household.
       tags:
         - households
   /api/v1/households/{id}/members:
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Returns a list of users in a specific household.
       parameters:
         - description: Household ID
@@ -2149,11 +2485,11 @@ paths:
           name: id
           required: true
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -2163,24 +2499,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_User'
+            $ref: "#/definitions/types.ListResponse-domain_User"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List household members by household ID.
       tags:
         - households
   /api/v1/households/{id}/members/{userId}:
     delete:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Disassociates a user from a specific household.
       parameters:
         - description: Household ID
@@ -2201,26 +2537,29 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Remove a member from the household by IDs.
       tags:
         - households
   /api/v1/households/invites/{code}:
     delete:
+      description:
+        By design, this method is unprotected to allow anyone to delete
+        leaked codes.
       parameters:
         - description: Invite code
           in: path
@@ -2233,13 +2572,14 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       summary: Revoke an invite code.
       tags:
         - households
   /api/v1/households/invites/{code}/info:
     get:
-      description: Returns the household name and inviter name for a given invite
+      description:
+        Returns the household name and inviter name for a given invite
         code without requiring authentication.
       parameters:
         - description: Invite code
@@ -2253,17 +2593,18 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.InviteInfo'
+            $ref: "#/definitions/domain.InviteInfo"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       summary: Get public info about an invite code.
       tags:
         - households
   /api/v1/households/invites/{code}/join:
     post:
-      description: Moves the authenticated user into the household identified by the
+      description:
+        Moves the authenticated user into the household identified by the
         invite code, returns updated user and access token, reflecting the new household.
       parameters:
         - description: Invite code
@@ -2277,27 +2618,28 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.AuthResponse'
+            $ref: "#/definitions/api.AuthResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Join a household using an invite code.
       tags:
         - households
   /api/v1/households/leave:
     post:
-      description: Removes the authenticated user from their household and assigns
+      description:
+        Removes the authenticated user from their household and assigns
         them a new personal household, returns updated user and access token, reflecting
         the new household.
       produces:
@@ -2306,13 +2648,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.AuthResponse'
+            $ref: "#/definitions/api.AuthResponse"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Leave the current household.
       tags:
         - households
@@ -2320,40 +2662,42 @@ paths:
     post:
       consumes:
         - application/json
-      description: Detects whether the URL points to a single recipe or a feed/listing.
+      description:
+        Detects whether the URL points to a single recipe or a feed/listing.
         Returns the imported recipe or the feed subscription.
       parameters:
-        - description: Import request
+        - description: Import request (type can be auto, recipe, or feed)
           in: body
           name: import
           required: true
           schema:
-            $ref: '#/definitions/api.ImportRequest'
+            $ref: "#/definitions/api.ImportRequest"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.ImportResult'
+            $ref: "#/definitions/domain.ImportResult"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Import a recipe or subscribe to a feed from a URL.
       tags:
         - import
   /api/v1/mealplan:
     get:
       consumes:
-        - '*/*'
-      description: Returns meal plan entries for the current household. Supports date
+        - "*/*"
+      description:
+        Returns meal plan entries for the current household. Supports date
         range filtering.
       parameters:
         - description: Start date (YYYY-MM-DD)
@@ -2364,11 +2708,11 @@ paths:
           in: query
           name: to
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -2378,13 +2722,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_MealPlan'
+            $ref: "#/definitions/types.ListResponse-domain_MealPlan"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List meal plan entries.
       tags:
         - meal-plan
@@ -2398,31 +2742,31 @@ paths:
           name: mealplan
           required: true
           schema:
-            $ref: '#/definitions/api.MealPlanForm'
+            $ref: "#/definitions/api.MealPlanForm"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.MealPlan'
+            $ref: "#/definitions/domain.MealPlan"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Schedule a meal.
       tags:
         - meal-plan
   /api/v1/mealplan/{id}:
     delete:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Remove a meal from the plan.
       parameters:
         - description: Meal Plan ID
@@ -2438,28 +2782,29 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Cancel a meal.
       tags:
         - meal-plan
     patch:
       consumes:
         - application/json
-      description: Update an existing meal plan entry (e.g. change date, servings
+      description:
+        Update an existing meal plan entry (e.g. change date, servings
         or description).
       parameters:
         - description: Meal Plan ID
@@ -2472,68 +2817,70 @@ paths:
           name: mealplan
           required: true
           schema:
-            $ref: '#/definitions/api.UpdateMealPlanForm'
+            $ref: "#/definitions/api.UpdateMealPlanForm"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.MealPlan'
+            $ref: "#/definitions/domain.MealPlan"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Reschedule a meal.
       tags:
         - meal-plan
   /api/v1/publishers:
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       description: List publishers stored in the database.
       parameters:
         - description: Text search
           in: query
           name: q
           type: string
-        - description: 'Comma-separated extras to include: feeds, images, last3_recipes
-          and total_recipes'
+        - description:
+            "Comma-separated extras to include: feeds, images, last3_recipes
+            and total_recipes"
           in: query
           name: preload
           type: string
-        - description: 'Restrict results to recipes visible in a given screen: feeds,
-          saved (default: all household-visible recipes)'
+        - description:
+            "Restrict results to recipes visible in a given screen: feeds,
+            saved (default: all household-visible recipes)"
           in: query
           name: scope
           type: string
-        - description: 'Sort by field: id, name, created, total_recipes (default: id)'
+        - description: "Sort by field: id, name, created, total_recipes (default: id)"
           in: query
           name: sort
           type: string
-        - description: 'Sort order: asc or desc (default: desc)'
+        - description: "Sort order: asc or desc (default: desc)"
           in: query
           name: order
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -2543,21 +2890,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Publisher'
+            $ref: "#/definitions/types.ListResponse-domain_Publisher"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List all publishers.
       tags:
         - publishers
   /api/v1/recipes:
     get:
       consumes:
-        - '*/*'
-      description: List recipes stored in the database, with optional search and filtering.
+        - "*/*"
+      description:
+        List recipes stored in the database, with optional search and filtering.
         Supports pagination and sorting.
       parameters:
         - description: Text search
@@ -2588,25 +2936,26 @@ paths:
           in: query
           name: total_time_max
           type: integer
-        - description: 'Comma-separated extras to include: publisher, author, feed,
-          images, ingredients, instructions, nutrition, taxonomies, collections and
-          saved'
+        - description:
+            "Comma-separated extras to include: publisher, author, feed,
+            images, ingredients, instructions, nutrition, taxonomies, collections and
+            saved"
           in: query
           name: preload
           type: string
-        - description: 'Sort by field: id, name, created, updated (default: id)'
+        - description: "Sort by field: id, name, created, updated (default: id)"
           in: query
           name: sort
           type: string
-        - description: 'Sort order: asc or desc (default: desc)'
+        - description: "Sort order: asc or desc (default: desc)"
           in: query
           name: order
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -2616,20 +2965,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Recipe'
+            $ref: "#/definitions/types.ListResponse-domain_Recipe"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List stored recipes.
       tags:
         - recipes
     post:
       consumes:
         - application/json
-      description: Create a new recipe from JSON body. The recipe is automatically
+      description:
+        Create a new recipe from JSON body. The recipe is automatically
         saved for the creator.
       parameters:
         - description: Recipe data
@@ -2637,31 +2987,31 @@ paths:
           name: recipe
           required: true
           schema:
-            $ref: '#/definitions/domain.Recipe'
+            $ref: "#/definitions/domain.Recipe"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.Recipe'
+            $ref: "#/definitions/domain.Recipe"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Create a new recipe.
       tags:
         - recipes
   /api/v1/recipes/{id}:
     delete:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Delete a specific recipe by ID.
       parameters:
         - description: Recipe ID
@@ -2677,23 +3027,23 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Delete a recipe.
       tags:
         - recipes
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       parameters:
         - description: Recipe ID
           in: path
@@ -2706,21 +3056,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.Recipe'
+            $ref: "#/definitions/domain.Recipe"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Return details of a specific recipe by its ID.
       tags:
         - recipes
@@ -2739,39 +3089,71 @@ paths:
           name: recipe
           required: true
           schema:
-            $ref: '#/definitions/domain.Recipe'
+            $ref: "#/definitions/domain.Recipe"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.Recipe'
+            $ref: "#/definitions/domain.Recipe"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Update a recipe.
+      tags:
+        - recipes
+  /api/v1/recipes/{id}/cost:
+    get:
+      parameters:
+        - description: Recipe UUID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/domain.RecipeCostEstimate"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Estimate the cost of a recipe
       tags:
         - recipes
   /api/v1/recipes/{id}/equipment/{equipmentId}:
     delete:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Remove equipment association from a recipe.
       parameters:
         - description: Recipe ID
@@ -2792,23 +3174,23 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Remove equipment from a recipe.
       tags:
         - recipes
     post:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Associate existing equipment with a recipe.
       parameters:
         - description: Recipe ID
@@ -2829,24 +3211,24 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Add equipment to a recipe.
       tags:
         - recipes
   /api/v1/recipes/{id}/favorite:
     delete:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Remove a recipe from the "Favorites" list.
       parameters:
         - description: Recipe ID
@@ -2862,19 +3244,19 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Remove a recipe from the user's collection.
       tags:
         - recipes
     post:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Adds the recipe to the user's personal "Favorites" list.
       parameters:
         - description: Recipe ID
@@ -2890,13 +3272,13 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Save a recipe.
       tags:
         - recipes
@@ -2916,35 +3298,35 @@ paths:
           name: ingredient
           required: true
           schema:
-            $ref: '#/definitions/domain.RecipeIngredient'
+            $ref: "#/definitions/domain.RecipeIngredient"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.RecipeIngredient'
+            $ref: "#/definitions/domain.RecipeIngredient"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Create a recipe ingredient.
       tags:
         - recipes
   /api/v1/recipes/{id}/ingredients/{ingredientId}:
     delete:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Delete a specific recipe ingredient.
       parameters:
         - description: Recipe ID
@@ -2965,17 +3347,17 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Delete a recipe ingredient.
       tags:
         - recipes
@@ -2999,32 +3381,32 @@ paths:
           name: ingredient
           required: true
           schema:
-            $ref: '#/definitions/domain.RecipeIngredient'
+            $ref: "#/definitions/domain.RecipeIngredient"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.RecipeIngredient'
+            $ref: "#/definitions/domain.RecipeIngredient"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Update a recipe ingredient.
       tags:
         - recipes
@@ -3044,35 +3426,35 @@ paths:
           name: instruction
           required: true
           schema:
-            $ref: '#/definitions/domain.RecipeInstruction'
+            $ref: "#/definitions/domain.RecipeInstruction"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.RecipeInstruction'
+            $ref: "#/definitions/domain.RecipeInstruction"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Create a recipe instruction.
       tags:
         - recipes
   /api/v1/recipes/{id}/instructions/{instructionId}:
     delete:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Delete a specific recipe instruction.
       parameters:
         - description: Recipe ID
@@ -3093,17 +3475,17 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Delete a recipe instruction.
       tags:
         - recipes
@@ -3127,72 +3509,41 @@ paths:
           name: instruction
           required: true
           schema:
-            $ref: '#/definitions/domain.RecipeInstruction'
+            $ref: "#/definitions/domain.RecipeInstruction"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.RecipeInstruction'
+            $ref: "#/definitions/domain.RecipeInstruction"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Update a recipe instruction.
-      tags:
-        - recipes
-  /api/v1/recipes/{id}/price:
-    get:
-      parameters:
-        - description: Recipe UUID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.RecipePriceEstimate'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/sentinels.Error'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/sentinels.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/sentinels.Error'
-      security:
-        - ApiKeyAuth: [ ]
-      summary: Estimate the cost of a recipe
       tags:
         - recipes
   /api/v1/recipes/import:
     post:
       consumes:
         - application/json
-      description: Backend attempts semantic extraction first, then AI extraction.
+      description:
+        Backend attempts semantic extraction first, then AI extraction.
         Returns the imported Recipe object.
       parameters:
         - description: Import request
@@ -3200,39 +3551,39 @@ paths:
           name: import
           required: true
           schema:
-            $ref: '#/definitions/api.ImportRequest'
+            $ref: "#/definitions/api.ImportRequest"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.Recipe'
+            $ref: "#/definitions/domain.Recipe"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Import a recipe from URL.
       tags:
         - recipes
   /api/v1/shoppinglists:
     get:
       parameters:
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -3242,13 +3593,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_ShoppingList'
+            $ref: "#/definitions/types.ListResponse-domain_ShoppingList"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List all shopping lists for the household.
       tags:
         - shopping-lists
@@ -3261,24 +3612,24 @@ paths:
           name: list
           required: true
           schema:
-            $ref: '#/definitions/api.ShoppingListForm'
+            $ref: "#/definitions/api.ShoppingListForm"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.ShoppingList'
+            $ref: "#/definitions/domain.ShoppingList"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Create a new shopping list.
       tags:
         - shopping-lists
@@ -3296,13 +3647,13 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Delete a shopping list.
       tags:
         - shopping-lists
@@ -3314,11 +3665,11 @@ paths:
           name: id
           required: true
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -3328,13 +3679,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_ShoppingItem'
+            $ref: "#/definitions/types.ListResponse-domain_ShoppingItem"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List items in a shopping list.
       tags:
         - shopping-lists
@@ -3352,24 +3703,24 @@ paths:
           name: item
           required: true
           schema:
-            $ref: '#/definitions/api.ShoppingItemForm'
+            $ref: "#/definitions/api.ShoppingItemForm"
       produces:
         - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.ShoppingItem'
+            $ref: "#/definitions/domain.ShoppingItem"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Add one or more items to a shopping list.
       tags:
         - shopping-lists
@@ -3392,13 +3743,13 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Remove a shopping list item.
       tags:
         - shopping-lists
@@ -3421,63 +3772,64 @@ paths:
           name: item
           required: true
           schema:
-            $ref: '#/definitions/api.UpdateShoppingItemForm'
+            $ref: "#/definitions/api.UpdateShoppingItemForm"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.ShoppingItem'
+            $ref: "#/definitions/domain.ShoppingItem"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Update a shopping list item.
       tags:
         - shopping-lists
   /api/v1/taxonomies:
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Returns a list of all taxonomies. Supports filtering by type.
       parameters:
         - description: Filter by taxonomy type
           in: query
           name: type
           type: string
-        - description: 'Comma-separated extras to include: total_recipes'
+        - description: "Comma-separated extras to include: total_recipes"
           in: query
           name: preload
           type: string
-        - description: 'Restrict results to recipes visible in a given screen: feeds,
-          saved (default: all household-visible recipes)'
+        - description:
+            "Restrict results to recipes visible in a given screen: feeds,
+            saved (default: all household-visible recipes)"
           in: query
           name: scope
           type: string
-        - description: 'Sort by field: id, name, created, total_recipes (default: id)'
+        - description: "Sort by field: id, name, created, total_recipes (default: id)"
           in: query
           name: sort
           type: string
-        - description: 'Sort order: asc or desc (default: desc)'
+        - description: "Sort order: asc or desc (default: desc)"
           in: query
           name: order
           type: string
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 10)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -3487,36 +3839,37 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Taxonomy'
+            $ref: "#/definitions/types.ListResponse-domain_Taxonomy"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List all taxonomies.
       tags:
         - taxonomies
   /api/v1/units:
     get:
       consumes:
-        - '*/*'
-      description: List all the units stored in the database, with optional search
+        - "*/*"
+      description:
+        List all the units stored in the database, with optional search
         and filtering.
       parameters:
         - description: Search query (matches name or slug)
           in: query
           name: q
           type: string
-        - description: 'Filter by system: true=imperial, false=metric'
+        - description: "Filter by system: true=imperial, false=metric"
           in: query
           name: imperial
           type: boolean
-        - description: 'Number of records to skip (default: 0)'
+        - description: "Number of records to skip (default: 0)"
           in: query
           name: offset
           type: integer
-        - description: 'Maximum number of records to return (default: 20)'
+        - description: "Maximum number of records to return (default: 10)"
           in: query
           name: limit
           type: integer
@@ -3526,14 +3879,96 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ListResponse-domain_Unit'
+            $ref: "#/definitions/types.ListResponse-domain_Unit"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: List all the units.
+      tags:
+        - units
+  /api/v1/units/{id}:
+    patch:
+      consumes:
+        - application/json
+      description: Update the name of a unit.
+      parameters:
+        - description: Unit UUID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Fields to update
+          in: body
+          name: unit
+          required: true
+          schema:
+            $ref: "#/definitions/api.updateUnitRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/domain.Unit"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Update a unit
+      tags:
+        - units
+  /api/v1/units/{id}/merge:
+    post:
+      consumes:
+        - application/json
+      description:
+        Reassigns all ingredients, shopping items, prices, food defaults,
+        and derived units from {id} to merge_into, then marks {id} as an alias.
+      parameters:
+        - description: Unit UUID to merge away (becomes alias)
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Target unit to keep
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/api.mergeRequest"
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Merge two units
       tags:
         - units
   /api/v1/uploads:
@@ -3553,24 +3988,24 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/domain.UploadedImage'
+            $ref: "#/definitions/domain.UploadedImage"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Upload an image.
       tags:
         - infrastructure
   /api/v1/users/{id}:
     delete:
       consumes:
-        - '*/*'
+        - "*/*"
       description: Delete the account of a specific user.
       parameters:
         - description: User ID
@@ -3586,19 +4021,19 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Delete user by ID.
       tags:
         - users
     get:
       consumes:
-        - '*/*'
+        - "*/*"
       parameters:
         - description: User ID
           in: path
@@ -3611,21 +4046,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.User'
+            $ref: "#/definitions/domain.User"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Return details of a specific user.
       tags:
         - users
@@ -3644,28 +4079,28 @@ paths:
           name: user
           required: true
           schema:
-            $ref: '#/definitions/api.UpdateUserForm'
+            $ref: "#/definitions/api.UpdateUserForm"
       produces:
         - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domain.User'
+            $ref: "#/definitions/domain.User"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/sentinels.Error'
+            $ref: "#/definitions/sentinels.Error"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Update user by ID.
       tags:
         - users

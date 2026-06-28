@@ -26,18 +26,6 @@ typedef RetryPolicy = bool Function(RequestMethod method, int? statusCode);
 
 bool _defaultRetryPolicy(RequestMethod method, int? statusCode) => method == RequestMethod.get && statusCode == null;
 
-/// Request Query Params
-typedef QueryParams = Map<String, dynamic>;
-
-/// Request Body (can be Map or List for batch operations)
-typedef RequestBody = dynamic;
-
-/// Response Body
-typedef ResponseBody = dynamic;
-
-/// Api Header
-typedef ApiHeaderType = Map<String, String>;
-
 // Base class for API repositories. [module] is the fixed base path for the resource.
 abstract class Repository {
   final Ref ref;
@@ -94,13 +82,13 @@ abstract class Repository {
 
   /// Sends an HTTP request. [method] and [path] are per-call overrides.
   /// Pass [authOverride] to bypass the instance-level [isAuth] for a single call.
-  Future<ResponseBody> sendRequest({
+  Future<dynamic> sendRequest({
     required RequestMethod method,
     String path = '',
     bool? authOverride,
-    QueryParams? queryParams,
-    RequestBody? body,
-    ApiHeaderType? headersCustom,
+    Map<String, dynamic>? queryParams,
+    dynamic body,
+    Map<String, String>? headersCustom,
   }) async {
     final bool effectiveAuth = authOverride ?? isAuth;
     final String? token = await ensureAuthenticated(authOverride: authOverride);
@@ -116,21 +104,16 @@ abstract class Repository {
       retryPolicy: retryPolicy,
     );
   }
+}
 
-  /// Ensures the [response] is a `Map<String, dynamic>`.
-  /// Throws [GeneralApiException] if the response is unexpected.
-  Map<String, dynamic> ensureMap(dynamic response) => ensureMapHelper(response);
-
-  /// Ensures the [response] is a `List<dynamic>`.
-  /// Throws [GeneralApiException] if the response is not a list.
-  List<dynamic> ensureList(dynamic response) {
-    if (response is List) return response;
-    throw GeneralApiException(message: 'Expected a list but got ${response.runtimeType}');
-  }
+/// Helper function to safely cast a dynamic value to `List<dynamic>`.
+List<dynamic> ensureList(dynamic response) {
+  if (response is List) return response;
+  throw GeneralApiException(message: 'Expected a list but got ${response.runtimeType}');
 }
 
 /// Helper function to safely cast a dynamic value to `Map<String, dynamic>`.
-Map<String, dynamic> ensureMapHelper(dynamic value) {
+Map<String, dynamic> ensureMap(dynamic value) {
   if (value is Map<String, dynamic>) return value;
   if (value is Map) return value.cast<String, dynamic>();
   throw GeneralApiException(message: 'Expected a Map but got ${value.runtimeType}: $value');
@@ -170,18 +153,18 @@ class RequestHandler {
   /// The [body] parameter stores the request parameters.
   /// The [headersCustom] parameter holds custom header values.
   /// For [RequestMethod.get] and [RequestMethod.delete], append the ID to the [urlString].
-  static Future<ResponseBody> call(
+  static Future<dynamic> call(
     String urlString,
     RequestMethod method, {
     bool authorized = true,
     String? accessToken,
-    RequestBody? body,
-    ApiHeaderType? headersCustom,
+    dynamic body,
+    Map<String, String>? headersCustom,
     http.Client? client,
     RetryPolicy? retryPolicy,
   }) async {
     final shouldRetry = retryPolicy ?? _defaultRetryPolicy;
-    Future<ResponseBody> doAttempt() async {
+    Future<dynamic> doAttempt() async {
       try {
         final Map<String, String> headers =
             headersCustom ??
@@ -224,7 +207,7 @@ class RequestHandler {
               throw GeneralApiException(message: 'Request failed with status: ${response.statusCode}');
             }
             try {
-              final errorBody = ensureMapHelper(json.decode(responseData));
+              final errorBody = ensureMap(json.decode(responseData));
               throw handleFormErrors(errorBody, statusCode: response.statusCode);
             } catch (e) {
               if (e is GeneralApiException) rethrow;

@@ -1,4 +1,5 @@
 import '../../l10n/app_localizations.dart';
+import 'extensions.dart';
 
 class Validator {
   static String? validateEmail(String value, [AppLocalizations? l10n]) {
@@ -41,6 +42,19 @@ class Validator {
       return l10n?.validatorText ?? 'Text is too short.';
     }
     return null;
+  }
+
+  static String? positiveNumber(String value, [AppLocalizations? l10n]) {
+    final parsed = value.asDecimal;
+    if (parsed == null || parsed <= 0) {
+      return l10n?.validatorPositiveNumber ?? 'Please enter a valid positive number.';
+    }
+    return null;
+  }
+
+  static String? optionalPositiveNumber(String value, [AppLocalizations? l10n]) {
+    if (value.trim().isEmpty) return null;
+    return positiveNumber(value, l10n);
   }
 
   static String extractUrl(String text) {

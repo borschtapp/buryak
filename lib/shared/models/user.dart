@@ -1,5 +1,6 @@
+import 'dart:convert';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
 part 'user.freezed.dart';
 part 'user.g.dart';
@@ -25,11 +26,17 @@ abstract class User with _$User {
     'refresh_token': refreshToken,
   };
 
+  static Map<String, dynamic> decodeJwt(String token) {
+    final payload = token.split('.')[1];
+    final padded = payload.padRight((payload.length + 3) & ~3, '=');
+    return jsonDecode(utf8.decode(base64Url.decode(padded))) as Map<String, dynamic>;
+  }
+
   bool isValidAccessToken() {
     final token = accessToken;
     if (token == null || token.isEmpty) return false;
     try {
-      final jwtData = JwtDecoder.decode(token);
+      final jwtData = User.decodeJwt(token);
       return (jwtData['exp'] as int) * 1000 > DateTime.now().millisecondsSinceEpoch;
     } catch (_) {
       return false;

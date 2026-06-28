@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/loading_button.dart';
+import '../../shared/components/recipes/food_merge.dart';
 import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/shopping_item.dart';
 import '../../shared/util/error_extensions.dart';
@@ -24,6 +25,30 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
     final nameController = useTextEditingController(text: item.text ?? '');
     final amountController = useTextEditingController(text: item.amount.formatAmount);
     final isSaving = useState(false);
+    final isMerging = useState(false);
+
+    // Free-text items have no linked canonical food, so there is nothing to merge.
+    final food = item.food;
+
+    Future<void> merge() async {
+      if (food == null) return;
+      isMerging.value = true;
+      try {
+        final merged = await runFoodMergeFlow(context, ref, source: food);
+        if (merged) {
+          // Merge is global; refresh the whole list so the alias rows collapse.
+          ref.invalidate(shoppingItemsProvider);
+          if (context.mounted) {
+            context.pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.l10n.shoppingItemMerged)),
+            );
+          }
+        }
+      } finally {
+        if (context.mounted) isMerging.value = false;
+      }
+    }
 
     Future<void> save() async {
       final name = nameController.text.trim();
@@ -113,6 +138,17 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
             onPressed: save,
             child: Text(context.l10n.saveChanges),
           ),
+          if (food != null) ...[
+            const SizedBox(height: UIConstants.paddingSmall),
+            LoadingButton(
+              type: LoadingButtonType.text,
+              isLoading: isMerging.value,
+              icon: const Icon(Icons.merge_outlined),
+              onPressed: (isSaving.value || isMerging.value) ? null : merge,
+              spinnerSize: 16,
+              child: Text(context.l10n.shoppingItemMergeFood),
+            ),
+          ],
         ],
       ),
     );

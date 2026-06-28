@@ -1,4 +1,3 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -27,6 +26,7 @@ import 'providers/shell.dart';
 import 'providers/user.dart';
 import 'route_names.dart';
 import 'util/extensions.dart';
+import 'util/transitions.dart';
 
 part 'router.g.dart';
 
@@ -249,12 +249,7 @@ GoRouter router(Ref ref) {
                 initialRecipe: state.extra is Recipe ? state.extra as Recipe : null,
                 backFallback: _findSourceRouteName(context) ?? RouteNames.feed,
               ),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                return FadeScaleTransition(
-                  animation: animation,
-                  child: child,
-                );
-              },
+              transitionsBuilder: (context, animation, secondaryAnimation, child) => fadeScaleTransition(animation, child),
             ),
           ),
           GoRoute(
@@ -264,12 +259,7 @@ GoRouter router(Ref ref) {
             pageBuilder: (context, state) => CustomTransitionPage<void>(
               key: state.pageKey,
               child: const FeedsScreen(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                return FadeScaleTransition(
-                  animation: animation,
-                  child: child,
-                );
-              },
+              transitionsBuilder: (context, animation, secondaryAnimation, child) => fadeScaleTransition(animation, child),
             ),
           ),
           GoRoute(
@@ -279,12 +269,7 @@ GoRouter router(Ref ref) {
             pageBuilder: (context, state) => CustomTransitionPage<void>(
               key: state.pageKey,
               child: CollectionScreen(collectionId: state.pathParameters['cid']!),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                return FadeScaleTransition(
-                  animation: animation,
-                  child: child,
-                );
-              },
+              transitionsBuilder: (context, animation, secondaryAnimation, child) => fadeScaleTransition(animation, child),
             ),
           ),
         ],
@@ -306,7 +291,7 @@ GoRouter router(Ref ref) {
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
           child: CookingScreen(recipe: state.extra as Recipe),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeScaleTransition(animation: animation, child: child),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => fadeScaleTransition(animation, child),
         ),
       ),
       GoRoute(

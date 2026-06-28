@@ -79,7 +79,6 @@ class ShoppingBottomSheet extends HookConsumerWidget {
 
     return StandardBottomSheet(
       title: context.l10n.shoppingAddToShoppingTitle,
-      showDragHandle: true,
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

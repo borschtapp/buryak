@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../models/meal_plan.dart';
@@ -58,6 +59,8 @@ extension StringExtensions on String {
     if (dt == null) return null;
     return dt.timeAgo(l10n, now: now);
   }
+
+  double? get asDecimal => double.tryParse(replaceAll(',', '.'));
 }
 
 extension RelativeTimeFormatting on DateTime {
@@ -118,6 +121,8 @@ const _fractionsMap = {
   '⅞': 0.875,
 };
 
+const double _fractionEpsilon = 0.01;
+
 extension DoubleFormat on double? {
   /// The user-facing "pretty" version (e.g., "½", "2 ½", "0.005", "1.1").
   String get displayAmount {
@@ -128,9 +133,9 @@ extension DoubleFormat on double? {
     final fraction = (self - integer).abs();
 
     // Try to find a matching fraction symbol
-    if (fraction > 0.01) {
+    if (fraction > _fractionEpsilon) {
       for (final entry in _fractionsMap.entries) {
-        if ((entry.value - fraction).abs() < 0.01) {
+        if ((entry.value - fraction).abs() < _fractionEpsilon) {
           return integer == 0 ? entry.key : '$integer ${entry.key}';
         }
       }
@@ -146,7 +151,7 @@ extension DoubleFormat on double? {
     if (self == null) return '';
 
     // Limit precision for very small numbers to avoid 15-digit display
-    if (self < 0.01) return self.toStringAsFixed(4);
+    if (self < _fractionEpsilon) return self.toStringAsFixed(4);
 
     // Show as integer if no decimal part
     if (self == self.truncateToDouble()) return self.truncate().toString();
@@ -158,6 +163,8 @@ extension DoubleFormat on double? {
 
 extension L10nContext on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
+
+  NumberFormat currencyFormatter(String? currency) => NumberFormat.simpleCurrency(locale: l10n.localeName, name: currency);
 
   /// Splits a template string like "Accept {termsLink} and {privacyLink}."
   /// into a list of InlineSpans, replacing named tokens with styled spans.

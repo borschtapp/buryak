@@ -12,8 +12,19 @@ class Ingredients extends StatelessWidget {
   final double scale;
   final Widget? headerTrailing;
   final bool showHeader;
+  final void Function(RecipeIngredient ingredient)? onIngredientTap;
+  final void Function(RecipeIngredient ingredient)? onIngredientLongPress;
 
-  const Ingredients(this.ingredients, {this.equipment, this.scale = 1.0, this.headerTrailing, this.showHeader = true, super.key});
+  const Ingredients(
+    this.ingredients, {
+    this.equipment,
+    this.scale = 1.0,
+    this.headerTrailing,
+    this.showHeader = true,
+    this.onIngredientTap,
+    this.onIngredientLongPress,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +133,8 @@ class Ingredients extends StatelessWidget {
   }
 
   Widget _buildIngredientRow(BuildContext context, RecipeIngredient ingredient) {
-    return Padding(
+    final tappable = onIngredientTap != null || onIngredientLongPress != null;
+    final row = Padding(
       padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingSmall),
       child: Row(
         children: [
@@ -135,9 +147,18 @@ class Ingredients extends StatelessWidget {
           ),
           const SizedBox(width: UIConstants.paddingMedium),
           Expanded(
-            child: Text(
-              ingredient.displayName,
-              style: context.textTheme.bodyLarge,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(ingredient.displayName, style: context.textTheme.bodyLarge),
+                if (ingredient.description != null && ingredient.description!.isNotEmpty)
+                  Text(
+                    ingredient.description!,
+                    style: context.textTheme.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
             ),
           ),
           Text(
@@ -146,6 +167,14 @@ class Ingredients extends StatelessWidget {
           ),
         ],
       ),
+    );
+
+    if (!tappable) return row;
+    return InkWell(
+      onTap: onIngredientTap != null ? () => onIngredientTap!(ingredient) : null,
+      onLongPress: onIngredientLongPress != null ? () => onIngredientLongPress!(ingredient) : null,
+      borderRadius: context.shapeSmall,
+      child: row,
     );
   }
 }

@@ -5,6 +5,7 @@ import '../models/recipe.dart';
 import '../models/recipe_filter.dart';
 import '../models/recipe_ingredient.dart';
 import '../models/recipe_instruction.dart';
+import '../models/recipe_cost_estimate.dart';
 import 'repository.dart';
 
 part 'recipe_repository.g.dart';
@@ -64,6 +65,11 @@ class RecipeRepository extends Repository {
 
   Future<void> delete(String id) async {
     await sendRequest(method: .delete, path: '/$id');
+  }
+
+  Future<RecipeCostEstimate> estimateCost(String recipeId) async {
+    final response = await sendRequest(method: .get, path: '/$recipeId/cost');
+    return RecipeCostEstimate.fromJson(ensureMap(response));
   }
 
   Future<void> save(String recipeId) async {

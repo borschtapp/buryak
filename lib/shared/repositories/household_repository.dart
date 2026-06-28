@@ -28,11 +28,11 @@ class HouseholdRepository extends Repository {
     return Household.fromJson(ensureMap(response));
   }
 
-  Future<Household> update(String id, String name) async {
+  Future<Household> update(String id, {String? name, String? currency}) async {
     final response = await sendRequest(
       method: .patch,
       path: '/$id',
-      body: {'name': name},
+      body: {'name': ?name, 'currency': ?currency},
     );
     return Household.fromJson(ensureMap(response));
   }

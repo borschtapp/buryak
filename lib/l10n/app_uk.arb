@@ -21,6 +21,7 @@
   "validatorNameLength": "Ім'я має містити щонайменше 3 символи.",
   "validatorUrl": "Введіть дійсну URL-адресу.",
   "validatorText": "Текст надто короткий.",
+  "validatorPositiveNumber": "Будь ласка, введіть дійсне додатне число.",
   "validatorFieldRequired": "Це поле є обов'язковим.",
   "loginWelcomeBack": "З поверненням",
   "loginTitle": "Увійдіть до свого акаунту",
@@ -87,6 +88,9 @@
   "householdRenameNameRequired": "Назва є обов'язковою",
   "householdLeave": "Покинути домогосподарство",
   "householdNoHousehold": "Немає домогосподарства",
+  "householdCurrency": "Валюта",
+  "householdChangeCurrency": "Змінити валюту",
+  "householdCurrencyNone": "Валюту не встановлено",
   "serverUrlTitle": "URL сервера",
   "serverUrlLabel": "Залиште порожнім для демо-сервера",
   "feedEmptyTitle": "Рецептів не знайдено",
@@ -218,6 +222,8 @@
   "shoppingAddItemLabel": "Назва продукту",
   "shoppingEditItem": "Редагувати товар",
   "shoppingItemUpdated": "Товар оновлено",
+  "shoppingItemMergeFood": "Об'єднати з іншим продуктом…",
+  "shoppingItemMerged": "Продукти об'єднано",
   "shoppingItemAmount": "Кількість",
   "shoppingItemUnit": "Одиниця",
   "shoppingItemName": "Назва",
@@ -441,5 +447,80 @@
     }
   },
   "decreaseServings": "Зменшити порції",
-  "increaseServings": "Збільшити порції"
+  "increaseServings": "Збільшити порції",
+  "recipeCostFacts": "Вартість",
+  "recipeCostTitle": "Вартість рецепту",
+  "recipeCostTotal": "Разом",
+  "recipeCostPerServing": "За порцію",
+  "recipeCostIncomplete": "{count, plural, =1{1 інгредієнт без ціни} few{{count} інгредієнти без ціни} many{{count} інгредієнтів без ціни} other{{count} інгредієнта без ціни}}",
+  "@recipeCostIncomplete": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipeCostTabMissing": "{count} без ціни",
+  "@recipeCostTabMissing": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recipeCostAddPrice": "Додати ціну",
+  "recipeCostSkip": "Пропустити",
+  "recipeCostNoPrices": "Ціни ще не записані",
+  "recipeCostNoPricesSubtitle": "Натисніть на інгредієнт, щоб додати його ціну.",
+  "foodPriceTitle": "Ціни для {name}",
+  "@foodPriceTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "foodPriceAddTitle": "Записати ціну",
+  "foodPricePrice": "Ціна",
+  "foodPricePriceHint": "4.99",
+  "foodPriceAmount": "Кількість",
+  "foodPriceAmountHint": "1",
+  "foodPriceHistory": "Історія цін",
+  "foodPriceHistoryEmpty": "Ціни не записані",
+  "foodPriceUnit": "Одиниця",
+  "foodPriceUnitSearch": "Пошук одиниць…",
+  "foodPricePerAmountUnit": "за {amount} {unit}",
+  "@foodPricePerAmountUnit": {
+    "placeholders": {
+      "amount": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "editIngredientTitle": "Редагувати інгредієнт",
+  "editIngredientName": "Назва",
+  "editIngredientMaxAmount": "Макс",
+  "editIngredientNotes": "Нотатки",
+  "editIngredientFood": "Продукт",
+  "editIngredientFoodSearch": "Пошук продуктів…",
+  "editIngredientFoodSearchHint": "Введіть щонайменше 2 символи",
+  "editFoodTitle": "Редагувати продукт",
+  "editFoodDefaultUnit": "Одиниця за замовчуванням",
+  "editFoodMerge": "Об'єднати з…",
+  "editFoodMergeTitle": "Об'єднати продукти",
+  "editFoodMergeMessage": "Замінити \"{source}\" на \"{target}\" усюди? Усі рецепти, товари в списку покупок і збережені ціни, що використовують \"{source}\", перейдуть на \"{target}\". Це не можна скасувати.",
+  "@editFoodMergeMessage": {
+    "placeholders": {
+      "source": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "editFoodMergeConfirm": "Об'єднати",
+  "editFoodPantry": "Базовий запас",
+  "editFoodPantryHint": "Базові запаси не додаються до списків покупок",
+  "editUnitTitle": "Редагувати одиницю",
+  "editUnitName": "Назва",
+  "editUnitMerge": "Об'єднати з…",
+  "editUnitMergeTitle": "Об'єднати одиниці",
+  "editUnitMergeMessage": "Замінити \"{source}\" на \"{target}\" усюди? Усі рецепти, товари в списку покупок і збережені ціни, що використовують \"{source}\", перейдуть на \"{target}\". Це не можна скасувати.",
+  "@editUnitMergeMessage": {
+    "placeholders": {
+      "source": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+  "editUnitMergeConfirm": "Об'єднати"
 }
