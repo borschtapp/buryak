@@ -522,5 +522,41 @@
       "target": { "type": "String" }
     }
   },
-  "editUnitMergeConfirm": "Об'єднати"
+  "editUnitMergeConfirm": "Об'єднати",
+  "foodConversionTitle": "Конвертація одиниць",
+  "foodConversionSetButton": "Встановити конвертацію для {unit}",
+  "@foodConversionSetButton": {
+    "placeholders": {
+      "unit": { "type": "String" }
+    }
+  },
+  "foodConversionSummary": "1 {unit} = {amount} {targetUnit}",
+  "@foodConversionSummary": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "amount": { "type": "String" },
+      "targetUnit": { "type": "String" }
+    }
+  },
+  "foodConversionDeleteTitle": "Видалити конвертацію?",
+  "foodConversionDeleteContent": "Видалення цієї конвертації може вплинути на оцінку вартості у всіх рецептах, що використовують {food}.",
+  "@foodConversionDeleteContent": {
+    "placeholders": {
+      "food": { "type": "String" }
+    }
+  },
+  "foodConversionFormHint": "Визначте, чому дорівнює 1 {unit} з {food} в базових одиницях:",
+  "@foodConversionFormHint": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "food": { "type": "String" }
+    }
+  },
+  "foodConversionTargetUnit": "Базова одиниця",
+  "foodConversionImpactNote": "Застосовується до всіх рецептів з {food} — оцінки вартості можуть змінитися.",
+  "@foodConversionImpactNote": {
+    "placeholders": {
+      "food": { "type": "String" }
+    }
+  }
 }

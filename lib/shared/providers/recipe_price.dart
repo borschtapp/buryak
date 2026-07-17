@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../models/food_price.dart';
+import '../models/food_unit_conversion.dart';
 import '../models/paginated_list.dart';
 import '../models/recipe_cost_estimate.dart';
 import '../models/unit.dart';
@@ -17,6 +19,11 @@ Future<RecipeCostEstimate> recipeCostEstimate(Ref ref, String recipeId) {
 @riverpod
 Future<PaginatedList<FoodPrice>> foodPrices(Ref ref, String foodId) {
   return ref.watch(foodRepositoryProvider).findPrices(foodId, limit: 20);
+}
+
+@riverpod
+Future<List<FoodUnitConversion>> foodConversions(Ref ref, String foodId) {
+  return ref.watch(foodRepositoryProvider).findConversions(foodId);
 }
 
 @Riverpod(keepAlive: true)

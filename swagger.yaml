@@ -222,6 +222,19 @@ definitions:
         minLength: 8
         type: string
     type: object
+  api.conversionRequest:
+    properties:
+      target_amount:
+        type: number
+      target_unit_id:
+        type: string
+      unit_id:
+        type: string
+    required:
+      - target_amount
+      - target_unit_id
+      - unit_id
+    type: object
   api.mergeRequest:
     properties:
       merge_into:
@@ -438,6 +451,28 @@ definitions:
     required:
       - amount
       - price
+    type: object
+  domain.FoodUnitConversion:
+    properties:
+      food_id:
+        type: string
+      id:
+        type: string
+      target_amount:
+        description: e.g. 200
+        type: number
+      target_unit:
+        $ref: "#/definitions/domain.Unit"
+      target_unit_id:
+        description: e.g. gram
+        type: string
+      unit:
+        $ref: "#/definitions/domain.Unit"
+      unit_id:
+        description: source, e.g. piece
+        type: string
+    required:
+      - target_amount
     type: object
   domain.Household:
     properties:
@@ -2172,6 +2207,159 @@ paths:
       security:
         - ApiKeyAuth: []
       summary: Update a food
+      tags:
+        - food
+  /api/v1/food/{id}/conversions:
+    get:
+      description: Get all unit conversions associated with a food.
+      parameters:
+        - description: Food UUID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: "#/definitions/domain.FoodUnitConversion"
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Get conversions for a food
+      tags:
+        - food
+    post:
+      consumes:
+        - application/json
+      description: Creates a new unit conversion for a food (e.g., 1 piece = 200 g).
+      parameters:
+        - description: Food UUID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Conversion request
+          in: body
+          name: conversion
+          required: true
+          schema:
+            $ref: "#/definitions/api.conversionRequest"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/domain.FoodUnitConversion"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Create a new conversion for a food
+      tags:
+        - food
+  /api/v1/food/{id}/conversions/{conversionId}:
+    delete:
+      parameters:
+        - description: Food UUID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Conversion UUID
+          in: path
+          name: conversionId
+          required: true
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Delete a food unit conversion
+      tags:
+        - food
+    put:
+      consumes:
+        - application/json
+      description: Updates the target amount or units of an existing conversion.
+      parameters:
+        - description: Food UUID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Conversion UUID
+          in: path
+          name: conversionId
+          required: true
+          type: string
+        - description: Conversion request
+          in: body
+          name: conversion
+          required: true
+          schema:
+            $ref: "#/definitions/api.conversionRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/domain.FoodUnitConversion"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+      security:
+        - ApiKeyAuth: []
+      summary: Update an existing conversion for a food
       tags:
         - food
   /api/v1/food/{id}/merge:

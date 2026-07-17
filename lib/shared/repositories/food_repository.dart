@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/food.dart';
 import '../models/food_price.dart';
+import '../models/food_unit_conversion.dart';
 import '../models/paginated_list.dart';
 import 'repository.dart';
 
@@ -86,5 +87,43 @@ class FoodRepository extends Repository {
 
   Future<void> deletePrice(String foodId, String priceId) async {
     await sendRequest(method: .delete, path: '/$foodId/price/$priceId');
+  }
+
+  Future<List<FoodUnitConversion>> findConversions(String foodId) async {
+    final response = await sendRequest(method: .get, path: '/$foodId/conversions');
+    return ensureList(response).map((e) => FoodUnitConversion.fromJson(ensureMap(e))).toList();
+  }
+
+  Future<FoodUnitConversion> createConversion(
+    String foodId,
+    String unitId,
+    double targetAmount,
+    String targetUnitId,
+  ) async {
+    final response = await sendRequest(
+      method: .post,
+      path: '/$foodId/conversions',
+      body: {'unit_id': unitId, 'target_amount': targetAmount, 'target_unit_id': targetUnitId},
+    );
+    return FoodUnitConversion.fromJson(ensureMap(response));
+  }
+
+  Future<FoodUnitConversion> updateConversion(
+    String foodId,
+    String conversionId,
+    String unitId,
+    double targetAmount,
+    String targetUnitId,
+  ) async {
+    final response = await sendRequest(
+      method: .put,
+      path: '/$foodId/conversions/$conversionId',
+      body: {'unit_id': unitId, 'target_amount': targetAmount, 'target_unit_id': targetUnitId},
+    );
+    return FoodUnitConversion.fromJson(ensureMap(response));
+  }
+
+  Future<void> deleteConversion(String foodId, String conversionId) async {
+    await sendRequest(method: .delete, path: '/$foodId/conversions/$conversionId');
   }
 }

@@ -9,8 +9,9 @@ import '../../shared/components/recipes/unit_picker_form_field.dart';
 import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/food.dart';
 import '../../shared/models/food_price.dart';
+import '../../shared/models/food_unit_conversion.dart';
 import '../../shared/models/recipe_ingredient.dart';
-
+import '../../shared/models/unit.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/providers/recipe_price.dart';
 import '../../shared/repositories/food_repository.dart';
@@ -18,6 +19,7 @@ import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 import '../../shared/util/validator.dart';
+import 'dialog_food_conversion.dart';
 
 class FoodPriceBottomSheet extends HookConsumerWidget {
   const FoodPriceBottomSheet({
@@ -180,6 +182,13 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
                     ),
                   ],
                 ),
+                if (selectedUnitId.value != null)
+                  _ConversionSection(
+                    food: food,
+                    selectedUnitId: selectedUnitId.value!,
+                    unitsAsync: unitsAsync,
+                    prices: pricesAsync.value?.data ?? const [],
+                  ),
                 const SizedBox(height: UIConstants.paddingMedium),
                 LoadingButton(
                   isLoading: isSaving.value,
@@ -244,6 +253,120 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ── Unit conversion section ────────────────────────────────────────────────
+
+class _ConversionSection extends ConsumerWidget {
+  const _ConversionSection({
+    required this.food,
+    required this.selectedUnitId,
+    required this.unitsAsync,
+    this.prices = const [],
+  });
+
+  final Food food;
+  final String selectedUnitId;
+  final AsyncValue<List<Unit>> unitsAsync;
+  final List<FoodPrice> prices;
+
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref, FoodUnitConversion conversion) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(ctx.l10n.foodConversionDeleteTitle),
+        content: Text(ctx.l10n.foodConversionDeleteContent(food.name)),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(ctx.l10n.cancel)),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(ctx.l10n.delete, style: TextStyle(color: ctx.colors.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await ref.read(foodRepositoryProvider).deleteConversion(food.id, conversion.id);
+      ref.invalidate(foodConversionsProvider(food.id));
+    } catch (e) {
+      ref.handleException(e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final conversionsAsync = ref.watch(foodConversionsProvider(food.id));
+    final existing = conversionsAsync.value?.where((c) => c.unitId == selectedUnitId).firstOrNull;
+    final selectedUnit = unitsAsync.value?.where((u) => u.id == selectedUnitId).firstOrNull;
+    final unitName = selectedUnit?.name ?? '';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: UIConstants.paddingSmall),
+        Row(
+          children: [
+            Text(
+              context.l10n.foodConversionTitle,
+              style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
+            ),
+            const Spacer(),
+            if (existing != null) ...[
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                tooltip: context.l10n.save,
+                visualDensity: VisualDensity.compact,
+                onPressed: () => FoodConversionBottomSheet.show(
+                  context,
+                  food: food,
+                  unitId: selectedUnitId,
+                  unitName: unitName,
+                  prices: prices,
+                  existing: existing,
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete_outline, size: 18, color: context.colors.error),
+                tooltip: context.l10n.delete,
+                visualDensity: VisualDensity.compact,
+                onPressed: () => _confirmDelete(context, ref, existing),
+              ),
+            ],
+          ],
+        ),
+        if (existing != null)
+          Row(
+            children: [
+              const Icon(Icons.balance_outlined, size: 16),
+              const SizedBox(width: UIConstants.paddingSmall),
+              Text(
+                context.l10n.foodConversionSummary(
+                  unitName,
+                  existing.targetAmount.formatAmount,
+                  existing.targetUnit?.name ?? existing.targetUnitId,
+                ),
+                style: context.textTheme.bodyMedium,
+              ),
+            ],
+          )
+        else if (conversionsAsync.isLoading)
+          const SizedBox.shrink()
+        else
+          OutlinedButton.icon(
+            onPressed: () => FoodConversionBottomSheet.show(
+              context,
+              food: food,
+              unitId: selectedUnitId,
+              unitName: unitName,
+              prices: prices,
+            ),
+            icon: const Icon(Icons.balance_outlined, size: 18),
+            label: Text(context.l10n.foodConversionSetButton(unitName)),
+          ),
+      ],
     );
   }
 }

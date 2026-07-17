@@ -522,5 +522,41 @@
       "target": { "type": "String" }
     }
   },
-  "editUnitMergeConfirm": "Merge"
+  "editUnitMergeConfirm": "Merge",
+  "foodConversionTitle": "Unit Conversion",
+  "foodConversionSetButton": "Set conversion for {unit}",
+  "@foodConversionSetButton": {
+    "placeholders": {
+      "unit": { "type": "String" }
+    }
+  },
+  "foodConversionSummary": "1 {unit} = {amount} {targetUnit}",
+  "@foodConversionSummary": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "amount": { "type": "String" },
+      "targetUnit": { "type": "String" }
+    }
+  },
+  "foodConversionDeleteTitle": "Remove conversion?",
+  "foodConversionDeleteContent": "Removing this conversion may affect cost estimates in all recipes using {food}.",
+  "@foodConversionDeleteContent": {
+    "placeholders": {
+      "food": { "type": "String" }
+    }
+  },
+  "foodConversionFormHint": "Define how 1 {unit} of {food} relates to a base unit:",
+  "@foodConversionFormHint": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "food": { "type": "String" }
+    }
+  },
+  "foodConversionTargetUnit": "Base unit",
+  "foodConversionImpactNote": "Applies to all recipes using {food} — cost estimates may change.",
+  "@foodConversionImpactNote": {
+    "placeholders": {
+      "food": { "type": "String" }
+    }
+  }
 }

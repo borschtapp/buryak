@@ -522,5 +522,41 @@
       "target": { "type": "String" }
     }
   },
-  "editUnitMergeConfirm": "Zusammenführen"
+  "editUnitMergeConfirm": "Zusammenführen",
+  "foodConversionTitle": "Einheitenumrechnung",
+  "foodConversionSetButton": "Umrechnung für {unit} festlegen",
+  "@foodConversionSetButton": {
+    "placeholders": {
+      "unit": { "type": "String" }
+    }
+  },
+  "foodConversionSummary": "1 {unit} = {amount} {targetUnit}",
+  "@foodConversionSummary": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "amount": { "type": "String" },
+      "targetUnit": { "type": "String" }
+    }
+  },
+  "foodConversionDeleteTitle": "Umrechnung entfernen?",
+  "foodConversionDeleteContent": "Das Entfernen dieser Umrechnung kann Kostenschätzungen in allen Rezepten beeinflussen, die {food} verwenden.",
+  "@foodConversionDeleteContent": {
+    "placeholders": {
+      "food": { "type": "String" }
+    }
+  },
+  "foodConversionFormHint": "Definieren Sie, wie 1 {unit} von {food} einer Basiseinheit entspricht:",
+  "@foodConversionFormHint": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "food": { "type": "String" }
+    }
+  },
+  "foodConversionTargetUnit": "Basiseinheit",
+  "foodConversionImpactNote": "Gilt für alle Rezepte mit {food} – Kostenschätzungen können sich ändern.",
+  "@foodConversionImpactNote": {
+    "placeholders": {
+      "food": { "type": "String" }
+    }
+  }
 }
