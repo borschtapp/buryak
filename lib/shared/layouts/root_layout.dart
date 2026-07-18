@@ -32,50 +32,40 @@ class RootLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, dimens) {
-        void onSelected(int index) {
-          final destination = router.destinations[index];
-          GoRouter.of(context).go(destination.route);
-        }
+    void onSelected(int index) {
+      final destination = router.destinations[index];
+      GoRouter.of(context).go(destination.route);
+    }
 
-        final fallbackRoute = router.destinations[currentIndex].name;
+    final fallbackRoute = router.destinations[currentIndex].name;
 
-        // The same key is intentionally shared across all RootLayout instances so
-        // Flutter reuses the AdaptiveNavigation widget on every route transition,
-        // preserving NavigationRail scroll position and selected state without
-        // a rebuild. This works safely because AdaptiveNavigation is stateless.
-        return AdaptiveNavigation(
-          key: _navigationRailKey,
-          appBar: appBar,
-          appBarTitle: appBarTitle,
-          tabActions: tabActions,
-          hideBottomNavigationBar: hideBottomNavigationBar,
-          floatingActionButton: floatingActionButton,
-          extendBodyBehindAppBar: extendBodyBehindAppBar,
-          destinations: router.destinations
-              .map((e) => NavigationDestination(icon: e.icon, selectedIcon: e.selectedIcon, label: e.label(context.l10n)))
-              .toList(),
-          selectedIndex: currentIndex,
-          onDestinationSelected: onSelected,
-          fallbackRoute: fallbackRoute,
-          child: Column(
-            children: [
-              Expanded(
-                child: TabletAppBar(
-                  appBar: appBar,
-                  appBarTitle: appBarTitle,
-                  scrollable: contentScrollable,
-                  fallbackRoute: fallbackRoute,
-                  child: SelectionArea(
-                    child: child,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+    // The same key is intentionally shared across all RootLayout instances so
+    // Flutter reuses the AdaptiveNavigation widget on every route transition,
+    // preserving NavigationRail scroll position and selected state without
+    // a rebuild. This works safely because AdaptiveNavigation is stateless.
+    return AdaptiveNavigation(
+      key: _navigationRailKey,
+      appBar: appBar,
+      appBarTitle: appBarTitle,
+      tabActions: tabActions,
+      hideBottomNavigationBar: hideBottomNavigationBar,
+      floatingActionButton: floatingActionButton,
+      extendBodyBehindAppBar: extendBodyBehindAppBar,
+      destinations: router.destinations
+          .map((e) => NavigationDestination(icon: e.icon, selectedIcon: e.selectedIcon, label: e.label(context.l10n)))
+          .toList(),
+      selectedIndex: currentIndex,
+      onDestinationSelected: onSelected,
+      fallbackRoute: fallbackRoute,
+      child: TabletAppBar(
+        appBar: appBar,
+        appBarTitle: appBarTitle,
+        scrollable: contentScrollable,
+        fallbackRoute: fallbackRoute,
+        child: SelectionArea(
+          child: child,
+        ),
+      ),
     );
   }
 }

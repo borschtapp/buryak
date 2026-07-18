@@ -13,7 +13,7 @@ part 'household.g.dart';
 abstract class Household with _$Household {
   const factory Household({
     required String id,
-    @JsonKey(name: 'owner_id') required String ownerId,
+    required String ownerId,
     required String name,
     String? currency,
 
@@ -21,7 +21,7 @@ abstract class Household with _$Household {
     List<User>? members,
     List<Feed>? feeds,
     List<Collection>? collections,
-    @JsonKey(name: 'shopping_lists') List<ShoppingList>? shoppingLists,
+    List<ShoppingList>? shoppingLists,
     List<UserToken>? invites,
   }) = _Household;
 

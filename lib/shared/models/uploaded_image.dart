@@ -10,7 +10,7 @@ abstract class UploadedImage with _$UploadedImage {
     int? width,
     int? height,
     int? size,
-    @JsonKey(name: 'content_type') String? contentType,
+    String? contentType,
   }) = _UploadedImage;
 
   factory UploadedImage.fromJson(Map<String, dynamic> json) => _$UploadedImageFromJson(json);

@@ -20,6 +20,14 @@ class PlanBottomSheet extends HookConsumerWidget {
 
   const PlanBottomSheet({super.key, this.recipe, this.plan}) : assert(recipe != null || plan != null, 'Must provide either recipe or plan');
 
+  static void show(BuildContext context, {Recipe? recipe, MealPlan? plan}) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => PlanBottomSheet(recipe: recipe, plan: plan),
+    );
+  }
+
   List<ButtonSegment<MealType>> _mealTypeSegments(BuildContext context) => MealType.values
       .map(
         (type) => ButtonSegment<MealType>(

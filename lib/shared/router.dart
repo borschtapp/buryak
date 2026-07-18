@@ -441,8 +441,8 @@ AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? rou
           icon: const Icon(Icons.more_vert),
           tooltip: context.l10n.recipesMoreOptionsTooltip,
           itemBuilder: (_) => [
-            _opmlMenuItem(Icons.upload_file, 'Import OPML (Coming soon)'),
-            _opmlMenuItem(Icons.download, 'Export OPML (Coming soon)'),
+            _opmlMenuItem(Icons.upload_file, context.l10n.opmlImportComingSoon),
+            _opmlMenuItem(Icons.download, context.l10n.opmlExportComingSoon),
           ],
         ),
       ],

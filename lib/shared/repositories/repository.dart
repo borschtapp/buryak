@@ -166,13 +166,12 @@ class RequestHandler {
     final shouldRetry = retryPolicy ?? _defaultRetryPolicy;
     Future<dynamic> doAttempt() async {
       try {
-        final Map<String, String> headers =
-            headersCustom ??
-            {
-              HttpHeaders.acceptHeader: 'application/json',
-              HttpHeaders.contentTypeHeader: 'application/json',
-              if (authorized && accessToken != null) HttpHeaders.authorizationHeader: 'Bearer $accessToken',
-            };
+        final Map<String, String> headers = {
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.contentTypeHeader: 'application/json',
+          if (authorized && accessToken != null) HttpHeaders.authorizationHeader: 'Bearer $accessToken',
+          ...?headersCustom,
+        };
 
         if (kDebugMode) {
           dev.log('→ ${method.name.toUpperCase()} $urlString${body != null ? '\n  body: ${json.encode(body)}' : ''}', name: 'http');
@@ -204,23 +203,17 @@ class RequestHandler {
             }
           case 400:
             if (responseData == null || responseData.isEmpty) {
-              throw GeneralApiException(message: 'Request failed with status: ${response.statusCode}');
+              throw GeneralApiException(message: '', statusCode: response.statusCode);
             }
             try {
               final errorBody = ensureMap(json.decode(responseData));
               throw handleFormErrors(errorBody, statusCode: response.statusCode);
             } catch (e) {
               if (e is GeneralApiException) rethrow;
-              throw GeneralApiException(
-                message: 'Error ${response.statusCode}: $responseData',
-                statusCode: response.statusCode,
-              );
+              throw GeneralApiException(message: '', statusCode: response.statusCode);
             }
           default:
-            final message = response.statusCode >= 500
-                ? 'Server error: ${response.statusCode}. Please try again later.'
-                : 'Request failed with status: ${response.statusCode}';
-            throw GeneralApiException(message: message, statusCode: response.statusCode);
+            throw GeneralApiException(message: '', statusCode: response.statusCode);
         }
       } on GeneralApiException {
         rethrow;
@@ -275,7 +268,7 @@ class FieldsApiException extends GeneralApiException {
 }
 
 Exception handleFormErrors(Map<String, dynamic> json, {int? statusCode}) {
-  final message = json['message']?.toString() ?? 'An error occurred';
+  final message = json['message']?.toString() ?? '';
   if (json['fields'] != null && json['fields'] is Map) {
     return FieldsApiException(
       message: message,

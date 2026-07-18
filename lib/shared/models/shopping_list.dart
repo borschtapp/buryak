@@ -10,7 +10,7 @@ abstract class ShoppingList with _$ShoppingList {
   const factory ShoppingList({
     required String id,
     required String name,
-    @JsonKey(name: 'is_default') bool? isDefault,
+    bool? isDefault,
 
     // Preload fields
     List<ShoppingItem>? items,

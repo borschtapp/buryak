@@ -10,9 +10,9 @@ part 'food_price.g.dart';
 abstract class FoodPrice with _$FoodPrice {
   const factory FoodPrice({
     required String id,
-    @JsonKey(name: 'food_id') required String foodId,
-    @JsonKey(name: 'unit_id') required String unitId,
-    @JsonKey(name: 'household_id') required String householdId,
+    required String foodId,
+    required String unitId,
+    required String householdId,
     required double price,
     required double amount,
     required DateTime created,

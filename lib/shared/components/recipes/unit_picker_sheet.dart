@@ -44,7 +44,7 @@ class UnitPicker extends HookConsumerWidget {
     return SearchableListSheet<Unit>(
       initialLoading: unitsAsync.isLoading,
       hintText: context.l10n.foodPriceUnitSearch,
-      emptyResultsText: context.l10n.feedFilterEmptyTitle,
+      emptyResultsText: context.l10n.searchNoResults,
       debounceDuration: Duration.zero,
       search: (query) {
         final available = units.where((u) => u.id != excludeId);

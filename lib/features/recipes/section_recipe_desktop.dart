@@ -12,6 +12,7 @@ import '../../shared/components/recipes/recipe_cost.dart';
 import '../../shared/components/recipes/scale_control.dart';
 import '../../shared/layouts/content_frame.dart';
 import '../../shared/models/recipe.dart';
+import '../../shared/models/recipe_ingredient.dart';
 import '../../shared/route_names.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
@@ -22,14 +23,29 @@ import 'dialog_edit_ingredient.dart';
 import 'dialog_food_price.dart';
 import 'section_recipe_actions.dart';
 
-class RecipeDesktopView extends HookWidget {
-  const RecipeDesktopView({super.key, required this.recipe});
+class RecipeDesktopSection extends HookWidget {
+  const RecipeDesktopSection({super.key, required this.recipe});
 
   final Recipe recipe;
 
   @override
   Widget build(BuildContext context) {
     final scale = useState(1.0);
+
+    void openEditIngredient(RecipeIngredient ingredient) {
+      EditIngredientBottomSheet.show(
+        context,
+        recipeId: recipe.id,
+        ingredient: ingredient,
+      );
+    }
+
+    void openEditFood(RecipeIngredient ingredient) {
+      final food = ingredient.food;
+      if (food == null) return;
+      EditFoodBottomSheet.show(context, food: food, recipeId: recipe.id);
+    }
+
     return ContentFrame(
       maxWidth: 1280,
       child: SingleChildScrollView(
@@ -63,13 +79,13 @@ class RecipeDesktopView extends HookWidget {
                   const SizedBox(width: UIConstants.paddingSmall),
                 ],
                 OutlinedButton.icon(
-                  onPressed: () => _showPlanSheet(context),
+                  onPressed: () => PlanBottomSheet.show(context, recipe: recipe),
                   icon: const Icon(Icons.calendar_today, size: 18),
                   label: Text(context.l10n.recipePlan),
                 ),
                 const SizedBox(width: UIConstants.paddingSmall),
                 OutlinedButton.icon(
-                  onPressed: () => _showShoppingSheet(context, recipe),
+                  onPressed: () => ShoppingBottomSheet.show(context, recipe),
                   icon: const Icon(Icons.shopping_basket, size: 18),
                   label: Text(context.l10n.recipeShop),
                 ),
@@ -120,18 +136,8 @@ class RecipeDesktopView extends HookWidget {
                       equipment: recipe.equipment,
                       scale: scale.value,
                       showHeader: false,
-                      onIngredientTap: (ingredient) {
-                        EditIngredientBottomSheet.show(
-                          context,
-                          recipeId: recipe.id,
-                          ingredient: ingredient,
-                        );
-                      },
-                      onIngredientLongPress: (ingredient) {
-                        final food = ingredient.food;
-                        if (food == null) return;
-                        EditFoodBottomSheet.show(context, food: food, recipeId: recipe.id);
-                      },
+                      onIngredientTap: openEditIngredient,
+                      onIngredientLongPress: openEditFood,
                     ),
                   ),
                 ),
@@ -156,58 +162,13 @@ class RecipeDesktopView extends HookWidget {
                   recipeId: recipe.id,
                   ingredient: ingredient,
                 ),
-                onIngredientTap: (ingredient) {
-                  EditIngredientBottomSheet.show(
-                    context,
-                    recipeId: recipe.id,
-                    ingredient: ingredient,
-                  );
-                },
-                onIngredientLongPress: (ingredient) {
-                  final food = ingredient.food;
-                  if (food == null) return;
-                  EditFoodBottomSheet.show(context, food: food, recipeId: recipe.id);
-                },
+                onIngredientTap: openEditIngredient,
+                onIngredientLongPress: openEditFood,
               ),
             ],
           ],
         ),
       ),
-    );
-  }
-
-  void _showShoppingSheet(BuildContext context, Recipe recipe) {
-    if (!context.mounted) return;
-    final screenHeight = MediaQuery.heightOf(context);
-    final topReserved = MediaQuery.paddingOf(context).top + kToolbarHeight;
-    final maxFraction = (screenHeight - topReserved) / screenHeight;
-
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.75,
-        minChildSize: 0.3,
-        maxChildSize: maxFraction,
-        expand: false,
-        snap: true,
-        snapSizes: maxFraction > 0.55 ? [maxFraction * 0.5] : null,
-        shouldCloseOnMinExtent: true,
-        builder: (context, scrollController) => ShoppingBottomSheet(
-          recipe: recipe,
-          scrollController: scrollController,
-        ),
-      ),
-    );
-  }
-
-  void _showPlanSheet(BuildContext context) {
-    if (!context.mounted) return;
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => PlanBottomSheet(recipe: recipe),
     );
   }
 }

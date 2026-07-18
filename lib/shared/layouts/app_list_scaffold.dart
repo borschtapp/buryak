@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../components/standard_async_builder.dart';
+import '../util/ui_constants.dart';
 import 'content_frame.dart';
 
 /// A standard layout for feature screens that display an asynchronous list.
 class AppListScaffold<T> extends StatelessWidget {
   final AsyncValue<T> value;
-  final Widget Function(T data) data;
+  final Widget Function(T data)? data;
   final RefreshCallback onRefresh;
   final VoidCallback? onRetry;
   final double maxWidth;
@@ -51,9 +52,7 @@ class AppListScaffold<T> extends StatelessWidget {
     this.onLoadMore,
     this.isLoadingMore = false,
     this.hasMore = false,
-  }) : data = _dummyDataBuilder;
-
-  static Widget _dummyDataBuilder(dynamic _) => const SizedBox.shrink();
+  }) : data = null;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +71,7 @@ class AppListScaffold<T> extends StatelessWidget {
             slivers: slivers!(results),
           );
         } else {
-          content = data(results);
+          content = data!(results);
         }
 
         return ContentFrame(
@@ -80,9 +79,17 @@ class AppListScaffold<T> extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: RefreshIndicator(
-                  onRefresh: onRefresh,
-                  child: content,
+                child: NotificationListener<ScrollEndNotification>(
+                  onNotification: (notification) {
+                    if (hasMore && !isLoadingMore && notification.metrics.extentAfter < UIConstants.scrollThreshold) {
+                      onLoadMore?.call();
+                    }
+                    return false;
+                  },
+                  child: RefreshIndicator(
+                    onRefresh: onRefresh,
+                    child: content,
+                  ),
                 ),
               ),
               if (isLoadingMore)

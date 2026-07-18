@@ -17,6 +17,31 @@ class ShoppingBottomSheet extends HookConsumerWidget {
 
   const ShoppingBottomSheet({super.key, required this.recipe, this.scrollController});
 
+  static void show(BuildContext context, Recipe recipe) {
+    final screenHeight = MediaQuery.heightOf(context);
+    final topReserved = MediaQuery.paddingOf(context).top + kToolbarHeight;
+    final maxFraction = (screenHeight - topReserved) / screenHeight;
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        minChildSize: 0.3,
+        maxChildSize: maxFraction,
+        expand: false,
+        snap: true,
+        snapSizes: maxFraction > 0.55 ? const [0.5] : null,
+        shouldCloseOnMinExtent: true,
+        builder: (context, scrollController) => ShoppingBottomSheet(
+          recipe: recipe,
+          scrollController: scrollController,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIngredientIds = useState<Set<String>>(

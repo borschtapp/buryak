@@ -69,12 +69,7 @@ class SavedTabs extends ConsumerWidget {
                 label: Text(context.l10n.feedClearFilters),
               ),
       ),
-      data: (recipes) => RecipesGrid(
-        recipes,
-        onLoadMore: onLoadMore,
-        isLoadingMore: isLoadingMore,
-        hasMore: hasMore,
-      ),
+      data: RecipesGrid.new,
     );
   }
 }

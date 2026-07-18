@@ -13,16 +13,10 @@ import 'recipe_tile.dart';
 
 class RecipesGrid extends HookWidget {
   final List<Recipe> recipes;
-  final VoidCallback? onLoadMore;
-  final bool isLoadingMore;
-  final bool hasMore;
 
   const RecipesGrid(
     this.recipes, {
     super.key,
-    this.onLoadMore,
-    this.isLoadingMore = false,
-    this.hasMore = false,
   });
 
   @override
@@ -52,35 +46,27 @@ class RecipesGrid extends HookWidget {
           });
         }
 
-        return NotificationListener<ScrollEndNotification>(
-          onNotification: (notification) {
-            if (hasMore && !isLoadingMore && notification.metrics.extentAfter < UIConstants.scrollThreshold) {
-              onLoadMore?.call();
-            }
-            return false;
-          },
-          child: GridView.builder(
-            padding: const EdgeInsets.all(5),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: effectiveCount,
-              childAspectRatio: constraints.isMobile ? 1.2 : 1.1,
-              mainAxisSpacing: 1,
-              crossAxisSpacing: 1,
-            ),
-            itemCount: recipes.length,
-            itemBuilder: (context, index) {
-              final recipe = recipes[index];
-              return InkWell(
-                borderRadius: context.shapeSmall,
-                child: RecipeTile(recipe: recipe),
-                onTap: () => context.pushNamed(
-                  'recipe',
-                  pathParameters: {'rid': recipe.id},
-                  extra: recipe,
-                ),
-              );
-            },
+        return GridView.builder(
+          padding: const EdgeInsets.all(5),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: effectiveCount,
+            childAspectRatio: constraints.isMobile ? 1.2 : 1.1,
+            mainAxisSpacing: 1,
+            crossAxisSpacing: 1,
           ),
+          itemCount: recipes.length,
+          itemBuilder: (context, index) {
+            final recipe = recipes[index];
+            return InkWell(
+              borderRadius: context.shapeSmall,
+              child: RecipeTile(recipe: recipe),
+              onTap: () => context.pushNamed(
+                'recipe',
+                pathParameters: {'rid': recipe.id},
+                extra: recipe,
+              ),
+            );
+          },
         );
       },
     );

@@ -11,12 +11,12 @@ abstract class User with _$User {
 
   const factory User({
     required String id,
-    @JsonKey(name: 'household_id') required String householdId,
+    required String householdId,
     required String email,
     required String name,
-    @JsonKey(name: 'image_url') String? imageUrl,
-    @JsonKey(name: 'access_token', includeToJson: false) String? accessToken,
-    @JsonKey(name: 'refresh_token', includeToJson: false) String? refreshToken,
+    String? imageUrl,
+    @JsonKey(includeToJson: false) String? accessToken,
+    @JsonKey(includeToJson: false) String? refreshToken,
   }) = _User;
 
   /// Used for secure storage where tokens are required.

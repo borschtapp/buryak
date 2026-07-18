@@ -11,9 +11,9 @@ abstract class RecipeInstruction with _$RecipeInstruction {
     String? title,
     required String text,
     String? url,
-    @JsonKey(name: 'image_url') String? imageUrl,
-    @JsonKey(name: 'video_url') String? videoUrl,
-    @JsonKey(name: 'parent_id') String? parentId,
+    String? imageUrl,
+    String? videoUrl,
+    String? parentId,
 
     // Preload fields
     RecipeInstruction? parent,

@@ -63,7 +63,7 @@ class ShoppingScreen extends HookConsumerWidget {
 
           return DismissibleTile(
             key: ValueKey(item.id),
-            label: item.text ?? 'Item',
+            label: item.text ?? context.l10n.shoppingItemField,
             onEdit: openEditSheet,
             onDelete: () async {
               try {
@@ -76,7 +76,7 @@ class ShoppingScreen extends HookConsumerWidget {
               onLongPress: openEditSheet,
               leading: Checkbox(
                 value: item.isBought ?? false,
-                semanticLabel: 'Mark ${item.text ?? "item"} as bought',
+                semanticLabel: context.l10n.shoppingMarkAsBought(item.text ?? context.l10n.shoppingItemField),
                 onChanged: (_) async {
                   try {
                     await ref.read(shoppingItemsProvider.notifier).toggleItem(item);

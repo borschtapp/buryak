@@ -103,92 +103,93 @@ class _CostContent extends StatelessWidget {
       // pantry items intentionally omitted from both lists
     }
 
-    return ListView(
+    return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: UIConstants.paddingContent,
         vertical: UIConstants.paddingMedium,
       ),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        Row(
-          children: [
-            Text(context.l10n.recipeCostTitle, style: context.textTheme.titleMedium),
-            if (!estimate.isComplete) ...[
-              const SizedBox(width: UIConstants.paddingSmall),
-              Chip(
-                label: Text(
-                  context.l10n.recipeCostIncomplete(estimate.missingCount),
-                  style: context.textTheme.labelSmall,
-                ),
-                visualDensity: VisualDensity.compact,
-                side: BorderSide(color: context.colors.outlineVariant),
-                backgroundColor: context.colors.surfaceContainerHighest,
-                padding: EdgeInsets.zero,
-              ),
-            ],
-          ],
-        ),
-        if (hasAnyData) ...[
-          const SizedBox(height: UIConstants.paddingMedium),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Row(
             children: [
-              if (hasTotal)
-                Expanded(
-                  child: _CostCard(
-                    label: context.l10n.recipeCostTotal,
-                    value: formatter.format(estimate.total),
+              Text(context.l10n.recipeCostTitle, style: context.textTheme.titleMedium),
+              if (!estimate.isComplete) ...[
+                const SizedBox(width: UIConstants.paddingSmall),
+                Chip(
+                  label: Text(
+                    context.l10n.recipeCostIncomplete(estimate.missingCount),
+                    style: context.textTheme.labelSmall,
                   ),
+                  visualDensity: VisualDensity.compact,
+                  side: BorderSide(color: context.colors.outlineVariant),
+                  backgroundColor: context.colors.surfaceContainerHighest,
+                  padding: EdgeInsets.zero,
                 ),
-              if (hasTotal && hasPerServing) const SizedBox(width: 12),
-              if (hasPerServing)
-                Expanded(
-                  child: _CostCard(
-                    label: context.l10n.recipeCostPerServing,
-                    value: formatter.format(estimate.perServing),
-                  ),
-                ),
+              ],
             ],
           ),
-        ] else ...[
-          const SizedBox(height: UIConstants.paddingMedium),
-          Text(
-            context.l10n.recipeCostNoPrices,
-            style: context.textTheme.bodyMedium?.copyWith(color: context.colors.onSurfaceVariant),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            context.l10n.recipeCostNoPricesSubtitle,
-            style: context.textTheme.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
-          ),
+          if (hasAnyData) ...[
+            const SizedBox(height: UIConstants.paddingMedium),
+            Row(
+              children: [
+                if (hasTotal)
+                  Expanded(
+                    child: _CostCard(
+                      label: context.l10n.recipeCostTotal,
+                      value: formatter.format(estimate.total),
+                    ),
+                  ),
+                if (hasTotal && hasPerServing) const SizedBox(width: 12),
+                if (hasPerServing)
+                  Expanded(
+                    child: _CostCard(
+                      label: context.l10n.recipeCostPerServing,
+                      value: formatter.format(estimate.perServing),
+                    ),
+                  ),
+              ],
+            ),
+          ] else ...[
+            const SizedBox(height: UIConstants.paddingMedium),
+            Text(
+              context.l10n.recipeCostNoPrices,
+              style: context.textTheme.bodyMedium?.copyWith(color: context.colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              context.l10n.recipeCostNoPricesSubtitle,
+              style: context.textTheme.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
+            ),
+          ],
+          if (actionableIngredients.isNotEmpty && onAddPrice != null) ...[
+            const SizedBox(height: UIConstants.paddingMedium),
+            _MissingPricesList(
+              ingredients: actionableIngredients,
+              onAddPrice: onAddPrice!,
+              onIngredientTap: onIngredientTap,
+              onIngredientLongPress: onIngredientLongPress,
+            ),
+          ],
+          if (pricedIngredients.isNotEmpty) ...[
+            const SizedBox(height: UIConstants.paddingMedium),
+            if (actionableIngredients.isNotEmpty && onAddPrice != null) const Divider(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final entry in pricedIngredients)
+                  _PricedIngredientTile(
+                    ingredient: entry.ingredient,
+                    cost: entry.cost,
+                    formatter: formatter,
+                    onIngredientTap: onIngredientTap,
+                    onIngredientLongPress: onIngredientLongPress,
+                  ),
+              ],
+            ),
+          ],
         ],
-        if (actionableIngredients.isNotEmpty && onAddPrice != null) ...[
-          const SizedBox(height: UIConstants.paddingMedium),
-          _MissingPricesList(
-            ingredients: actionableIngredients,
-            onAddPrice: onAddPrice!,
-            onIngredientTap: onIngredientTap,
-            onIngredientLongPress: onIngredientLongPress,
-          ),
-        ],
-        if (pricedIngredients.isNotEmpty) ...[
-          const SizedBox(height: UIConstants.paddingMedium),
-          if (actionableIngredients.isNotEmpty && onAddPrice != null) const Divider(),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final entry in pricedIngredients)
-                _PricedIngredientTile(
-                  ingredient: entry.ingredient,
-                  cost: entry.cost,
-                  formatter: formatter,
-                  onIngredientTap: onIngredientTap,
-                  onIngredientLongPress: onIngredientLongPress,
-                ),
-            ],
-          ),
-        ],
-      ],
+      ),
     );
   }
 }
@@ -280,14 +281,9 @@ class _MissingPricesList extends StatelessWidget {
                 ],
               ],
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextButton(
-                  onPressed: () => onAddPrice(ingredient),
-                  child: Text(context.l10n.recipeCostAddPrice),
-                ),
-              ],
+            trailing: TextButton(
+              onPressed: () => onAddPrice(ingredient),
+              child: Text(context.l10n.recipeCostAddPrice),
             ),
           ),
       ],

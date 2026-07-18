@@ -17,13 +17,15 @@ class ErrorSnackBarListener extends ConsumerWidget {
     ref.listen<ErrorMessage?>(errorHandlerProvider, (_, message) {
       if (message == null) return;
 
+      final text = message.messageKey != null ? _resolveKey(context, message.messageKey!) : message.text ?? '';
+
       if (kDebugMode) {
-        dev.log(message.text, name: 'error');
+        dev.log(text, name: 'error');
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message.text),
+          content: Text(text),
           backgroundColor: message.isWarning ? context.colors.tertiaryContainer : context.colors.errorContainer,
           action: message.actionLabel != null
               ? SnackBarAction(
@@ -38,3 +40,13 @@ class ErrorSnackBarListener extends ConsumerWidget {
     return child;
   }
 }
+
+String _resolveKey(BuildContext context, ErrorMessageKey key) => switch (key) {
+  ErrorMessageKey.sessionExpired => context.l10n.errorSessionExpired,
+  ErrorMessageKey.noPermission => context.l10n.errorNoPermission,
+  ErrorMessageKey.notFound => context.l10n.errorNotFound,
+  ErrorMessageKey.requestProblem => context.l10n.errorRequestProblem,
+  ErrorMessageKey.serverError => context.l10n.errorServerError,
+  ErrorMessageKey.somethingWentWrong => context.l10n.errorSomethingWentWrong,
+  ErrorMessageKey.connectionIssue => context.l10n.errorConnectionIssue,
+};

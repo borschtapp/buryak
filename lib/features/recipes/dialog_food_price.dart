@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../shared/components/dialog_confirm.dart';
 import '../../shared/components/dismissible_tile.dart';
 import '../../shared/components/loading_button.dart';
 import '../../shared/components/recipes/unit_picker_form_field.dart';
@@ -273,21 +274,14 @@ class _ConversionSection extends ConsumerWidget {
   final List<FoodPrice> prices;
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref, FoodUnitConversion conversion) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ctx.l10n.foodConversionDeleteTitle),
-        content: Text(ctx.l10n.foodConversionDeleteContent(food.name)),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(ctx.l10n.cancel)),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(ctx.l10n.delete, style: TextStyle(color: ctx.colors.error)),
-          ),
-        ],
-      ),
+    final confirmed = await showConfirmDialog(
+      context,
+      title: context.l10n.foodConversionDeleteTitle,
+      content: context.l10n.foodConversionDeleteContent(food.name),
+      confirmLabel: context.l10n.delete,
+      destructive: true,
     );
-    if (confirmed != true) return;
+    if (!confirmed) return;
     try {
       await ref.read(foodRepositoryProvider).deleteConversion(food.id, conversion.id);
       ref.invalidate(foodConversionsProvider(food.id));

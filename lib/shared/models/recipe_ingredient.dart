@@ -14,13 +14,13 @@ abstract class RecipeIngredient with _$RecipeIngredient {
   const factory RecipeIngredient({
     required String id,
     double? amount,
-    @JsonKey(name: 'max_amount') double? maxAmount,
+    double? maxAmount,
     String? name,
     String? category,
     String? description,
-    @JsonKey(name: 'raw_text') String? rawText,
-    @JsonKey(name: 'food_id') String? foodId,
-    @JsonKey(name: 'unit_id') String? unitId,
+    String? rawText,
+    String? foodId,
+    String? unitId,
 
     // Preload fields
     Food? food,

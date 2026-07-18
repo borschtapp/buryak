@@ -12,9 +12,9 @@ abstract class ShoppingItem with _$ShoppingItem {
     required String id,
     String? text,
     double? amount,
-    @JsonKey(name: 'food_id') String? foodId,
-    @JsonKey(name: 'unit_id') String? unitId,
-    @JsonKey(name: 'is_bought') bool? isBought,
+    String? foodId,
+    String? unitId,
+    bool? isBought,
 
     // Preload fields
     Unit? unit,

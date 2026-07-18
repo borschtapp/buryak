@@ -15,9 +15,9 @@ abstract final class IngredientCostStatus {
 @freezed
 abstract class RecipeIngredientCost with _$RecipeIngredientCost {
   const factory RecipeIngredientCost({
-    @JsonKey(name: 'ingredient_id') required String ingredientId,
+    required String ingredientId,
     double? cost,
-    @JsonKey(name: 'food_price') FoodPrice? foodPrice,
+    FoodPrice? foodPrice,
     required String status,
   }) = _RecipeIngredientCost;
 
@@ -31,7 +31,7 @@ abstract class RecipeCostEstimate with _$RecipeCostEstimate {
   const factory RecipeCostEstimate({
     List<RecipeIngredientCost>? items,
     double? total,
-    @JsonKey(name: 'per_serving') double? perServing,
+    double? perServing,
   }) = _RecipeCostEstimate;
 
   bool get isComplete =>

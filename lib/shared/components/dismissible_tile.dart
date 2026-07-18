@@ -63,7 +63,7 @@ class DismissibleTile extends StatelessWidget {
         onDelete?.call();
         SemanticsService.sendAnnouncement(
           View.of(context),
-          '$label removed',
+          context.l10n.dismissibleTileRemoved(label),
           TextDirection.ltr,
         );
       },

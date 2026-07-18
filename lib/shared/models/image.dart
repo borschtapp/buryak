@@ -10,7 +10,7 @@ abstract class Image with _$Image {
     String? url,
     int? width,
     int? height,
-    @JsonKey(name: 'content_type') String? contentType,
+    String? contentType,
     int? size,
     String? caption,
     int? order,

@@ -26,8 +26,8 @@ abstract class MealPlan with _$MealPlan {
   const factory MealPlan({
     required String id,
     @DateConverter() required DateTime date,
-    @JsonKey(name: 'meal_type') required MealType mealType,
-    @JsonKey(name: 'recipe_id') String? recipeId,
+    required MealType mealType,
+    String? recipeId,
     int? servings,
     String? description,
 

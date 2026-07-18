@@ -13,12 +13,12 @@ abstract class Feed with _$Feed {
     required bool active,
     required String url,
     required String name,
-    @JsonKey(name: 'last_sync_at') String? lastSyncAt,
-    @JsonKey(name: 'last_sync_success') bool? lastSyncSuccess,
+    String? lastSyncAt,
+    bool? lastSyncSuccess,
 
     // Preload fields
-    @JsonKey(name: 'total_recipes') int? totalRecipes,
-    @JsonKey(name: 'publisher_id') String? publisherId,
+    int? totalRecipes,
+    String? publisherId,
     Publisher? publisher,
     List<Recipe>? recipes,
   }) = _Feed;

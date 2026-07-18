@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../providers/theme.dart';
+import '../route_names.dart';
 import '../util/extensions.dart';
 import '../util/ui_constants.dart';
 import 'content_frame.dart';
@@ -18,7 +19,7 @@ class AdaptiveNavigation extends StatelessWidget {
     this.floatingActionButton,
     this.hideBottomNavigationBar = false,
     this.extendBodyBehindAppBar = false,
-    this.fallbackRoute = 'home',
+    this.fallbackRoute = RouteNames.feed,
   });
 
   final AppBar? appBar;
@@ -131,7 +132,7 @@ class TabletAppBar extends StatelessWidget {
     this.appBar,
     this.appBarTitle,
     this.scrollable = true,
-    this.fallbackRoute = 'home',
+    this.fallbackRoute = RouteNames.feed,
   });
 
   @override

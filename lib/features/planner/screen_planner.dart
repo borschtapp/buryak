@@ -62,13 +62,7 @@ class PlannerScreen extends ConsumerWidget {
                 style: context.textTheme.bodySmall,
               ),
               onTap: entry.recipeId != null ? () => context.pushNamed(RouteNames.recipe, pathParameters: {'rid': entry.recipeId!}) : null,
-              onLongPress: () {
-                showModalBottomSheet<void>(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (context) => PlanBottomSheet(plan: entry),
-                );
-              },
+              onLongPress: () => PlanBottomSheet.show(context, plan: entry),
             ),
           );
         },

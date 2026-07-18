@@ -22,18 +22,16 @@ class CollectionScreen extends ConsumerWidget {
     return AppListScaffold<List<Recipe>>(
       value: recipesAsync,
       onRefresh: () async => ref.invalidate(provider),
+      onLoadMore: notifier.loadMore,
+      isLoadingMore: notifier.isLoadingMore,
+      hasMore: notifier.hasMore,
       isEmpty: (data) => data.isEmpty,
       emptyState: EmptyState(
         icon: Icons.auto_stories_outlined,
         title: context.l10n.collectionEmptyTitle,
         subtitle: context.l10n.collectionEmptySubtitle,
       ),
-      data: (recipes) => RecipesGrid(
-        recipes,
-        onLoadMore: notifier.loadMore,
-        isLoadingMore: notifier.isLoadingMore,
-        hasMore: notifier.hasMore,
-      ),
+      data: RecipesGrid.new,
     );
   }
 }

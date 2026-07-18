@@ -10,8 +10,8 @@ import '../../shared/util/ui_constants.dart';
 import '../planner/dialog_edit_plan.dart';
 import '../shopping/dialog_add_from_recipe.dart';
 import 'controller_recipe.dart';
-import 'view_recipe_desktop.dart';
-import 'view_recipe_mobile.dart';
+import 'section_recipe_desktop.dart';
+import 'section_recipe_mobile.dart';
 
 class RecipeScreen extends ConsumerWidget {
   const RecipeScreen({
@@ -45,7 +45,9 @@ class RecipeScreen extends ConsumerWidget {
       child: Column(
         children: [
           Expanded(
-            child: context.isMobile ? RecipeMobileView(recipe: recipe, backFallback: backFallback) : RecipeDesktopView(recipe: recipe),
+            child: context.isMobile
+                ? RecipeMobileSection(recipe: recipe, backFallback: backFallback)
+                : RecipeDesktopSection(recipe: recipe),
           ),
           if (context.isMobile) ...[
             if (isLoading) const LinearProgressIndicator(minHeight: 2) else _MobileBottomActionBar(recipe: recipe),
@@ -92,7 +94,7 @@ class _MobileBottomActionBar extends StatelessWidget {
           const SizedBox(width: UIConstants.paddingSmall),
           Expanded(
             child: OutlinedButton(
-              onPressed: () => _showPlanSheet(context),
+              onPressed: () => PlanBottomSheet.show(context, recipe: recipe),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
                 side: BorderSide(color: context.colors.primary),
@@ -103,7 +105,7 @@ class _MobileBottomActionBar extends StatelessWidget {
           const SizedBox(width: UIConstants.paddingSmall),
           Expanded(
             child: OutlinedButton(
-              onPressed: () => _showShoppingSheet(context),
+              onPressed: () => ShoppingBottomSheet.show(context, recipe),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
                 side: BorderSide(color: context.colors.primary),
@@ -113,39 +115,6 @@ class _MobileBottomActionBar extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void _showShoppingSheet(BuildContext context) {
-    final screenHeight = MediaQuery.heightOf(context);
-    final topReserved = MediaQuery.paddingOf(context).top + kToolbarHeight;
-    final maxFraction = (screenHeight - topReserved) / screenHeight;
-
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.75,
-        minChildSize: 0.3,
-        maxChildSize: maxFraction,
-        expand: false,
-        snap: true,
-        snapSizes: maxFraction > 0.55 ? const [0.5] : null,
-        shouldCloseOnMinExtent: true,
-        builder: (context, scrollController) => ShoppingBottomSheet(
-          recipe: recipe,
-          scrollController: scrollController,
-        ),
-      ),
-    );
-  }
-
-  void _showPlanSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => PlanBottomSheet(recipe: recipe),
     );
   }
 }

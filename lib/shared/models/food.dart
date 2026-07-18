@@ -13,14 +13,14 @@ abstract class Food with _$Food {
     required String slug,
     required String name,
     String? description,
-    @JsonKey(name: 'image_url') String? imageUrl,
-    @JsonKey(name: 'default_unit_id') String? defaultUnitId,
+    String? imageUrl,
+    String? defaultUnitId,
     bool? pantry,
-    @JsonKey(name: 'canonical_food_id') String? canonicalFoodId,
+    String? canonicalFoodId,
 
     // Preload fields
     List<Taxonomy>? taxonomies,
-    @JsonKey(name: 'default_unit') Unit? defaultUnit,
+    Unit? defaultUnit,
   }) = _Food;
 
   factory Food.fromJson(Map<String, dynamic> json) => _$FoodFromJson(json);

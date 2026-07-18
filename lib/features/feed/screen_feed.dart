@@ -71,12 +71,7 @@ class FeedScreen extends HookConsumerWidget {
                   label: Text(context.l10n.feedClearFilters),
                 ),
         ),
-        data: (results) => RecipesGrid(
-          results,
-          onLoadMore: notifier.loadMore,
-          isLoadingMore: notifier.isLoadingMore,
-          hasMore: notifier.hasMore,
-        ),
+        data: RecipesGrid.new,
       ),
     );
   }

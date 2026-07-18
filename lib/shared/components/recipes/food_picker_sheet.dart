@@ -30,7 +30,7 @@ class FoodPicker extends HookConsumerWidget {
     return SearchableListSheet<Food>(
       hintText: context.l10n.editIngredientFoodSearch,
       emptySearchText: context.l10n.editIngredientFoodSearchHint,
-      emptyResultsText: context.l10n.feedFilterEmptyTitle,
+      emptyResultsText: context.l10n.searchNoResults,
       minQueryLength: 2,
       search: (query) async {
         final page = await ref.read(foodRepositoryProvider).findAll(q: query, limit: 20);

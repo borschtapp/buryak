@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../util/extensions.dart';
 import 'error_state.dart';
 
 /// A standard builder for [AsyncValue] that provides consistent loading and error states.
@@ -30,7 +31,7 @@ class StandardAsyncBuilder<T> extends StatelessWidget {
       error:
           error ??
           (err, stack) => ErrorState(
-            title: errorTitle ?? 'Something went wrong',
+            title: errorTitle ?? context.l10n.errorSomethingWentWrong,
             message: err.toString(),
             onRetry: onRetry,
           ),

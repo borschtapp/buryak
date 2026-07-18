@@ -10,7 +10,7 @@ abstract class UserToken with _$UserToken {
     required String token,
     required String type,
     required DateTime expires,
-    @JsonKey(name: 'user_id') String? userId,
+    String? userId,
   }) = _UserToken;
 
   factory UserToken.fromJson(Map<String, dynamic> json) => _$UserTokenFromJson(json);

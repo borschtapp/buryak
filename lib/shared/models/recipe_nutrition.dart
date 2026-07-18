@@ -8,15 +8,15 @@ abstract class RecipeNutrition with _$RecipeNutrition {
   const RecipeNutrition._();
 
   const factory RecipeNutrition({
-    @JsonKey(name: 'serving_size') String? servingSize,
+    String? servingSize,
     double? calories,
     double? carbs,
-    @JsonKey(name: 'carbs_fiber') double? carbsFiber,
-    @JsonKey(name: 'carbs_sugar') double? carbsSugar,
+    double? carbsFiber,
+    double? carbsSugar,
     double? cholesterol,
     double? fat,
-    @JsonKey(name: 'fat_saturated') double? fatSaturated,
-    @JsonKey(name: 'fat_trans') double? fatTrans,
+    double? fatSaturated,
+    double? fatTrans,
     double? protein,
     double? sodium,
     double? calcium,

@@ -9,12 +9,12 @@ part 'collection.g.dart';
 abstract class Collection with _$Collection {
   const factory Collection({
     required String id,
-    @JsonKey(name: 'user_id') required String userId,
+    required String userId,
     required String name,
     String? description,
 
     // Preload fields, these are most likely empty
-    @JsonKey(name: 'total_recipes') int? totalRecipes,
+    int? totalRecipes,
     List<Recipe>? recipes,
   }) = _Collection;
 

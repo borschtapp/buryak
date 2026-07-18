@@ -15,8 +15,8 @@ import '../../shared/components/recipes/recipe_title.dart';
 import '../../shared/components/recipes/scale_control.dart';
 import '../../shared/components/recipes/sticky_tab_bar_delegate.dart';
 import '../../shared/models/recipe.dart';
-import '../../shared/models/recipe_ingredient.dart';
 import '../../shared/models/recipe_cost_estimate.dart';
+import '../../shared/models/recipe_ingredient.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/providers/recipe_price.dart';
 import '../../shared/util/extensions.dart';
@@ -28,8 +28,8 @@ import 'section_recipe_actions.dart';
 
 enum _RecipeTab { ingredients, instructions, cost, nutrition }
 
-class RecipeMobileView extends HookConsumerWidget {
-  const RecipeMobileView({super.key, required this.recipe, this.backFallback});
+class RecipeMobileSection extends HookConsumerWidget {
+  const RecipeMobileSection({super.key, required this.recipe, this.backFallback});
 
   final Recipe recipe;
   final String? backFallback;

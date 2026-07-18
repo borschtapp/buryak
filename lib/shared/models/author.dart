@@ -10,7 +10,7 @@ abstract class Author with _$Author {
     String? name,
     String? description,
     String? url,
-    @JsonKey(name: 'image_url') String? imageUrl,
+    String? imageUrl,
   }) = _Author;
 
   factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);

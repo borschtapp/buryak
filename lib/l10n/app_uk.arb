@@ -8,6 +8,12 @@
   "navAccount": "Акаунт",
   "errorSomethingWentWrong": "Щось пішло не так",
   "errorTryAgain": "Спробувати знову",
+  "errorSessionExpired": "Термін дії сесії закінчився. Будь ласка, увійдіть знову.",
+  "errorNoPermission": "У вас немає дозволу на цю дію.",
+  "errorNotFound": "Запитаний елемент не знайдено.",
+  "errorRequestProblem": "Виникла проблема з вашим запитом. Перевірте дані та спробуйте ще раз.",
+  "errorServerError": "Помилка сервера. Спробуйте пізніше.",
+  "errorConnectionIssue": "Проблема з підключенням. Перевірте інтернет-з'єднання.",
   "cancel": "Скасувати",
   "save": "Зберегти",
   "confirm": "Підтвердити",
@@ -15,6 +21,12 @@
   "close": "Закрити",
   "refresh": "Оновити",
   "loading": "Завантаження…",
+  "dismissibleTileRemoved": "{label} видалено",
+  "@dismissibleTileRemoved": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
   "saveChanges": "Зберегти зміни",
   "validatorEmail": "Введіть дійсну адресу електронної пошти.",
   "validatorPasswordLength": "Пароль має містити щонайменше 8 символів.",
@@ -95,6 +107,7 @@
   "serverUrlLabel": "Залиште порожнім для демо-сервера",
   "feedEmptyTitle": "Рецептів не знайдено",
   "feedEmptySubtitle": "Спробуйте додати нову стрічку або стандартизувати наявні.",
+  "searchNoResults": "Немає результатів",
   "feedFilterEmptyTitle": "Немає результатів",
   "feedFilterEmptySubtitle": "Спробуйте змінити пошук або фільтри.",
   "feedClearFilters": "Очистити фільтри",
@@ -214,6 +227,12 @@
   "plannerMealUpdated": "План харчування оновлено",
   "plannerMealAdded": "Додано до плану харчування",
   "plannerAddToPlan": "Додати до плану",
+  "shoppingMarkAsBought": "Позначити {item} як куплено",
+  "@shoppingMarkAsBought": {
+    "placeholders": {
+      "item": { "type": "String" }
+    }
+  },
   "shoppingEmptyTitle": "Список покупок порожній",
   "shoppingEmptySubtitle": "Натисніть +, щоб додати товари.",
   "shoppingAddItem": "Додати товар",
@@ -358,6 +377,8 @@
     }
   },
   "recipesMoreOptionsTooltip": "Більше опцій",
+  "opmlImportComingSoon": "Імпорт OPML (Незабаром)",
+  "opmlExportComingSoon": "Експорт OPML (Незабаром)",
   "feedsRemoveFeedContent": "Видалити \"{name}\" та всі імпортовані рецепти зі стрічки?",
   "@feedsRemoveFeedContent": {
     "placeholders": {

@@ -13,10 +13,10 @@ abstract class Publisher with _$Publisher {
     required String name,
     String? description,
     String? url,
-    @JsonKey(name: 'image_url') String? imageUrl,
+    String? imageUrl,
 
     // Preload fields
-    @JsonKey(name: 'total_recipes') int? totalRecipes,
+    int? totalRecipes,
     List<Feed>? feeds,
     List<Recipe>? recipes,
   }) = _Publisher;

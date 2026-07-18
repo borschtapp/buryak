@@ -8,6 +8,12 @@
   "navAccount": "Account",
   "errorSomethingWentWrong": "Something went wrong",
   "errorTryAgain": "Try Again",
+  "errorSessionExpired": "Your session expired. Please log in again.",
+  "errorNoPermission": "You don't have permission to do this.",
+  "errorNotFound": "The requested item was not found.",
+  "errorRequestProblem": "There was a problem with your request. Please check and try again.",
+  "errorServerError": "Server error. Please try again later.",
+  "errorConnectionIssue": "Connection issue. Please check your internet.",
   "cancel": "Cancel",
   "save": "Save",
   "confirm": "Confirm",
@@ -15,6 +21,12 @@
   "close": "Close",
   "refresh": "Refresh",
   "loading": "Loading…",
+  "dismissibleTileRemoved": "{label} removed",
+  "@dismissibleTileRemoved": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
   "saveChanges": "Save changes",
   "validatorEmail": "Please enter a valid email address.",
   "validatorPasswordLength": "Password must be at least 8 characters.",
@@ -95,6 +107,7 @@
   "serverUrlLabel": "Leave empty to use demo server",
   "feedEmptyTitle": "No recipes found",
   "feedEmptySubtitle": "Try adding a new feed or standardizing existing ones.",
+  "searchNoResults": "No results",
   "feedFilterEmptyTitle": "No results",
   "feedFilterEmptySubtitle": "Try adjusting your search or filters.",
   "feedClearFilters": "Clear filters",
@@ -214,6 +227,12 @@
   "plannerMealUpdated": "Meal plan updated",
   "plannerMealAdded": "Added to meal plan",
   "plannerAddToPlan": "Add to plan",
+  "shoppingMarkAsBought": "Mark {item} as bought",
+  "@shoppingMarkAsBought": {
+    "placeholders": {
+      "item": { "type": "String" }
+    }
+  },
   "shoppingEmptyTitle": "Your shopping list is empty",
   "shoppingEmptySubtitle": "Tap the + button to add items you need for your recipes.",
   "shoppingAddItem": "Add item",
@@ -358,6 +377,8 @@
     }
   },
   "recipesMoreOptionsTooltip": "More options",
+  "opmlImportComingSoon": "Import OPML (Coming soon)",
+  "opmlExportComingSoon": "Export OPML (Coming soon)",
   "feedsRemoveFeedContent": "Remove \"{name}\" and all its imported recipes from your feed?",
   "@feedsRemoveFeedContent": {
     "placeholders": {

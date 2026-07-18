@@ -10,9 +10,9 @@ abstract class Taxonomy with _$Taxonomy {
     String? slug,
     String? type,
     String? label,
-    @JsonKey(name: 'parent_id') String? parentId,
-    @JsonKey(name: 'canonical_id') String? canonicalId,
-    @JsonKey(name: 'total_recipes') int? totalRecipes,
+    String? parentId,
+    String? canonicalId,
+    int? totalRecipes,
 
     // Preload fields
     Taxonomy? parent,

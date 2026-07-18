@@ -9,14 +9,14 @@ part 'food_unit_conversion.g.dart';
 abstract class FoodUnitConversion with _$FoodUnitConversion {
   const factory FoodUnitConversion({
     required String id,
-    @JsonKey(name: 'food_id') required String foodId,
-    @JsonKey(name: 'unit_id') String? unitId,
-    @JsonKey(name: 'target_unit_id') required String targetUnitId,
-    @JsonKey(name: 'target_amount') required double targetAmount,
+    required String foodId,
+    String? unitId,
+    required String targetUnitId,
+    required double targetAmount,
 
     // Preload fields
     Unit? unit,
-    @JsonKey(name: 'target_unit') Unit? targetUnit,
+    Unit? targetUnit,
   }) = _FoodUnitConversion;
 
   factory FoodUnitConversion.fromJson(Map<String, dynamic> json) => _$FoodUnitConversionFromJson(json);

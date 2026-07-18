@@ -8,7 +8,7 @@ abstract class RecipeSavedUser with _$RecipeSavedUser {
   const factory RecipeSavedUser({
     required String id,
     String? name,
-    @JsonKey(name: 'image_url') String? imageUrl,
+    String? imageUrl,
   }) = _RecipeSavedUser;
 
   factory RecipeSavedUser.fromJson(Map<String, dynamic> json) =>
