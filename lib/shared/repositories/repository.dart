@@ -268,7 +268,7 @@ class FieldsApiException extends GeneralApiException {
 }
 
 Exception handleFormErrors(Map<String, dynamic> json, {int? statusCode}) {
-  final message = json['message']?.toString() ?? '';
+  final message = json['message']?.toString() ?? 'An error occurred';
   if (json['fields'] != null && json['fields'] is Map) {
     return FieldsApiException(
       message: message,
