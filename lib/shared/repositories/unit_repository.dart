@@ -7,8 +7,7 @@ import 'repository.dart';
 part 'unit_repository.g.dart';
 
 @Riverpod(keepAlive: true)
-UnitRepository unitRepository(Ref ref) =>
-    UnitRepository(ref: ref, client: ref.watch(httpClientProvider));
+UnitRepository unitRepository(Ref ref) => UnitRepository(ref: ref, client: ref.watch(httpClientProvider));
 
 class UnitRepository extends Repository {
   const UnitRepository({required super.ref, super.client}) : super(module: '/api/v1/units');

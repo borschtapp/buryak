@@ -11,6 +11,5 @@ abstract class RecipeSavedUser with _$RecipeSavedUser {
     String? imageUrl,
   }) = _RecipeSavedUser;
 
-  factory RecipeSavedUser.fromJson(Map<String, dynamic> json) =>
-      _$RecipeSavedUserFromJson(json);
+  factory RecipeSavedUser.fromJson(Map<String, dynamic> json) => _$RecipeSavedUserFromJson(json);
 }

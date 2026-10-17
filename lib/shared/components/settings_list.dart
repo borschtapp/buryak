@@ -61,11 +61,11 @@ class SettingsTile extends StatelessWidget {
     this.leading,
     required this.title,
     this.subtitle,
-    Object? trailing = _defaultTrailing,
+    this._trailing = _defaultTrailing,
     this.onTap,
     this.foregroundColor,
     this.isLoading = false,
-  }) : _trailing = trailing;
+  });
 
   @override
   Widget build(BuildContext context) {

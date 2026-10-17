@@ -69,7 +69,8 @@ class StandardCard extends StatelessWidget {
             ),
           ),
         Card(
-          margin: margin ??
+          margin:
+              margin ??
               const EdgeInsets.symmetric(
                 horizontal: UIConstants.paddingMedium,
                 vertical: UIConstants.paddingSmall,

@@ -15,8 +15,7 @@ enum MealType {
   @JsonValue('dinner')
   dinner,
   @JsonValue('snack')
-  snack
-  ;
+  snack;
 
   String toJsonValue() => _$MealTypeEnumMap[this]!;
 }
