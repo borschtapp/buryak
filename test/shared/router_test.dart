@@ -27,6 +27,8 @@ class MockAuthNotifier extends AuthNotifier {
 
   @override
   User? build() => initialUser;
+
+  void setUser(User? user) => state = user;
 }
 
 void main() {
@@ -145,6 +147,47 @@ void main() {
       // Should still be on home (FeedScreen)
       expect(find.byType(FeedScreen), findsOneWidget);
       expect(find.text('Login to your account'), findsNothing);
+    });
+  });
+
+  group('Auth state changes', () {
+    testWidgets('logging out redirects to /login without rebuilding the router', (tester) async {
+      final user = User.fromJson(fakeUserJson());
+      final container = ProviderContainer(
+        overrides: [
+          authProvider.overrideWith(() => MockAuthNotifier(user)),
+          feedRepositoryProvider.overrideWithValue(mockFeedRepository),
+          householdRepositoryProvider.overrideWithValue(mockHouseholdRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final router = container.read(routerProvider);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(FeedScreen), findsOneWidget);
+
+      (container.read(authProvider.notifier) as MockAuthNotifier).setUser(null);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Login to your account'), findsOneWidget);
+      expect(find.byType(FeedScreen), findsNothing);
+      expect(container.read(routerProvider), same(router));
+
+      (container.read(authProvider.notifier) as MockAuthNotifier).setUser(user);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FeedScreen), findsOneWidget);
+      expect(container.read(routerProvider), same(router));
     });
   });
 
