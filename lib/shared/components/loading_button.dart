@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../util/extensions.dart';
 
 enum LoadingButtonType { filled, elevated, outlined, text }

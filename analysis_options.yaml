@@ -17,9 +17,12 @@ analyzer:
   exclude:
     - test/features/feed/feed_screen_test.dart
     - test/features/account/login_screen_test.dart
+    - build/**
+    - android/**
+    - web/**
 
 plugins:
-  riverpod_lint: ^3.1.3
+  riverpod_lint: ^3.1.9
 
 linter:
   # The lint rules applied to this project can be customized in the
