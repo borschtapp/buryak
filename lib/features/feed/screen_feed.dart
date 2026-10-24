@@ -24,7 +24,7 @@ class FeedScreen extends HookConsumerWidget {
     final fab = useMemoized(
       () => FloatingActionButton(
         heroTag: 'feed_add_fab',
-        onPressed: () => showImportDialog(context, ref),
+        onPressed: () => showImportDialog(context),
         child: const Icon(Icons.add),
       ),
       [],

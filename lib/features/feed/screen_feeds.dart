@@ -25,7 +25,7 @@ class FeedsScreen extends HookConsumerWidget {
       ref,
       FloatingActionButton(
         heroTag: 'feeds_add_fab',
-        onPressed: () => showImportDialog(context, ref, isFeedOnly: true),
+        onPressed: () => showImportDialog(context, isFeedOnly: true),
         child: const Icon(Icons.add),
       ),
     );
@@ -39,7 +39,7 @@ class FeedsScreen extends HookConsumerWidget {
         title: context.l10n.feedsEmptyTitle,
         subtitle: context.l10n.feedsEmptySubtitle,
         action: FilledButton.icon(
-          onPressed: () => showImportDialog(context, ref, isFeedOnly: true),
+          onPressed: () => showImportDialog(context, isFeedOnly: true),
           icon: const Icon(Icons.add),
           label: Text(context.l10n.importAddFeed),
         ),

@@ -1,11 +1,18 @@
+import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/models/feed.dart';
+import '../../shared/models/import_result.dart';
+import '../../shared/providers/saved.dart';
 import '../../shared/repositories/feed_repository.dart';
 import '../../shared/repositories/import_repository.dart';
 import 'notifier_feed.dart';
 
 part 'notifier_feed_list.g.dart';
+
+// Run with `tsx.get(feedListProvider.notifier)`: the transaction keeps this
+// auto-disposed notifier alive until the import has finished.
+final importMutation = Mutation<ImportResult>(label: 'import');
 
 @riverpod
 class FeedList extends _$FeedList {
@@ -36,6 +43,16 @@ class FeedList extends _$FeedList {
       ref.invalidateSelf();
       rethrow;
     }
+  }
+
+  /// Imports a recipe or feed from [url]; with [feedOnly], only a feed.
+  Future<ImportResult> importUrl(String url, {required bool feedOnly}) async {
+    final result = await ref.read(importRepositoryProvider).import(url, type: feedOnly ? 'feed' : 'auto');
+    ref.invalidate(feedStreamProvider);
+    ref.invalidate(savedRecipesProvider);
+    // Last step: rebuilding replaces this notifier, so nothing after it may use ref or state.
+    ref.invalidateSelf();
+    return result;
   }
 
   Future<void> restoreFeed(Feed feed) async {

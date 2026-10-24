@@ -8,6 +8,7 @@ import '../../shared/components/standard_picture.dart';
 import '../../shared/models/household.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/providers/user.dart';
+import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
 import 'dialog_change_currency.dart';
@@ -39,7 +40,7 @@ class HouseholdDetails extends HookConsumerWidget {
                 Text(context.l10n.householdNotMember),
                 const SizedBox(height: UIConstants.paddingMedium),
                 FilledButton.icon(
-                  onPressed: () => showJoinHouseholdDialog(context, ref),
+                  onPressed: () => showJoinHouseholdDialog(context),
                   icon: const Icon(Icons.login),
                   label: Text(context.l10n.householdJoinHousehold),
                 ),
@@ -49,6 +50,7 @@ class HouseholdDetails extends HookConsumerWidget {
         }
 
         final isOwner = household.ownerId == currentUserId;
+        final isLeaving = ref.watch(leaveHouseholdMutation).isPending;
 
         return StandardCard(
           title: context.l10n.householdTitle,
@@ -98,6 +100,7 @@ class HouseholdDetails extends HookConsumerWidget {
                 ...household.members!.map((member) {
                   final isMe = member.id == currentUserId;
                   final isMemberOwner = member.id == household.ownerId;
+                  final isRemoving = ref.watch(removeMemberMutation(member.id)).isPending;
 
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -111,18 +114,21 @@ class HouseholdDetails extends HookConsumerWidget {
                     trailing: (isOwner && !isMe)
                         ? IconButton(
                             icon: const Icon(Icons.person_remove),
-                            onPressed: () async {
-                              final confirm = await showConfirmDialog(
-                                context,
-                                title: context.l10n.householdRemoveMemberTitle,
-                                content: context.l10n.householdRemoveMemberContent(member.name),
-                                confirmLabel: context.l10n.householdRemoveMemberConfirm,
-                                destructive: true,
-                              );
-                              if (confirm) {
-                                await ref.read(householdProvider.notifier).removeMember(member.id);
-                              }
-                            },
+                            onPressed: isRemoving
+                                ? null
+                                : () async {
+                                    final confirm = await showConfirmDialog(
+                                      context,
+                                      title: context.l10n.householdRemoveMemberTitle,
+                                      content: context.l10n.householdRemoveMemberContent(member.name),
+                                      confirmLabel: context.l10n.householdRemoveMemberConfirm,
+                                      destructive: true,
+                                    );
+                                    if (!confirm || !context.mounted) return;
+                                    await removeMemberMutation(
+                                      member.id,
+                                    ).tryRun(ref, (tsx) => tsx.get(householdProvider.notifier).removeMember(member.id));
+                                  },
                           )
                         : null,
                   );
@@ -139,25 +145,26 @@ class HouseholdDetails extends HookConsumerWidget {
                       label: Text(context.l10n.householdInviteUser),
                     ),
                   OutlinedButton.icon(
-                    onPressed: () => showJoinHouseholdDialog(context, ref),
+                    onPressed: () => showJoinHouseholdDialog(context),
                     icon: const Icon(Icons.login),
                     label: Text(context.l10n.householdJoinHousehold),
                   ),
                   if (!isOwner)
                     OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(foregroundColor: context.colors.error),
-                      onPressed: () async {
-                        final confirm = await showConfirmDialog(
-                          context,
-                          title: context.l10n.householdLeave,
-                          content: context.l10n.householdLeaveContent,
-                          confirmLabel: context.l10n.householdLeaveConfirm,
-                          destructive: true,
-                        );
-                        if (confirm) {
-                          await ref.read(householdProvider.notifier).leaveHousehold();
-                        }
-                      },
+                      onPressed: isLeaving
+                          ? null
+                          : () async {
+                              final confirm = await showConfirmDialog(
+                                context,
+                                title: context.l10n.householdLeave,
+                                content: context.l10n.householdLeaveContent,
+                                confirmLabel: context.l10n.householdLeaveConfirm,
+                                destructive: true,
+                              );
+                              if (!confirm || !context.mounted) return;
+                              await leaveHouseholdMutation.tryRun(ref, (tsx) => tsx.get(householdProvider.notifier).leaveHousehold());
+                            },
                       icon: const Icon(Icons.exit_to_app),
                       label: Text(context.l10n.householdLeave),
                     ),

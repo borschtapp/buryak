@@ -75,7 +75,7 @@ class LoginScreen extends HookConsumerWidget {
       children: [
         InkWell(
           borderRadius: BorderRadius.circular(8),
-          onTap: () => showServerUrlDialog(context, ref),
+          onTap: () => showServerUrlDialog(context),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               vertical: UIConstants.paddingSmall,

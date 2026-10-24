@@ -27,7 +27,7 @@ class AccountScreen extends HookConsumerWidget {
     useEffect(() {
       if (joinCode != null && joinCode!.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          showJoinHouseholdDialog(context, ref, initialCode: joinCode);
+          showJoinHouseholdDialog(context, initialCode: joinCode);
         });
       }
       return null;

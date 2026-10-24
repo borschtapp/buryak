@@ -68,7 +68,7 @@ class SavedScreen extends HookConsumerWidget {
           ),
           SavedCookbooksTab(
             value: collectionsAsync,
-            onCreateCollection: () => showCreateCollectionDialog(context, ref),
+            onCreateCollection: () => showCreateCollectionDialog(context),
             onLoadMore: collectionsNotifier.loadMore,
             isLoadingMore: collectionsNotifier.isLoadingMore,
             hasMore: collectionsNotifier.hasMore,
@@ -83,13 +83,13 @@ class SavedScreen extends HookConsumerWidget {
     if (tabIndex == 0) {
       return FloatingActionButton(
         heroTag: 'saved_import_fab',
-        onPressed: () => showImportDialog(context, ref),
+        onPressed: () => showImportDialog(context),
         child: const Icon(Icons.add),
       );
     } else {
       return FloatingActionButton(
         heroTag: 'saved_cookbook_fab',
-        onPressed: () => showCreateCollectionDialog(context, ref),
+        onPressed: () => showCreateCollectionDialog(context),
         child: const Icon(Icons.add),
       );
     }

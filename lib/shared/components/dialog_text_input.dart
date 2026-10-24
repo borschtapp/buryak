@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../util/error_extensions.dart';
 import '../util/extensions.dart';
 import '../util/ui_constants.dart';
+import 'loading_button.dart';
 
 /// A reusable dialog widget for collecting single text input from users.
 ///
-/// Handles loading state, optional validation, and error display via SnackBar.
-/// Does not auto-pop on success — [onSubmit] is responsible for navigation.
-class TextInputDialog extends HookConsumerWidget {
+/// Submitting runs [onSubmit] as [mutation]; the dialog shows its pending
+/// state, closes on success and then calls [onSuccess] with the result. On
+/// failure it stays open so the input can be corrected, and
+/// `MutationErrorReporter` reports the error.
+class TextInputDialog<T> extends HookConsumerWidget {
   final String title;
   final String hintText;
   final String submitLabel;
@@ -22,9 +26,14 @@ class TextInputDialog extends HookConsumerWidget {
   final String? Function(String)? validator;
   final String? initialText;
 
-  /// Callback invoked when user submits.
-  /// Responsible for navigation (pop or replace).
-  final Future<void> Function(String value, BuildContext context) onSubmit;
+  final Mutation<T> mutation;
+
+  /// The write, given the trimmed input; run it through [MutationTransaction.get].
+  final Future<T> Function(MutationTransaction tsx, String value) onSubmit;
+
+  /// Called after the dialog has closed, e.g. to show a snackbar or navigate
+  /// from the caller's (still mounted) context.
+  final void Function(T result)? onSuccess;
 
   const TextInputDialog({
     super.key,
@@ -35,14 +44,34 @@ class TextInputDialog extends HookConsumerWidget {
     this.helperText,
     this.validator,
     this.initialText,
+    required this.mutation,
     required this.onSubmit,
+    this.onSuccess,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = useTextEditingController(text: initialText);
-    final isLoading = useState(false);
     final validationError = useState<String?>(null);
+    final isLoading = ref.watch(mutation).isPending;
+
+    Future<void> submit() async {
+      final value = controller.text.trim();
+
+      final error = validator?.call(value);
+      validationError.value = error;
+      if (error != null) return;
+
+      final T result;
+      try {
+        result = await mutation.run(ref, (tsx) => onSubmit(tsx, value));
+      } on Object {
+        return; // Already reported by MutationErrorReporter.
+      }
+      if (!context.mounted) return;
+      context.pop();
+      onSuccess?.call(result);
+    }
 
     return Dialog(
       constraints: const BoxConstraints(maxWidth: 560),
@@ -60,38 +89,30 @@ class TextInputDialog extends HookConsumerWidget {
             TextField(
               controller: controller,
               autofocus: true,
-              enabled: !isLoading.value,
+              enabled: !isLoading,
               decoration: InputDecoration(
                 labelText: labelText,
                 hintText: hintText,
                 helperText: helperText,
                 errorText: validationError.value,
               ),
-              onSubmitted: isLoading.value ? null : (_) => _handleSubmit(context, ref, controller, isLoading, validationError),
+              onSubmitted: isLoading ? null : (_) => submit(),
             ),
             const SizedBox(height: UIConstants.paddingLarge),
             Row(
               children: [
                 Expanded(
                   child: TextButton(
-                    onPressed: isLoading.value ? null : () => Navigator.pop(context),
+                    onPressed: isLoading ? null : () => context.pop(),
                     child: Text(context.l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: UIConstants.paddingSmall),
                 Expanded(
-                  child: FilledButton(
-                    onPressed: isLoading.value ? null : () => _handleSubmit(context, ref, controller, isLoading, validationError),
-                    child: isLoading.value
-                        ? SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: context.colors.onPrimary,
-                            ),
-                          )
-                        : Text(submitLabel),
+                  child: LoadingButton(
+                    isLoading: isLoading,
+                    onPressed: submit,
+                    child: Text(submitLabel),
                   ),
                 ),
               ],
@@ -100,33 +121,5 @@ class TextInputDialog extends HookConsumerWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _handleSubmit(
-    BuildContext context,
-    WidgetRef ref,
-    TextEditingController controller,
-    ValueNotifier<bool> isLoading,
-    ValueNotifier<String?> validationError,
-  ) async {
-    final value = controller.text.trim();
-
-    // Run optional validator
-    if (validator != null) {
-      final error = validator!(value);
-      validationError.value = error;
-      if (error != null) return;
-    }
-
-    isLoading.value = true;
-    try {
-      await onSubmit(value, context);
-    } catch (e) {
-      ref.handleException(e);
-    } finally {
-      if (context.mounted) {
-        isLoading.value = false;
-      }
-    }
   }
 }

@@ -9,6 +9,7 @@ import '../../shared/repositories/shopping_list_repository.dart';
 part 'notifier_shopping.g.dart';
 
 // Run with `tsx.get(shoppingItemsProvider.notifier)`.
+final addShoppingItemMutation = Mutation<void>(label: 'addShoppingItem');
 final addShoppingItemsMutation = Mutation<int>(label: 'addShoppingItems');
 final updateShoppingItemMutation = Mutation<void>(label: 'updateShoppingItem');
 

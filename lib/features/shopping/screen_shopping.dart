@@ -23,7 +23,7 @@ class ShoppingScreen extends HookConsumerWidget {
       ref,
       FloatingActionButton(
         heroTag: 'shopping_add_fab',
-        onPressed: () => showAddItemDialog(context, ref),
+        onPressed: () => showAddItemDialog(context),
         child: const Icon(Icons.add),
       ),
     );

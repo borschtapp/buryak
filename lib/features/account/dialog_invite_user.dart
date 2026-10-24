@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../shared/components/icon_label.dart';
 import '../../shared/components/loading_button.dart';
 import '../../shared/constants.dart';
+import '../../shared/models/user_token.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
@@ -24,8 +26,8 @@ class DialogInviteUser extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final emailController = useTextEditingController();
-    final isEmailLoading = useState(false);
-    final isLinkLoading = useState(false);
+    final isEmailLoading = ref.watch(inviteViaEmailMutation).isPending;
+    final isLinkLoading = ref.watch(generateInviteMutation).isPending;
     final generatedCode = useState<String?>(null);
 
     final l10n = context.l10n;
@@ -48,23 +50,18 @@ class DialogInviteUser extends HookConsumerWidget {
           ),
           const SizedBox(height: UIConstants.paddingMedium),
           LoadingButton(
-            isLoading: isEmailLoading.value,
+            isLoading: isEmailLoading,
             onPressed: () async {
               final email = emailController.text.trim();
               if (email.isEmpty) return;
 
-              isEmailLoading.value = true;
-              try {
-                await ref.read(householdProvider.notifier).inviteViaEmail(email);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.inviteSent)));
-                  emailController.clear();
-                }
-              } catch (e) {
-                ref.handleException(e);
-              } finally {
-                if (context.mounted) isEmailLoading.value = false;
-              }
+              final sent = await inviteViaEmailMutation.tryRun(
+                ref,
+                (tsx) => tsx.get(householdProvider.notifier).inviteViaEmail(email),
+              );
+              if (!sent || !context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.inviteSent)));
+              emailController.clear();
             },
             child: IconLabel(icon: Icons.email, label: l10n.inviteSendEmailButton, iconSize: 24, spacing: 8),
           ),
@@ -100,18 +97,19 @@ class DialogInviteUser extends HookConsumerWidget {
             ),
           ] else ...[
             LoadingButton(
-              isLoading: isLinkLoading.value,
+              isLoading: isLinkLoading,
               onPressed: () async {
-                isLinkLoading.value = true;
+                final UserToken token;
                 try {
-                  final token = await ref.read(householdProvider.notifier).generateInvite();
-                  if (context.mounted) {
-                    generatedCode.value = token.token; // "token" field contains the code
-                  }
-                } catch (e) {
-                  ref.handleException(e);
-                } finally {
-                  if (context.mounted) isLinkLoading.value = false;
+                  token = await generateInviteMutation.run(
+                    ref,
+                    (tsx) => tsx.get(householdProvider.notifier).generateInvite(),
+                  );
+                } on Object {
+                  return; // Already reported by MutationErrorReporter.
+                }
+                if (context.mounted) {
+                  generatedCode.value = token.token; // "token" field contains the code
                 }
               },
               type: LoadingButtonType.outlined,
@@ -122,7 +120,7 @@ class DialogInviteUser extends HookConsumerWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           child: Text(context.l10n.close),
         ),
       ],

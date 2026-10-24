@@ -12,6 +12,7 @@ import 'user.dart';
 part 'saved.g.dart';
 
 // Run with `tsx.get(savedCollectionsProvider.notifier)`.
+final createCollectionMutation = Mutation<void>(label: 'createCollection');
 final updateRecipeCollectionsMutation = Mutation<void>(label: 'updateRecipeCollections');
 
 @riverpod

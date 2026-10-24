@@ -1,10 +1,14 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../constants.dart';
 import 'runtime_config_stub.dart' if (dart.library.js_interop) 'runtime_config_web.dart';
 
 part 'server_url.g.dart';
+
+// Run with `tsx.get(serverUrlProvider.notifier)`.
+final setServerUrlMutation = Mutation<void>(label: 'setServerUrl');
 
 String _resolveDefaultUrl() {
   final runtimeUrl = getRuntimeApiUrl();

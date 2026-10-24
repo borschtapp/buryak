@@ -11,6 +11,13 @@ part 'household.g.dart';
 
 // Run with `tsx.get(householdProvider.notifier)`.
 final updateHouseholdMutation = Mutation<void>(label: 'updateHousehold');
+final joinHouseholdMutation = Mutation<void>(label: 'joinHousehold');
+final inviteViaEmailMutation = Mutation<void>(label: 'inviteViaEmail');
+final generateInviteMutation = Mutation<UserToken>(label: 'generateInvite');
+final leaveHouseholdMutation = Mutation<void>(label: 'leaveHousehold');
+
+/// Key it with the member id (`removeMemberMutation(userId)`), since removals can overlap.
+final removeMemberMutation = Mutation<void>(label: 'removeMember');
 
 @riverpod
 class HouseholdNotifier extends _$HouseholdNotifier {
@@ -106,25 +113,19 @@ class HouseholdNotifier extends _$HouseholdNotifier {
   }
 
   Future<void> joinHousehold(String code) async {
-    state = const AsyncValue.loading();
-    try {
-      final repo = ref.read(householdRepositoryProvider);
-      final response = await repo.joinHousehold(code);
-
-      // Refresh the access token and household data
-      await ref.read(authProvider.notifier).updateUser(response);
-
-      await reload();
-    } catch (e, st) {
-      state = AsyncError(e, st);
-    }
+    final response = await ref.read(householdRepositoryProvider).joinHousehold(code);
+    // Switches the session to the new household, which rebuilds this notifier
+    // and every other household-scoped cache.
+    await ref.read(authProvider.notifier).updateUser(response);
+    // Still reload when the code was for the current household, so its members are fresh.
+    // Last step: rebuilding replaces this notifier, so nothing after it may use ref or state.
+    ref.invalidateSelf();
   }
 
   Future<void> leaveHousehold() async {
-    final repo = ref.read(householdRepositoryProvider);
-    final response = await repo.leaveHousehold();
-
-    final auth = ref.read(authProvider.notifier);
-    await auth.updateUser(response);
+    final response = await ref.read(householdRepositoryProvider).leaveHousehold();
+    // Switches the session off this household, which rebuilds this notifier
+    // and every other household-scoped cache.
+    await ref.read(authProvider.notifier).updateUser(response);
   }
 }
