@@ -18,13 +18,13 @@ class ShoppingBottomSheet extends HookConsumerWidget {
   const ShoppingBottomSheet({super.key, required this.recipe, this.scrollController});
 
   static void show(BuildContext context, Recipe recipe) {
-    final screenHeight = MediaQuery.heightOf(context);
-    final topReserved = MediaQuery.paddingOf(context).top + kToolbarHeight;
-    final maxFraction = (screenHeight - topReserved) / screenHeight;
+    // The sheet's parent already excludes the status bar (`useSafeArea`), so stop
+    // one toolbar below it.
+    final availableHeight = MediaQuery.heightOf(context) - MediaQuery.paddingOf(context).top;
+    final maxFraction = (availableHeight - kToolbarHeight) / availableHeight;
 
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.75,
@@ -105,6 +105,8 @@ class ShoppingBottomSheet extends HookConsumerWidget {
     return StandardBottomSheet(
       title: context.l10n.shoppingAddToShoppingTitle,
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+      // Bounded by the draggable sheet, so a long ingredient list scrolls instead of overflowing.
+      expandChild: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,

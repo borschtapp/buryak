@@ -46,9 +46,8 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
     required String recipeId,
     RecipeIngredient? ingredient,
   }) {
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
       builder: (_) => FoodPriceBottomSheet(food: food, recipeId: recipeId, ingredient: ingredient),
     );
   }

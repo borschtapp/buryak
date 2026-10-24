@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/dismissible_tile.dart';
 import '../../shared/components/empty_state.dart';
+import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/hooks.dart';
 import '../../shared/layouts/app_list_scaffold.dart';
 import '../../shared/models/shopping_item.dart';
@@ -54,9 +55,8 @@ class ShoppingScreen extends HookConsumerWidget {
         itemBuilder: (context, index) {
           final item = items[index];
           void openEditSheet() {
-            showModalBottomSheet<void>(
+            showAppBottomSheet<void>(
               context: context,
-              isScrollControlled: true,
               builder: (context) => EditShoppingItemBottomSheet(item: item),
             );
           }

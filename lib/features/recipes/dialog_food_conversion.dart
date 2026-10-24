@@ -39,9 +39,8 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
     List<FoodPrice> prices = const [],
     FoodUnitConversion? existing,
   }) {
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
       builder: (_) => FoodConversionBottomSheet(
         food: food,
         unitId: unitId,

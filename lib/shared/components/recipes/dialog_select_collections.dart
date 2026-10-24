@@ -20,9 +20,8 @@ Future<List<Collection>?> showCollectionsBottomSheet(
 }) {
   assert(recipeId.isNotEmpty, 'recipeId cannot be empty');
 
-  return showModalBottomSheet<List<Collection>>(
+  return showAppBottomSheet<List<Collection>>(
     context: context,
-    isScrollControlled: true,
     builder: (context) => DraggableScrollableSheet(
       initialChildSize: 0.6,
       minChildSize: 0.4,

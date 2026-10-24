@@ -6,6 +6,7 @@ import '../../models/unit.dart';
 import '../../providers/recipe_price.dart';
 import '../../util/extensions.dart';
 import '../searchable_list_sheet.dart';
+import '../standard_bottom_sheet.dart';
 import 'dialog_edit_unit.dart';
 
 /// Reusable bottom sheet that lists the unit catalog (from [allUnitsProvider])
@@ -16,7 +17,7 @@ import 'dialog_edit_unit.dart';
 /// surface where duplicate units ("g" vs "gram") are actually noticed. The
 /// affordance is disabled when the picker is itself used to choose a merge
 /// target, to avoid recursive editing.
-class UnitPicker extends HookConsumerWidget {
+class UnitPicker extends ConsumerWidget {
   const UnitPicker({super.key, this.allowEdit = true, this.excludeId});
 
   final bool allowEdit;
@@ -29,9 +30,8 @@ class UnitPicker extends HookConsumerWidget {
     bool allowEdit = true,
     String? excludeId,
   }) {
-    return showModalBottomSheet<Unit>(
+    return showAppBottomSheet<Unit>(
       context: context,
-      isScrollControlled: true,
       builder: (_) => UnitPicker(allowEdit: allowEdit, excludeId: excludeId),
     );
   }
@@ -39,18 +39,18 @@ class UnitPicker extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final unitsAsync = ref.watch(allUnitsProvider);
-    final units = unitsAsync.value ?? const <Unit>[];
+    final units = [...?unitsAsync.value?.where((u) => u.id != excludeId)];
 
-    return SearchableListSheet<Unit>(
-      initialLoading: unitsAsync.isLoading,
+    return FilterableListSheet<Unit>(
+      // Only block on the first load; reloads keep showing the current list.
+      loading: unitsAsync.isLoading && !unitsAsync.hasValue,
+      // A failed reload keeps the current list; only a failed first load has nothing to show.
+      error: unitsAsync.hasValue || unitsAsync.isLoading ? null : unitsAsync.error,
+      onRetry: () => ref.invalidate(allUnitsProvider),
       hintText: context.l10n.foodPriceUnitSearch,
       emptyResultsText: context.l10n.searchNoResults,
-      debounceDuration: Duration.zero,
-      search: (query) {
-        final available = units.where((u) => u.id != excludeId);
-        if (query.isEmpty) return available.toList();
-        return available.where((u) => u.name.toLowerCase().contains(query.toLowerCase())).toList();
-      },
+      items: units,
+      filter: (unit, query) => unit.name.toLowerCase().contains(query),
       itemBuilder: (context, unit) => ListTile(
         title: Text(unit.name),
         trailing: allowEdit

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/loading_button.dart';
+import '../../shared/components/picker_form_field.dart';
 import '../../shared/components/recipes/food_picker_sheet.dart';
 import '../../shared/components/recipes/unit_picker_form_field.dart';
 import '../../shared/components/standard_bottom_sheet.dart';
@@ -33,9 +34,8 @@ class EditIngredientBottomSheet extends HookConsumerWidget {
     required String recipeId,
     required RecipeIngredient ingredient,
   }) {
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
       builder: (_) => EditIngredientBottomSheet(recipeId: recipeId, ingredient: ingredient),
     );
   }
@@ -112,8 +112,11 @@ class EditIngredientBottomSheet extends HookConsumerWidget {
               validator: (v) => (v == null || v.trim().isEmpty) ? context.l10n.validatorFieldRequired : null,
             ),
             const SizedBox(height: UIConstants.paddingSmall),
-            _FoodPickerField(
-              selectedFood: selectedFood.value,
+            PickerFormField<Food>(
+              selectionKey: selectedFood.value?.id,
+              selectionLabel: selectedFood.value?.name,
+              labelText: context.l10n.editIngredientFood,
+              pick: FoodPicker.pick,
               onSelected: (f) => selectedFood.value = f,
               onCleared: () => selectedFood.value = null,
             ),
@@ -189,42 +192,6 @@ class EditIngredientBottomSheet extends HookConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _FoodPickerField extends StatelessWidget {
-  const _FoodPickerField({
-    required this.selectedFood,
-    required this.onSelected,
-    required this.onCleared,
-  });
-
-  final Food? selectedFood;
-  final void Function(Food) onSelected;
-  final VoidCallback onCleared;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      readOnly: true,
-      key: ValueKey(selectedFood?.id),
-      initialValue: selectedFood?.name ?? '',
-      decoration: InputDecoration(
-        labelText: context.l10n.editIngredientFood,
-        border: const OutlineInputBorder(),
-        suffixIcon: selectedFood != null
-            ? IconButton(
-                icon: const Icon(Icons.clear, size: 18),
-                onPressed: onCleared,
-                tooltip: context.l10n.close,
-              )
-            : const Icon(Icons.arrow_drop_down),
-      ),
-      onTap: () async {
-        final picked = await FoodPicker.pick(context);
-        if (picked != null) onSelected(picked);
-      },
     );
   }
 }

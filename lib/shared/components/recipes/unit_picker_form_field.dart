@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../models/unit.dart';
 import '../../util/extensions.dart';
+import '../picker_form_field.dart';
 import 'unit_picker_sheet.dart';
 
 class UnitPickerFormField extends StatelessWidget {
@@ -25,42 +26,15 @@ class UnitPickerFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = unitsAsync.isLoading;
     final selectedUnit = unitsAsync.value?.where((u) => u.id == selectedUnitId).firstOrNull;
-
-    Widget suffixIcon;
-    if (isLoading) {
-      suffixIcon = const Padding(
-        padding: EdgeInsets.all(12),
-        child: SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      );
-    } else if (onCleared != null && selectedUnit != null) {
-      suffixIcon = IconButton(
-        icon: const Icon(Icons.clear, size: 18),
-        onPressed: onCleared,
-        tooltip: context.l10n.close,
-      );
-    } else {
-      suffixIcon = const Icon(Icons.arrow_drop_down);
-    }
-
-    return TextFormField(
-      readOnly: true,
-      key: ValueKey(selectedUnit?.id),
-      initialValue: selectedUnit?.name ?? '',
-      decoration: InputDecoration(
-        labelText: labelText ?? context.l10n.foodPriceUnit,
-        border: const OutlineInputBorder(),
-        suffixIcon: suffixIcon,
-      ),
-      onTap: () async {
-        final picked = await UnitPicker.pick(context);
-        if (picked != null) onSelected(picked);
-      },
+    return PickerFormField<Unit>(
+      selectionKey: selectedUnit?.id,
+      selectionLabel: selectedUnit?.name,
+      labelText: labelText ?? context.l10n.foodPriceUnit,
+      isLoading: unitsAsync.isLoading,
+      pick: UnitPicker.pick,
+      onSelected: onSelected,
+      onCleared: onCleared,
       validator: validator,
     );
   }

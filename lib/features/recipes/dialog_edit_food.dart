@@ -31,9 +31,8 @@ class EditFoodBottomSheet extends HookConsumerWidget {
     required Food food,
     required String recipeId,
   }) {
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
       builder: (_) => EditFoodBottomSheet(food: food, recipeId: recipeId),
     );
   }

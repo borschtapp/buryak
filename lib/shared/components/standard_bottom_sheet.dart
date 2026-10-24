@@ -4,8 +4,42 @@ import 'package:go_router/go_router.dart';
 import '../util/extensions.dart';
 import '../util/ui_constants.dart';
 
-/// A structural wrapper for bottom sheets that provides a standard header,
-/// consistent padding, and handles keyboard safety.
+/// Opens a modal bottom sheet with the app's defaults: scroll-controlled, so it
+/// can grow with its content, kept below the status bar, and lifted above the
+/// on-screen keyboard (so sheet bodies don't pad for it themselves).
+Future<T?> showAppBottomSheet<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  Color? backgroundColor,
+}) {
+  return showModalBottomSheet<T>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: backgroundColor,
+    builder: (context) => _KeyboardInset(child: builder(context)),
+  );
+}
+
+/// Pads [child] by the keyboard height. A widget of its own, so the keyboard
+/// animation rebuilds only this padding rather than the whole sheet body.
+class _KeyboardInset extends StatelessWidget {
+  const _KeyboardInset({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: child,
+    );
+  }
+}
+
+/// A structural wrapper for bottom sheets that provides a standard header
+/// and consistent padding. Open it with [showAppBottomSheet], which keeps it
+/// above the keyboard.
 class StandardBottomSheet extends StatelessWidget {
   final String title;
   final Widget child;
@@ -20,8 +54,9 @@ class StandardBottomSheet extends StatelessWidget {
   final double? maxHeightFraction;
 
   /// Wraps [child] in a [Flexible] so a scrollable / expanding body fills the
-  /// remaining height instead of overflowing. Only meaningful together with
-  /// [maxHeightFraction]. `Flexible` (not `Expanded`) is used so the sheet
+  /// remaining height instead of overflowing. Only meaningful when the height is
+  /// bounded: by [maxHeightFraction], or by a parent such as a
+  /// [DraggableScrollableSheet]. `Flexible` (not `Expanded`) is used so the sheet
   /// still shrink-wraps when the body is short.
   final bool expandChild;
 
@@ -75,20 +110,15 @@ class StandardBottomSheet extends StatelessWidget {
     }
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: Padding(
-        padding:
-            padding ??
-            const EdgeInsets.fromLTRB(
-              UIConstants.paddingContent,
-              UIConstants.paddingContent,
-              UIConstants.paddingContent,
-              UIConstants.paddingLarge,
-            ),
-        child: content,
-      ),
+      padding:
+          padding ??
+          const EdgeInsets.fromLTRB(
+            UIConstants.paddingContent,
+            UIConstants.paddingContent,
+            UIConstants.paddingContent,
+            UIConstants.paddingLarge,
+          ),
+      child: content,
     );
   }
 }

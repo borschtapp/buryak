@@ -6,6 +6,7 @@ import '../../models/food.dart';
 import '../../repositories/food_repository.dart';
 import '../../util/extensions.dart';
 import '../searchable_list_sheet.dart';
+import '../standard_bottom_sheet.dart';
 
 /// Reusable bottom sheet that searches the canonical food catalog and returns
 /// the picked [Food]. Used both for selecting an ingredient's food and for
@@ -18,9 +19,8 @@ class FoodPicker extends HookConsumerWidget {
 
   /// Opens the picker and resolves with the chosen food, or `null` if dismissed.
   static Future<Food?> pick(BuildContext context, {String? excludeId}) {
-    return showModalBottomSheet<Food>(
+    return showAppBottomSheet<Food>(
       context: context,
-      isScrollControlled: true,
       builder: (_) => FoodPicker(excludeId: excludeId),
     );
   }

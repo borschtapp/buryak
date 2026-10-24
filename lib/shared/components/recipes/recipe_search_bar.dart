@@ -6,6 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import '../../models/recipe_filter.dart';
 import '../../util/extensions.dart';
 import '../../util/ui_constants.dart';
+import '../standard_bottom_sheet.dart';
 import 'recipe_filters.dart';
 
 /// A search bar row with a debounced text field and a filter button.
@@ -75,10 +76,8 @@ class RecipeSearchBar extends HookWidget {
       try {
         late RecipeFilter? result;
         if (ctx.isMobile) {
-          result = await showModalBottomSheet<RecipeFilter>(
+          result = await showAppBottomSheet<RecipeFilter>(
             context: ctx,
-            isScrollControlled: true,
-            useSafeArea: true,
             builder: (context) => RecipeFilters(
               initialFilter: filter,
               showTaxonomyFilters: showTaxonomyFilters,

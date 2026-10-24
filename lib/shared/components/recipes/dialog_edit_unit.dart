@@ -23,9 +23,8 @@ class EditUnitBottomSheet extends HookConsumerWidget {
   final Unit unit;
 
   static void show(BuildContext context, {required Unit unit}) {
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
       builder: (_) => EditUnitBottomSheet(unit: unit),
     );
   }
