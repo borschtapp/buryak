@@ -11,6 +11,7 @@
   "errorSessionExpired": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.",
   "errorNoPermission": "Du hast keine Berechtigung dafür.",
   "errorNotFound": "Der angeforderte Eintrag wurde nicht gefunden.",
+  "errorAlreadyExists": "Das existiert bereits.",
   "errorRequestProblem": "Es gab ein Problem mit deiner Anfrage. Bitte überprüfe sie und versuche es erneut.",
   "errorServerError": "Serverfehler. Bitte versuche es später erneut.",
   "errorConnectionIssue": "Verbindungsproblem. Bitte überprüfe deine Internetverbindung.",

@@ -1,5 +1,8 @@
-import 'dart:ui';
+import 'dart:developer' as dev;
 
+import 'package:flutter/foundation.dart';
+import 'package:hooks_riverpod/experimental/mutation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart' show ProviderObserver, ProviderObserverContext;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../repositories/repository.dart';
@@ -15,6 +18,7 @@ enum ErrorMessageKey {
   sessionExpired,
   noPermission,
   notFound,
+  alreadyExists,
   requestProblem,
   serverError,
   somethingWentWrong,
@@ -42,8 +46,11 @@ class ErrorHandler extends _$ErrorHandler {
   @override
   ErrorMessage? build() => null;
 
-  void handle(Object exception, {String? actionLabel, VoidCallback? onAction}) {
-    final (text, messageKey) = _resolve(exception);
+  void handle(Object exception, {StackTrace? stackTrace, String? actionLabel, VoidCallback? onAction}) {
+    if (kDebugMode) {
+      dev.log('$exception', name: 'error', error: exception, stackTrace: stackTrace);
+    }
+    final (text, messageKey) = resolve(exception);
     state = ErrorMessage(
       text: text,
       messageKey: messageKey,
@@ -53,7 +60,8 @@ class ErrorHandler extends _$ErrorHandler {
     );
   }
 
-  static (String?, ErrorMessageKey?) _resolve(Object e) {
+  /// User-facing copy for [e]: either raw [ErrorMessage.text] or a key to localize.
+  static (String?, ErrorMessageKey?) resolve(Object e) {
     if (e is FieldsApiException) {
       final text = e.fields.entries
           .map((entry) {
@@ -68,6 +76,8 @@ class ErrorHandler extends _$ErrorHandler {
         401 => (null, ErrorMessageKey.sessionExpired),
         403 => (null, ErrorMessageKey.noPermission),
         404 => (null, ErrorMessageKey.notFound),
+        // The server sends a generic English message for any unique-key clash.
+        409 => (null, ErrorMessageKey.alreadyExists),
         422 => e.message.isNotEmpty ? (e.message, null) : (null, ErrorMessageKey.requestProblem),
         500 => (null, ErrorMessageKey.serverError),
         _ => e.message.isNotEmpty ? (e.message, null) : (null, ErrorMessageKey.somethingWentWrong),
@@ -83,5 +93,21 @@ class ErrorHandler extends _$ErrorHandler {
       if (code != null && code >= 500) return false;
     }
     return true;
+  }
+}
+
+/// Reports every failed [Mutation] through [ErrorHandler], so call sites don't
+/// catch-and-report themselves. Because it observes the container rather than
+/// a widget, a failure is still shown after the sheet that started the
+/// mutation has been dismissed.
+final class MutationErrorReporter extends ProviderObserver {
+  @override
+  void mutationError(
+    ProviderObserverContext context,
+    Mutation<Object?> mutation,
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    context.container.read(errorHandlerProvider.notifier).handle(error, stackTrace: stackTrace);
   }
 }

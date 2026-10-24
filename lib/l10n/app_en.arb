@@ -11,6 +11,7 @@
   "errorSessionExpired": "Your session expired. Please log in again.",
   "errorNoPermission": "You don't have permission to do this.",
   "errorNotFound": "The requested item was not found.",
+  "errorAlreadyExists": "This already exists.",
   "errorRequestProblem": "There was a problem with your request. Please check and try again.",
   "errorServerError": "Server error. Please try again later.",
   "errorConnectionIssue": "Connection issue. Please check your internet.",

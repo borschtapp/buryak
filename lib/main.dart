@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'shared/app.dart';
+import 'shared/providers/error_handler.dart';
 import 'shared/providers/locale.dart';
 import 'shared/providers/server_url.dart';
 import 'shared/providers/user.dart';
@@ -17,7 +18,7 @@ void main() async {
   // auth state from the very first URL match. Without this, the intermediate
   // MaterialApp(home:) causes Flutter's Navigator to fail on deep-link URLs
   // (e.g. /recipes, /recipes/:id) before GoRouter takes over.
-  final container = ProviderContainer();
+  final container = ProviderContainer(observers: [MutationErrorReporter()]);
   try {
     await container.read(serverUrlProvider.notifier).init();
     await container.read(authProvider.notifier).init();
