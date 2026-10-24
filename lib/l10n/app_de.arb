@@ -104,6 +104,7 @@
   "householdCurrency": "Währung",
   "householdChangeCurrency": "Währung ändern",
   "householdCurrencyNone": "Keine Währung festgelegt",
+  "currencyName": "{code, select, AUD{Australischer Dollar} BRL{Brasilianischer Real} CAD{Kanadischer Dollar} CHF{Schweizer Franken} CNY{Chinesischer Yuan} CZK{Tschechische Krone} DKK{Dänische Krone} EUR{Euro} GBP{Britisches Pfund} HKD{Hongkong-Dollar} HUF{Ungarischer Forint} INR{Indische Rupie} JPY{Japanischer Yen} KRW{Südkoreanischer Won} MXN{Mexikanischer Peso} NOK{Norwegische Krone} NZD{Neuseeland-Dollar} PLN{Polnischer Złoty} SEK{Schwedische Krone} SGD{Singapur-Dollar} TRY{Türkische Lira} UAH{Ukrainische Hrywnja} USD{US-Dollar} ZAR{Südafrikanischer Rand} other{{code}}}",
   "serverUrlTitle": "Server-URL",
   "serverUrlLabel": "Leer lassen für Demo-Server",
   "feedEmptyTitle": "Keine Rezepte gefunden",

@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../models/collection.dart';
 import '../../providers/saved.dart';
-import '../../repositories/collection_repository.dart';
 import '../../util/error_extensions.dart';
 import '../../util/extensions.dart';
 import '../loading_button.dart';
@@ -51,7 +50,7 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final localAddedIds = useState<Set<String>>({});
     final localRemovedIds = useState<Set<String>>({});
-    final isSaving = useState(false);
+    final isSaving = ref.watch(updateRecipeCollectionsMutation).isPending;
     final collectionsAsync = ref.watch(savedCollectionsProvider);
 
     return StandardAsyncBuilder<List<Collection>>(
@@ -75,42 +74,28 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
           actions: [
             if (hasChanges)
               LoadingButton(
-                isLoading: isSaving.value,
+                isLoading: isSaving,
                 type: LoadingButtonType.text,
                 onPressed: () async {
-                  isSaving.value = true;
-                  try {
-                    final repo = ref.read(collectionRepositoryProvider);
+                  final saved = await updateRecipeCollectionsMutation.tryRun(
+                    ref,
+                    (tsx) => tsx
+                        .get(savedCollectionsProvider.notifier)
+                        .updateRecipeCollections(recipeId, add: localAddedIds.value, remove: localRemovedIds.value),
+                  );
+                  if (!saved || !context.mounted) return;
 
-                    final futures = [
-                      ...localAddedIds.value.map((id) => repo.addRecipe(id, recipeId)),
-                      ...localRemovedIds.value.map((id) => repo.removeRecipe(id, recipeId)),
-                    ];
-
-                    await Future.wait(futures);
-
-                    ref.invalidate(savedCollectionsProvider);
-                    ref.invalidate(collectionRecipesProvider);
-
-                    final updatedCollections = collections
-                        .where(
-                          (c) =>
-                              (initialCollectionIds.contains(c.id) && !localRemovedIds.value.contains(c.id)) ||
-                              localAddedIds.value.contains(c.id),
-                        )
-                        .toList();
-
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(context.l10n.recipesCookbooksUpdated)),
-                      );
-                      Navigator.pop(context, updatedCollections);
-                    }
-                  } catch (e) {
-                    ref.handleException(e);
-                  } finally {
-                    isSaving.value = false;
-                  }
+                  final updatedCollections = collections
+                      .where(
+                        (c) =>
+                            (initialCollectionIds.contains(c.id) && !localRemovedIds.value.contains(c.id)) ||
+                            localAddedIds.value.contains(c.id),
+                      )
+                      .toList();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(context.l10n.recipesCookbooksUpdated)),
+                  );
+                  Navigator.pop(context, updatedCollections);
                 },
                 child: Text(context.l10n.save),
               ),
@@ -137,7 +122,7 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                   trailing: isInCollection
                       ? Text(context.l10n.recipesCollectionSelected, style: const TextStyle(color: Colors.green, fontSize: 12))
                       : null,
-                  onTap: isSaving.value
+                  onTap: isSaving
                       ? null
                       : () {
                           final announcement = isInCollection

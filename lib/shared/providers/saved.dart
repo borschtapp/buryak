@@ -1,3 +1,4 @@
+import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/collection.dart';
@@ -9,6 +10,9 @@ import 'paged_notifier_mixin.dart';
 import 'user.dart';
 
 part 'saved.g.dart';
+
+// Run with `tsx.get(savedCollectionsProvider.notifier)`.
+final updateRecipeCollectionsMutation = Mutation<void>(label: 'updateRecipeCollections');
 
 @riverpod
 Set<String> savedRecipeIds(Ref ref) {
@@ -100,6 +104,18 @@ class SavedCollections extends _$SavedCollections with PagedNotifierMixin<Collec
 
   Future<void> create(String name) async {
     await ref.read(collectionRepositoryProvider).create(name);
+    ref.invalidateSelf();
+  }
+
+  /// Adds [recipeId] to the collections in [add] and removes it from those in [remove].
+  Future<void> updateRecipeCollections(String recipeId, {required Set<String> add, required Set<String> remove}) async {
+    final repo = ref.read(collectionRepositoryProvider);
+    await Future.wait([
+      ...add.map((id) => repo.addRecipe(id, recipeId)),
+      ...remove.map((id) => repo.removeRecipe(id, recipeId)),
+    ]);
+    ref.invalidate(collectionRecipesProvider);
+    // Last step: rebuilding replaces this notifier, so nothing after it may use ref or state.
     ref.invalidateSelf();
   }
 }

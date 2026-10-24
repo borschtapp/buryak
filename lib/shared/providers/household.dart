@@ -1,3 +1,4 @@
+import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/household.dart';
@@ -7,6 +8,9 @@ import '../util/logger.dart';
 import 'user.dart';
 
 part 'household.g.dart';
+
+// Run with `tsx.get(householdProvider.notifier)`.
+final updateHouseholdMutation = Mutation<void>(label: 'updateHousehold');
 
 @riverpod
 class HouseholdNotifier extends _$HouseholdNotifier {

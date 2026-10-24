@@ -8,7 +8,6 @@ import '../../shared/components/loading_button.dart';
 import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/meal_plan.dart';
 import '../../shared/models/recipe.dart';
-import '../../shared/repositories/meal_plan_repository.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
@@ -42,7 +41,7 @@ class PlanBottomSheet extends HookConsumerWidget {
     final selectedDate = useState(plan?.date ?? DateTime.now());
     final selectedMealType = useState(plan?.mealType ?? MealType.lunch);
     final servings = useState(plan?.servings ?? recipe?.yield ?? 1);
-    final isSaving = useState(false);
+    final isSaving = ref.watch(saveMealPlanMutation).isPending;
 
     Future<void> selectDate() async {
       final now = DateTime.now();
@@ -58,47 +57,27 @@ class PlanBottomSheet extends HookConsumerWidget {
     }
 
     Future<void> save() async {
-      isSaving.value = true;
-      try {
-        final updated = isEditing
-            ? await ref
-                  .read(mealPlanRepositoryProvider)
-                  .update(
-                    plan!.id,
-                    date: selectedDate.value,
-                    mealType: selectedMealType.value,
-                    servings: servings.value,
-                  )
-            : await ref
-                  .read(mealPlanRepositoryProvider)
-                  .create(
-                    selectedDate.value,
-                    selectedMealType.value,
-                    recipeId: recipe!.id,
-                    servings: servings.value,
-                  );
-
-        // Update local state instead of re-fetching the entire week
-        final notifier = ref.read(mealPlanWeekProvider.notifier);
-        if (isEditing) {
-          notifier.updatePlan(updated);
-        } else {
-          notifier.addPlan(updated);
-        }
-
-        if (context.mounted) {
-          context.pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(isEditing ? context.l10n.plannerMealUpdated : context.l10n.plannerMealAdded)),
-          );
-        }
-      } catch (e) {
-        ref.handleException(e);
-      } finally {
-        if (context.mounted) {
-          isSaving.value = false;
-        }
-      }
+      final saved = await saveMealPlanMutation.tryRun(ref, (tsx) {
+        final notifier = tsx.get(mealPlanWeekProvider.notifier);
+        return isEditing
+            ? notifier.editPlan(
+                plan!.id,
+                date: selectedDate.value,
+                mealType: selectedMealType.value,
+                servings: servings.value,
+              )
+            : notifier.createPlan(
+                selectedDate.value,
+                selectedMealType.value,
+                recipeId: recipe!.id,
+                servings: servings.value,
+              );
+      });
+      if (!saved || !context.mounted) return;
+      context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(isEditing ? context.l10n.plannerMealUpdated : context.l10n.plannerMealAdded)),
+      );
     }
 
     final l10n = context.l10n;
@@ -151,7 +130,7 @@ class PlanBottomSheet extends HookConsumerWidget {
           ),
           const SizedBox(height: 32),
           LoadingButton(
-            isLoading: isSaving.value,
+            isLoading: isSaving,
             onPressed: save,
             child: Text(buttonText),
           ),

@@ -10,14 +10,12 @@ import '../../shared/components/recipes/unit_picker_form_field.dart';
 import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/food.dart';
 import '../../shared/models/recipe_ingredient.dart';
-
 import '../../shared/providers/recipe_price.dart';
-import '../../shared/repositories/recipe_repository.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
-import 'controller_recipe.dart';
 import '../../shared/util/ui_constants.dart';
 import '../../shared/util/validator.dart';
+import 'controller_recipe.dart';
 
 class EditIngredientBottomSheet extends HookConsumerWidget {
   const EditIngredientBottomSheet({
@@ -51,46 +49,34 @@ class EditIngredientBottomSheet extends HookConsumerWidget {
     final descriptionController = useTextEditingController(text: ingredient.description ?? '');
     final selectedUnitId = useState<String?>(ingredient.unitId ?? ingredient.unit?.id);
     final selectedFood = useState<Food?>(ingredient.food);
-    final isSaving = useState(false);
-    final isDeleting = useState(false);
+    final isSaving = ref.watch(updateIngredientMutation).isPending;
+    final isDeleting = ref.watch(deleteIngredientMutation).isPending;
 
     final unitsAsync = ref.watch(allUnitsProvider);
 
     Future<void> save() async {
       if (!formKey.currentState!.validate()) return;
-      isSaving.value = true;
-      try {
-        final updated = ingredient.copyWith(
-          name: nameController.text.trim(),
-          amount: amountController.text.asDecimal,
-          maxAmount: maxAmountController.text.asDecimal,
-          description: descriptionController.text.trim().isEmpty ? null : descriptionController.text.trim(),
-          unitId: selectedUnitId.value,
-          foodId: selectedFood.value?.id,
-        );
-        await ref.read(recipeRepositoryProvider).updateIngredient(recipeId, ingredient.id, updated);
-        ref.invalidate(recipeControllerProvider(recipeId));
-        ref.invalidate(recipeCostEstimateProvider(recipeId));
-        if (context.mounted) context.pop();
-      } catch (e) {
-        ref.handleException(e);
-      } finally {
-        if (context.mounted) isSaving.value = false;
-      }
+      final updated = ingredient.copyWith(
+        name: nameController.text.trim(),
+        amount: amountController.text.asDecimal,
+        maxAmount: maxAmountController.text.asDecimal,
+        description: descriptionController.text.trim().isEmpty ? null : descriptionController.text.trim(),
+        unitId: selectedUnitId.value,
+        foodId: selectedFood.value?.id,
+      );
+      final saved = await updateIngredientMutation.tryRun(
+        ref,
+        (tsx) => tsx.get(recipeControllerProvider(recipeId).notifier).updateIngredient(ingredient.id, updated),
+      );
+      if (saved && context.mounted) context.pop();
     }
 
     Future<void> delete() async {
-      isDeleting.value = true;
-      try {
-        await ref.read(recipeRepositoryProvider).deleteIngredient(recipeId, ingredient.id);
-        ref.invalidate(recipeControllerProvider(recipeId));
-        ref.invalidate(recipeCostEstimateProvider(recipeId));
-        if (context.mounted) context.pop();
-      } catch (e) {
-        ref.handleException(e);
-      } finally {
-        if (context.mounted) isDeleting.value = false;
-      }
+      final deleted = await deleteIngredientMutation.tryRun(
+        ref,
+        (tsx) => tsx.get(recipeControllerProvider(recipeId).notifier).deleteIngredient(ingredient.id),
+      );
+      if (deleted && context.mounted) context.pop();
     }
 
     return StandardBottomSheet(
@@ -175,15 +161,15 @@ class EditIngredientBottomSheet extends HookConsumerWidget {
             ),
             const SizedBox(height: UIConstants.paddingMedium),
             LoadingButton(
-              isLoading: isSaving.value,
+              isLoading: isSaving,
               onPressed: save,
               child: Text(context.l10n.save),
             ),
             const SizedBox(height: UIConstants.paddingSmall),
             LoadingButton(
               type: LoadingButtonType.text,
-              isLoading: isDeleting.value,
-              onPressed: isDeleting.value ? null : delete,
+              isLoading: isDeleting,
+              onPressed: isDeleting ? null : delete,
               spinnerSize: 16,
               icon: const Icon(Icons.delete_outline),
               style: TextButton.styleFrom(foregroundColor: context.colors.error),
