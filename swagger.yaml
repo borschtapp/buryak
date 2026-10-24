@@ -151,6 +151,8 @@ definitions:
     properties:
       name:
         example: Weekly Shop
+        maxLength: 255
+        minLength: 2
         type: string
     required:
       - name
@@ -194,13 +196,17 @@ definitions:
   api.UpdateShoppingItemForm:
     properties:
       amount:
+        description: null clears it
         example: 1
         type: number
+        x-nullable: true
       is_bought:
         example: true
         type: boolean
       text:
         example: Organic Milk
+        maxLength: 255
+        minLength: 1
         type: string
     type: object
   api.UpdateUserForm:
@@ -221,8 +227,14 @@ definitions:
         example: newpassword123
         minLength: 8
         type: string
+      refresh_token:
+        description: |-
+          RefreshToken is the caller's own refresh token. When changing the email or password, every
+          other refresh token for the user is revoked; passing this one exempts it so the current
+          session survives the change instead of being logged out along with every other session.
+        type: string
     type: object
-  api.conversionRequest:
+  api.createConversionRequest:
     properties:
       target_amount:
         type: number
@@ -255,13 +267,28 @@ definitions:
       - price
       - unit_id
     type: object
+  api.updateConversionRequest:
+    properties:
+      target_amount:
+        type: number
+      target_unit_id:
+        type: string
+    required:
+      - target_amount
+      - target_unit_id
+    type: object
   api.updateFoodRequest:
     properties:
       default_unit_id:
+        description: null clears it
+        format: uuid
         type: string
+        x-nullable: true
       description:
+        description: null clears it
         maxLength: 1000
         type: string
+        x-nullable: true
       name:
         maxLength: 255
         minLength: 1
@@ -941,11 +968,10 @@ definitions:
           $ref: "#/definitions/domain.ShoppingItem"
         type: array
       name:
+        description: empty for the default list, clients show a localized name
         maxLength: 255
         minLength: 2
         type: string
-    required:
-      - name
     type: object
   domain.Taxonomy:
     properties:
@@ -1245,8 +1271,8 @@ info:
   contact: {}
   description: The backend API for Borscht app.
   license:
-    name: MIT license
-    url: https://opensource.org/license/mit/
+    name: GNU General Public License v3.0
+    url: https://www.gnu.org/licenses/gpl-3.0.html
   title: Smetana API
   version: "1.0"
 paths:
@@ -2259,7 +2285,7 @@ paths:
           name: conversion
           required: true
           schema:
-            $ref: "#/definitions/api.conversionRequest"
+            $ref: "#/definitions/api.createConversionRequest"
       produces:
         - application/json
       responses:
@@ -2275,8 +2301,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: "#/definitions/sentinels.Error"
-        "404":
-          description: Not Found
+        "409":
+          description: Conflict
           schema:
             $ref: "#/definitions/sentinels.Error"
       security:
@@ -2320,7 +2346,9 @@ paths:
     put:
       consumes:
         - application/json
-      description: Updates the target amount or units of an existing conversion.
+      description:
+        Updates target amount and target unit of an existing conversion.
+        The source unit (unit_id) is immutable after creation.
       parameters:
         - description: Food UUID
           in: path
@@ -2332,19 +2360,15 @@ paths:
           name: conversionId
           required: true
           type: string
-        - description: Conversion request
+        - description: Conversion update request
           in: body
           name: conversion
           required: true
           schema:
-            $ref: "#/definitions/api.conversionRequest"
-      produces:
-        - application/json
+            $ref: "#/definitions/api.updateConversionRequest"
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: "#/definitions/domain.FoodUnitConversion"
+        "204":
+          description: No Content
         "400":
           description: Bad Request
           schema:

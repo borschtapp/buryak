@@ -29,11 +29,13 @@ class FoodRepository extends Repository {
     );
   }
 
+  /// Null fields are left unchanged; [clearDefaultUnit] sends an explicit null.
   Future<Food> update(
     String foodId, {
     String? name,
     String? description,
     String? defaultUnitId,
+    bool clearDefaultUnit = false,
     bool? pantry,
   }) async {
     final response = await sendRequest(
@@ -42,7 +44,7 @@ class FoodRepository extends Repository {
       body: {
         'name': ?name,
         'description': ?description,
-        'default_unit_id': ?defaultUnitId,
+        if (clearDefaultUnit) 'default_unit_id': null else 'default_unit_id': ?defaultUnitId,
         'pantry': ?pantry,
       },
     );
@@ -108,19 +110,18 @@ class FoodRepository extends Repository {
     return FoodUnitConversion.fromJson(ensureMap(response));
   }
 
-  Future<FoodUnitConversion> updateConversion(
+  /// The source unit can't change after creation, so only the target is sent.
+  Future<void> updateConversion(
     String foodId,
     String conversionId,
-    String unitId,
     double targetAmount,
     String targetUnitId,
   ) async {
-    final response = await sendRequest(
+    await sendRequest(
       method: .put,
       path: '/$foodId/conversions/$conversionId',
-      body: {'unit_id': unitId, 'target_amount': targetAmount, 'target_unit_id': targetUnitId},
+      body: {'target_amount': targetAmount, 'target_unit_id': targetUnitId},
     );
-    return FoodUnitConversion.fromJson(ensureMap(response));
   }
 
   Future<void> deleteConversion(String foodId, String conversionId) async {

@@ -8,32 +8,27 @@ import '../../shared/components/recipes/food_merge.dart';
 import '../../shared/components/recipes/unit_picker_form_field.dart';
 import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/food.dart';
-
+import '../../shared/providers/food_catalog.dart';
 import '../../shared/providers/recipe_price.dart';
-import '../../shared/repositories/food_repository.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
-import 'controller_recipe.dart';
 
 class EditFoodBottomSheet extends HookConsumerWidget {
   const EditFoodBottomSheet({
     super.key,
     required this.food,
-    required this.recipeId,
   });
 
   final Food food;
-  final String recipeId;
 
   static void show(
     BuildContext context, {
     required Food food,
-    required String recipeId,
   }) {
     showAppBottomSheet<void>(
       context: context,
-      builder: (_) => EditFoodBottomSheet(food: food, recipeId: recipeId),
+      builder: (_) => EditFoodBottomSheet(food: food),
     );
   }
 
@@ -43,45 +38,33 @@ class EditFoodBottomSheet extends HookConsumerWidget {
     final nameController = useTextEditingController(text: food.name);
     final selectedUnitId = useState<String?>(food.defaultUnitId);
     final isPantry = useState(food.pantry ?? false);
-    final isSaving = useState(false);
-    final isMerging = useState(false);
+    final isSaving = ref.watch(updateFoodMutation).isPending;
+    final isMerging = ref.watch(mergeFoodsMutation).isPending;
 
     final unitsAsync = ref.watch(allUnitsProvider);
 
     Future<void> save() async {
       if (!formKey.currentState!.validate()) return;
-      isSaving.value = true;
-      try {
-        final newName = nameController.text.trim();
-        await ref
-            .read(foodRepositoryProvider)
-            .update(
+      final newName = nameController.text.trim();
+      final unitChanged = selectedUnitId.value != food.defaultUnitId;
+      final saved = await updateFoodMutation.tryRun(
+        ref,
+        (tsx) => tsx
+            .get(foodCatalogProvider)
+            .updateFood(
               food.id,
               name: newName != food.name ? newName : null,
-              defaultUnitId: selectedUnitId.value,
+              defaultUnitId: unitChanged ? selectedUnitId.value : null,
+              clearDefaultUnit: unitChanged && selectedUnitId.value == null,
               pantry: isPantry.value != (food.pantry ?? false) ? isPantry.value : null,
-            );
-        ref.invalidate(recipeControllerProvider);
-        ref.invalidate(recipeCostEstimateProvider);
-        if (context.mounted) context.pop();
-      } catch (e) {
-        ref.handleException(e);
-      } finally {
-        if (context.mounted) isSaving.value = false;
-      }
+            ),
+      );
+      if (saved && context.mounted) context.pop();
     }
 
     Future<void> merge() async {
-      isMerging.value = true;
-      try {
-        final merged = await runFoodMergeFlow(context, ref, source: food);
-        if (merged) {
-          ref.invalidate(recipeControllerProvider);
-          if (context.mounted) context.pop();
-        }
-      } finally {
-        if (context.mounted) isMerging.value = false;
-      }
+      final merged = await runFoodMergeFlow(context, ref, source: food);
+      if (merged && context.mounted) context.pop();
     }
 
     return StandardBottomSheet(
@@ -120,15 +103,15 @@ class EditFoodBottomSheet extends HookConsumerWidget {
             ),
             const SizedBox(height: UIConstants.paddingMedium),
             LoadingButton(
-              isLoading: isSaving.value,
+              isLoading: isSaving,
               onPressed: save,
               child: Text(context.l10n.save),
             ),
             const SizedBox(height: UIConstants.paddingSmall),
             LoadingButton(
               type: LoadingButtonType.text,
-              isLoading: isMerging.value,
-              onPressed: (isSaving.value || isMerging.value) ? null : merge,
+              isLoading: isMerging,
+              onPressed: (isSaving || isMerging) ? null : merge,
               spinnerSize: 16,
               icon: const Icon(Icons.merge_outlined),
               child: Text(context.l10n.editFoodMerge),

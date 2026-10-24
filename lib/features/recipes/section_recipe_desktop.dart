@@ -43,7 +43,7 @@ class RecipeDesktopSection extends HookWidget {
     void openEditFood(RecipeIngredient ingredient) {
       final food = ingredient.food;
       if (food == null) return;
-      EditFoodBottomSheet.show(context, food: food, recipeId: recipe.id);
+      EditFoodBottomSheet.show(context, food: food);
     }
 
     return ContentFrame(
@@ -159,7 +159,6 @@ class RecipeDesktopSection extends HookWidget {
                 onAddPrice: (ingredient) => FoodPriceBottomSheet.show(
                   context,
                   food: ingredient.food!,
-                  recipeId: recipe.id,
                   ingredient: ingredient,
                 ),
                 onIngredientTap: openEditIngredient,

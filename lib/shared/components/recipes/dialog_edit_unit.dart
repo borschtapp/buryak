@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../models/unit.dart';
-import '../../providers/recipe_price.dart';
-import '../../repositories/unit_repository.dart';
+import '../../providers/food_catalog.dart';
 import '../../util/error_extensions.dart';
 import '../../util/extensions.dart';
 import '../../util/ui_constants.dart';
@@ -15,8 +14,8 @@ import 'unit_merge.dart';
 
 /// Contextual unit curation: rename a unit, or merge it into another.
 ///
-/// Both actions are household-global, so on success the shared [allUnitsProvider]
-/// is invalidated to refresh every open unit picker.
+/// Both actions are household-global; [FoodCatalog] refreshes every cache that
+/// shows units (pickers, recipes, prices, shopping list) on success.
 class EditUnitBottomSheet extends HookConsumerWidget {
   const EditUnitBottomSheet({super.key, required this.unit});
 
@@ -32,8 +31,8 @@ class EditUnitBottomSheet extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nameController = useTextEditingController(text: unit.name);
-    final isSaving = useState(false);
-    final isMerging = useState(false);
+    final isSaving = ref.watch(renameUnitMutation).isPending;
+    final isMerging = ref.watch(mergeUnitsMutation).isPending;
 
     Future<void> save() async {
       final newName = nameController.text.trim();
@@ -41,29 +40,16 @@ class EditUnitBottomSheet extends HookConsumerWidget {
         context.pop();
         return;
       }
-      isSaving.value = true;
-      try {
-        await ref.read(unitRepositoryProvider).update(unit.id, name: newName);
-        ref.invalidate(allUnitsProvider);
-        if (context.mounted) context.pop();
-      } catch (e) {
-        ref.handleException(e);
-      } finally {
-        if (context.mounted) isSaving.value = false;
-      }
+      final saved = await renameUnitMutation.tryRun(
+        ref,
+        (tsx) => tsx.get(foodCatalogProvider).renameUnit(unit.id, newName),
+      );
+      if (saved && context.mounted) context.pop();
     }
 
     Future<void> merge() async {
-      isMerging.value = true;
-      try {
-        final merged = await runUnitMergeFlow(context, ref, source: unit);
-        if (merged) {
-          ref.invalidate(allUnitsProvider);
-          if (context.mounted) context.pop();
-        }
-      } finally {
-        if (context.mounted) isMerging.value = false;
-      }
+      final merged = await runUnitMergeFlow(context, ref, source: unit);
+      if (merged && context.mounted) context.pop();
     }
 
     return StandardBottomSheet(
@@ -83,16 +69,16 @@ class EditUnitBottomSheet extends HookConsumerWidget {
           ),
           const SizedBox(height: UIConstants.paddingMedium),
           LoadingButton(
-            isLoading: isSaving.value,
+            isLoading: isSaving,
             onPressed: save,
             child: Text(context.l10n.save),
           ),
           const SizedBox(height: UIConstants.paddingSmall),
           LoadingButton(
             type: LoadingButtonType.text,
-            isLoading: isMerging.value,
+            isLoading: isMerging,
             icon: const Icon(Icons.merge_outlined),
-            onPressed: (isSaving.value || isMerging.value) ? null : merge,
+            onPressed: (isSaving || isMerging) ? null : merge,
             spinnerSize: 16,
             child: Text(context.l10n.editUnitMerge),
           ),

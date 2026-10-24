@@ -13,9 +13,9 @@ import '../../shared/models/food_price.dart';
 import '../../shared/models/food_unit_conversion.dart';
 import '../../shared/models/recipe_ingredient.dart';
 import '../../shared/models/unit.dart';
+import '../../shared/providers/food_catalog.dart';
 import '../../shared/providers/household.dart';
 import '../../shared/providers/recipe_price.dart';
-import '../../shared/repositories/food_repository.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
@@ -26,12 +26,10 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
   const FoodPriceBottomSheet({
     super.key,
     required this.food,
-    required this.recipeId,
     this.ingredient,
   });
 
   final Food food;
-  final String recipeId;
   final RecipeIngredient? ingredient;
 
   static String _defaultAmount(double? recipeAmount) {
@@ -43,12 +41,11 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
   static void show(
     BuildContext context, {
     required Food food,
-    required String recipeId,
     RecipeIngredient? ingredient,
   }) {
     showAppBottomSheet<void>(
       context: context,
-      builder: (_) => FoodPriceBottomSheet(food: food, recipeId: recipeId, ingredient: ingredient),
+      builder: (_) => FoodPriceBottomSheet(food: food, ingredient: ingredient),
     );
   }
 
@@ -61,18 +58,23 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
     final selectedUnitId = useState<String?>(
       ingredient?.unitId ?? ref.read(foodUnitPreferencesProvider)[food.id] ?? food.defaultUnitId,
     );
-    final isSaving = useState(false);
+    final isSaving = ref.watch(recordPriceMutation).isPending;
 
     final pricesAsync = ref.watch(foodPricesProvider(food.id));
     final unitsAsync = ref.watch(allUnitsProvider);
     final currency = ref.watch(householdProvider).value?.currency;
+    final hasInitialized = useRef(false);
 
-    // Pre-fill price & amount from the most recent recorded entry when dialog opens.
+    // Pre-fill price & amount from the most recent recorded entry, only on the
+    // first load — later reloads (e.g. after saving) must not refill the form.
     useEffect(() {
+      if (hasInitialized.value) return null;
       final prices = pricesAsync.value;
-      if ((prices?.data.isEmpty ?? true) || priceController.text.isNotEmpty) return null;
+      if (prices == null) return null;
+      hasInitialized.value = true;
+      if (prices.data.isEmpty || priceController.text.isNotEmpty) return null;
 
-      final latest = prices!.data.first;
+      final latest = prices.data.first;
       priceController.text = latest.price.formatAmount;
       if (amountController.text == defaultAmount) {
         amountController.text = latest.amount.formatAmount;
@@ -84,38 +86,28 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
       if (!formKey.currentState!.validate()) return;
       final unitId = selectedUnitId.value;
       if (unitId == null) return;
-      isSaving.value = true;
-      try {
-        await ref
-            .read(foodRepositoryProvider)
+      final saved = await recordPriceMutation.tryRun(
+        ref,
+        (tsx) => tsx
+            .get(foodCatalogProvider)
             .recordPrice(
               food.id,
               priceController.text.asDecimal!,
               amountController.text.asDecimal!,
               unitId,
-            );
-        if (!context.mounted) return;
-        ref.read(foodUnitPreferencesProvider.notifier).setPreferred(food.id, unitId);
+            ),
+      );
+      if (saved && context.mounted) {
         priceController.clear();
         amountController.text = defaultAmount;
-        ref.invalidate(foodPricesProvider(food.id));
-        ref.invalidate(recipeCostEstimateProvider(recipeId));
-      } catch (e) {
-        ref.handleException(e);
-      } finally {
-        if (context.mounted) isSaving.value = false;
       }
     }
 
-    Future<void> deletePrice(FoodPrice price) async {
-      try {
-        await ref.read(foodRepositoryProvider).deletePrice(food.id, price.id);
-        ref.invalidate(foodPricesProvider(food.id));
-        ref.invalidate(recipeCostEstimateProvider(recipeId));
-      } catch (e) {
-        ref.handleException(e);
-      }
-    }
+    Future<void> deletePrice(FoodPrice price) =>
+        // Keyed per price: swipes can overlap, and a mutation only reports its latest run.
+        deletePriceMutation(
+          price.id,
+        ).tryRun(ref, (tsx) => tsx.get(foodCatalogProvider).deletePrice(food.id, price.id));
 
     return StandardBottomSheet(
       title: context.l10n.foodPriceTitle(food.name),
@@ -191,7 +183,7 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
                   ),
                 const SizedBox(height: UIConstants.paddingMedium),
                 LoadingButton(
-                  isLoading: isSaving.value,
+                  isLoading: isSaving,
                   onPressed: submit,
                   child: Text(context.l10n.foodPriceAddTitle),
                 ),
@@ -280,13 +272,11 @@ class _ConversionSection extends ConsumerWidget {
       confirmLabel: context.l10n.delete,
       destructive: true,
     );
-    if (!confirmed) return;
-    try {
-      await ref.read(foodRepositoryProvider).deleteConversion(food.id, conversion.id);
-      ref.invalidate(foodConversionsProvider(food.id));
-    } catch (e) {
-      ref.handleException(e);
-    }
+    if (!confirmed || !context.mounted) return;
+    await deleteConversionMutation.tryRun(
+      ref,
+      (tsx) => tsx.get(foodCatalogProvider).deleteConversion(food.id, conversion.id),
+    );
   }
 
   @override

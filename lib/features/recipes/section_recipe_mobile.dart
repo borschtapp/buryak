@@ -71,7 +71,7 @@ class RecipeMobileSection extends HookConsumerWidget {
     void openEditFood(RecipeIngredient ingredient) {
       final food = ingredient.food;
       if (food == null) return;
-      EditFoodBottomSheet.show(context, food: food, recipeId: recipe.id);
+      EditFoodBottomSheet.show(context, food: food);
     }
 
     return CustomScrollView(
@@ -193,7 +193,6 @@ class RecipeMobileSection extends HookConsumerWidget {
                   onAddPrice: (ingredient) => FoodPriceBottomSheet.show(
                     context,
                     food: ingredient.food!,
-                    recipeId: recipe.id,
                     ingredient: ingredient,
                   ),
                   onIngredientTap: openEditIngredient,

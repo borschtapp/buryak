@@ -242,13 +242,10 @@ class _MissingPricesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final withFood = ingredients.where((i) => i.food != null).toList();
-    if (withFood.isEmpty) return const SizedBox.shrink();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final ingredient in withFood)
+        for (final ingredient in ingredients)
           ListTile(
             contentPadding: EdgeInsets.zero,
             dense: true,
@@ -281,10 +278,13 @@ class _MissingPricesList extends StatelessWidget {
                 ],
               ],
             ),
-            trailing: TextButton(
-              onPressed: () => onAddPrice(ingredient),
-              child: Text(context.l10n.recipeCostAddPrice),
-            ),
+            // Free-text ingredients can't be priced until they're linked to a food.
+            trailing: ingredient.food != null
+                ? TextButton(
+                    onPressed: () => onAddPrice(ingredient),
+                    child: Text(context.l10n.recipeCostAddPrice),
+                  )
+                : null,
           ),
       ],
     );

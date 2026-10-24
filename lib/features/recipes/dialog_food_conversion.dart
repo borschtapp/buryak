@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/loading_button.dart';
@@ -8,8 +9,8 @@ import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/food.dart';
 import '../../shared/models/food_price.dart';
 import '../../shared/models/food_unit_conversion.dart';
+import '../../shared/providers/food_catalog.dart';
 import '../../shared/providers/recipe_price.dart';
-import '../../shared/repositories/food_repository.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
@@ -57,7 +58,7 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
     final amountController = useTextEditingController(
       text: existing?.targetAmount.formatAmount ?? '',
     );
-    final isSaving = useState(false);
+    final isSaving = ref.watch(saveConversionMutation).isPending;
     final unitsAsync = ref.watch(allUnitsProvider);
     final selectedTargetUnitId = useState<String?>(
       existing?.targetUnitId ?? food.defaultUnitId ?? prices.firstOrNull?.unitId,
@@ -68,32 +69,19 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
       final targetUnitId = selectedTargetUnitId.value;
       if (targetUnitId == null) return;
 
-      isSaving.value = true;
-      try {
-        final repo = ref.read(foodRepositoryProvider);
-        if (existing != null) {
-          await repo.updateConversion(
-            food.id,
-            existing!.id,
-            unitId,
-            amountController.text.asDecimal!,
-            targetUnitId,
-          );
-        } else {
-          await repo.createConversion(
-            food.id,
-            unitId,
-            amountController.text.asDecimal!,
-            targetUnitId,
-          );
-        }
-        ref.invalidate(foodConversionsProvider(food.id));
-        if (context.mounted) Navigator.of(context).pop();
-      } catch (e) {
-        ref.handleException(e);
-      } finally {
-        if (context.mounted) isSaving.value = false;
-      }
+      final saved = await saveConversionMutation.tryRun(
+        ref,
+        (tsx) => tsx
+            .get(foodCatalogProvider)
+            .saveConversion(
+              food.id,
+              existingId: existing?.id,
+              unitId: unitId,
+              targetAmount: amountController.text.asDecimal!,
+              targetUnitId: targetUnitId,
+            ),
+      );
+      if (saved && context.mounted) context.pop();
     }
 
     return StandardBottomSheet(
@@ -156,7 +144,7 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
             ),
             const SizedBox(height: UIConstants.paddingMedium),
             LoadingButton(
-              isLoading: isSaving.value,
+              isLoading: isSaving,
               onPressed: submit,
               child: Text(context.l10n.save),
             ),
