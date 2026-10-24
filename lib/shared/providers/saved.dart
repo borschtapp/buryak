@@ -25,9 +25,7 @@ bool recipeIsSaved(Ref ref, String recipeId) {
 class SavedRecipesFilter extends _$SavedRecipesFilter {
   @override
   RecipeFilter build() {
-    ref.listen(authProvider, (_, next) {
-      if (next == null) state = const RecipeFilter();
-    });
+    ref.watch(sessionProvider);
     return const RecipeFilter();
   }
 
@@ -41,6 +39,7 @@ class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
   @override
   Future<List<Recipe>> build() async {
     resetPagination();
+    ref.watchSession();
     final filter = ref.read(savedRecipesFilterProvider);
     final result = await ref
         .read(recipeRepositoryProvider)
@@ -78,6 +77,7 @@ class SavedCollections extends _$SavedCollections with PagedNotifierMixin<Collec
   @override
   Future<List<Collection>> build() async {
     resetPagination();
+    ref.watchSession();
     final result = await ref
         .read(collectionRepositoryProvider)
         .findAll(

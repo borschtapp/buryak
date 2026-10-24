@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -205,4 +206,32 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
 
 extension AuthStateX on User? {
   bool get isLoggedIn => this != null && this!.isValidAccessToken();
+}
+
+/// Whom the app is acting for. Changes on sign-in, sign-out, account switch and
+/// household switch, but not on token refresh.
+typedef Session = ({String userId, String householdId});
+
+/// The current [Session], or `null` while signed out.
+///
+/// Providers that cache per-user data depend on it (usually through
+/// [SessionScope.watchSession]) so they're dropped and rebuilt whenever the
+/// session changes, rather than each one reacting to [authProvider] itself.
+@Riverpod(keepAlive: true)
+Session? session(Ref ref) =>
+    ref.watch(authProvider.select((user) => user == null ? null : (userId: user.id, householdId: user.householdId)));
+
+/// Thrown by [SessionScope.watchSession] while signed out.
+class SignedOutError extends StateError {
+  SignedOutError() : super('Signed out');
+}
+
+extension SessionScope on Ref {
+  /// Scopes the calling provider to the signed-in [Session]: it's rebuilt,
+  /// dropping its cache, whenever the session changes.
+  ///
+  /// Throws [SignedOutError] while signed out, so a provider that's still
+  /// listened to during sign-out fails fast instead of fetching without
+  /// credentials. Riverpod doesn't retry [Error]s.
+  Session watchSession() => watch(sessionProvider) ?? (throw SignedOutError());
 }

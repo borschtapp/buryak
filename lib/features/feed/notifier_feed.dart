@@ -13,9 +13,7 @@ part 'notifier_feed.g.dart';
 class FeedFilter extends _$FeedFilter {
   @override
   RecipeFilter build() {
-    ref.listen(authProvider, (_, next) {
-      if (next == null) state = const RecipeFilter();
-    });
+    ref.watch(sessionProvider);
     return const RecipeFilter();
   }
 
@@ -29,11 +27,7 @@ class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
   @override
   Future<List<Recipe>> build() async {
     resetPagination();
-    // Watch authProvider so build() re-runs on login and logout, preventing
-    // stale data from persisting across account switches.
-    final user = ref.watch(authProvider);
-    if (user == null) return [];
-
+    ref.watchSession();
     final filter = ref.watch(feedFilterProvider);
     // Use ref.read (not ref.watch) for the repository — consistent with
     // loadMore() and avoids spurious rebuilds from a stable provider.

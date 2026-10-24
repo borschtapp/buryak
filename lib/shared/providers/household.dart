@@ -12,12 +12,10 @@ part 'household.g.dart';
 class HouseholdNotifier extends _$HouseholdNotifier {
   @override
   FutureOr<Household?> build() async {
-    final user = ref.watch(authProvider);
-    if (user == null || user.householdId.isEmpty) {
-      if (user != null) {
-        logger.d(
-          'HouseholdNotifier: user has no householdId (id: ${user.id}, email: ${user.email}, householdId: "${user.householdId}")',
-        );
+    final session = ref.watch(sessionProvider);
+    if (session == null || session.householdId.isEmpty) {
+      if (session != null) {
+        logger.d('HouseholdNotifier: user ${session.userId} has no householdId');
       }
       return null;
     }
@@ -25,13 +23,13 @@ class HouseholdNotifier extends _$HouseholdNotifier {
     final repo = ref.read(householdRepositoryProvider);
     try {
       final household = await repo.findOne(
-        user.householdId,
+        session.householdId,
         preload: [.members, .invites],
       );
 
       return household;
     } catch (e, st) {
-      logger.e('HouseholdNotifier: Error loading household ${user.householdId}', error: e, stackTrace: st);
+      logger.e('HouseholdNotifier: Error loading household ${session.householdId}', error: e, stackTrace: st);
       rethrow;
     }
   }

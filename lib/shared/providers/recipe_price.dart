@@ -8,6 +8,7 @@ import '../models/unit.dart';
 import '../repositories/food_repository.dart';
 import '../repositories/recipe_repository.dart';
 import '../repositories/unit_repository.dart';
+import 'user.dart';
 
 part 'recipe_price.g.dart';
 
@@ -28,6 +29,7 @@ Future<List<FoodUnitConversion>> foodConversions(Ref ref, String foodId) {
 
 @Riverpod(keepAlive: true)
 Future<List<Unit>> allUnits(Ref ref) async {
+  ref.watchSession();
   final page = await ref.watch(unitRepositoryProvider).findAll(limit: 200);
   return page.data;
 }
@@ -37,7 +39,10 @@ Future<List<Unit>> allUnits(Ref ref) async {
 @Riverpod(keepAlive: true)
 class FoodUnitPreferences extends _$FoodUnitPreferences {
   @override
-  Map<String, String> build() => {};
+  Map<String, String> build() {
+    ref.watch(sessionProvider);
+    return {};
+  }
 
   void setPreferred(String foodId, String unitId) {
     state = {...state, foodId: unitId};

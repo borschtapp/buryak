@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/models/meal_plan.dart';
 import '../../shared/providers/date.dart';
+import '../../shared/providers/user.dart';
 import '../../shared/repositories/meal_plan_repository.dart';
 
 part 'notifier_planner.g.dart';
@@ -10,6 +11,7 @@ part 'notifier_planner.g.dart';
 class MealPlanWeek extends _$MealPlanWeek {
   @override
   FutureOr<List<MealPlan>> build() async {
+    ref.watchSession();
     final now = ref.watch(currentDateProvider).value ?? DateTime.now();
     final from = DateTime(now.year, now.month, now.day);
     final to = from.add(const Duration(days: 6));

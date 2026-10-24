@@ -20,7 +20,7 @@ class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem
   @override
   Future<List<ShoppingItem>> build() async {
     resetPagination();
-    _primaryListId = await ref.read(primaryShoppingListIdProvider.future);
+    _primaryListId = await ref.watch(primaryShoppingListIdProvider.future);
 
     final itemsResponse = await ref.read(shoppingListRepositoryProvider).findItems(_primaryListId, limit: limit, offset: 0);
     return itemsResponse.data;

@@ -1,13 +1,16 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../repositories/shopping_list_repository.dart';
+import 'user.dart';
 
 part 'shopping.g.dart';
 
-/// Provides the ID of the primary (default) shopping list.
-/// This is cached to avoid redundant API calls when adding items.
+/// Provides the ID of the primary (default) shopping list. Cached to avoid
+/// redundant API calls, and recomputed whenever the session changes.
 @Riverpod(keepAlive: true)
 Future<String> primaryShoppingListId(Ref ref) async {
+  ref.watchSession();
+
   final listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
   final lists = listsResponse.data;
 
