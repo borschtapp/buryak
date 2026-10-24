@@ -11,24 +11,7 @@ part 'shopping.g.dart';
 Future<String> primaryShoppingListId(Ref ref) async {
   ref.watchSession();
 
-  final listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
-  final lists = listsResponse.data;
-
-  if (lists.isEmpty) {
-    // Create a default list if none exist
-    final newList = await ref
-        .read(shoppingListRepositoryProvider)
-        .create(
-          'Shopping List',
-          isDefault: true,
-        );
-    return newList.id;
-  }
-
-  // Find the default list, or use the first one
-  final primary = lists.firstWhere(
-    (l) => l.isDefault ?? false,
-    orElse: () => lists.first,
-  );
-  return primary.id;
+  // The server creates the default list together with the household.
+  final lists = (await ref.read(shoppingListRepositoryProvider).findAll()).data;
+  return lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first).id;
 }

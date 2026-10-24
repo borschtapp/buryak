@@ -42,17 +42,6 @@ class ShoppingListRepository extends Repository {
     );
   }
 
-  Future<ShoppingList> create(String name, {bool? isDefault}) async {
-    final response = await sendRequest(
-      method: .post,
-      body: {
-        'name': name,
-        'is_default': ?isDefault,
-      },
-    );
-    return ShoppingList.fromJson(ensureMap(response));
-  }
-
   Future<ShoppingList> update(String id, {String? name, bool? isDefault}) async {
     final response = await sendRequest(
       method: .patch,
@@ -93,13 +82,21 @@ class ShoppingListRepository extends Repository {
     return list.map((item) => ShoppingItem.fromJson(ensureMap(item))).toList();
   }
 
-  Future<ShoppingItem> updateItem(String listId, String itemId, {String? text, double? amount, bool? isBought}) async {
+  /// Null fields are left unchanged; [clearAmount] sends an explicit null.
+  Future<ShoppingItem> updateItem(
+    String listId,
+    String itemId, {
+    String? text,
+    double? amount,
+    bool clearAmount = false,
+    bool? isBought,
+  }) async {
     final response = await sendRequest(
       method: .patch,
       path: '/$listId/items/$itemId',
       body: {
         'text': ?text,
-        'amount': ?amount,
+        if (clearAmount) 'amount': null else 'amount': ?amount,
         'is_bought': ?isBought,
       },
     );

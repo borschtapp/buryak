@@ -90,22 +90,37 @@ void main() {
       expect(result.data[0].text, 'Milk');
     });
 
-    test('create returns the created shopping list', () async {
-      final listJson = {'id': '2', 'name': 'New List', 'is_default': false};
-      final responseBody = jsonEncode(listJson);
+    group('updateItem', () {
+      Future<Map<String, dynamic>> sentBody(Future<void> Function() call) async {
+        when(
+          () => mockClient.patch(
+            any(),
+            headers: any(named: 'headers'),
+            body: any(named: 'body'),
+          ),
+        ).thenAnswer((_) async => http.Response(jsonEncode({'id': 'i1', 'text': 'Milk'}), 200));
+        await call();
+        final body = verify(
+          () => mockClient.patch(
+            any(),
+            headers: any(named: 'headers'),
+            body: captureAny(named: 'body'),
+          ),
+        ).captured.single;
+        return jsonDecode(body as String) as Map<String, dynamic>;
+      }
 
-      when(
-        () => mockClient.post(
-          any(),
-          headers: any(named: 'headers'),
-          body: any(named: 'body'),
-        ),
-      ).thenAnswer((_) async => http.Response(responseBody, 201));
+      test('leaves out fields that were not passed', () async {
+        final body = await sentBody(() => repository.updateItem('l1', 'i1', isBought: true));
 
-      final result = await repository.create('New List');
+        expect(body, {'is_bought': true});
+      });
 
-      expect(result.name, 'New List');
-      expect(result.id, '2');
+      test('clearAmount sends an explicit null', () async {
+        final body = await sentBody(() => repository.updateItem('l1', 'i1', text: 'Milk', clearAmount: true));
+
+        expect(body, {'text': 'Milk', 'amount': null});
+      });
     });
   });
 }

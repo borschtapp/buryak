@@ -6,8 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../shared/components/loading_button.dart';
 import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/recipe.dart';
-import '../../shared/repositories/shopping_list_repository.dart';
-import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import 'notifier_shopping.dart';
 
@@ -47,54 +45,41 @@ class ShoppingBottomSheet extends HookConsumerWidget {
     final selectedIngredientIds = useState<Set<String>>(
       (recipe.ingredients ?? []).map((i) => i.id).toSet(),
     );
-    final isSaving = useState(false);
+    final isSaving = ref.watch(addShoppingItemsMutation).isPending;
 
     Future<void> save() async {
-      isSaving.value = true;
+      final selectedIngredients = recipe.ingredients?.where((i) => selectedIngredientIds.value.contains(i.id)).toList();
+      if (selectedIngredients == null) return;
+
+      final itemsToCreate = selectedIngredients
+          .map(
+            (ingredient) => {
+              'text': ingredient.displayName,
+              'amount': ingredient.amount,
+              'unit_id': ingredient.unitId,
+            },
+          )
+          .toList();
+
+      final int successCount;
       try {
-        final selectedIngredients = recipe.ingredients?.where((i) => selectedIngredientIds.value.contains(i.id)).toList();
-
-        if (selectedIngredients != null) {
-          final listsResponse = await ref.read(shoppingListRepositoryProvider).findAll();
-          var lists = listsResponse.data;
-          if (lists.isEmpty) {
-            final newList = await ref.read(shoppingListRepositoryProvider).create('Shopping List', isDefault: true);
-            lists = [newList];
-          }
-          final primaryList = lists.firstWhere((l) => l.isDefault ?? false, orElse: () => lists.first);
-
-          final repo = ref.read(shoppingListRepositoryProvider);
-          final itemsToCreate = selectedIngredients
-              .map(
-                (ingredient) => {
-                  'text': ingredient.displayName,
-                  'amount': ingredient.amount,
-                  'unit_id': ingredient.unitId,
-                },
-              )
-              .toList();
-
-          final createdItems = await repo.createItems(primaryList.id, itemsToCreate);
-          final successCount = createdItems.length;
-
-          ref.invalidate(shoppingItemsProvider);
-
-          if (context.mounted) {
-            context.pop();
-            final l10n = context.l10n;
-            final message = successCount == selectedIngredients.length
-                ? l10n.shoppingAllIngredientsAdded
-                : l10n.shoppingPartialIngredientsAdded(successCount, selectedIngredients.length);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
-          }
-        }
-      } catch (e) {
-        ref.handleException(e);
-      } finally {
-        isSaving.value = false;
+        successCount = await addShoppingItemsMutation.run(
+          ref,
+          (tsx) => tsx.get(shoppingItemsProvider.notifier).addItems(itemsToCreate),
+        );
+      } on Object {
+        return; // Already reported by MutationErrorReporter.
       }
+
+      if (!context.mounted) return;
+      context.pop();
+      final l10n = context.l10n;
+      final message = successCount == selectedIngredients.length
+          ? l10n.shoppingAllIngredientsAdded
+          : l10n.shoppingPartialIngredientsAdded(successCount, selectedIngredients.length);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
     }
 
     final ingredients = useMemoized(
@@ -144,7 +129,7 @@ class ShoppingBottomSheet extends HookConsumerWidget {
           Padding(
             padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.paddingOf(context).bottom),
             child: LoadingButton(
-              isLoading: isSaving.value,
+              isLoading: isSaving,
               onPressed: selectedIngredientIds.value.isEmpty ? null : save,
               child: Text(context.l10n.shoppingAddToList),
             ),
