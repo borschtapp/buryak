@@ -19,6 +19,7 @@ enum ErrorMessageKey {
   noPermission,
   notFound,
   alreadyExists,
+  expired,
   requestProblem,
   serverError,
   somethingWentWrong,
@@ -78,6 +79,8 @@ class ErrorHandler extends _$ErrorHandler {
         404 => (null, ErrorMessageKey.notFound),
         // The server sends a generic English message for any unique-key clash.
         409 => (null, ErrorMessageKey.alreadyExists),
+        // An expired invite code.
+        410 => (null, ErrorMessageKey.expired),
         422 => e.message.isNotEmpty ? (e.message, null) : (null, ErrorMessageKey.requestProblem),
         500 => (null, ErrorMessageKey.serverError),
         _ => e.message.isNotEmpty ? (e.message, null) : (null, ErrorMessageKey.somethingWentWrong),

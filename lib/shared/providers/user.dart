@@ -188,13 +188,14 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
     if (id == null) throw SignedOutError();
     final User updated;
     try {
+      // Always sent, even when it matches the cached user: that copy may be stale, and the server
+      // still has to check the current password.
       // Sends this session's refresh token, which the server spares when it revokes the others.
       updated = await ref
           .read(userRepositoryProvider)
           .update(id, name: name, email: email, currentPassword: currentPassword, newPassword: newPassword);
-    } on GeneralApiException catch (e) {
-      // The token was checked just before the request, so a 401 here is the password.
-      if (e.statusCode == 401 && currentPassword != null) throw WrongPasswordException();
+    } on FieldsApiException catch (e) {
+      if (e.fields.containsKey('current_password')) throw WrongPasswordException();
       rethrow;
     }
     // The response carries no tokens; keep the current ones, which may have been refreshed meanwhile.

@@ -123,6 +123,9 @@ enum RequestMethod { get, post, put, delete, patch }
 
 const Duration _kRequestTimeout = Duration(seconds: 30);
 
+/// The server's message for a row that doesn't exist, unlike its 404 for an unknown route.
+const _kEntityNotFound = 'The requested entity does not exist';
+
 extension MethodManager on RequestMethod {
   Future<http.Response> request(Uri url, {Map<String, String>? headers, Object? body, http.Client? client}) async {
     if (client == null) {
@@ -207,6 +210,11 @@ class RequestHandler {
             }
             try {
               final errorBody = ensureMap(json.decode(responseData));
+              // Deleting a row that is already gone (e.g. by another household member)
+              // did what was asked. A wrong URL gets another message, so it still fails.
+              if (method == .delete && response.statusCode == 404 && errorBody['message'] == _kEntityNotFound) {
+                return null;
+              }
               throw handleFormErrors(errorBody, statusCode: response.statusCode);
             } catch (e) {
               if (e is GeneralApiException) rethrow;
@@ -256,14 +264,15 @@ class GeneralApiException implements Exception {
 }
 
 class FieldsApiException extends GeneralApiException {
-  final Map<String, dynamic> fields;
+  final Map<String, String> fields;
 
   FieldsApiException({required super.message, required this.fields, super.statusCode});
 
   @override
   String toString() {
-    final first = fields.entries.first;
-    return '${first.key}: ${first.value.first}';
+    if (fields.isEmpty) return message;
+    final MapEntry(:key, :value) = fields.entries.first;
+    return '$key: $value';
   }
 }
 
@@ -272,7 +281,8 @@ Exception handleFormErrors(Map<String, dynamic> json, {int? statusCode}) {
   if (json['fields'] != null && json['fields'] is Map) {
     return FieldsApiException(
       message: message,
-      fields: (json['fields'] as Map).cast<String, dynamic>(),
+      // The server sends one message per field.
+      fields: (json['fields'] as Map).map((key, value) => MapEntry('$key', '$value')),
       statusCode: statusCode,
     );
   } else {

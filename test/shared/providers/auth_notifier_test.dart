@@ -11,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../helpers/fake_auth.dart';
 import '../../helpers/fake_user.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
@@ -168,7 +169,7 @@ void main() {
         await signIn();
         when(
           () => mockUserRepository.update('user-1', currentPassword: 'wrong', newPassword: 'newpassword'),
-        ).thenThrow(GeneralApiException(message: 'Invalid credentials', statusCode: 401));
+        ).thenThrow(wrongPasswordError());
 
         await expectLater(
           container.read(authProvider.notifier).changePassword(currentPassword: 'wrong', newPassword: 'newpassword'),
@@ -189,6 +190,29 @@ void main() {
 
         expect(container.read(authProvider)!.name, 'Chef');
         expect(sessions, isEmpty, reason: 'per-user caches must survive a rename');
+      });
+
+      test('an email matching the cached one is still sent, so the server checks the password', () async {
+        await signIn();
+        when(
+          () => mockUserRepository.update('user-1', email: 'test@example.com', currentPassword: 'wrong'),
+        ).thenThrow(wrongPasswordError());
+
+        await expectLater(
+          container.read(authProvider.notifier).changeEmail('test@example.com', currentPassword: 'wrong'),
+          throwsA(isA<WrongPasswordException>()),
+        );
+      });
+
+      test('a name matching the cached one is still sent, since another device may have changed it', () async {
+        await signIn();
+        when(
+          () => mockUserRepository.update('user-1', name: 'Test User'),
+        ).thenAnswer((_) async => const User(id: 'user-1', householdId: 'household-1', email: 'test@example.com', name: 'Test User'));
+
+        await container.read(authProvider.notifier).changeName('Test User');
+
+        verify(() => mockUserRepository.update('user-1', name: 'Test User')).called(1);
       });
     });
   });

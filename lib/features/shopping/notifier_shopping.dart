@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../shared/models/recipe_ingredient.dart';
 import '../../shared/models/shopping_item.dart';
 import '../../shared/providers/paged_notifier_mixin.dart';
 import '../../shared/providers/shopping.dart';
@@ -28,11 +29,13 @@ class ShoppingItemWriter {
 
   final Ref _ref;
 
-  /// Adds [items] to the primary list. The server saves all of them or none, and
-  /// merges items of the same food, so it can return fewer rows than were sent.
-  Future<void> addItems(List<Map<String, dynamic>> items) async {
+  /// Adds [ingredients] to the primary list, linked to their food. The server saves
+  /// all of them or none, and merges items of the same food into one row.
+  Future<void> addIngredients(List<RecipeIngredient> ingredients) async {
     final listId = await _ref.read(primaryShoppingListIdProvider.future);
-    await _ref.read(shoppingListRepositoryProvider).createItems(listId, items);
+    await _ref.read(shoppingListRepositoryProvider).createItems(listId, [
+      for (final i in ingredients) (text: i.displayName, amount: i.amount, unitId: i.unitId, foodId: i.foodId),
+    ]);
     // Reloads the list only if it was loaded.
     _ref.invalidate(shoppingItemsProvider);
   }
@@ -131,7 +134,12 @@ class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem
   }
 
   Future<void> addItem(String name) async {
-    final newItem = await ref.read(shoppingListRepositoryProvider).createItem(await _listId, name);
+    final newItem = await ref.read(shoppingListRepositoryProvider).createItem(await _listId, (
+      text: name,
+      amount: null,
+      unitId: null,
+      foodId: null,
+    ));
 
     // The server keeps one row per food, so it may return an existing row (with the
     // amounts added, or a bought one unchecked); move that row to the top instead of

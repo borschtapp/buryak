@@ -12,17 +12,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../helpers/fake_auth.dart';
 import '../../helpers/fake_user.dart';
 
 class MockHouseholdRepository extends Mock implements HouseholdRepository {}
-
-class FakeAuthNotifier extends AuthNotifier {
-  @override
-  User? build() => User.fromJson(fakeUserJson());
-
-  @override
-  Future<void> init() async {}
-}
 
 void main() {
   late MockHouseholdRepository repo;
@@ -38,7 +31,7 @@ void main() {
       observers: [MutationErrorReporter()],
       overrides: [
         householdRepositoryProvider.overrideWithValue(repo),
-        authProvider.overrideWith(FakeAuthNotifier.new),
+        authProvider.overrideWith(FakeAuthNotifier.signedIn),
       ],
     );
     addTearDown(container.dispose);

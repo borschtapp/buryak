@@ -1,57 +1,14 @@
 import 'dart:convert';
 
-import 'package:buryak/shared/models/user.dart';
-import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/repositories/shopping_list_repository.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 
-class MockClient extends Mock implements http.Client {}
-
-class FakeAuthNotifier extends AuthNotifier {
-  @override
-  User? build() => null;
-
-  @override
-  Future<void> init() async {}
-
-  @override
-  Future<void> logout() async {}
-
-  @override
-  Future<bool> refreshLogin({bool force = false}) async => true;
-}
+import '../../helpers/repository_harness.dart';
 
 void main() {
-  late MockClient mockClient;
-  late ShoppingListRepository repository;
-  late ProviderContainer container;
-
-  setUpAll(() {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    registerFallbackValue(Uri.parse('https://example.com'));
-    FlutterSecureStorage.setMockInitialValues({});
-  });
-
-  setUp(() {
-    mockClient = MockClient();
-    container = ProviderContainer(
-      overrides: [
-        authProvider.overrideWith(FakeAuthNotifier.new),
-      ],
-    );
-    repository = ShoppingListRepository(
-      ref: container.read(Provider<Ref>((ref) => ref)),
-      client: mockClient,
-    );
-  });
-
-  tearDown(() {
-    container.dispose();
-  });
+  final harness = setUpRepository((ref, client) => ShoppingListRepository(ref: ref, client: client));
 
   group('ShoppingListRepository', () {
     test('findAll returns a list of shopping lists', () async {
@@ -64,10 +21,10 @@ void main() {
       });
 
       when(
-        () => mockClient.get(any(), headers: any(named: 'headers')),
+        () => harness.client.get(any(), headers: any(named: 'headers')),
       ).thenAnswer((_) async => http.Response(responseBody, 200));
 
-      final result = await repository.findAll();
+      final result = await harness.repository.findAll();
       expect(result.data.length, 1);
       expect(result.data[0].name, 'Weekly Groceries');
     });
@@ -82,42 +39,43 @@ void main() {
       });
 
       when(
-        () => mockClient.get(any(), headers: any(named: 'headers')),
+        () => harness.client.get(any(), headers: any(named: 'headers')),
       ).thenAnswer((_) async => http.Response(responseBody, 200));
 
-      final result = await repository.findItems('1');
+      final result = await harness.repository.findItems('1');
       expect(result.data.length, 1);
       expect(result.data[0].text, 'Milk');
     });
 
+    test('createItems sends one entry per item, leaving out unset fields', () async {
+      final body = await sentBody(
+        harness.client,
+        .post,
+        () => harness.repository.createItems('l1', [
+          (text: 'red onions', amount: 2, unitId: 'pc', foodId: 'onion'),
+          (text: 'water', amount: null, unitId: null, foodId: null),
+        ]),
+        response: [],
+      );
+
+      expect(body, [
+        {'text': 'red onions', 'amount': 2, 'unit_id': 'pc', 'food_id': 'onion'},
+        {'text': 'water'},
+      ]);
+    });
+
     group('updateItem', () {
-      Future<Map<String, dynamic>> sentBody(Future<void> Function() call) async {
-        when(
-          () => mockClient.patch(
-            any(),
-            headers: any(named: 'headers'),
-            body: any(named: 'body'),
-          ),
-        ).thenAnswer((_) async => http.Response(jsonEncode({'id': 'i1', 'text': 'Milk'}), 200));
-        await call();
-        final body = verify(
-          () => mockClient.patch(
-            any(),
-            headers: any(named: 'headers'),
-            body: captureAny(named: 'body'),
-          ),
-        ).captured.single;
-        return jsonDecode(body as String) as Map<String, dynamic>;
-      }
+      Future<dynamic> patchBody(Future<void> Function() call) =>
+          sentBody(harness.client, .patch, call, response: {'id': 'i1', 'text': 'Milk'});
 
       test('leaves out fields that were not passed', () async {
-        final body = await sentBody(() => repository.updateItem('l1', 'i1', isBought: true));
+        final body = await patchBody(() => harness.repository.updateItem('l1', 'i1', isBought: true));
 
         expect(body, {'is_bought': true});
       });
 
       test('clearAmount sends an explicit null', () async {
-        final body = await sentBody(() => repository.updateItem('l1', 'i1', text: 'Milk', clearAmount: true));
+        final body = await patchBody(() => harness.repository.updateItem('l1', 'i1', text: 'Milk', clearAmount: true));
 
         expect(body, {'text': 'Milk', 'amount': null});
       });

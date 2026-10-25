@@ -12,6 +12,7 @@
   "errorNoPermission": "You don't have permission to do this.",
   "errorNotFound": "The requested item was not found.",
   "errorAlreadyExists": "This already exists.",
+  "errorExpired": "This code has expired.",
   "errorRequestProblem": "There was a problem with your request. Please check and try again.",
   "errorServerError": "Server error. Please try again later.",
   "errorConnectionIssue": "Connection issue. Please check your internet.",

@@ -1,60 +1,16 @@
 import 'dart:convert';
 
 import 'package:buryak/shared/models/recipe.dart';
-import 'package:buryak/shared/models/user.dart';
-import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/repositories/recipe_repository.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 
+import '../../helpers/repository_harness.dart';
 import '../../helpers/fake_recipe.dart';
 
-class MockClient extends Mock implements http.Client {}
-
-class FakeAuthNotifier extends AuthNotifier {
-  @override
-  User? build() => null;
-
-  @override
-  Future<void> init() async {}
-
-  @override
-  Future<void> logout() async {}
-
-  @override
-  Future<bool> refreshLogin({bool force = false}) async => true;
-}
-
 void main() {
-  late MockClient mockClient;
-  late RecipeRepository repository;
-  late ProviderContainer container;
-
-  setUpAll(() {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    registerFallbackValue(Uri.parse('https://example.com'));
-    FlutterSecureStorage.setMockInitialValues({});
-  });
-
-  setUp(() {
-    mockClient = MockClient();
-    container = ProviderContainer(
-      overrides: [
-        authProvider.overrideWith(FakeAuthNotifier.new),
-      ],
-    );
-    repository = RecipeRepository(
-      ref: container.read(Provider<Ref>((ref) => ref)),
-      client: mockClient,
-    );
-  });
-
-  tearDown(() {
-    container.dispose();
-  });
+  final harness = setUpRepository((ref, client) => RecipeRepository(ref: ref, client: client));
 
   group('RecipeRepository', () {
     test('findAll returns a list of recipes', () async {
@@ -65,10 +21,10 @@ void main() {
       });
 
       when(
-        () => mockClient.get(any(), headers: any(named: 'headers')),
+        () => harness.client.get(any(), headers: any(named: 'headers')),
       ).thenAnswer((_) async => http.Response(responseBody, 200));
 
-      final result = await repository.findAll();
+      final result = await harness.repository.findAll();
       expect(result.data[0].name, 'Test Recipe');
       expect(result.data[0].id, '1');
     });
@@ -78,10 +34,10 @@ void main() {
       final responseBody = jsonEncode(recipeJson);
 
       when(
-        () => mockClient.get(any(), headers: any(named: 'headers')),
+        () => harness.client.get(any(), headers: any(named: 'headers')),
       ).thenAnswer((_) async => http.Response(responseBody, 200));
 
-      final result = await repository.findOne('123');
+      final result = await harness.repository.findOne('123');
 
       expect(result.id, '123');
       expect(result.name, 'Test Recipe');
@@ -92,24 +48,24 @@ void main() {
       final responseBody = jsonEncode(recipeJson);
 
       when(
-        () => mockClient.post(
+        () => harness.client.post(
           any(),
           headers: any(named: 'headers'),
           body: any(named: 'body'),
         ),
       ).thenAnswer((_) async => http.Response(responseBody, 201));
 
-      final result = await repository.create(Recipe.fromJson(fakeRecipeJson()));
+      final result = await harness.repository.create(Recipe.fromJson(fakeRecipeJson()));
 
       expect(result.id, 'new-id');
     });
 
     test('throws exception on error', () async {
       when(
-        () => mockClient.get(any(), headers: any(named: 'headers')),
+        () => harness.client.get(any(), headers: any(named: 'headers')),
       ).thenAnswer((_) async => http.Response('Error', 500));
 
-      expect(() => repository.findAll(), throwsA(isA<Exception>()));
+      expect(() => harness.repository.findAll(), throwsA(isA<Exception>()));
     });
   });
 }

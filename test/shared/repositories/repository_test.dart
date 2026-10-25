@@ -4,8 +4,10 @@ import 'package:buryak/shared/repositories/repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/fake_user.dart';
+import '../../helpers/repository_harness.dart';
 
 final dummyProvider = Provider<Ref>((ref) => ref);
 late Ref mockRef;
@@ -40,23 +42,23 @@ void main() {
   });
 
   group('FieldsApiException', () {
-    test('toString returns first field name and first error', () {
+    test('toString returns the first field and its error, as the server sends it', () {
       final e = FieldsApiException(
         message: 'Validation failed',
-        fields: {
-          'email': ['Email is taken'],
-          'name': ['Name is too short'],
-        },
+        fields: {'email': 'Email is taken', 'name': 'Name is too short'},
       );
       expect(e.toString(), equals('email: Email is taken'));
+    });
+
+    test('toString falls back to the message without fields', () {
+      final e = FieldsApiException(message: 'Validation failed', fields: {});
+      expect(e.toString(), equals('Validation failed'));
     });
 
     test('is a GeneralApiException', () {
       final e = FieldsApiException(
         message: 'Validation failed',
-        fields: {
-          'email': ['taken'],
-        },
+        fields: {'email': 'taken'},
       );
       expect(e, isA<GeneralApiException>());
     });
@@ -66,9 +68,7 @@ void main() {
     test('returns FieldsApiException when fields key is present', () {
       final json = {
         'message': 'Validation failed',
-        'fields': {
-          'email': ['taken'],
-        },
+        'fields': {'email': 'taken'},
       };
       final result = handleFormErrors(json);
       expect(result, isA<FieldsApiException>());
@@ -128,6 +128,40 @@ void main() {
           },
         ),
         equals('http://localhost/api/test?q=borscht'),
+      );
+    });
+  });
+
+  group('RequestHandler.call', () {
+    late MockClient client;
+
+    setUpAll(() => registerFallbackValue(Uri.parse('http://localhost')));
+    setUp(() => client = MockClient());
+
+    void respondNotFound(RequestMethod method, String message) =>
+        respond(client, method, body: {'status': 404, 'message': message}, status: 404);
+
+    test('deleting a row that is already gone succeeds', () async {
+      respondNotFound(.delete, 'The requested entity does not exist');
+
+      expect(await RequestHandler.call('http://localhost/api/x', .delete, authorized: false, client: client), isNull);
+    });
+
+    test('a DELETE to an unknown route still fails', () async {
+      respondNotFound(.delete, 'Cannot DELETE /api/x');
+
+      await expectLater(
+        RequestHandler.call('http://localhost/api/x', .delete, authorized: false, client: client),
+        throwsA(isA<GeneralApiException>().having((e) => e.statusCode, 'statusCode', 404)),
+      );
+    });
+
+    test('a missing row is still an error for other methods', () async {
+      respondNotFound(.get, 'The requested entity does not exist');
+
+      await expectLater(
+        RequestHandler.call('http://localhost/api/x', .get, authorized: false, client: client),
+        throwsA(isA<GeneralApiException>().having((e) => e.statusCode, 'statusCode', 404)),
       );
     });
   });

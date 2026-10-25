@@ -18,6 +18,7 @@ extension ErrorMessageKeyL10n on ErrorMessageKey {
     .noPermission => l10n.errorNoPermission,
     .notFound => l10n.errorNotFound,
     .alreadyExists => l10n.errorAlreadyExists,
+    .expired => l10n.errorExpired,
     .requestProblem => l10n.errorRequestProblem,
     .serverError => l10n.errorServerError,
     .somethingWentWrong => l10n.errorSomethingWentWrong,

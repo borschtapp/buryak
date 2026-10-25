@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../models/food_price.dart';
 import '../../models/recipe_cost_estimate.dart';
 import '../../models/recipe_ingredient.dart';
 import '../../providers/household.dart';
@@ -25,8 +26,8 @@ class RecipeCost extends ConsumerWidget {
   final List<RecipeIngredient> ingredients;
   final void Function(RecipeIngredient ingredient)? onAddPrice;
 
-  /// For an ingredient whose food has a price in a unit its amount can't be converted to.
-  final void Function(RecipeIngredient ingredient)? onAddConversion;
+  /// For an ingredient whose food has a [price] in a unit its amount can't be converted to.
+  final void Function(RecipeIngredient ingredient, FoodPrice price)? onAddConversion;
   final void Function(RecipeIngredient ingredient)? onIngredientTap;
   final void Function(RecipeIngredient ingredient)? onIngredientLongPress;
 
@@ -81,7 +82,7 @@ class _CostContent extends StatelessWidget {
   final List<RecipeIngredient> ingredients;
   final String? currency;
   final void Function(RecipeIngredient ingredient)? onAddPrice;
-  final void Function(RecipeIngredient ingredient)? onAddConversion;
+  final void Function(RecipeIngredient ingredient, FoodPrice price)? onAddConversion;
   final void Function(RecipeIngredient ingredient)? onIngredientTap;
   final void Function(RecipeIngredient ingredient)? onIngredientLongPress;
 
@@ -246,7 +247,7 @@ class _MissingPricesList extends StatelessWidget {
 
   final List<({RecipeIngredient ingredient, RecipeIngredientCost cost})> ingredients;
   final void Function(RecipeIngredient ingredient) onAddPrice;
-  final void Function(RecipeIngredient ingredient)? onAddConversion;
+  final void Function(RecipeIngredient ingredient, FoodPrice price)? onAddConversion;
   final void Function(RecipeIngredient ingredient)? onIngredientTap;
   final void Function(RecipeIngredient ingredient)? onIngredientLongPress;
 
@@ -297,9 +298,9 @@ class _MissingPricesList extends StatelessWidget {
 
   /// A conversion when the food is priced in a unit the amount can't be converted to, else a price.
   Widget _addButton(BuildContext context, RecipeIngredient ingredient, RecipeIngredientCost cost) {
-    final addConversion = onAddConversion;
-    if (cost.status == IngredientCostStatus.incompatibleUnit && addConversion != null) {
-      return TextButton(onPressed: () => addConversion(ingredient), child: Text(context.l10n.recipeCostAddConversion));
+    final (addConversion, price) = (onAddConversion, cost.foodPrice);
+    if (cost.status == IngredientCostStatus.incompatibleUnit && addConversion != null && price != null) {
+      return TextButton(onPressed: () => addConversion(ingredient, price), child: Text(context.l10n.recipeCostAddConversion));
     }
     return TextButton(onPressed: () => onAddPrice(ingredient), child: Text(context.l10n.recipeCostAddPrice));
   }

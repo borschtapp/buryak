@@ -5,7 +5,6 @@ import '../../features/recipes/controller_recipe.dart';
 import '../../features/shopping/notifier_shopping.dart';
 import '../models/food.dart';
 import '../repositories/food_repository.dart';
-import '../repositories/repository.dart';
 import '../repositories/unit_repository.dart';
 import 'recipe_price.dart';
 
@@ -103,12 +102,7 @@ class FoodCatalog {
   }
 
   Future<void> deleteConversion(String foodId, String conversionId) async {
-    try {
-      await _foods.deleteConversion(foodId, conversionId);
-    } on GeneralApiException catch (e) {
-      // Already deleted, e.g. by another household member: only the list is stale.
-      if (e.statusCode != 404) rethrow;
-    }
+    await _foods.deleteConversion(foodId, conversionId);
     _conversionsChanged(foodId);
   }
 

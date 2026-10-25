@@ -789,7 +789,7 @@ definitions:
       food_price:
         allOf:
           - $ref: "#/definitions/domain.FoodPrice"
-        description: the price used (nil if not calculated)
+        description: the price used or tried (nil for pantry/missing_price)
       ingredient_id:
         description: references Recipe.Ingredients[].ID
         type: string
@@ -2394,7 +2394,8 @@ paths:
       description:
         Reassigns all ingredients, shopping items, and prices from the
         food at {id} to merge_into, then marks {id} as an alias so future imports
-        resolve correctly.
+        resolve correctly. IDs of merged-away foods stand for the food they were merged
+        into; if both resolve to the same food, nothing happens.
       parameters:
         - description: Food UUID to merge away (becomes alias)
           in: path
@@ -2811,6 +2812,10 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/sentinels.Error"
+        "410":
+          description: invite code has expired
+          schema:
+            $ref: "#/definitions/sentinels.Error"
       summary: Get public info about an invite code.
       tags:
         - households
@@ -2842,6 +2847,10 @@ paths:
             $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "410":
+          description: invite code has expired
           schema:
             $ref: "#/definitions/sentinels.Error"
       security:
@@ -3193,7 +3202,8 @@ paths:
         - application/json
       description:
         Create a new recipe from JSON body. The recipe is automatically
-        saved for the creator.
+        saved for the creator. Nested rows are always created as new, nested foods
+        and units without an ID are matched by name, and collections are ignored.
       parameters:
         - description: Recipe data
           in: body
@@ -3290,7 +3300,9 @@ paths:
     patch:
       consumes:
         - application/json
-      description: Update an existing recipe. Allows users to correct details.
+      description:
+        Update an existing recipe's own fields. Nested ingredients, instructions,
+        equipment and taxonomies are ignored; use their dedicated endpoints.
       parameters:
         - description: Recipe ID
           in: path
@@ -4157,7 +4169,10 @@ paths:
         - application/json
       description:
         Reassigns all ingredients, shopping items, prices, food defaults,
-        and derived units from {id} to merge_into, then marks {id} as an alias.
+        and derived units from {id} to merge_into, then marks {id} as an alias. IDs
+        of merged-away units stand for the unit they were merged into; if both resolve
+        to the same unit, nothing happens. The built-in piece unit cannot be merged
+        away, and only count units can be merged into it.
       parameters:
         - description: Unit UUID to merge away (becomes alias)
           in: path
@@ -4189,6 +4204,10 @@ paths:
             $ref: "#/definitions/sentinels.Error"
         "404":
           description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "422":
+          description: Only count units can be merged into the piece unit
           schema:
             $ref: "#/definitions/sentinels.Error"
       security:
@@ -4322,6 +4341,10 @@ paths:
             $ref: "#/definitions/sentinels.Error"
         "403":
           description: Forbidden
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "422":
+          description: current_password is incorrect
           schema:
             $ref: "#/definitions/sentinels.Error"
       security:

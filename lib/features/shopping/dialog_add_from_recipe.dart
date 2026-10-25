@@ -54,21 +54,10 @@ class ShoppingBottomSheet extends HookConsumerWidget {
     final isSaving = ref.watch(addShoppingItemsMutation).isPending;
 
     Future<void> save() async {
-      // The food id lets the server merge the item into the same food's row on the list.
-      final itemsToCreate = [
-        for (final ingredient in ingredients)
-          if (selectedIngredientIds.value.contains(ingredient.id))
-            {
-              'text': ingredient.displayName,
-              'amount': ?ingredient.amount,
-              'unit_id': ?ingredient.unitId,
-              'food_id': ?ingredient.foodId,
-            },
-      ];
-
+      final selected = ingredients.where((i) => selectedIngredientIds.value.contains(i.id)).toList();
       final added = await addShoppingItemsMutation.tryRun(
         ref,
-        (tsx) => tsx.get(shoppingItemWriterProvider).addItems(itemsToCreate),
+        (tsx) => tsx.get(shoppingItemWriterProvider).addIngredients(selected),
       );
       if (!added || !context.mounted) return;
       context.pop();

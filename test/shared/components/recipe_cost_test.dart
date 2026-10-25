@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../helpers/fake_units.dart';
+
 void main() {
   const onion = RecipeIngredient(
     id: 'onion',
@@ -32,10 +34,10 @@ void main() {
         overrides: [
           sessionProvider.overrideWithValue(null),
           recipeCostEstimateProvider('r1').overrideWith(
-            (ref) async => const RecipeCostEstimate(
+            (ref) async => RecipeCostEstimate(
               items: [
-                RecipeIngredientCost(ingredientId: 'onion', status: IngredientCostStatus.incompatibleUnit),
-                RecipeIngredientCost(ingredientId: 'leek', status: IngredientCostStatus.missingPrice),
+                RecipeIngredientCost(ingredientId: 'onion', status: IngredientCostStatus.incompatibleUnit, foodPrice: fakeOnionPrice('kg')),
+                const RecipeIngredientCost(ingredientId: 'leek', status: IngredientCostStatus.missingPrice),
               ],
             ),
           ),
@@ -47,7 +49,7 @@ void main() {
               recipeId: 'r1',
               ingredients: const [onion, leek],
               onAddPrice: (i) => added.add('price:${i.id}'),
-              onAddConversion: (i) => added.add('conversion:${i.id}'),
+              onAddConversion: (i, price) => added.add('conversion:${i.id}:${price.unitId}'),
             ),
           ),
         ),
@@ -59,6 +61,6 @@ void main() {
     await tester.tap(find.text(l10n.recipeCostAddConversion));
     await tester.tap(find.text(l10n.recipeCostAddPrice));
 
-    expect(added, ['conversion:onion', 'price:leek']);
+    expect(added, ['conversion:onion:kg', 'price:leek']);
   });
 }

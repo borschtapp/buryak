@@ -177,25 +177,6 @@ void main() {
     verify(() => units.findAll(limit: 200)).called(2);
   });
 
-  test('deleting a conversion that is already gone succeeds quietly and refreshes the list', () async {
-    final errors = <ErrorMessage?>[];
-    container.listen(errorHandlerProvider, (_, next) => errors.add(next));
-    when(() => foods.findConversions('f1')).thenAnswer((_) async => const []);
-    when(() => foods.deleteConversion('f1', 'c1')).thenThrow(GeneralApiException(message: '', statusCode: 404));
-    container.listen(foodConversionsProvider('f1'), (_, _) {});
-    await container.read(foodConversionsProvider('f1').future);
-
-    final deleted = await deleteConversionMutation.tryRun(
-      container,
-      (tsx) => tsx.get(foodCatalogProvider).deleteConversion('f1', 'c1'),
-    );
-    await container.read(foodConversionsProvider('f1').future);
-
-    expect(deleted, isTrue);
-    expect(errors, isEmpty);
-    verify(() => foods.findConversions('f1')).called(2);
-  });
-
   test('mergeUnits moves remembered units to the unit they were merged into', () async {
     when(() => units.merge('u1', 'u2')).thenAnswer((_) async {});
     container.read(foodUnitPreferencesProvider.notifier)

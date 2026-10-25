@@ -1,12 +1,12 @@
-import 'package:buryak/l10n/app_localizations.dart';
 import 'package:buryak/shared/components/dialog_text_input.dart';
 import 'package:buryak/shared/providers/error_handler.dart';
 import 'package:buryak/shared/repositories/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../../helpers/sheet_opener.dart';
 
 void main() {
   late Mutation<String> mutation;
@@ -21,38 +21,23 @@ void main() {
   /// Opens a [TextInputDialog] whose write is [submit], recording what reached `onSuccess`.
   Future<List<String>> open(WidgetTester tester, Future<String> Function(String value) submit, {int? maxLength}) async {
     final successes = <String>[];
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, _) => TextButton(
-            onPressed: () => showDialog<void>(
-              context: context,
-              builder: (_) => TextInputDialog<String>(
-                title: 'Title',
-                hintText: 'Hint',
-                submitLabel: 'Submit',
-                validator: (value) => value.isEmpty ? 'Required' : null,
-                maxLength: maxLength,
-                mutation: mutation,
-                onSubmit: (_, value) => submit(value),
-                onSuccess: successes.add,
-              ),
-            ),
-            child: const Text('open'),
-          ),
+    await pumpAndOpen(
+      tester,
+      (context) => showDialog<void>(
+        context: context,
+        builder: (_) => TextInputDialog<String>(
+          title: 'Title',
+          hintText: 'Hint',
+          submitLabel: 'Submit',
+          validator: (value) => value.isEmpty ? 'Required' : null,
+          maxLength: maxLength,
+          mutation: mutation,
+          onSubmit: (_, value) => submit(value),
+          onSuccess: successes.add,
         ),
-      ],
-    );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp.router(localizationsDelegates: AppLocalizations.localizationsDelegates, routerConfig: router),
       ),
+      container: container,
     );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
     return successes;
   }
 

@@ -12,6 +12,7 @@
   "errorNoPermission": "Du hast keine Berechtigung dafür.",
   "errorNotFound": "Der angeforderte Eintrag wurde nicht gefunden.",
   "errorAlreadyExists": "Das existiert bereits.",
+  "errorExpired": "Dieser Code ist abgelaufen.",
   "errorRequestProblem": "Es gab ein Problem mit deiner Anfrage. Bitte überprüfe sie und versuche es erneut.",
   "errorServerError": "Serverfehler. Bitte versuche es später erneut.",
   "errorConnectionIssue": "Verbindungsproblem. Bitte überprüfe deine Internetverbindung.",

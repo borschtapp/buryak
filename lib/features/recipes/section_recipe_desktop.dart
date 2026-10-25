@@ -162,7 +162,7 @@ class RecipeDesktopSection extends HookWidget {
                   food: ingredient.food!,
                   ingredient: ingredient,
                 ),
-                onAddConversion: (ingredient) => IngredientConversionSheet.show(context, ingredient: ingredient),
+                onAddConversion: (ingredient, price) => IngredientConversionSheet.show(context, ingredient: ingredient, price: price),
                 onIngredientTap: openEditIngredient,
                 onIngredientLongPress: openEditFood,
               ),

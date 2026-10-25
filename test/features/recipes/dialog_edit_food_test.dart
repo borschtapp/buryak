@@ -6,9 +6,9 @@ import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/repositories/food_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../helpers/sheet_opener.dart';
 
 class MockFoodRepository extends Mock implements FoodRepository {}
 
@@ -31,32 +31,15 @@ void main() {
 
   /// Opens the sheet for [food]; returns the strings to find its fields by.
   Future<AppLocalizations> open(WidgetTester tester, Food food) async {
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, _) => Scaffold(
-            body: TextButton(
-              onPressed: () => EditFoodBottomSheet.show(context, food: food),
-              child: const Text('open'),
-            ),
-          ),
-        ),
+    await pumpAndOpen(
+      tester,
+      (context) => EditFoodBottomSheet.show(context, food: food),
+      overrides: [
+        sessionProvider.overrideWithValue(null),
+        foodRepositoryProvider.overrideWithValue(foods),
+        allUnitsProvider.overrideWith((ref) async => const []),
       ],
     );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sessionProvider.overrideWithValue(null),
-          foodRepositoryProvider.overrideWithValue(foods),
-          allUnitsProvider.overrideWith((ref) async => const []),
-        ],
-        child: MaterialApp.router(localizationsDelegates: AppLocalizations.localizationsDelegates, routerConfig: router),
-      ),
-    );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
     return AppLocalizations.of(tester.element(find.byType(EditFoodBottomSheet)));
   }
 

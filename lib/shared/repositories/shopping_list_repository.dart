@@ -7,6 +7,9 @@ import 'repository.dart';
 
 part 'shopping_list_repository.g.dart';
 
+/// An item to add to a list. A [foodId] lets the server merge it into that food's row.
+typedef NewShoppingItem = ({String text, double? amount, String? unitId, String? foodId});
+
 @Riverpod(keepAlive: true)
 ShoppingListRepository shoppingListRepository(Ref ref) => ShoppingListRepository(ref: ref, client: ref.watch(httpClientProvider));
 
@@ -58,29 +61,27 @@ class ShoppingListRepository extends Repository {
     await sendRequest(method: .delete, path: '/$id');
   }
 
-  Future<ShoppingItem> createItem(String listId, String text, {double? amount, String? unitId, String? foodId}) async {
-    final response = await sendRequest(
-      method: .post,
-      path: '/$listId/items',
-      body: {
-        'text': text,
-        'amount': ?amount,
-        'unit_id': ?unitId,
-        'food_id': ?foodId,
-      },
-    );
+  Future<ShoppingItem> createItem(String listId, NewShoppingItem item) async {
+    final response = await sendRequest(method: .post, path: '/$listId/items', body: _newItemBody(item));
     return ShoppingItem.fromJson(ensureMap(response));
   }
 
-  Future<List<ShoppingItem>> createItems(String listId, List<Map<String, dynamic>> items) async {
+  Future<List<ShoppingItem>> createItems(String listId, List<NewShoppingItem> items) async {
     final response = await sendRequest(
       method: .post,
       path: '/$listId/items',
-      body: items,
+      body: items.map(_newItemBody).toList(),
     );
     final list = ensureList(response);
     return list.map((item) => ShoppingItem.fromJson(ensureMap(item))).toList();
   }
+
+  Map<String, dynamic> _newItemBody(NewShoppingItem item) => {
+    'text': item.text,
+    'amount': ?item.amount,
+    'unit_id': ?item.unitId,
+    'food_id': ?item.foodId,
+  };
 
   /// Null fields are left unchanged; [clearAmount] sends an explicit null.
   Future<ShoppingItem> updateItem(

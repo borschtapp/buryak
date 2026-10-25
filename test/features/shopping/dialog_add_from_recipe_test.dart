@@ -6,11 +6,10 @@ import 'package:buryak/shared/providers/shopping.dart';
 import 'package:buryak/shared/repositories/shopping_list_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/fake_recipe.dart';
+import '../../helpers/sheet_opener.dart';
 
 class MockShoppingListRepository extends Mock implements ShoppingListRepository {}
 
@@ -27,21 +26,7 @@ void main() {
       ],
     });
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          home: Builder(
-            builder: (context) => TextButton(
-              onPressed: () => ShoppingBottomSheet.show(context, recipe),
-              child: const Text('open'),
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
+    await pumpAndOpen(tester, (context) => ShoppingBottomSheet.show(context, recipe));
     await tester.fling(find.byType(ShoppingBottomSheet), const Offset(0, -2000), 3000);
     await tester.pumpAndSettle();
 
@@ -50,32 +35,14 @@ void main() {
 
   /// Opens the sheet for [recipe] and taps "Add to list" with the default selection.
   Future<AppLocalizations> addAll(WidgetTester tester, MockShoppingListRepository repo, Recipe recipe) async {
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, _) => Scaffold(
-            body: TextButton(
-              onPressed: () => ShoppingBottomSheet.show(context, recipe),
-              child: const Text('open'),
-            ),
-          ),
-        ),
+    await pumpAndOpen(
+      tester,
+      (context) => ShoppingBottomSheet.show(context, recipe),
+      overrides: [
+        shoppingListRepositoryProvider.overrideWithValue(repo),
+        primaryShoppingListIdProvider.overrideWith((ref) async => 'list-1'),
       ],
     );
-    addTearDown(router.dispose);
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          shoppingListRepositoryProvider.overrideWithValue(repo),
-          primaryShoppingListIdProvider.overrideWith((ref) async => 'list-1'),
-        ],
-        child: MaterialApp.router(localizationsDelegates: AppLocalizations.localizationsDelegates, routerConfig: router),
-      ),
-    );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
     final l10n = AppLocalizations.of(tester.element(find.byType(ShoppingBottomSheet)));
     await tester.tap(find.text(l10n.shoppingAddToList));
     await tester.pumpAndSettle();
@@ -129,8 +96,8 @@ void main() {
 
     final sent = verify(() => repo.createItems('list-1', captureAny())).captured.single;
     expect(sent, [
-      {'text': 'red onions', 'amount': 2.0, 'unit_id': 'pc', 'food_id': 'onion'},
-      {'text': 'water'},
+      (text: 'red onions', amount: 2.0, unitId: 'pc', foodId: 'onion'),
+      (text: 'water', amount: null, unitId: null, foodId: null),
     ]);
   });
 }

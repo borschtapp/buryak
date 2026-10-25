@@ -4,29 +4,18 @@ import 'package:buryak/l10n/app_localizations.dart';
 import 'package:buryak/shared/models/user.dart';
 import 'package:buryak/shared/providers/error_handler.dart';
 import 'package:buryak/shared/providers/user.dart';
-import 'package:buryak/shared/repositories/repository.dart';
 import 'package:buryak/shared/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../helpers/fake_auth.dart';
 import '../../helpers/fake_user.dart';
+import '../../helpers/sheet_opener.dart';
 
 class MockUserRepository extends Mock implements UserRepository {}
-
-class SignedInAuthNotifier extends AuthNotifier {
-  @override
-  User? build() {
-    super.build(); // keeps the dispose hook that cancels the token refresh
-    return User.fromJson(fakeUserJson());
-  }
-
-  @override
-  Future<void> init() async {}
-}
 
 void main() {
   late MockUserRepository users;
@@ -41,29 +30,15 @@ void main() {
 
   /// Opens the sheet that [show] opens; returns the strings to find its fields by.
   Future<AppLocalizations> open(WidgetTester tester, void Function(BuildContext context) show) async {
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, _) => Scaffold(
-            body: TextButton(onPressed: () => show(context), child: const Text('open')),
-          ),
-        ),
+    await pumpAndOpen(
+      tester,
+      show,
+      observers: [MutationErrorReporter()],
+      overrides: [
+        authProvider.overrideWith(FakeAuthNotifier.signedIn),
+        userRepositoryProvider.overrideWithValue(users),
       ],
     );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      ProviderScope(
-        observers: [MutationErrorReporter()],
-        overrides: [
-          authProvider.overrideWith(SignedInAuthNotifier.new),
-          userRepositoryProvider.overrideWithValue(users),
-        ],
-        child: MaterialApp.router(localizationsDelegates: AppLocalizations.localizationsDelegates, routerConfig: router),
-      ),
-    );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
     return AppLocalizations.of(tester.element(find.text('open', skipOffstage: false)));
   }
 
@@ -73,7 +48,7 @@ void main() {
     testWidgets('a wrong current password is shown on that field, not reported globally', (tester) async {
       when(
         () => users.update('user-1', email: 'new@example.com', currentPassword: 'wrongpass'),
-      ).thenThrow(GeneralApiException(message: 'Invalid credentials', statusCode: 401));
+      ).thenThrow(wrongPasswordError());
       final l10n = await open(tester, ChangeEmailBottomSheet.show);
       final reported = <ErrorMessage?>[];
       containerOf(tester).listen(errorHandlerProvider, (_, next) => reported.add(next));

@@ -29,14 +29,9 @@ class ChangeEmailBottomSheet extends HookConsumerWidget {
 
     Future<void> save() async {
       if (!formKey.currentState!.validate()) return;
-      final email = emailController.text.trim();
-      if (email == ref.read(authProvider)?.email) {
-        context.pop();
-        return;
-      }
       final saved = await changeEmailMutation.tryRun(
         ref,
-        (tsx) => tsx.get(authProvider.notifier).changeEmail(email, currentPassword: passwordController.text),
+        (tsx) => tsx.get(authProvider.notifier).changeEmail(emailController.text.trim(), currentPassword: passwordController.text),
       );
       if (!saved || !context.mounted) return;
       context.pop();

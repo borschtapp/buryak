@@ -24,19 +24,23 @@ void main() {
       required String priceUnitId,
       List<FoodUnitConversion> conversions = const [],
     }) async {
+      final price = fakeOnionPrice(priceUnitId);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             sessionProvider.overrideWithValue(null),
             allUnitsProvider.overrideWith((ref) async => const [piece, can, gram, kilogram, milliliter, cup]),
-            foodPricesProvider(onion.id).overrideWith(
-              (ref) async => PaginatedList(data: [fakeOnionPrice(priceUnitId)], meta: const Meta(total: 1, limit: 20, offset: 0)),
-            ),
             foodConversionsProvider(onion.id).overrideWith((ref) async => conversions),
+            // Loaded by the fallback price form.
+            foodPricesProvider(onion.id).overrideWith(
+              (ref) async => PaginatedList(data: [price], meta: const Meta(total: 1, limit: 20, offset: 0)),
+            ),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
-            home: Scaffold(body: IngredientConversionSheet(ingredient: ingredient)),
+            home: Scaffold(
+              body: IngredientConversionSheet(ingredient: ingredient, price: price),
+            ),
           ),
         ),
       );
