@@ -267,13 +267,6 @@
   "shoppingNoIngredients": "Інгредієнтів для цього рецепту не знайдено.",
   "shoppingAddToList": "Додати до списку",
   "shoppingAllIngredientsAdded": "Всі інгредієнти додано до списку покупок",
-  "shoppingPartialIngredientsAdded": "Додано {count} з {total} інгредієнтів",
-  "@shoppingPartialIngredientsAdded": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
   "authorPublishedBy": "Опубліковано: ",
   "authorSourceLinkError": "Не вдалося відкрити посилання на джерело",
   "updateAvailableTitle": "Доступне оновлення",
@@ -502,6 +495,7 @@
     }
   },
   "recipeCostAddPrice": "Додати ціну",
+  "recipeCostAddConversion": "Додати конвертацію",
   "recipeCostSkip": "Пропустити",
   "recipeCostNoPrices": "Ціни ще не записані",
   "recipeCostNoPricesSubtitle": "Натисніть на інгредієнт, щоб додати його ціну.",
@@ -535,6 +529,7 @@
   "editIngredientFoodSearch": "Пошук продуктів…",
   "editIngredientFoodSearchHint": "Введіть щонайменше 2 символи",
   "editFoodTitle": "Редагувати продукт",
+  "editFoodDescription": "Опис",
   "editFoodDefaultUnit": "Одиниця за замовчуванням",
   "editFoodMerge": "Об'єднати з…",
   "editFoodMergeTitle": "Об'єднати продукти",

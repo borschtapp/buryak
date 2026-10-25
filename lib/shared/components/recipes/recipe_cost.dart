@@ -16,6 +16,7 @@ class RecipeCost extends ConsumerWidget {
     required this.recipeId,
     required this.ingredients,
     this.onAddPrice,
+    this.onAddConversion,
     this.onIngredientTap,
     this.onIngredientLongPress,
   });
@@ -23,6 +24,9 @@ class RecipeCost extends ConsumerWidget {
   final String recipeId;
   final List<RecipeIngredient> ingredients;
   final void Function(RecipeIngredient ingredient)? onAddPrice;
+
+  /// For an ingredient whose food has a price in a unit its amount can't be converted to.
+  final void Function(RecipeIngredient ingredient)? onAddConversion;
   final void Function(RecipeIngredient ingredient)? onIngredientTap;
   final void Function(RecipeIngredient ingredient)? onIngredientLongPress;
 
@@ -53,6 +57,7 @@ class RecipeCost extends ConsumerWidget {
           ingredients: ingredients,
           currency: currency,
           onAddPrice: onAddPrice,
+          onAddConversion: onAddConversion,
           onIngredientTap: onIngredientTap,
           onIngredientLongPress: onIngredientLongPress,
         );
@@ -67,6 +72,7 @@ class _CostContent extends StatelessWidget {
     required this.ingredients,
     required this.currency,
     this.onAddPrice,
+    this.onAddConversion,
     this.onIngredientTap,
     this.onIngredientLongPress,
   });
@@ -75,6 +81,7 @@ class _CostContent extends StatelessWidget {
   final List<RecipeIngredient> ingredients;
   final String? currency;
   final void Function(RecipeIngredient ingredient)? onAddPrice;
+  final void Function(RecipeIngredient ingredient)? onAddConversion;
   final void Function(RecipeIngredient ingredient)? onIngredientTap;
   final void Function(RecipeIngredient ingredient)? onIngredientLongPress;
 
@@ -89,14 +96,14 @@ class _CostContent extends StatelessWidget {
       for (final item in estimate.items ?? <RecipeIngredientCost>[]) item.ingredientId: item,
     };
 
-    final actionableIngredients = <RecipeIngredient>[];
+    final actionableIngredients = <({RecipeIngredient ingredient, RecipeIngredientCost cost})>[];
     final pricedIngredients = <({RecipeIngredient ingredient, RecipeIngredientCost cost})>[];
 
     for (final ingredient in ingredients) {
       final cost = costByIngredientId[ingredient.id];
       if (cost == null) continue;
       if (cost.status == IngredientCostStatus.missingPrice || cost.status == IngredientCostStatus.incompatibleUnit) {
-        actionableIngredients.add(ingredient);
+        actionableIngredients.add((ingredient: ingredient, cost: cost));
       } else if (cost.status == IngredientCostStatus.calculated) {
         pricedIngredients.add((ingredient: ingredient, cost: cost));
       }
@@ -167,6 +174,7 @@ class _CostContent extends StatelessWidget {
             _MissingPricesList(
               ingredients: actionableIngredients,
               onAddPrice: onAddPrice!,
+              onAddConversion: onAddConversion,
               onIngredientTap: onIngredientTap,
               onIngredientLongPress: onIngredientLongPress,
             ),
@@ -231,12 +239,14 @@ class _MissingPricesList extends StatelessWidget {
   const _MissingPricesList({
     required this.ingredients,
     required this.onAddPrice,
+    this.onAddConversion,
     this.onIngredientTap,
     this.onIngredientLongPress,
   });
 
-  final List<RecipeIngredient> ingredients;
+  final List<({RecipeIngredient ingredient, RecipeIngredientCost cost})> ingredients;
   final void Function(RecipeIngredient ingredient) onAddPrice;
+  final void Function(RecipeIngredient ingredient)? onAddConversion;
   final void Function(RecipeIngredient ingredient)? onIngredientTap;
   final void Function(RecipeIngredient ingredient)? onIngredientLongPress;
 
@@ -245,7 +255,7 @@ class _MissingPricesList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final ingredient in ingredients)
+        for (final (:ingredient, :cost) in ingredients)
           ListTile(
             contentPadding: EdgeInsets.zero,
             dense: true,
@@ -279,15 +289,19 @@ class _MissingPricesList extends StatelessWidget {
               ],
             ),
             // Free-text ingredients can't be priced until they're linked to a food.
-            trailing: ingredient.food != null
-                ? TextButton(
-                    onPressed: () => onAddPrice(ingredient),
-                    child: Text(context.l10n.recipeCostAddPrice),
-                  )
-                : null,
+            trailing: ingredient.food == null ? null : _addButton(context, ingredient, cost),
           ),
       ],
     );
+  }
+
+  /// A conversion when the food is priced in a unit the amount can't be converted to, else a price.
+  Widget _addButton(BuildContext context, RecipeIngredient ingredient, RecipeIngredientCost cost) {
+    final addConversion = onAddConversion;
+    if (cost.status == IngredientCostStatus.incompatibleUnit && addConversion != null) {
+      return TextButton(onPressed: () => addConversion(ingredient), child: Text(context.l10n.recipeCostAddConversion));
+    }
+    return TextButton(onPressed: () => onAddPrice(ingredient), child: Text(context.l10n.recipeCostAddPrice));
   }
 }
 

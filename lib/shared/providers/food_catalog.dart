@@ -3,7 +3,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/recipes/controller_recipe.dart';
 import '../../features/shopping/notifier_shopping.dart';
+import '../models/food.dart';
 import '../repositories/food_repository.dart';
+import '../repositories/repository.dart';
 import '../repositories/unit_repository.dart';
 import 'recipe_price.dart';
 
@@ -44,15 +46,17 @@ class FoodCatalog {
   Future<void> updateFood(
     String foodId, {
     String? name,
+    String? description,
     String? defaultUnitId,
     bool clearDefaultUnit = false,
     bool? pantry,
   }) async {
     final unitChanged = defaultUnitId != null || clearDefaultUnit;
-    if (name == null && !unitChanged && pantry == null) return;
+    if (name == null && description == null && !unitChanged && pantry == null) return;
     await _foods.update(
       foodId,
       name: name,
+      description: description,
       defaultUnitId: defaultUnitId,
       clearDefaultUnit: clearDefaultUnit,
       pantry: pantry,
@@ -69,10 +73,12 @@ class FoodCatalog {
     _foodsReassigned();
   }
 
-  Future<void> recordPrice(String foodId, double price, double amount, String unitId) async {
-    await _foods.recordPrice(foodId, price, amount, unitId);
-    _ref.read(foodUnitPreferencesProvider.notifier).setPreferred(foodId, unitId);
-    _pricesChanged(foodId);
+  Future<void> recordPrice(Food food, double price, double amount, String unitId) async {
+    await _foods.recordPrice(food.id, price, amount, unitId);
+    _ref.read(foodUnitPreferencesProvider.notifier).setPreferred(food.id, unitId);
+    _pricesChanged(food.id);
+    // The server makes the first price's unit the food's default; recipes embed the food.
+    if (food.defaultUnitId == null) _ref.invalidate(recipeControllerProvider);
   }
 
   Future<void> deletePrice(String foodId, String priceId) async {
@@ -97,7 +103,12 @@ class FoodCatalog {
   }
 
   Future<void> deleteConversion(String foodId, String conversionId) async {
-    await _foods.deleteConversion(foodId, conversionId);
+    try {
+      await _foods.deleteConversion(foodId, conversionId);
+    } on GeneralApiException catch (e) {
+      // Already deleted, e.g. by another household member: only the list is stale.
+      if (e.statusCode != 404) rethrow;
+    }
     _conversionsChanged(foodId);
   }
 
@@ -108,6 +119,7 @@ class FoodCatalog {
 
   Future<void> mergeUnits(String sourceId, String targetId) async {
     await _units.merge(sourceId, targetId);
+    _ref.read(foodUnitPreferencesProvider.notifier).replaceUnit(sourceId, targetId);
     _unitsChanged();
   }
 

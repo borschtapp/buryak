@@ -47,4 +47,9 @@ class FoodUnitPreferences extends _$FoodUnitPreferences {
   void setPreferred(String foodId, String unitId) {
     state = {...state, foodId: unitId};
   }
+
+  /// Points foods that remembered [fromUnitId] at [toUnitId], e.g. after a unit merge.
+  void replaceUnit(String fromUnitId, String toUnitId) {
+    state = {for (final MapEntry(:key, :value) in state.entries) key: value == fromUnitId ? toUnitId : value};
+  }
 }

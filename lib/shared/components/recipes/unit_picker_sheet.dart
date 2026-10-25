@@ -18,28 +18,28 @@ import 'dialog_edit_unit.dart';
 /// affordance is disabled when the picker is itself used to choose a merge
 /// target, to avoid recursive editing.
 class UnitPicker extends ConsumerWidget {
-  const UnitPicker({super.key, this.allowEdit = true, this.excludeId});
+  const UnitPicker({super.key, this.allowEdit = true, this.where});
 
   final bool allowEdit;
 
-  /// Unit id to hide from results (e.g. the merge source itself).
-  final String? excludeId;
+  /// When set, only units it accepts are listed (e.g. not the merge source itself).
+  final bool Function(Unit unit)? where;
 
   static Future<Unit?> pick(
     BuildContext context, {
     bool allowEdit = true,
-    String? excludeId,
+    bool Function(Unit unit)? where,
   }) {
     return showAppBottomSheet<Unit>(
       context: context,
-      builder: (_) => UnitPicker(allowEdit: allowEdit, excludeId: excludeId),
+      builder: (_) => UnitPicker(allowEdit: allowEdit, where: where),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final unitsAsync = ref.watch(allUnitsProvider);
-    final units = [...?unitsAsync.value?.where((u) => u.id != excludeId)];
+    final units = [...?unitsAsync.value?.where(where ?? (_) => true)];
 
     return FilterableListSheet<Unit>(
       // Only block on the first load; reloads keep showing the current list.

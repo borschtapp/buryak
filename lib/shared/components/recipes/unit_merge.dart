@@ -22,7 +22,7 @@ Future<bool> runUnitMergeFlow(
   WidgetRef ref, {
   required Unit source,
 }) async {
-  final target = await UnitPicker.pick(context, allowEdit: false, excludeId: source.id);
+  final target = await UnitPicker.pick(context, allowEdit: false, where: (u) => u.id != source.id);
   if (target == null || !context.mounted) return false;
 
   final confirmed = await showConfirmDialog(

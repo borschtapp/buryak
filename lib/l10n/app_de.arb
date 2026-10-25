@@ -267,13 +267,6 @@
   "shoppingNoIngredients": "Keine Zutaten für dieses Rezept gefunden.",
   "shoppingAddToList": "Zur Liste hinzufügen",
   "shoppingAllIngredientsAdded": "Alle Zutaten zur Einkaufsliste hinzugefügt",
-  "shoppingPartialIngredientsAdded": "{count} von {total} Zutaten hinzugefügt",
-  "@shoppingPartialIngredientsAdded": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
   "authorPublishedBy": "Veröffentlicht von ",
   "authorSourceLinkError": "Quelllink konnte nicht geöffnet werden",
   "updateAvailableTitle": "Update verfügbar",
@@ -502,6 +495,7 @@
     }
   },
   "recipeCostAddPrice": "Preis hinzufügen",
+  "recipeCostAddConversion": "Umrechnung hinzufügen",
   "recipeCostSkip": "Überspringen",
   "recipeCostNoPrices": "Noch keine Preise erfasst",
   "recipeCostNoPricesSubtitle": "Tippe auf eine Zutat, um ihren Preis hinzuzufügen.",
@@ -535,6 +529,7 @@
   "editIngredientFoodSearch": "Lebensmittel suchen…",
   "editIngredientFoodSearchHint": "Mindestens 2 Zeichen eingeben",
   "editFoodTitle": "Lebensmittel bearbeiten",
+  "editFoodDescription": "Beschreibung",
   "editFoodDefaultUnit": "Standardeinheit",
   "editFoodMerge": "Zusammenführen mit…",
   "editFoodMergeTitle": "Lebensmittel zusammenführen",

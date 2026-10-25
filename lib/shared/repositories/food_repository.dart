@@ -29,7 +29,8 @@ class FoodRepository extends Repository {
     );
   }
 
-  /// Null fields are left unchanged; [clearDefaultUnit] sends an explicit null.
+  /// Null fields are left unchanged; [clearDefaultUnit] sends an explicit null. An empty
+  /// [description] clears it, as the server would otherwise keep the empty string.
   Future<Food> update(
     String foodId, {
     String? name,
@@ -43,7 +44,7 @@ class FoodRepository extends Repository {
       path: '/$foodId',
       body: {
         'name': ?name,
-        'description': ?description,
+        if (description != null) 'description': description.isEmpty ? null : description,
         if (clearDefaultUnit) 'default_unit_id': null else 'default_unit_id': ?defaultUnitId,
         'pantry': ?pantry,
       },

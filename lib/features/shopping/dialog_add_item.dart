@@ -13,6 +13,7 @@ Future<void> showAddItemDialog(BuildContext context) async {
       hintText: l10n.shoppingAddItemHint,
       labelText: l10n.shoppingAddItemLabel,
       submitLabel: l10n.importAddSubmit,
+      maxLength: shoppingItemTextMaxLength,
       mutation: addShoppingItemMutation,
       onSubmit: (tsx, value) => tsx.get(shoppingItemsProvider.notifier).addItem(value),
     ),

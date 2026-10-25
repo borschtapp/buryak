@@ -2198,7 +2198,8 @@ paths:
         - application/json
       description:
         Update name, description, default unit, or pantry status of a food.
-        Only provided fields are changed.
+        Only provided fields are changed. An ID of a merged-away food updates the
+        food it was merged into.
       parameters:
         - description: Food UUID
           in: path
@@ -3931,6 +3932,12 @@ paths:
           description: Unauthorized
           schema:
             $ref: "#/definitions/sentinels.Error"
+        "422":
+          description:
+            Amount unit cannot be combined with the unit already on the
+            list
+          schema:
+            $ref: "#/definitions/sentinels.Error"
       security:
         - ApiKeyAuth: []
       summary: Add one or more items to a shopping list.
@@ -4105,7 +4112,9 @@ paths:
     patch:
       consumes:
         - application/json
-      description: Update the name of a unit.
+      description:
+        Update the name of a unit. An ID of a merged-away unit updates
+        the unit it was merged into.
       parameters:
         - description: Unit UUID
           in: path
@@ -4172,6 +4181,10 @@ paths:
             $ref: "#/definitions/sentinels.Error"
         "401":
           description: Unauthorized
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "403":
+          description: The built-in piece unit cannot be merged into another unit
           schema:
             $ref: "#/definitions/sentinels.Error"
         "404":

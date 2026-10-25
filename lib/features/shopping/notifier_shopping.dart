@@ -8,12 +8,15 @@ import '../../shared/repositories/shopping_list_repository.dart';
 
 part 'notifier_shopping.g.dart';
 
+/// The server rejects item text longer than this.
+const shoppingItemTextMaxLength = 255;
+
 // Run with `tsx.get(shoppingItemsProvider.notifier)`.
 final addShoppingItemMutation = Mutation<void>(label: 'addShoppingItem');
 final updateShoppingItemMutation = Mutation<void>(label: 'updateShoppingItem');
 
 // Run with `tsx.get(shoppingItemWriterProvider)`.
-final addShoppingItemsMutation = Mutation<int>(label: 'addShoppingItems');
+final addShoppingItemsMutation = Mutation<void>(label: 'addShoppingItems');
 
 @Riverpod(keepAlive: true)
 ShoppingItemWriter shoppingItemWriter(Ref ref) => ShoppingItemWriter(ref);
@@ -25,13 +28,13 @@ class ShoppingItemWriter {
 
   final Ref _ref;
 
-  /// Adds [items] to the primary list and returns how many were created.
-  Future<int> addItems(List<Map<String, dynamic>> items) async {
+  /// Adds [items] to the primary list. The server saves all of them or none, and
+  /// merges items of the same food, so it can return fewer rows than were sent.
+  Future<void> addItems(List<Map<String, dynamic>> items) async {
     final listId = await _ref.read(primaryShoppingListIdProvider.future);
-    final created = await _ref.read(shoppingListRepositoryProvider).createItems(listId, items);
+    await _ref.read(shoppingListRepositoryProvider).createItems(listId, items);
     // Reloads the list only if it was loaded.
     _ref.invalidate(shoppingItemsProvider);
-    return created.length;
   }
 }
 
@@ -130,12 +133,9 @@ class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem
   Future<void> addItem(String name) async {
     final newItem = await ref.read(shoppingListRepositoryProvider).createItem(await _listId, name);
 
-    if (state.value != null) {
-      final items = [...state.value!];
-      items.insert(0, newItem);
-      state = AsyncData(items);
-    } else {
-      state = AsyncData([newItem]);
-    }
+    // The server keeps one row per food, so it may return an existing row (with the
+    // amounts added, or a bought one unchecked); move that row to the top instead of
+    // adding a second one. The returned row is never bought, so the order stays sorted.
+    state = AsyncData([newItem, ...?state.value?.where((i) => i.id != newItem.id)]);
   }
 }

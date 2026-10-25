@@ -48,7 +48,41 @@ void main() {
     verifyZeroInteractions(repo);
   });
 
-  test('addItems writes to the primary list, returns the count, and reloads the list', () async {
+  group('addItem when the server merges into an existing row', () {
+    Future<List<ShoppingItem>> addOnion(ShoppingItem existing, ShoppingItem returned) async {
+      final container = containerWithList('list-1');
+      when(() => repo.findItems('list-1', limit: 20, offset: 0)).thenAnswer(
+        (_) async => _page([const ShoppingItem(id: 'milk', text: 'Milk', isBought: false), existing]),
+      );
+      when(() => repo.createItem('list-1', 'onion')).thenAnswer((_) async => returned);
+      container.listen(shoppingItemsProvider, (_, _) {});
+      await container.read(shoppingItemsProvider.future);
+
+      await container.read(shoppingItemsProvider.notifier).addItem('onion');
+      return container.read(shoppingItemsProvider).requireValue;
+    }
+
+    test('an unbought item is replaced, not duplicated', () async {
+      final items = await addOnion(
+        const ShoppingItem(id: 'onion', text: 'Onion', amount: 1, isBought: false),
+        const ShoppingItem(id: 'onion', text: 'Onion', amount: 2, isBought: false),
+      );
+
+      expect(items.map((i) => i.id), ['onion', 'milk']);
+      expect(items.first.amount, 2);
+    });
+
+    test('a bought item is unchecked and moves above the bought ones', () async {
+      final items = await addOnion(
+        const ShoppingItem(id: 'onion', text: 'Onion', isBought: true),
+        const ShoppingItem(id: 'onion', text: 'Onion', isBought: false),
+      );
+
+      expect(items.map((i) => (i.id, i.isBought)), [('onion', false), ('milk', false)]);
+    });
+  });
+
+  test('addItems writes to the primary list and reloads the list', () async {
     final container = containerWithList('list-1');
     final items = [
       {'text': 'Milk'},
@@ -58,13 +92,12 @@ void main() {
     container.listen(shoppingItemsProvider, (_, _) {});
     await container.read(shoppingItemsProvider.future);
 
-    final count = await addShoppingItemsMutation.run(
+    await addShoppingItemsMutation.run(
       container,
       (tsx) => tsx.get(shoppingItemWriterProvider).addItems(items),
     );
     await container.read(shoppingItemsProvider.future);
 
-    expect(count, 1);
     verify(() => repo.findItems('list-1', limit: 20, offset: 0)).called(2);
   });
 
@@ -76,12 +109,11 @@ void main() {
     when(() => repo.findItems('list-1', limit: 20, offset: 0)).thenAnswer((_) async => _page(const []));
     when(() => repo.createItems('list-1', items)).thenAnswer((_) async => const [ShoppingItem(id: 'i1', text: 'Milk')]);
 
-    final count = await addShoppingItemsMutation.run(
+    await addShoppingItemsMutation.run(
       container,
       (tsx) => tsx.get(shoppingItemWriterProvider).addItems(items),
     );
 
-    expect(count, 1);
     verify(() => repo.createItems('list-1', items)).called(1);
     await Future<void>.delayed(Duration.zero);
     verifyNever(
@@ -117,7 +149,7 @@ void main() {
     await container.read(shoppingItemsProvider.future);
     created.complete(const [ShoppingItem(id: 'i1', text: 'Milk')]);
 
-    expect(await pending, 1);
+    await pending;
     await container.read(shoppingItemsProvider.future);
     expect(fetches, 3, reason: 'initial load, the refresh, and the reload after the write');
   });

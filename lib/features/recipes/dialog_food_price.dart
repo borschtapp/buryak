@@ -55,13 +55,17 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
     final priceController = useTextEditingController();
     final defaultAmount = useMemoized(() => _defaultAmount(ingredient?.amount), [ingredient?.amount]);
     final amountController = useTextEditingController(text: defaultAmount);
-    final selectedUnitId = useState<String?>(
-      ingredient?.unitId ?? ref.read(foodUnitPreferencesProvider)[food.id] ?? food.defaultUnitId,
-    );
     final isSaving = ref.watch(recordPriceMutation).isPending;
 
     final pricesAsync = ref.watch(foodPricesProvider(food.id));
     final unitsAsync = ref.watch(allUnitsProvider);
+
+    final pickedUnitId = useState<String?>(null);
+    final rememberedUnitId = useMemoized(() => ref.read(foodUnitPreferencesProvider)[food.id]);
+    // The server counts a unitless ingredient in pieces, so its price is suggested per piece.
+    final pieceUnitId = unitsAsync.value?.piece?.id;
+    final ingredientUnitId = ingredient == null ? null : ingredient!.unitId ?? pieceUnitId;
+    final selectedUnitId = pickedUnitId.value ?? ingredientUnitId ?? rememberedUnitId ?? food.defaultUnitId;
     final currency = ref.watch(householdProvider).value?.currency;
     final hasInitialized = useRef(false);
 
@@ -84,17 +88,16 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
 
     Future<void> submit() async {
       if (!formKey.currentState!.validate()) return;
-      final unitId = selectedUnitId.value;
-      if (unitId == null) return;
+      if (selectedUnitId == null) return;
       final saved = await recordPriceMutation.tryRun(
         ref,
         (tsx) => tsx
             .get(foodCatalogProvider)
             .recordPrice(
-              food.id,
+              food,
               priceController.text.asDecimal!,
               amountController.text.asDecimal!,
-              unitId,
+              selectedUnitId,
             ),
       );
       if (saved && context.mounted) {
@@ -167,17 +170,17 @@ class FoodPriceBottomSheet extends HookConsumerWidget {
                       flex: 3,
                       child: UnitPickerFormField(
                         unitsAsync: unitsAsync,
-                        selectedUnitId: selectedUnitId.value,
-                        onSelected: (u) => selectedUnitId.value = u.id,
-                        validator: (_) => selectedUnitId.value == null ? context.l10n.validatorFieldRequired : null,
+                        selectedUnitId: selectedUnitId,
+                        onSelected: (u) => pickedUnitId.value = u.id,
+                        validator: (_) => selectedUnitId == null ? context.l10n.validatorFieldRequired : null,
                       ),
                     ),
                   ],
                 ),
-                if (selectedUnitId.value != null)
+                if (selectedUnitId != null)
                   _ConversionSection(
                     food: food,
-                    selectedUnitId: selectedUnitId.value!,
+                    selectedUnitId: selectedUnitId,
                     unitsAsync: unitsAsync,
                     prices: pricesAsync.value?.data ?? const [],
                   ),

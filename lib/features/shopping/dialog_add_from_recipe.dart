@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../shared/components/loading_button.dart';
 import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/recipe.dart';
+import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import 'notifier_shopping.dart';
 
@@ -42,50 +43,39 @@ class ShoppingBottomSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIngredientIds = useState<Set<String>>(
-      (recipe.ingredients ?? []).map((i) => i.id).toSet(),
-    );
-    final isSaving = ref.watch(addShoppingItemsMutation).isPending;
-
-    Future<void> save() async {
-      final selectedIngredients = recipe.ingredients?.where((i) => selectedIngredientIds.value.contains(i.id)).toList();
-      if (selectedIngredients == null) return;
-
-      final itemsToCreate = selectedIngredients
-          .map(
-            (ingredient) => {
-              'text': ingredient.displayName,
-              'amount': ingredient.amount,
-              'unit_id': ingredient.unitId,
-            },
-          )
-          .toList();
-
-      final int successCount;
-      try {
-        successCount = await addShoppingItemsMutation.run(
-          ref,
-          (tsx) => tsx.get(shoppingItemWriterProvider).addItems(itemsToCreate),
-        );
-      } on Object {
-        return; // Already reported by MutationErrorReporter.
-      }
-
-      if (!context.mounted) return;
-      context.pop();
-      final l10n = context.l10n;
-      final message = successCount == selectedIngredients.length
-          ? l10n.shoppingAllIngredientsAdded
-          : l10n.shoppingPartialIngredientsAdded(successCount, selectedIngredients.length);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
-    }
-
+    // Pantry staples are hidden, so they must not be selected (and added) either.
     final ingredients = useMemoized(
       () => (recipe.ingredients ?? []).where((i) => i.food?.pantry != true).toList(),
       [recipe.ingredients],
     );
+    final selectedIngredientIds = useState<Set<String>>(
+      ingredients.map((i) => i.id).toSet(),
+    );
+    final isSaving = ref.watch(addShoppingItemsMutation).isPending;
+
+    Future<void> save() async {
+      // The food id lets the server merge the item into the same food's row on the list.
+      final itemsToCreate = [
+        for (final ingredient in ingredients)
+          if (selectedIngredientIds.value.contains(ingredient.id))
+            {
+              'text': ingredient.displayName,
+              'amount': ?ingredient.amount,
+              'unit_id': ?ingredient.unitId,
+              'food_id': ?ingredient.foodId,
+            },
+      ];
+
+      final added = await addShoppingItemsMutation.tryRun(
+        ref,
+        (tsx) => tsx.get(shoppingItemWriterProvider).addItems(itemsToCreate),
+      );
+      if (!added || !context.mounted) return;
+      context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.shoppingAllIngredientsAdded)),
+      );
+    }
 
     return StandardBottomSheet(
       title: context.l10n.shoppingAddToShoppingTitle,

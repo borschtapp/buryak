@@ -9,6 +9,7 @@ import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/food.dart';
 import '../../shared/models/food_price.dart';
 import '../../shared/models/food_unit_conversion.dart';
+import '../../shared/models/unit.dart';
 import '../../shared/providers/food_catalog.dart';
 import '../../shared/providers/recipe_price.dart';
 import '../../shared/util/error_extensions.dart';
@@ -24,6 +25,7 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
     required this.unitName,
     this.prices = const [],
     this.existing,
+    this.targetUnitId,
   });
 
   final Food food;
@@ -31,6 +33,9 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
   final String unitName;
   final List<FoodPrice> prices;
   final FoodUnitConversion? existing;
+
+  /// Target to preselect instead of [existing]'s, whose amount is kept only for the same target.
+  final String? targetUnitId;
 
   static void show(
     BuildContext context, {
@@ -55,19 +60,27 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formKey = useMemoized(GlobalKey<FormState>.new);
+    final initialTargetUnitId = targetUnitId ?? existing?.targetUnitId;
+    // An amount only holds for the unit it was given in.
     final amountController = useTextEditingController(
-      text: existing?.targetAmount.formatAmount ?? '',
+      text: existing?.targetUnitId == initialTargetUnitId ? existing?.targetAmount.formatAmount : null,
     );
     final isSaving = ref.watch(saveConversionMutation).isPending;
     final unitsAsync = ref.watch(allUnitsProvider);
-    final selectedTargetUnitId = useState<String?>(
-      existing?.targetUnitId ?? food.defaultUnitId ?? prices.firstOrNull?.unitId,
-    );
+    final unitsById = (unitsAsync.value ?? const <Unit>[]).byId;
+    final source = unitsById[unitId];
+    bool isTarget(Unit unit) => source != null ? unit.isConversionTargetFor(source) : unit.isMeasurable && unit.id != unitId;
+
+    final pickedTargetUnitId = useState<String?>(initialTargetUnitId);
+    // Suggest the food's own units, skipping any the server would reject (e.g. the
+    // default unit is often the source unit itself).
+    final selectedTargetUnitId =
+        pickedTargetUnitId.value ??
+        [food.defaultUnitId, ...prices.map((p) => p.unitId)].map((id) => unitsById[id]).nonNulls.where(isTarget).firstOrNull?.id;
 
     Future<void> submit() async {
       if (!formKey.currentState!.validate()) return;
-      final targetUnitId = selectedTargetUnitId.value;
-      if (targetUnitId == null) return;
+      if (selectedTargetUnitId == null) return;
 
       final saved = await saveConversionMutation.tryRun(
         ref,
@@ -78,7 +91,7 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
               existingId: existing?.id,
               unitId: unitId,
               targetAmount: amountController.text.asDecimal!,
-              targetUnitId: targetUnitId,
+              targetUnitId: selectedTargetUnitId,
             ),
       );
       if (saved && context.mounted) context.pop();
@@ -120,10 +133,11 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
                   flex: 3,
                   child: UnitPickerFormField(
                     unitsAsync: unitsAsync,
-                    selectedUnitId: selectedTargetUnitId.value,
-                    onSelected: (u) => selectedTargetUnitId.value = u.id,
+                    selectedUnitId: selectedTargetUnitId,
+                    onSelected: (u) => pickedTargetUnitId.value = u.id,
                     labelText: context.l10n.foodConversionTargetUnit,
-                    validator: (_) => selectedTargetUnitId.value == null ? context.l10n.validatorFieldRequired : null,
+                    where: isTarget,
+                    validator: (_) => selectedTargetUnitId == null ? context.l10n.validatorFieldRequired : null,
                   ),
                 ),
               ],

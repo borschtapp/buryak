@@ -15,6 +15,7 @@ class UnitPickerFormField extends StatelessWidget {
     this.onCleared,
     this.validator,
     this.labelText,
+    this.where,
   });
 
   final AsyncValue<List<Unit>> unitsAsync;
@@ -24,6 +25,9 @@ class UnitPickerFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final String? labelText;
 
+  /// When set, the picker lists only units it accepts.
+  final bool Function(Unit unit)? where;
+
   @override
   Widget build(BuildContext context) {
     final selectedUnit = unitsAsync.value?.where((u) => u.id == selectedUnitId).firstOrNull;
@@ -32,7 +36,7 @@ class UnitPickerFormField extends StatelessWidget {
       selectionLabel: selectedUnit?.name,
       labelText: labelText ?? context.l10n.foodPriceUnit,
       isLoading: unitsAsync.isLoading,
-      pick: UnitPicker.pick,
+      pick: (context) => UnitPicker.pick(context, where: where),
       onSelected: onSelected,
       onCleared: onCleared,
       validator: validator,

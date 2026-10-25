@@ -113,6 +113,7 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
             TextField(
               controller: nameController,
               autofocus: item.amount == null,
+              inputFormatters: [LengthLimitingTextInputFormatter(shoppingItemTextMaxLength)],
               decoration: InputDecoration(
                 labelText: context.l10n.shoppingItemName,
                 border: const OutlineInputBorder(),
@@ -123,6 +124,7 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
             TextField(
               controller: nameController,
               autofocus: true,
+              inputFormatters: [LengthLimitingTextInputFormatter(shoppingItemTextMaxLength)],
               decoration: InputDecoration(
                 labelText: context.l10n.shoppingItemField,
                 border: const OutlineInputBorder(),

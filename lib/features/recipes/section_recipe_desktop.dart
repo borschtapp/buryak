@@ -21,6 +21,7 @@ import '../shopping/dialog_add_from_recipe.dart';
 import 'dialog_edit_food.dart';
 import 'dialog_edit_ingredient.dart';
 import 'dialog_food_price.dart';
+import 'dialog_ingredient_conversion.dart';
 import 'section_recipe_actions.dart';
 
 class RecipeDesktopSection extends HookWidget {
@@ -161,6 +162,7 @@ class RecipeDesktopSection extends HookWidget {
                   food: ingredient.food!,
                   ingredient: ingredient,
                 ),
+                onAddConversion: (ingredient) => IngredientConversionSheet.show(context, ingredient: ingredient),
                 onIngredientTap: openEditIngredient,
                 onIngredientLongPress: openEditFood,
               ),

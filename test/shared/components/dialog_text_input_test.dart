@@ -19,7 +19,7 @@ void main() {
   });
 
   /// Opens a [TextInputDialog] whose write is [submit], recording what reached `onSuccess`.
-  Future<List<String>> open(WidgetTester tester, Future<String> Function(String value) submit) async {
+  Future<List<String>> open(WidgetTester tester, Future<String> Function(String value) submit, {int? maxLength}) async {
     final successes = <String>[];
     final router = GoRouter(
       routes: [
@@ -33,6 +33,7 @@ void main() {
                 hintText: 'Hint',
                 submitLabel: 'Submit',
                 validator: (value) => value.isEmpty ? 'Required' : null,
+                maxLength: maxLength,
                 mutation: mutation,
                 onSubmit: (_, value) => submit(value),
                 onSuccess: successes.add,
@@ -93,5 +94,15 @@ void main() {
 
     expect(find.text('Required'), findsOneWidget);
     expect(calls, 0);
+  });
+
+  testWidgets('stops input at maxLength', (tester) async {
+    final successes = await open(tester, (value) async => value, maxLength: 5);
+
+    await tester.enterText(find.byType(TextField), 'Buttermilk');
+    await tester.tap(find.text('Submit'));
+    await tester.pumpAndSettle();
+
+    expect(successes, ['Butte']);
   });
 }

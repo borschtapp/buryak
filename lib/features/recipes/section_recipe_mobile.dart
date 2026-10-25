@@ -24,6 +24,7 @@ import '../../shared/util/ui_constants.dart';
 import 'dialog_edit_food.dart';
 import 'dialog_edit_ingredient.dart';
 import 'dialog_food_price.dart';
+import 'dialog_ingredient_conversion.dart';
 import 'section_recipe_actions.dart';
 
 enum _RecipeTab { ingredients, instructions, cost, nutrition }
@@ -195,6 +196,7 @@ class RecipeMobileSection extends HookConsumerWidget {
                     food: ingredient.food!,
                     ingredient: ingredient,
                   ),
+                  onAddConversion: (ingredient) => IngredientConversionSheet.show(context, ingredient: ingredient),
                   onIngredientTap: openEditIngredient,
                   onIngredientLongPress: openEditFood,
                 ),

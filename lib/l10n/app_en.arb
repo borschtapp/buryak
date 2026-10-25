@@ -272,13 +272,6 @@
   "shoppingNoIngredients": "No ingredients found for this recipe.",
   "shoppingAddToList": "Add to list",
   "shoppingAllIngredientsAdded": "All ingredients added to shopping list",
-  "shoppingPartialIngredientsAdded": "Added {count} of {total} ingredients",
-  "@shoppingPartialIngredientsAdded": {
-    "placeholders": {
-      "count": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
   "authorPublishedBy": "Published by ",
   "authorSourceLinkError": "Could not open source link",
   "updateAvailableTitle": "Update Available",
@@ -507,6 +500,7 @@
     }
   },
   "recipeCostAddPrice": "Add Price",
+  "recipeCostAddConversion": "Add Conversion",
   "recipeCostSkip": "Skip",
   "recipeCostNoPrices": "No prices recorded yet",
   "recipeCostNoPricesSubtitle": "Tap an ingredient to add its price.",
@@ -540,6 +534,7 @@
   "editIngredientFoodSearch": "Search foods…",
   "editIngredientFoodSearchHint": "Type at least 2 characters to search",
   "editFoodTitle": "Edit Food",
+  "editFoodDescription": "Description",
   "editFoodDefaultUnit": "Default Unit",
   "editFoodMerge": "Merge into…",
   "editFoodMergeTitle": "Merge Food",

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/experimental/mutation.dart';
@@ -26,6 +27,9 @@ class TextInputDialog<T> extends HookConsumerWidget {
   final String? Function(String)? validator;
   final String? initialText;
 
+  /// Stops input at this many characters, without showing a counter.
+  final int? maxLength;
+
   final Mutation<T> mutation;
 
   /// The write, given the trimmed input; run it through [MutationTransaction.get].
@@ -44,6 +48,7 @@ class TextInputDialog<T> extends HookConsumerWidget {
     this.helperText,
     this.validator,
     this.initialText,
+    this.maxLength,
     required this.mutation,
     required this.onSubmit,
     this.onSuccess,
@@ -90,6 +95,7 @@ class TextInputDialog<T> extends HookConsumerWidget {
               controller: controller,
               autofocus: true,
               enabled: !isLoading,
+              inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
               decoration: InputDecoration(
                 labelText: labelText,
                 hintText: hintText,

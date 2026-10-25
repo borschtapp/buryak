@@ -73,15 +73,18 @@ class EditUnitBottomSheet extends HookConsumerWidget {
             onPressed: save,
             child: Text(context.l10n.save),
           ),
-          const SizedBox(height: UIConstants.paddingSmall),
-          LoadingButton(
-            type: LoadingButtonType.text,
-            isLoading: isMerging,
-            icon: const Icon(Icons.merge_outlined),
-            onPressed: (isSaving || isMerging) ? null : merge,
-            spinnerSize: 16,
-            child: Text(context.l10n.editUnitMerge),
-          ),
+          // Other units can still be merged into it.
+          if (!unit.isPiece) ...[
+            const SizedBox(height: UIConstants.paddingSmall),
+            LoadingButton(
+              type: LoadingButtonType.text,
+              isLoading: isMerging,
+              icon: const Icon(Icons.merge_outlined),
+              onPressed: (isSaving || isMerging) ? null : merge,
+              spinnerSize: 16,
+              child: Text(context.l10n.editUnitMerge),
+            ),
+          ],
         ],
       ),
     );

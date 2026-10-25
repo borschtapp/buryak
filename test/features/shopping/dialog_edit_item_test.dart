@@ -47,6 +47,20 @@ void main() {
     expect(hasFocus('Name'), isTrue);
   });
 
+  testWidgets('the name stops at the server\'s 255 characters', (tester) async {
+    for (final item in const [
+      ShoppingItem(id: 'i1', text: 'Flour', amount: 200, unitId: 'g', unit: Unit(id: 'g', slug: 'g', name: 'g')),
+      ShoppingItem(id: 'i2', text: 'Something tasty'),
+    ]) {
+      await pumpSheet(tester, item);
+      final name = find.widgetWithText(TextField, item.amount != null ? 'Name' : 'Item');
+
+      await tester.enterText(name, 'a' * 300);
+
+      expect(tester.widget<TextField>(name).controller!.text, hasLength(255));
+    }
+  });
+
   testWidgets('a free-text item has no amount field', (tester) async {
     await pumpSheet(tester, const ShoppingItem(id: 'i1', text: 'Something tasty'));
 

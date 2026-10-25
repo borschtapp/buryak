@@ -36,6 +36,7 @@ class EditFoodBottomSheet extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final nameController = useTextEditingController(text: food.name);
+    final descriptionController = useTextEditingController(text: food.description);
     final selectedUnitId = useState<String?>(food.defaultUnitId);
     final isPantry = useState(food.pantry ?? false);
     final isSaving = ref.watch(updateFoodMutation).isPending;
@@ -46,6 +47,7 @@ class EditFoodBottomSheet extends HookConsumerWidget {
     Future<void> save() async {
       if (!formKey.currentState!.validate()) return;
       final newName = nameController.text.trim();
+      final newDescription = descriptionController.text.trim();
       final unitChanged = selectedUnitId.value != food.defaultUnitId;
       final saved = await updateFoodMutation.tryRun(
         ref,
@@ -54,6 +56,7 @@ class EditFoodBottomSheet extends HookConsumerWidget {
             .updateFood(
               food.id,
               name: newName != food.name ? newName : null,
+              description: newDescription != (food.description ?? '') ? newDescription : null,
               defaultUnitId: unitChanged ? selectedUnitId.value : null,
               clearDefaultUnit: unitChanged && selectedUnitId.value == null,
               pantry: isPantry.value != (food.pantry ?? false) ? isPantry.value : null,
@@ -70,53 +73,70 @@ class EditFoodBottomSheet extends HookConsumerWidget {
     return StandardBottomSheet(
       title: context.l10n.editFoodTitle,
       maxHeightFraction: 0.7,
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextFormField(
-              controller: nameController,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(
-                labelText: context.l10n.editIngredientName,
-                border: const OutlineInputBorder(),
+      // Scrolls on short screens instead of overflowing the capped height.
+      expandChild: true,
+      child: SingleChildScrollView(
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: nameController,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: InputDecoration(
+                  labelText: context.l10n.editIngredientName,
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (v) => (v == null || v.trim().isEmpty) ? context.l10n.validatorFieldRequired : null,
               ),
-              validator: (v) => (v == null || v.trim().isEmpty) ? context.l10n.validatorFieldRequired : null,
-            ),
-            const SizedBox(height: UIConstants.paddingSmall),
-            UnitPickerFormField(
-              unitsAsync: unitsAsync,
-              selectedUnitId: selectedUnitId.value,
-              onSelected: (u) => selectedUnitId.value = u.id,
-              onCleared: () => selectedUnitId.value = null,
-              labelText: context.l10n.editFoodDefaultUnit,
-            ),
-            const SizedBox(height: UIConstants.paddingSmall),
-            SwitchListTile.adaptive(
-              value: isPantry.value,
-              onChanged: (v) => isPantry.value = v,
-              title: Text(context.l10n.editFoodPantry),
-              subtitle: Text(context.l10n.editFoodPantryHint),
-              contentPadding: EdgeInsets.zero,
-            ),
-            const SizedBox(height: UIConstants.paddingMedium),
-            LoadingButton(
-              isLoading: isSaving,
-              onPressed: save,
-              child: Text(context.l10n.save),
-            ),
-            const SizedBox(height: UIConstants.paddingSmall),
-            LoadingButton(
-              type: LoadingButtonType.text,
-              isLoading: isMerging,
-              onPressed: (isSaving || isMerging) ? null : merge,
-              spinnerSize: 16,
-              icon: const Icon(Icons.merge_outlined),
-              child: Text(context.l10n.editFoodMerge),
-            ),
-          ],
+              const SizedBox(height: UIConstants.paddingSmall),
+              TextFormField(
+                controller: descriptionController,
+                textCapitalization: TextCapitalization.sentences,
+                minLines: 1,
+                maxLines: 4,
+                // The server's limit; long enough that the counter helps.
+                maxLength: 1000,
+                decoration: InputDecoration(
+                  labelText: context.l10n.editFoodDescription,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: UIConstants.paddingSmall),
+              UnitPickerFormField(
+                unitsAsync: unitsAsync,
+                selectedUnitId: selectedUnitId.value,
+                onSelected: (u) => selectedUnitId.value = u.id,
+                onCleared: () => selectedUnitId.value = null,
+                labelText: context.l10n.editFoodDefaultUnit,
+              ),
+              const SizedBox(height: UIConstants.paddingSmall),
+              SwitchListTile.adaptive(
+                value: isPantry.value,
+                onChanged: (v) => isPantry.value = v,
+                title: Text(context.l10n.editFoodPantry),
+                subtitle: Text(context.l10n.editFoodPantryHint),
+                contentPadding: EdgeInsets.zero,
+              ),
+              const SizedBox(height: UIConstants.paddingMedium),
+              LoadingButton(
+                isLoading: isSaving,
+                onPressed: save,
+                child: Text(context.l10n.save),
+              ),
+              const SizedBox(height: UIConstants.paddingSmall),
+              LoadingButton(
+                type: LoadingButtonType.text,
+                isLoading: isMerging,
+                onPressed: (isSaving || isMerging) ? null : merge,
+                spinnerSize: 16,
+                icon: const Icon(Icons.merge_outlined),
+                child: Text(context.l10n.editFoodMerge),
+              ),
+            ],
+          ),
         ),
       ),
     );
