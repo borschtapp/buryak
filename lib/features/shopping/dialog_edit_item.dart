@@ -23,7 +23,8 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasAmount = item.amount != null;
+    // A linked food or unit keeps the field after its amount is cleared, so it can be set again.
+    final hasAmount = item.amount != null || item.foodId != null || item.unitId != null;
 
     final nameController = useTextEditingController(text: item.text ?? '');
     final amountController = useTextEditingController(text: item.amount.formatAmount);
@@ -77,7 +78,8 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
                   width: 160,
                   child: TextField(
                     controller: amountController,
-                    autofocus: true,
+                    // An item kept only for its food (e.g. "Salt") is opened to rename it.
+                    autofocus: item.amount != null,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     // Reject (rather than trim) any edit that isn't a number with at most one
                     // decimal separator, so input like '1.000,5' can't be typed.
@@ -110,6 +112,7 @@ class EditShoppingItemBottomSheet extends HookConsumerWidget {
             const SizedBox(height: UIConstants.paddingMedium),
             TextField(
               controller: nameController,
+              autofocus: item.amount == null,
               decoration: InputDecoration(
                 labelText: context.l10n.shoppingItemName,
                 border: const OutlineInputBorder(),

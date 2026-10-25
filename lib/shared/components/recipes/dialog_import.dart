@@ -19,7 +19,7 @@ void showImportDialog(BuildContext context, {bool isFeedOnly = false}) {
       submitLabel: isFeedOnly ? l10n.importAddSubmit : l10n.importSubmit,
       validator: (value) => Validator.validateUrl(Validator.extractUrl(value), l10n),
       mutation: importMutation,
-      onSubmit: (tsx, url) => tsx.get(feedListProvider.notifier).importUrl(Validator.extractUrl(url), feedOnly: isFeedOnly),
+      onSubmit: (tsx, url) => tsx.get(importerProvider).importUrl(Validator.extractUrl(url), feedOnly: isFeedOnly),
       onSuccess: (result) {
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(

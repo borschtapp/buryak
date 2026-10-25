@@ -65,7 +65,7 @@ class ShoppingBottomSheet extends HookConsumerWidget {
       try {
         successCount = await addShoppingItemsMutation.run(
           ref,
-          (tsx) => tsx.get(shoppingItemsProvider.notifier).addItems(itemsToCreate),
+          (tsx) => tsx.get(shoppingItemWriterProvider).addItems(itemsToCreate),
         );
       } on Object {
         return; // Already reported by MutationErrorReporter.

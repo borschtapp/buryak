@@ -10,9 +10,29 @@ import 'notifier_feed.dart';
 
 part 'notifier_feed_list.g.dart';
 
-// Run with `tsx.get(feedListProvider.notifier)`: the transaction keeps this
-// auto-disposed notifier alive until the import has finished.
+// Run with `tsx.get(importerProvider)`.
 final importMutation = Mutation<ImportResult>(label: 'import');
+
+@Riverpod(keepAlive: true)
+Importer importer(Ref ref) => Importer(ref);
+
+/// Imports recipes and feeds. Kept off [FeedList] so an import started from
+/// another screen doesn't load the feed list only to throw it away.
+class Importer {
+  Importer(this._ref);
+
+  final Ref _ref;
+
+  /// Imports a recipe or feed from [url]; with [feedOnly], only a feed.
+  Future<ImportResult> importUrl(String url, {required bool feedOnly}) async {
+    final result = await _ref.read(importRepositoryProvider).import(url, type: feedOnly ? 'feed' : 'auto');
+    _ref
+      ..invalidate(feedListProvider)
+      ..invalidate(feedStreamProvider)
+      ..invalidate(savedRecipesProvider);
+    return result;
+  }
+}
 
 @riverpod
 class FeedList extends _$FeedList {
@@ -43,16 +63,6 @@ class FeedList extends _$FeedList {
       ref.invalidateSelf();
       rethrow;
     }
-  }
-
-  /// Imports a recipe or feed from [url]; with [feedOnly], only a feed.
-  Future<ImportResult> importUrl(String url, {required bool feedOnly}) async {
-    final result = await ref.read(importRepositoryProvider).import(url, type: feedOnly ? 'feed' : 'auto');
-    ref.invalidate(feedStreamProvider);
-    ref.invalidate(savedRecipesProvider);
-    // Last step: rebuilding replaces this notifier, so nothing after it may use ref or state.
-    ref.invalidateSelf();
-    return result;
   }
 
   Future<void> restoreFeed(Feed feed) async {

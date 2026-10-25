@@ -60,7 +60,7 @@ void main() {
 
     final count = await addShoppingItemsMutation.run(
       container,
-      (tsx) => tsx.get(shoppingItemsProvider.notifier).addItems(items),
+      (tsx) => tsx.get(shoppingItemWriterProvider).addItems(items),
     );
     await container.read(shoppingItemsProvider.future);
 
@@ -68,7 +68,7 @@ void main() {
     verify(() => repo.findItems('list-1', limit: 20, offset: 0)).called(2);
   });
 
-  test('addItems works before the list has ever loaded (cold start from a recipe)', () async {
+  test('addItems before the list was ever shown writes without loading it (cold start from a recipe)', () async {
     final container = containerWithList('list-1');
     final items = [
       {'text': 'Milk'},
@@ -78,11 +78,19 @@ void main() {
 
     final count = await addShoppingItemsMutation.run(
       container,
-      (tsx) => tsx.get(shoppingItemsProvider.notifier).addItems(items),
+      (tsx) => tsx.get(shoppingItemWriterProvider).addItems(items),
     );
 
     expect(count, 1);
     verify(() => repo.createItems('list-1', items)).called(1);
+    await Future<void>.delayed(Duration.zero);
+    verifyNever(
+      () => repo.findItems(
+        any(),
+        limit: any(named: 'limit'),
+        offset: any(named: 'offset'),
+      ),
+    );
   });
 
   test('addItems succeeds when the list is refreshed while the write is in flight', () async {
@@ -102,7 +110,7 @@ void main() {
 
     final pending = addShoppingItemsMutation.run(
       container,
-      (tsx) => tsx.get(shoppingItemsProvider.notifier).addItems(items),
+      (tsx) => tsx.get(shoppingItemWriterProvider).addItems(items),
     );
     await Future<void>.delayed(Duration.zero);
     container.invalidate(shoppingItemsProvider); // e.g. pull-to-refresh

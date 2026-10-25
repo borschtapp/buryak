@@ -114,12 +114,13 @@ class HouseholdNotifier extends _$HouseholdNotifier {
 
   Future<void> joinHousehold(String code) async {
     final response = await ref.read(householdRepositoryProvider).joinHousehold(code);
+    final sameHousehold = response.householdId == ref.read(sessionProvider)?.householdId;
     // Switches the session to the new household, which rebuilds this notifier
     // and every other household-scoped cache.
     await ref.read(authProvider.notifier).updateUser(response);
-    // Still reload when the code was for the current household, so its members are fresh.
+    // A code for the current household changes no session: reload so its members are fresh.
     // Last step: rebuilding replaces this notifier, so nothing after it may use ref or state.
-    ref.invalidateSelf();
+    if (sameHousehold) ref.invalidateSelf();
   }
 
   Future<void> leaveHousehold() async {

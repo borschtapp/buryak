@@ -58,15 +58,15 @@ class PlanBottomSheet extends HookConsumerWidget {
 
     Future<void> save() async {
       final saved = await saveMealPlanMutation.tryRun(ref, (tsx) {
-        final notifier = tsx.get(mealPlanWeekProvider.notifier);
+        final writer = tsx.get(mealPlanWriterProvider);
         return isEditing
-            ? notifier.editPlan(
+            ? writer.editPlan(
                 plan!.id,
                 date: selectedDate.value,
                 mealType: selectedMealType.value,
                 servings: servings.value,
               )
-            : notifier.createPlan(
+            : writer.createPlan(
                 selectedDate.value,
                 selectedMealType.value,
                 recipeId: recipe!.id,

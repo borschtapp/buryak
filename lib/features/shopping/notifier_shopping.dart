@@ -10,15 +10,37 @@ part 'notifier_shopping.g.dart';
 
 // Run with `tsx.get(shoppingItemsProvider.notifier)`.
 final addShoppingItemMutation = Mutation<void>(label: 'addShoppingItem');
-final addShoppingItemsMutation = Mutation<int>(label: 'addShoppingItems');
 final updateShoppingItemMutation = Mutation<void>(label: 'updateShoppingItem');
+
+// Run with `tsx.get(shoppingItemWriterProvider)`.
+final addShoppingItemsMutation = Mutation<int>(label: 'addShoppingItems');
+
+@Riverpod(keepAlive: true)
+ShoppingItemWriter shoppingItemWriter(Ref ref) => ShoppingItemWriter(ref);
+
+/// Adds items from outside the shopping screen. Kept off [ShoppingItems] so
+/// adding a recipe's ingredients doesn't load a list nobody is showing.
+class ShoppingItemWriter {
+  ShoppingItemWriter(this._ref);
+
+  final Ref _ref;
+
+  /// Adds [items] to the primary list and returns how many were created.
+  Future<int> addItems(List<Map<String, dynamic>> items) async {
+    final listId = await _ref.read(primaryShoppingListIdProvider.future);
+    final created = await _ref.read(shoppingListRepositoryProvider).createItems(listId, items);
+    // Reloads the list only if it was loaded.
+    _ref.invalidate(shoppingItemsProvider);
+    return created.length;
+  }
+}
 
 @Riverpod(keepAlive: true)
 class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem> {
   // The household's default list can't be deleted or replaced (backend
   // `ShoppingListService`), so its cached id stays valid until the session
-  // changes. Read it per call rather than caching it in [build]: writes such as
-  // [addItems] can run before the list has ever loaded.
+  // changes. Read it per call rather than caching it in [build]: a write can
+  // run before the list has finished loading.
   Future<String> get _listId => ref.read(primaryShoppingListIdProvider.future);
 
   @override
@@ -115,13 +137,5 @@ class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem
     } else {
       state = AsyncData([newItem]);
     }
-  }
-
-  /// Adds [items] to the primary list and returns how many were created.
-  Future<int> addItems(List<Map<String, dynamic>> items) async {
-    final created = await ref.read(shoppingListRepositoryProvider).createItems(await _listId, items);
-    // Last step: rebuilding replaces this notifier, so nothing after it may use ref or state.
-    ref.invalidateSelf();
-    return created.length;
   }
 }

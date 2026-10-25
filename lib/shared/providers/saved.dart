@@ -111,13 +111,17 @@ class SavedCollections extends _$SavedCollections with PagedNotifierMixin<Collec
   /// Adds [recipeId] to the collections in [add] and removes it from those in [remove].
   Future<void> updateRecipeCollections(String recipeId, {required Set<String> add, required Set<String> remove}) async {
     final repo = ref.read(collectionRepositoryProvider);
-    await Future.wait([
-      ...add.map((id) => repo.addRecipe(id, recipeId)),
-      ...remove.map((id) => repo.removeRecipe(id, recipeId)),
-    ]);
-    ref.invalidate(collectionRecipesProvider);
-    // Last step: rebuilding replaces this notifier, so nothing after it may use ref or state.
-    ref.invalidateSelf();
+    try {
+      // Waits for every change before throwing, so the reload sees all that succeeded.
+      await Future.wait([
+        ...add.map((id) => repo.addRecipe(id, recipeId)),
+        ...remove.map((id) => repo.removeRecipe(id, recipeId)),
+      ]);
+    } finally {
+      ref.invalidate(collectionRecipesProvider);
+      // Last step: rebuilding replaces this notifier, so nothing after it may use ref or state.
+      ref.invalidateSelf();
+    }
   }
 }
 
