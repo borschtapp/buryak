@@ -126,6 +126,11 @@ class TabletAppBar extends StatelessWidget {
   final bool scrollable;
   final String fallbackRoute;
 
+  /// Lets [child] span the full width and centre itself (see
+  /// [ContentFrame.gutter]); the header aligns to [UIConstants.defaultMaxWidth].
+  /// Only applies when not [scrollable].
+  final bool fullWidth;
+
   const TabletAppBar({
     super.key,
     required this.child,
@@ -133,6 +138,7 @@ class TabletAppBar extends StatelessWidget {
     this.appBarTitle,
     this.scrollable = true,
     this.fallbackRoute = RouteNames.feed,
+    this.fullWidth = false,
   });
 
   @override
@@ -143,29 +149,49 @@ class TabletAppBar extends StatelessWidget {
 
     final title = appBarTitle != null ? Text(appBarTitle!, style: context.textTheme.headlineSmall) : appBar?.title;
 
+    final header = SafeArea(
+      bottom: false,
+      child: Row(
+        children: [
+          appBar?.leading ??
+              (appBar?.automaticallyImplyLeading != false
+                  ? BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute))
+                  : const SizedBox.shrink()),
+          const SizedBox(width: 6),
+          ?title,
+          const Expanded(child: SizedBox()),
+          Row(
+            children: appBar?.actions ?? [],
+          ),
+        ],
+      ),
+    );
+
+    if (fullWidth && !scrollable) {
+      return Column(
+        children: [
+          ContentFrame(
+            maxWidth: UIConstants.defaultMaxWidth,
+            padding: const EdgeInsets.fromLTRB(
+              UIConstants.paddingMedium,
+              UIConstants.paddingMedium,
+              UIConstants.paddingMedium,
+              0,
+            ),
+            child: header,
+          ),
+          Expanded(child: child),
+        ],
+      );
+    }
+
     final content = ContentFrame(
       padding: const EdgeInsets.all(UIConstants.paddingMedium),
       child: Column(
         crossAxisAlignment: .start,
         mainAxisAlignment: .start,
         children: [
-          SafeArea(
-            bottom: false,
-            child: Row(
-              children: [
-                appBar?.leading ??
-                    (appBar?.automaticallyImplyLeading != false
-                        ? BackButton(onPressed: () => context.popOrGoNamed(fallbackRoute))
-                        : const SizedBox.shrink()),
-                const SizedBox(width: 6),
-                ?title,
-                const Expanded(child: SizedBox()),
-                Row(
-                  children: appBar?.actions ?? [],
-                ),
-              ],
-            ),
-          ),
+          header,
           if (scrollable) child else Expanded(child: child),
         ],
       ),

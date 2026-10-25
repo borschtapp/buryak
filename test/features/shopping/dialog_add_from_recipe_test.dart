@@ -33,6 +33,12 @@ void main() {
     expect(tester.getTopLeft(find.byType(ShoppingBottomSheet)).dy, statusBar + kToolbarHeight);
   });
 
+  testWidgets('the sheet paints the themed surface like other bottom sheets', (tester) async {
+    await pumpAndOpen(tester, (context) => ShoppingBottomSheet.show(context, Recipe.fromJson(fakeRecipeJson())));
+
+    expect(tester.widget<BottomSheet>(find.byType(BottomSheet)).backgroundColor?.a, 1);
+  });
+
   /// Opens the sheet for [recipe] and taps "Add to list" with the default selection.
   Future<AppLocalizations> addAll(WidgetTester tester, MockShoppingListRepository repo, Recipe recipe) async {
     await pumpAndOpen(

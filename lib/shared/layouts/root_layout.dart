@@ -17,6 +17,7 @@ class RootLayout extends StatelessWidget {
     this.hideBottomNavigationBar = false,
     this.extendBodyBehindAppBar = false,
     this.contentScrollable = true,
+    this.contentFullWidth = false,
   });
 
   final Widget child;
@@ -28,6 +29,7 @@ class RootLayout extends StatelessWidget {
   final Widget? floatingActionButton;
   final bool extendBodyBehindAppBar;
   final bool contentScrollable;
+  final bool contentFullWidth;
   static const _navigationRailKey = PageStorageKey('navigationRailKey');
 
   @override
@@ -61,6 +63,7 @@ class RootLayout extends StatelessWidget {
         appBar: appBar,
         appBarTitle: appBarTitle,
         scrollable: contentScrollable,
+        fullWidth: contentFullWidth,
         fallbackRoute: fallbackRoute,
         child: SelectionArea(
           child: child,

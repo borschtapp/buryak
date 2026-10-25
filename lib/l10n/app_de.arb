@@ -217,6 +217,12 @@
   "recipeLikeTooltip": "Gefällt mir",
   "recipeDislikeTooltip": "Gefällt mir nicht",
   "recipeLikeFailed": "Status konnte nicht aktualisiert werden",
+  "recipeLikedBy": "Gefällt {names}",
+  "@recipeLikedBy": {
+    "placeholders": {
+      "names": { "type": "String" }
+    }
+  },
   "cookingComplete": "Fertig",
   "cookingStep": "Schritt {current}",
   "@cookingStep": {

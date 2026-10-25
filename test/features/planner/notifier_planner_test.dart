@@ -154,7 +154,12 @@ void main() {
 
       await week.read(mealPlanWeekProvider.future);
 
-      final to = verify(() => repo.findAll(from: start, to: captureAny(named: 'to'))).captured.single;
+      final to = verify(
+        () => repo.findAll(
+          from: start,
+          to: captureAny(named: 'to'),
+        ),
+      ).captured.single;
       expect(to, DateTime(start.year, start.month, start.day + 6), reason: 'week starting $start');
     }
   });

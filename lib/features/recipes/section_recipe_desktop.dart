@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../shared/components/recipes/author_line.dart';
 import '../../shared/components/recipes/hero_image.dart';
@@ -106,7 +105,7 @@ class RecipeDesktopSection extends HookWidget {
                 const Spacer(),
                 if (recipe.published != null)
                   Text(
-                    context.l10n.recipesPublishedDate(DateFormat.yMMMd(context.l10n.localeName).format(recipe.published!)),
+                    context.l10n.recipesPublishedDate(recipe.published!.localizedDate(context.l10n)),
                     style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
                   ),
               ],

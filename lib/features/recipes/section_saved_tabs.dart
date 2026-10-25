@@ -9,6 +9,7 @@ import '../../shared/components/empty_state.dart';
 import '../../shared/components/icon_label.dart';
 import '../../shared/components/recipes/recipes_grid.dart';
 import '../../shared/layouts/app_list_scaffold.dart';
+import '../../shared/layouts/content_frame.dart';
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
@@ -45,6 +46,7 @@ class SavedTabs extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AppListScaffold<List<Recipe>>(
       value: value,
+      maxWidth: double.infinity,
       onRefresh: onRefresh,
       onLoadMore: onLoadMore,
       isLoadingMore: isLoadingMore,
@@ -96,6 +98,7 @@ class SavedCookbooksTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AppListScaffold<List<Collection>>(
       value: value,
+      maxWidth: double.infinity,
       onRefresh: onRefresh,
       onLoadMore: onLoadMore,
       isLoadingMore: isLoadingMore,
@@ -110,114 +113,128 @@ class SavedCookbooksTab extends ConsumerWidget {
           label: Text(context.l10n.refresh),
         ),
       ),
-      data: (data) => GridView.builder(
-        padding: const EdgeInsets.all(UIConstants.paddingMedium),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 300,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 16 / 9,
+      data: (data) => LayoutBuilder(
+        builder: (context, constraints) => GridView.builder(
+          padding: EdgeInsets.symmetric(
+            horizontal: ContentFrame.gutter(constraints.maxWidth) + UIConstants.paddingMedium,
+            vertical: UIConstants.paddingMedium,
+          ),
+          // 360 keeps it to 4 columns at the full content width.
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 360,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            childAspectRatio: 16 / 9,
+          ),
+          itemCount: data.length,
+          itemBuilder: (context, index) => _CollectionCard(collection: data[index]),
         ),
-        itemCount: data.length,
-        itemBuilder: (context, index) {
-          final collection = data[index];
-          return Card(
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: () {
-                context.pushNamed(
-                  RouteNames.collection,
-                  pathParameters: {'cid': collection.id},
-                );
-              },
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: _CollectionCover(
-                      collection: collection,
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: const [0.4, 1.0],
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withValues(alpha: 0.85),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          collection.name,
-                          style: context.textTheme.titleMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          context.l10n.recipesRecipesCount(collection.totalRecipes ?? 0),
-                          style: context.textTheme.bodySmall?.copyWith(color: Colors.white70),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: PopupMenuButton<_CollectionAction>(
-                      icon: const Icon(Icons.more_horiz, color: Colors.white),
-                      tooltip: context.l10n.recipesMoreOptionsTooltip,
-                      onSelected: (value) async {
-                        if (value == _CollectionAction.delete) {
-                          final confirmed = await showConfirmDialog(
-                            context,
-                            title: context.l10n.recipesDeleteCookbookTitle,
-                            content: context.l10n.recipesDeleteCookbookContent(collection.name),
-                            confirmLabel: context.l10n.delete,
-                            destructive: true,
-                          );
+      ),
+    );
+  }
+}
 
-                          if (confirmed) {
-                            try {
-                              await ref.read(collectionRepositoryProvider).delete(collection.id);
-                              HapticFeedback.mediumImpact();
-                              ref.invalidate(savedCollectionsProvider);
-                            } catch (e) {
-                              ref.handleException(e);
-                            }
-                          }
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: _CollectionAction.delete,
-                          child: IconLabel(
-                            icon: Icons.delete_outline,
-                            label: context.l10n.delete,
-                            color: Colors.red,
-                            iconSize: 24,
-                            spacing: 8,
-                          ),
-                        ),
-                      ],
+class _CollectionCard extends ConsumerWidget {
+  final Collection collection;
+
+  const _CollectionCard({required this.collection});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          context.pushNamed(
+            RouteNames.collection,
+            pathParameters: {'cid': collection.id},
+          );
+        },
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: _CollectionCover(
+                collection: collection,
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: const [0.4, 1.0],
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.85),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    collection.name,
+                    style: context.textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    context.l10n.recipesRecipesCount(collection.totalRecipes ?? 0),
+                    style: context.textTheme.bodySmall?.copyWith(color: Colors.white70),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: PopupMenuButton<_CollectionAction>(
+                icon: const Icon(Icons.more_horiz, color: Colors.white),
+                tooltip: context.l10n.recipesMoreOptionsTooltip,
+                onSelected: (value) async {
+                  if (value == _CollectionAction.delete) {
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: context.l10n.recipesDeleteCookbookTitle,
+                      content: context.l10n.recipesDeleteCookbookContent(collection.name),
+                      confirmLabel: context.l10n.delete,
+                      destructive: true,
+                    );
+
+                    if (confirmed) {
+                      try {
+                        await ref.read(collectionRepositoryProvider).delete(collection.id);
+                        HapticFeedback.mediumImpact();
+                        ref.invalidate(savedCollectionsProvider);
+                      } catch (e) {
+                        ref.handleException(e);
+                      }
+                    }
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: _CollectionAction.delete,
+                    child: IconLabel(
+                      icon: Icons.delete_outline,
+                      label: context.l10n.delete,
+                      color: Colors.red,
+                      iconSize: 24,
+                      spacing: 8,
                     ),
                   ),
                 ],
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }

@@ -116,6 +116,10 @@ class _RouteConfig {
   final bool contentScrollable;
   final bool extendBodyBehindAppBar;
 
+  /// Content spans the full width under a header capped at the default max
+  /// width, so a scrollable list keeps its scrollbar at the window edge.
+  final bool contentFullWidth;
+
   /// Builds actions for the primary-tab logo AppBar (e.g. tune icon on Feed).
   /// Only applied when no custom [appBar] or [appBarTitle] is in use, so it
   /// never conflicts with detail-route headers.
@@ -127,6 +131,7 @@ class _RouteConfig {
     this.hideBottomNav = false,
     this.contentScrollable = true,
     this.extendBodyBehindAppBar = false,
+    this.contentFullWidth = false,
     this.tabActionsBuilder,
   });
 }
@@ -138,7 +143,7 @@ const Map<String, _RouteConfig> _routeConfigs = {
   ),
   RouteNames.feeds: _RouteConfig(hideBottomNav: true, contentScrollable: false),
   RouteNames.recipe: _RouteConfig(hideBottomNav: true, contentScrollable: false, extendBodyBehindAppBar: true),
-  RouteNames.collection: _RouteConfig(hideBottomNav: true, contentScrollable: false),
+  RouteNames.collection: _RouteConfig(hideBottomNav: true, contentScrollable: false, contentFullWidth: true),
 };
 
 List<Widget> _buildFeedTabActions(BuildContext context) => [
@@ -186,6 +191,7 @@ GoRouter router(Ref ref) {
             hideBottomNavigationBar: config?.hideBottomNav ?? false,
             contentScrollable: config?.contentScrollable ?? true,
             extendBodyBehindAppBar: config?.extendBodyBehindAppBar ?? false,
+            contentFullWidth: config?.contentFullWidth ?? false,
             floatingActionButton: fab,
             child: child,
           );

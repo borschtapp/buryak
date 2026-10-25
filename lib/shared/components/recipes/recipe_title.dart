@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../models/recipe.dart';
 import '../../util/extensions.dart';
@@ -48,7 +47,7 @@ class RecipeTitle extends StatelessWidget {
               ),
               if (recipe.published != null) ...[
                 Text(
-                  DateFormat.yMMMd(context.l10n.localeName).format(recipe.published!),
+                  recipe.published!.localizedDate(context.l10n),
                   style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
                 ),
               ],

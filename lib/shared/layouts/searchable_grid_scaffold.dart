@@ -10,37 +10,42 @@ class SearchableGridScaffold extends StatelessWidget {
     this.searchBar,
     required this.child,
     this.topWidget,
-    this.maxWidth = 1440,
   });
 
   final Widget? searchBar;
   final Widget child;
   final Widget? topWidget;
-  final double maxWidth;
 
   @override
   Widget build(BuildContext context) {
-    return ContentFrame(
-      maxWidth: maxWidth,
-      child: Column(
-        children: [
-          Material(
-            color: context.colors.surface,
+    // Only the header is capped; the list spans the full width and centres its
+    // items itself (see [ContentFrame.gutter]) so its scrollbar sits at the edge.
+    return Column(
+      children: [
+        Material(
+          color: context.colors.surface,
+          child: ContentFrame(
+            maxWidth: UIConstants.defaultMaxWidth,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ?topWidget,
                 if (searchBar case final bar?)
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(12, UIConstants.paddingSmall, 12, 4),
+                    padding: const EdgeInsets.fromLTRB(
+                      UIConstants.paddingMedium,
+                      UIConstants.paddingSmall,
+                      UIConstants.paddingMedium,
+                      4,
+                    ),
                     child: bar,
                   ),
               ],
             ),
           ),
-          Expanded(child: child),
-        ],
-      ),
+        ),
+        Expanded(child: child),
+      ],
     );
   }
 }

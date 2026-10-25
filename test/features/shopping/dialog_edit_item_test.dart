@@ -11,7 +11,9 @@ void main() {
     ProviderScope(
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: Scaffold(body: EditShoppingItemBottomSheet(key: ValueKey(item.id), item: item)),
+        home: Scaffold(
+          body: EditShoppingItemBottomSheet(key: ValueKey(item.id), item: item),
+        ),
       ),
     ),
   );
@@ -49,7 +51,13 @@ void main() {
 
   testWidgets('the name stops at the server\'s 255 characters', (tester) async {
     for (final item in const [
-      ShoppingItem(id: 'i1', text: 'Flour', amount: 200, unitId: 'g', unit: Unit(id: 'g', slug: 'g', name: 'g')),
+      ShoppingItem(
+        id: 'i1',
+        text: 'Flour',
+        amount: 200,
+        unitId: 'g',
+        unit: Unit(id: 'g', slug: 'g', name: 'g'),
+      ),
       ShoppingItem(id: 'i2', text: 'Something tasty'),
     ]) {
       await pumpSheet(tester, item);

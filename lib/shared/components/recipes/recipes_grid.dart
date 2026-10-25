@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../layouts/content_frame.dart';
 import '../../models/recipe.dart';
-import '../../util/breakpoints.dart';
 import '../../util/extensions.dart';
 import '../../util/ui_constants.dart';
 import 'recipe_tile.dart';
@@ -32,11 +31,10 @@ class RecipesGrid extends HookWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final newCount = constraints.isMobile
-            ? max(1, constraints.maxWidth ~/ UIConstants.gridItemWidthMobile)
-            : constraints.maxWidth >= AppBreakpoints.wide
-            ? min(UIConstants.gridMaxColumnsWide, max(1, constraints.maxWidth ~/ UIConstants.gridItemWidthWide))
-            : max(1, constraints.maxWidth ~/ UIConstants.gridItemWidthDesktop);
+        final gutter = ContentFrame.gutter(constraints.maxWidth);
+        final contentWidth = constraints.maxWidth - 2 * gutter;
+        final itemWidth = constraints.isMobile ? UIConstants.gridItemWidthMobile : UIConstants.gridItemWidthDesktop;
+        final newCount = (contentWidth ~/ itemWidth).clamp(1, UIConstants.gridMaxColumns);
         final effectiveCount = crossAxisCount.value ?? newCount;
 
         if (newCount != effectiveCount) {
@@ -47,7 +45,7 @@ class RecipesGrid extends HookWidget {
         }
 
         return GridView.builder(
-          padding: const EdgeInsets.all(5),
+          padding: EdgeInsets.symmetric(horizontal: gutter, vertical: 5),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: effectiveCount,
             childAspectRatio: constraints.isMobile ? 1.2 : 1.1,

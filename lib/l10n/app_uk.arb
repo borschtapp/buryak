@@ -217,6 +217,12 @@
   "recipeLikeTooltip": "Подобається",
   "recipeDislikeTooltip": "Не подобається",
   "recipeLikeFailed": "Не вдалося оновити статус",
+  "recipeLikedBy": "Подобається: {names}",
+  "@recipeLikedBy": {
+    "placeholders": {
+      "names": { "type": "String" }
+    }
+  },
   "cookingComplete": "Готово",
   "cookingStep": "Крок {current}",
   "@cookingStep": {

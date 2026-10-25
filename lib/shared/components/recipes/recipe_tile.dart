@@ -12,6 +12,7 @@ import '../../util/ui_constants.dart';
 import '../icon_label.dart';
 import 'author_line.dart';
 import 'dialog_select_collections.dart';
+import 'liked_by_avatars.dart';
 import 'placeholder.dart';
 
 class RecipeTile extends HookConsumerWidget {
@@ -25,7 +26,9 @@ class RecipeTile extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recipeId = recipe.id;
-    final (:isSaved, :toggle) = ref.watch(savedRecipeStateProvider(recipeId));
+    final isSaved = ref.watchIsSaved(recipe);
+    final likedByOthers = ref.watchLikedByOthers(recipe);
+    final totalTime = recipe.totalTime.asDuration?.localized(context.l10n) ?? '-';
 
     final collectionsOverride = useState<List<Collection>?>(null);
     useEffect(() {
@@ -51,66 +54,61 @@ class RecipeTile extends HookConsumerWidget {
                     child: Semantics(
                       label: 'Photo of ${recipe.name}',
                       excludeSemantics: true,
-                      child: Container(
-                        foregroundDecoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.black.withValues(alpha: 0.78),
-                              Colors.transparent,
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            stops: const [0, 0.3],
-                          ),
-                        ),
-                        child: () {
-                          if (recipe.imageUrl == null) {
-                            return const RecipePlaceholder();
-                          }
-                          return CachedNetworkImage(
-                            imageUrl: recipe.imageUrl!,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) => const RecipePlaceholder(),
-                          );
-                        }(),
-                      ),
+                      child: recipe.imageUrl == null
+                          ? const RecipePlaceholder()
+                          : CachedNetworkImage(
+                              imageUrl: recipe.imageUrl!,
+                              fit: BoxFit.cover,
+                              errorWidget: (context, url, error) => const RecipePlaceholder(),
+                            ),
                     ),
                   ),
                 ),
+                // One translucent pill in the corner gives the icons contrast on any photo,
+                // without darkening the photo itself.
                 Positioned(
-                  top: 14,
-                  right: 14,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () async {
-                          final updated = await showCollectionsBottomSheet(
-                            context,
-                            ref,
-                            recipeId: recipeId,
-                            initialCollections: collectionsOverride.value ?? recipe.collections,
-                          );
-                          if (updated != null) collectionsOverride.value = updated;
-                        },
-                        icon: Icon(
-                          isCollected ? Icons.collections_bookmark : Icons.bookmark_add_outlined,
-                          color: Colors.white,
+                  top: UIConstants.paddingSmall,
+                  right: UIConstants.paddingSmall,
+                  child: Material(
+                    color: Colors.black.withValues(alpha: 0.45),
+                    shape: const StadiumBorder(),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (likedByOthers.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(start: UIConstants.paddingSmall),
+                            child: LikedByAvatars(users: likedByOthers, ringColor: Colors.white, size: 22),
+                          ),
+                        IconButton(
+                          onPressed: () async {
+                            try {
+                              await ref.read(recipeSaveTogglesProvider.notifier).toggle(recipeId, isSaved: isSaved);
+                            } catch (e) {
+                              ref.handleException(e);
+                            }
+                          },
+                          icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline, color: Colors.white),
+                          tooltip: isSaved ? context.l10n.recipeDislikeTooltip : context.l10n.recipeLikeTooltip,
                         ),
-                        tooltip: isCollected ? context.l10n.recipeUnsaveTooltip : context.l10n.recipeSaveTooltip,
-                      ),
-                      const SizedBox(width: 12),
-                      IconButton(
-                        onPressed: () async {
-                          try {
-                            await toggle();
-                          } catch (e) {
-                            ref.handleException(e);
-                          }
-                        },
-                        icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline, color: Colors.white),
-                        tooltip: isSaved ? context.l10n.recipeLikeTooltip : context.l10n.recipeDislikeTooltip,
-                      ),
-                    ],
+                        IconButton(
+                          onPressed: () async {
+                            final updated = await showCollectionsBottomSheet(
+                              context,
+                              ref,
+                              recipeId: recipeId,
+                              initialCollections: collectionsOverride.value ?? recipe.collections,
+                            );
+                            if (updated != null) collectionsOverride.value = updated;
+                          },
+                          icon: Icon(
+                            isCollected ? Icons.collections_bookmark : Icons.bookmark_add_outlined,
+                            color: Colors.white,
+                          ),
+                          tooltip: isCollected ? context.l10n.recipeUnsaveTooltip : context.l10n.recipeSaveTooltip,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -119,38 +117,46 @@ class RecipeTile extends HookConsumerWidget {
           const SizedBox(height: 15),
           SizedBox(
             height: 72,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Flexible(
-                  flex: 3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: Text(
                         recipe.name,
                         style: context.textTheme.titleMedium,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                       ),
-                      const SizedBox(height: 4),
-                      RecipeAuthorLine(recipe: recipe, showPrefix: false, useUnderline: false),
-                    ],
-                  ),
+                    ),
+                    Semantics(
+                      label: context.l10n.recipeTotalTimeLabel(totalTime),
+                      child: IconLabel(icon: Icons.timer_outlined, label: totalTime, iconSize: 16),
+                    ),
+                  ],
                 ),
-                Flexible(
-                  flex: 1,
-                  child: Semantics(
-                    label: context.l10n.recipeTotalTimeLabel(recipe.totalTime.asDuration?.localized(context.l10n) ?? '-'),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: IconLabel(
-                        icon: Icons.timer_outlined,
-                        label: recipe.totalTime.asDuration?.localized(context.l10n) ?? '-',
-                        iconSize: 16,
+                const SizedBox(height: 4),
+                Row(
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: RecipeAuthorLine(recipe: recipe, showPrefix: false, useUnderline: false),
                       ),
                     ),
-                  ),
+                    if (recipe.published case final published?)
+                      Semantics(
+                        label: context.l10n.recipesPublishedDate(published.localizedDate(context.l10n)),
+                        excludeSemantics: true,
+                        child: Text(
+                          published.localizedDate(context.l10n, omitCurrentYear: true),
+                          style: context.textTheme.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),

@@ -1,9 +1,11 @@
 import 'package:hooks_riverpod/experimental/mutation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/collection.dart';
 import '../models/recipe.dart';
 import '../models/recipe_filter.dart';
+import '../models/recipe_saved_user.dart';
 import '../repositories/collection_repository.dart';
 import '../repositories/recipe_repository.dart';
 import 'paged_notifier_mixin.dart';
@@ -15,15 +17,56 @@ part 'saved.g.dart';
 final createCollectionMutation = Mutation<void>(label: 'createCollection');
 final updateRecipeCollectionsMutation = Mutation<void>(label: 'updateRecipeCollections');
 
-@riverpod
-Set<String> savedRecipeIds(Ref ref) {
-  final recipes = ref.watch(savedRecipesProvider).value ?? [];
-  return recipes.map((r) => r.id).toSet();
+/// Likes the signed-in user toggled since their recipes were fetched, by recipe ID.
+///
+/// A recipe's `saved_by` is only as fresh as the list it came from; these win over it
+/// (see [WatchRecipeSaved.watchIsSaved]).
+@Riverpod(keepAlive: true)
+class RecipeSaveToggles extends _$RecipeSaveToggles {
+  @override
+  Map<String, bool> build() {
+    ref.watch(sessionProvider);
+    return const {};
+  }
+
+  /// Likes or unlikes [recipeId], showing the change before the server confirms it.
+  Future<void> toggle(String recipeId, {required bool isSaved}) async {
+    state = {...state, recipeId: !isSaved};
+    final repo = ref.read(recipeRepositoryProvider);
+    try {
+      if (isSaved) {
+        final userId = ref.read(sessionProvider)?.userId;
+        if (userId != null && ref.exists(savedRecipesProvider)) {
+          ref.read(savedRecipesProvider.notifier).removeLike(recipeId, userId);
+        }
+        await repo.unsave(recipeId);
+      } else {
+        await repo.save(recipeId);
+        ref.invalidate(savedRecipesProvider);
+      }
+    } catch (_) {
+      state = {...state, recipeId: isSaved};
+      ref.invalidate(savedRecipesProvider);
+      rethrow;
+    }
+  }
 }
 
-@riverpod
-bool recipeIsSaved(Ref ref, String recipeId) {
-  return ref.watch(savedRecipeIdsProvider).contains(recipeId);
+extension WatchRecipeSaved on WidgetRef {
+  /// Whether the signed-in user liked [recipe]. Likes are per user, so one by
+  /// another household member doesn't count.
+  bool watchIsSaved(Recipe recipe) {
+    final toggled = watch(recipeSaveTogglesProvider.select((toggles) => toggles[recipe.id]));
+    if (toggled != null) return toggled;
+    final userId = watch(sessionProvider)?.userId;
+    return recipe.savedBy?.any((user) => user.id == userId) ?? false;
+  }
+
+  /// The other household members who liked [recipe]; the user's own like is the heart.
+  List<RecipeSavedUser> watchLikedByOthers(Recipe recipe) {
+    final userId = watch(sessionProvider)?.userId;
+    return [...?recipe.savedBy?.where((user) => user.id != userId)];
+  }
 }
 
 @Riverpod(keepAlive: true)
@@ -51,15 +94,30 @@ class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
         .findAll(
           preload: _preload,
           filter: filter,
+          scope: 'saved',
           limit: limit,
           offset: 0,
         );
     return result.data;
   }
 
-  /// Removes a recipe from the cached list in-place, avoiding a reload flash.
-  void remove(String recipeId) {
-    state = state.whenData((list) => list.where((r) => r.id != recipeId).toList());
+  /// Drops [userId]'s like from the cached list in place, avoiding a reload flash.
+  ///
+  /// Saved lists the whole household's likes, so the recipe stays while someone else
+  /// still likes it.
+  void removeLike(String recipeId, String userId) {
+    state = state.whenData(
+      (list) => [
+        for (final recipe in list)
+          if (recipe.id != recipeId) recipe else ?_withoutLike(recipe, userId),
+      ],
+    );
+  }
+
+  /// [recipe] without [userId]'s like, or `null` when nobody else likes it.
+  static Recipe? _withoutLike(Recipe recipe, String userId) {
+    final others = [...?recipe.savedBy?.where((user) => user.id != userId)];
+    return others.isEmpty ? null : recipe.copyWith(savedBy: others);
   }
 
   Future<void> loadMore() => loadNextPage((offset, limit) {
@@ -69,6 +127,7 @@ class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
         .findAll(
           preload: _preload,
           filter: filter,
+          scope: 'saved',
           offset: offset,
           limit: limit,
         );
@@ -122,32 +181,6 @@ class SavedCollections extends _$SavedCollections with PagedNotifierMixin<Collec
       // Last step: rebuilding replaces this notifier, so nothing after it may use ref or state.
       ref.invalidateSelf();
     }
-  }
-}
-
-@riverpod
-class SavedRecipeState extends _$SavedRecipeState {
-  @override
-  ({bool isSaved, Future<void> Function() toggle}) build(String recipeId) {
-    final isSaved = ref.watch(recipeIsSavedProvider(recipeId));
-    return (
-      isSaved: isSaved,
-      toggle: () async {
-        final currentIsSaved = ref.read(recipeIsSavedProvider(recipeId));
-        if (!currentIsSaved) {
-          await ref.read(recipeRepositoryProvider).save(recipeId);
-          ref.invalidate(savedRecipesProvider);
-        } else {
-          ref.read(savedRecipesProvider.notifier).remove(recipeId);
-          try {
-            await ref.read(recipeRepositoryProvider).unsave(recipeId);
-          } catch (e) {
-            ref.invalidate(savedRecipesProvider);
-            rethrow;
-          }
-        }
-      },
-    );
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:buryak/features/feed/screen_feed.dart';
 import 'package:buryak/l10n/app_localizations.dart';
+import 'package:buryak/shared/components/recipes/recipe_tile.dart';
 import 'package:buryak/shared/models/paginated_list.dart';
 import 'package:buryak/shared/models/recipe.dart';
 import 'package:buryak/shared/models/user.dart';
@@ -27,19 +28,6 @@ void main() {
     mockFeedRepository = MockFeedRepository();
     mockRecipeRepository = MockRecipeRepository();
     fakeUser = User.fromJson(fakeUserJson());
-
-    // RecipeTile watches recipeIsSaved → savedRecipes → RecipeRepository.findAll.
-    // Return an empty list to prevent real HTTP calls and pending retry timers.
-    when(
-      () => mockRecipeRepository.findAll(
-        preload: any(named: 'preload'),
-        filter: any(named: 'filter'),
-        limit: any(named: 'limit'),
-        offset: any(named: 'offset'),
-      ),
-    ).thenAnswer(
-      (_) async => PaginatedList(data: [], meta: const Meta(total: 0, limit: 20, offset: 0)),
-    );
   });
 
   Widget createFeedScreen() {
@@ -84,6 +72,56 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Italian Pasta'), findsOneWidget);
+  });
+
+  testWidgets('FeedScreen fills the heart for the user\'s likes and shows others as avatars', (tester) async {
+    // Neither recipe is in the (unloaded) saved list; the heart comes from saved_by.
+    final recipes = [
+      Recipe.fromJson({
+        ...fakeRecipeJson(id: 'r1', name: 'Liked by me'),
+        'saved_by': [
+          {'id': fakeUser.id, 'name': 'Me'},
+        ],
+      }),
+      Recipe.fromJson({
+        ...fakeRecipeJson(id: 'r2', name: 'Liked by partner'),
+        'saved_by': [
+          {'id': 'user-2', 'name': 'Partner'},
+        ],
+      }),
+    ];
+
+    when(
+      () => mockFeedRepository.stream(
+        preload: any(named: 'preload'),
+        filter: any(named: 'filter'),
+        limit: any(named: 'limit'),
+        offset: any(named: 'offset'),
+      ),
+    ).thenAnswer(
+      (_) async => PaginatedList(
+        data: recipes,
+        meta: Meta(total: recipes.length, limit: 20, offset: 0),
+      ),
+    );
+
+    await tester.pumpWidget(createFeedScreen());
+    await tester.pumpAndSettle();
+
+    Finder inTile(String name, Finder matching) => find.descendant(of: find.widgetWithText(RecipeTile, name), matching: matching);
+    expect(inTile('Liked by me', find.byIcon(Icons.favorite)), findsOneWidget);
+    expect(inTile('Liked by me', find.text('M')), findsNothing, reason: 'own like is the heart, not an avatar');
+    expect(inTile('Liked by partner', find.byIcon(Icons.favorite_outline)), findsOneWidget);
+    expect(inTile('Liked by partner', find.text('P')), findsOneWidget);
+    verifyNever(
+      () => mockRecipeRepository.findAll(
+        preload: any(named: 'preload'),
+        filter: any(named: 'filter'),
+        scope: any(named: 'scope'),
+        limit: any(named: 'limit'),
+        offset: any(named: 'offset'),
+      ),
+    );
   });
 
   testWidgets('FeedScreen shows error state', (tester) async {

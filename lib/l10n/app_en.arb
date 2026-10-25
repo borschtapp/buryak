@@ -222,6 +222,12 @@
   "recipeLikeTooltip": "Like",
   "recipeDislikeTooltip": "Dislike",
   "recipeLikeFailed": "Failed to update liked status",
+  "recipeLikedBy": "Liked by {names}",
+  "@recipeLikedBy": {
+    "placeholders": {
+      "names": { "type": "String" }
+    }
+  },
   "cookingComplete": "Complete",
   "cookingStep": "Step {current}",
   "@cookingStep": {

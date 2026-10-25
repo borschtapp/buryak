@@ -21,6 +21,7 @@ class CollectionScreen extends ConsumerWidget {
 
     return AppListScaffold<List<Recipe>>(
       value: recipesAsync,
+      maxWidth: double.infinity,
       onRefresh: () async => ref.invalidate(provider),
       onLoadMore: notifier.loadMore,
       isLoadingMore: notifier.isLoadingMore,

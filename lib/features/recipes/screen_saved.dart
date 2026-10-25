@@ -35,7 +35,6 @@ class SavedScreen extends HookConsumerWidget {
     final filter = ref.read(savedRecipesFilterProvider);
 
     return SearchableGridScaffold(
-      maxWidth: 1440,
       searchBar: tabController.index == 0
           ? RecipeSearchBar(
               filter: filter,

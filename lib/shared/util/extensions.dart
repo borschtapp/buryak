@@ -76,6 +76,18 @@ extension RelativeTimeFormatting on DateTime {
   }
 }
 
+extension DateFormatting on DateTime {
+  /// "Oct 25, 2026" in the active locale and local time zone. With [omitCurrentYear],
+  /// dates in the current year drop the year ("Oct 25").
+  String localizedDate(AppLocalizations l10n, {bool omitCurrentYear = false}) {
+    final local = toLocal();
+    final format = omitCurrentYear && local.year == DateTime.now().year
+        ? DateFormat.MMMd(l10n.localeName)
+        : DateFormat.yMMMd(l10n.localeName);
+    return format.format(local);
+  }
+}
+
 extension SecondsToDuration on int? {
   Duration? get asDuration => (this == null || this! <= 0) ? null : Duration(seconds: this!);
 }

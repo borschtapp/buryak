@@ -8,6 +8,7 @@ import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
+import '../../shared/util/ui_constants.dart';
 import 'notifier_shopping.dart';
 
 class ShoppingBottomSheet extends HookConsumerWidget {
@@ -24,7 +25,6 @@ class ShoppingBottomSheet extends HookConsumerWidget {
 
     showAppBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.transparent,
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.75,
         minChildSize: 0.3,
@@ -68,7 +68,12 @@ class ShoppingBottomSheet extends HookConsumerWidget {
 
     return StandardBottomSheet(
       title: context.l10n.shoppingAddToShoppingTitle,
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+      padding: const EdgeInsets.fromLTRB(
+        UIConstants.paddingContent,
+        UIConstants.paddingContent,
+        UIConstants.paddingContent,
+        0,
+      ),
       // Bounded by the draggable sheet, so a long ingredient list scrolls instead of overflowing.
       expandChild: true,
       child: Column(
@@ -77,7 +82,7 @@ class ShoppingBottomSheet extends HookConsumerWidget {
         children: [
           if (ingredients.isEmpty)
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingContent),
               child: Text(context.l10n.shoppingNoIngredients),
             )
           else
@@ -89,6 +94,7 @@ class ShoppingBottomSheet extends HookConsumerWidget {
                 itemBuilder: (context, index) {
                   final ingredient = ingredients[index];
                   return CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
                     value: selectedIngredientIds.value.contains(ingredient.id),
                     onChanged: (value) {
                       final newSet = Set<String>.from(selectedIngredientIds.value);
@@ -106,7 +112,10 @@ class ShoppingBottomSheet extends HookConsumerWidget {
               ),
             ),
           Padding(
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.paddingOf(context).bottom),
+            padding: EdgeInsets.only(
+              top: UIConstants.paddingContent,
+              bottom: UIConstants.paddingContent + MediaQuery.paddingOf(context).bottom,
+            ),
             child: LoadingButton(
               isLoading: isSaving,
               onPressed: selectedIngredientIds.value.isEmpty ? null : save,

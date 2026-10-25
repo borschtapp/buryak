@@ -2,10 +2,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/paginated_list.dart';
 import '../models/recipe.dart';
+import '../models/recipe_cost_estimate.dart';
 import '../models/recipe_filter.dart';
 import '../models/recipe_ingredient.dart';
 import '../models/recipe_instruction.dart';
-import '../models/recipe_cost_estimate.dart';
 import 'repository.dart';
 
 part 'recipe_repository.g.dart';
@@ -18,9 +18,12 @@ RecipeRepository recipeRepository(Ref ref) => RecipeRepository(ref: ref, client:
 class RecipeRepository extends Repository {
   const RecipeRepository({required super.ref, super.client}) : super(module: '/api/v1/recipes');
 
+  /// Without a [scope] the server lists every recipe the household can see,
+  /// including all recipes from subscribed feeds; pass 'saved' or 'feeds' to narrow it.
   Future<PaginatedList<Recipe>> findAll({
     List<RecipePreload>? preload,
     RecipeFilter? filter,
+    String? scope,
     int? limit,
     int? offset,
   }) async {
@@ -28,6 +31,7 @@ class RecipeRepository extends Repository {
     final response = await sendRequest(
       method: .get,
       queryParams: {
+        'scope': ?scope,
         'q': ?f.q,
         'taxonomies': ?f.taxonomiesParam,
         'publishers': ?f.publishersParam,

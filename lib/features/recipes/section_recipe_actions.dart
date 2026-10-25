@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../shared/components/recipes/dialog_select_collections.dart';
+import '../../shared/components/recipes/liked_by_avatars.dart';
 import '../../shared/providers/saved.dart';
 import '../../shared/util/extensions.dart';
 import 'controller_recipe.dart';
@@ -17,8 +18,8 @@ class RecipeActions extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isSaved = ref.watch(recipeIsSavedProvider(recipeId));
     final recipe = ref.watch(recipeControllerProvider(recipeId)).value;
+    final isSaved = recipe != null && ref.watchIsSaved(recipe);
     final isCollected = recipe?.collections?.isNotEmpty ?? false;
     final l10n = context.l10n;
 
@@ -51,21 +52,24 @@ class RecipeActions extends HookConsumerWidget {
                   }
                 },
         ),
+        if (recipe != null) LikedByAvatars(users: ref.watchLikedByOthers(recipe), ringColor: context.colors.surface),
         IconButton(
           visualDensity: VisualDensity.compact,
           icon: Icon(isSaved ? Icons.favorite : Icons.favorite_outline),
           tooltip: isSaved ? l10n.recipeDislikeTooltip : l10n.recipeLikeTooltip,
-          onPressed: () async {
-            try {
-              await ref.read(recipeControllerProvider(recipeId).notifier).toggleSaved();
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(context.l10n.recipeLikeFailed)),
-                );
-              }
-            }
-          },
+          onPressed: recipe == null
+              ? null
+              : () async {
+                  try {
+                    await ref.read(recipeSaveTogglesProvider.notifier).toggle(recipeId, isSaved: isSaved);
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(context.l10n.recipeLikeFailed)),
+                      );
+                    }
+                  }
+                },
         ),
       ],
     );
