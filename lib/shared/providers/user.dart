@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -11,8 +12,17 @@ import '../repositories/auth_repository.dart';
 import '../repositories/repository.dart';
 import '../repositories/user_repository.dart';
 import '../util/logger.dart';
+import 'error_handler.dart';
 
 part 'user.g.dart';
+
+// Run with `tsx.get(authProvider.notifier)`.
+final changeNameMutation = Mutation<void>(label: 'changeName');
+final changeEmailMutation = Mutation<void>(label: 'changeEmail');
+final changePasswordMutation = Mutation<void>(label: 'changePassword');
+
+/// The server rejected the current password given to confirm a credential change.
+class WrongPasswordException implements InlineError {}
 
 @Riverpod(keepAlive: true)
 class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
@@ -161,6 +171,36 @@ class AuthNotifier extends _$AuthNotifier with WidgetsBindingObserver {
     if (id == null) return;
     await ref.read(userRepositoryProvider).delete(id);
     await logout();
+  }
+
+  Future<void> changeName(String name) => _updateProfile(name: name);
+
+  /// The server signs every other device out; this one stays signed in.
+  Future<void> changeEmail(String email, {required String currentPassword}) =>
+      _updateProfile(email: email, currentPassword: currentPassword);
+
+  /// The server signs every other device out; this one stays signed in.
+  Future<void> changePassword({required String currentPassword, required String newPassword}) =>
+      _updateProfile(currentPassword: currentPassword, newPassword: newPassword);
+
+  Future<void> _updateProfile({String? name, String? email, String? currentPassword, String? newPassword}) async {
+    final id = state?.id;
+    if (id == null) throw SignedOutError();
+    final User updated;
+    try {
+      // Sends this session's refresh token, which the server spares when it revokes the others.
+      updated = await ref
+          .read(userRepositoryProvider)
+          .update(id, name: name, email: email, currentPassword: currentPassword, newPassword: newPassword);
+    } on GeneralApiException catch (e) {
+      // The token was checked just before the request, so a 401 here is the password.
+      if (e.statusCode == 401 && currentPassword != null) throw WrongPasswordException();
+      rethrow;
+    }
+    // The response carries no tokens; keep the current ones, which may have been refreshed meanwhile.
+    final current = state;
+    if (current == null || current.id != id) return;
+    await _persist(current.copyWith(name: updated.name, email: updated.email));
   }
 
   Future<void> _persist(User user) async {

@@ -14,6 +14,9 @@ import '../../shared/sections/app_version.dart';
 import '../../shared/util/error_extensions.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/ui_constants.dart';
+import 'dialog_change_email.dart';
+import 'dialog_change_name.dart';
+import 'dialog_change_password.dart';
 import 'dialog_join_household.dart';
 import 'section_household_details.dart';
 
@@ -52,6 +55,29 @@ class AccountScreen extends HookConsumerWidget {
           children: [
             ProfileDetails(name: name, email: email, image: image),
             const SizedBox(height: UIConstants.paddingMedium),
+            SettingsSection(
+              title: context.l10n.accountProfile,
+              children: [
+                SettingsTile(
+                  leading: const Icon(Icons.person),
+                  title: context.l10n.accountName,
+                  subtitle: name,
+                  onTap: () => showChangeNameDialog(context, ref),
+                ),
+                SettingsTile(
+                  leading: const Icon(Icons.email),
+                  title: context.l10n.accountEmail,
+                  subtitle: email,
+                  onTap: () => ChangeEmailBottomSheet.show(context),
+                ),
+                SettingsTile(
+                  leading: const Icon(Icons.lock),
+                  title: context.l10n.accountPassword,
+                  onTap: () => ChangePasswordBottomSheet.show(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: UIConstants.paddingSmall),
             const HouseholdDetails(),
             const SizedBox(height: UIConstants.paddingSmall),
             SettingsSection(

@@ -5,6 +5,7 @@ import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/repositories/auth_repository.dart';
 import 'package:buryak/shared/repositories/household_repository.dart';
 import 'package:buryak/shared/repositories/repository.dart';
+import 'package:buryak/shared/repositories/user_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -16,8 +17,11 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockHouseholdRepository extends Mock implements HouseholdRepository {}
 
+class MockUserRepository extends Mock implements UserRepository {}
+
 void main() {
   late MockAuthRepository mockAuthRepository;
+  late MockUserRepository mockUserRepository;
   late ProviderContainer container;
   const storage = FlutterSecureStorage();
 
@@ -36,9 +40,11 @@ void main() {
 
   setUp(() {
     mockAuthRepository = MockAuthRepository();
+    mockUserRepository = MockUserRepository();
     container = ProviderContainer(
       overrides: [
         authRepositoryProvider.overrideWithValue(mockAuthRepository),
+        userRepositoryProvider.overrideWithValue(mockUserRepository),
         householdRepositoryProvider.overrideWithValue(MockHouseholdRepository()),
       ],
     );
@@ -133,6 +139,57 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(container.read(authProvider), isNull);
+    });
+
+    group('profile changes', () {
+      Future<void> signIn() async {
+        FlutterSecureStorage.setMockInitialValues({'user': jsonEncode(User.fromJson(fakeUserJson()).toFullJson())});
+        await container.read(authProvider.notifier).init();
+      }
+
+      test('a new email is stored, and this session keeps its tokens', () async {
+        await signIn();
+        // The response is the user without tokens.
+        when(
+          () => mockUserRepository.update('user-1', email: 'new@example.com', currentPassword: 'secret123'),
+        ).thenAnswer((_) async => const User(id: 'user-1', householdId: 'household-1', email: 'new@example.com', name: 'Test User'));
+
+        await container.read(authProvider.notifier).changeEmail('new@example.com', currentPassword: 'secret123');
+
+        final user = container.read(authProvider)!;
+        expect(user.email, 'new@example.com');
+        expect(user.accessToken, kFutureJwt);
+        expect(user.refreshToken, 'refresh-token-abc');
+        final stored = jsonDecode((await storage.read(key: 'user'))!) as Map<String, dynamic>;
+        expect((stored['email'], stored['refresh_token']), ('new@example.com', 'refresh-token-abc'));
+      });
+
+      test('a rejected current password is a WrongPasswordException and changes nothing', () async {
+        await signIn();
+        when(
+          () => mockUserRepository.update('user-1', currentPassword: 'wrong', newPassword: 'newpassword'),
+        ).thenThrow(GeneralApiException(message: 'Invalid credentials', statusCode: 401));
+
+        await expectLater(
+          container.read(authProvider.notifier).changePassword(currentPassword: 'wrong', newPassword: 'newpassword'),
+          throwsA(isA<WrongPasswordException>()),
+        );
+        expect(container.read(authProvider)!.email, 'test@example.com');
+      });
+
+      test('a new name does not touch the session', () async {
+        await signIn();
+        final sessions = <Session?>[];
+        container.listen(sessionProvider, (_, next) => sessions.add(next));
+        when(
+          () => mockUserRepository.update('user-1', name: 'Chef'),
+        ).thenAnswer((_) async => const User(id: 'user-1', householdId: 'household-1', email: 'test@example.com', name: 'Chef'));
+
+        await container.read(authProvider.notifier).changeName('Chef');
+
+        expect(container.read(authProvider)!.name, 'Chef');
+        expect(sessions, isEmpty, reason: 'per-user caches must survive a rename');
+      });
     });
   });
 }

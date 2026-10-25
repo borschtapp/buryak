@@ -83,24 +83,24 @@ void main() {
   });
 
   group('Validator.validateName', () {
-    test('returns null for name with 3+ characters', () {
+    test('returns null for name with 2+ characters', () {
       expect(Validator.validateName('Alice', l10n), isNull);
     });
 
-    test('returns error for name shorter than 3 characters', () {
-      expect(Validator.validateName('Al', l10n), isNotNull);
+    test('returns error for name shorter than 2 characters', () {
+      expect(Validator.validateName('A', l10n), isNotNull);
     });
 
     test('returns error for empty name', () {
       expect(Validator.validateName('', l10n), isNotNull);
     });
 
-    test('returns error for whitespace only (length 3)', () {
-      expect(Validator.validateName('   ', l10n), isNotNull);
+    test('returns error for whitespace only (length 2)', () {
+      expect(Validator.validateName('  ', l10n), isNotNull);
     });
 
-    test('returns null for name of exactly 3 characters', () {
-      expect(Validator.validateName('Ali', l10n), isNull);
+    test('returns null for name of exactly 2 characters, as the server allows', () {
+      expect(Validator.validateName('Al', l10n), isNull);
     });
   });
 

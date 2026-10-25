@@ -19,7 +19,8 @@ class Validator {
   }
 
   static String? validateName(String value, AppLocalizations l10n) {
-    if (value.trim().length < 3) {
+    // The server's minimum.
+    if (value.trim().length < 2) {
       return l10n.validatorNameLength;
     }
     return null;

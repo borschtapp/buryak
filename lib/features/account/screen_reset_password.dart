@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../shared/components/password_field.dart';
 import '../../shared/layouts/standard_auth_form.dart';
 import '../../shared/repositories/auth_repository.dart';
 import '../../shared/route_names.dart';
@@ -18,7 +19,6 @@ class ResetPasswordScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = useState(false);
-    final showPassword = useState(false);
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final passwordController = useTextEditingController();
 
@@ -55,19 +55,14 @@ class ResetPasswordScreen extends HookConsumerWidget {
         child: Text(context.l10n.resetPasswordBackToLogin),
       ),
       children: [
-        TextFormField(
-          obscureText: !showPassword.value,
-          onFieldSubmitted: (_) => submit(),
+        PasswordField(
           controller: passwordController,
+          onFieldSubmitted: (_) => submit(),
           autofillHints: const [AutofillHints.newPassword],
-          validator: (value) => Validator.validatePassword(value ?? '', context.l10n),
+          validator: (value) => Validator.validatePassword(value, context.l10n),
           decoration: InputDecoration(
             labelText: context.l10n.resetPasswordNewPassword,
             hintText: context.l10n.loginPasswordHint,
-            suffixIcon: GestureDetector(
-              onTap: () => showPassword.value = !showPassword.value,
-              child: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
-            ),
           ),
         ),
       ],

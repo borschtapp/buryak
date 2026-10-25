@@ -96,8 +96,12 @@ class ErrorHandler extends _$ErrorHandler {
   }
 }
 
+/// A failure that the form which started it shows next to the field at fault,
+/// so [MutationErrorReporter] leaves it out of the global error snackbar.
+abstract interface class InlineError implements Exception {}
+
 /// Reports every failed [Mutation] through [ErrorHandler], so call sites don't
-/// catch-and-report themselves. Because it observes the container rather than
+/// catch-and-report themselves; an [InlineError] is left to its form. Because it observes the container rather than
 /// a widget, a failure is still shown after the sheet that started the
 /// mutation has been dismissed.
 final class MutationErrorReporter extends ProviderObserver {
@@ -108,6 +112,7 @@ final class MutationErrorReporter extends ProviderObserver {
     Object error,
     StackTrace stackTrace,
   ) {
+    if (error is InlineError) return;
     context.container.read(errorHandlerProvider.notifier).handle(error, stackTrace: stackTrace);
   }
 }

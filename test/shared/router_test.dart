@@ -235,9 +235,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // AccountScreen renders the logged-in user's email — confirm we landed
-      // on the right screen instead of being redirected to /login or /.
-      expect(find.text('test@example.com'), findsOneWidget);
+      // AccountScreen renders the logged-in user's email (header and Email tile) —
+      // confirm we landed on the right screen instead of being redirected to /login or /.
+      expect(find.text('test@example.com'), findsWidgets);
       expect(find.text('Login to your account'), findsNothing);
       expect(find.byType(FeedScreen), findsNothing);
     });

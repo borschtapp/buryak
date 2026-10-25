@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/icon_label.dart';
+import '../../shared/components/password_field.dart';
 import '../../shared/layouts/standard_auth_form.dart';
 import '../../shared/providers/server_url.dart';
 import '../../shared/providers/user.dart';
@@ -26,7 +27,6 @@ class LoginScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = useState(false);
-    final showPassword = useState(false);
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final emailController = useTextEditingController(text: kDebugMode ? _devEmail : '');
     final passwordController = useTextEditingController(text: kDebugMode ? _devPassword : '');
@@ -108,20 +108,14 @@ class LoginScreen extends HookConsumerWidget {
             hintText: context.l10n.loginEmailHint,
           ),
         ),
-        TextFormField(
-          obscureText: !showPassword.value,
-          onFieldSubmitted: (_) => login(),
+        PasswordField(
           controller: passwordController,
+          onFieldSubmitted: (_) => login(),
           autofillHints: const [AutofillHints.password],
-          validator: (value) => Validator.validatePassword(value ?? '', context.l10n),
+          validator: (value) => Validator.validatePassword(value, context.l10n),
           decoration: InputDecoration(
             labelText: context.l10n.loginPassword,
             hintText: context.l10n.loginPasswordHint,
-            suffixIcon: IconButton(
-              icon: Icon(showPassword.value ? Icons.visibility_off : Icons.visibility),
-              tooltip: showPassword.value ? context.l10n.loginHidePassword : context.l10n.loginShowPassword,
-              onPressed: () => showPassword.value = !showPassword.value,
-            ),
           ),
         ),
         Align(
