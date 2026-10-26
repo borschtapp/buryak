@@ -104,7 +104,7 @@ class _SyncStatusBadge extends StatelessWidget {
     }
     if (feed.lastSyncSuccess == true) {
       final when = feed.lastSyncAt?.timeAgo(context.l10n) ?? '';
-      return (Icons.check_circle_outline, context.l10n.feedSyncedAgo(when), Colors.green);
+      return (Icons.check_circle_outline, context.l10n.feedSyncedAgo(when), context.colors.secondary);
     }
     return (Icons.error_outline, context.l10n.feedSyncFailed, context.colors.error);
   }

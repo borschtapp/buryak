@@ -8,17 +8,14 @@ import '../../shared/util/extensions.dart';
 Future<void> showRenameHouseholdDialog(BuildContext context, WidgetRef ref) async {
   final l10n = context.l10n;
   final currentName = ref.read(householdProvider).value?.name;
-  return showDialog<void>(
-    context: context,
-    builder: (context) => TextInputDialog(
-      title: l10n.householdRenameHousehold,
-      hintText: l10n.householdRenameNameHint,
-      labelText: l10n.householdRenameName,
-      submitLabel: l10n.save,
-      initialText: currentName,
-      validator: (value) => value.isEmpty ? l10n.householdRenameNameRequired : null,
-      mutation: updateHouseholdMutation,
-      onSubmit: (tsx, value) => tsx.get(householdProvider.notifier).updateHousehold(name: value),
-    ),
-  );
+  return TextInputDialog(
+    title: l10n.householdRenameHousehold,
+    hintText: l10n.householdRenameNameHint,
+    labelText: l10n.householdRenameName,
+    submitLabel: l10n.save,
+    initialText: currentName,
+    validator: (value) => value.isEmpty ? l10n.householdRenameNameRequired : null,
+    mutation: updateHouseholdMutation,
+    onSubmit: (tsx, value) => tsx.get(householdProvider.notifier).updateHousehold(name: value),
+  ).show(context);
 }

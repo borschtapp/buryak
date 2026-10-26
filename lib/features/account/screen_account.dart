@@ -62,7 +62,7 @@ class AccountScreen extends HookConsumerWidget {
                   leading: const Icon(Icons.person),
                   title: context.l10n.accountName,
                   subtitle: name,
-                  onTap: () => showChangeNameDialog(context, ref),
+                  onTap: () => ChangeNameBottomSheet.show(context),
                 ),
                 SettingsTile(
                   leading: const Icon(Icons.email),

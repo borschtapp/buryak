@@ -1,4 +1,5 @@
 import 'package:buryak/shared/components/dialog_text_input.dart';
+import 'package:buryak/shared/components/standard_bottom_sheet.dart';
 import 'package:buryak/shared/providers/error_handler.dart';
 import 'package:buryak/shared/repositories/repository.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ void main() {
     final successes = <String>[];
     await pumpAndOpen(
       tester,
-      (context) => showDialog<void>(
+      (context) => showAppBottomSheet<void>(
         context: context,
         builder: (_) => TextInputDialog<String>(
           title: 'Title',

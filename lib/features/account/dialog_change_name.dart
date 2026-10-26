@@ -2,23 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/dialog_text_input.dart';
+import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/util/extensions.dart';
 import '../../shared/util/validator.dart';
 
-Future<void> showChangeNameDialog(BuildContext context, WidgetRef ref) async {
-  final l10n = context.l10n;
-  return showDialog<void>(
-    context: context,
-    builder: (context) => TextInputDialog(
-      title: l10n.accountChangeName,
-      hintText: l10n.registerNameHint,
-      labelText: l10n.accountName,
-      submitLabel: l10n.save,
+/// Changes the user's display name.
+class ChangeNameBottomSheet extends ConsumerWidget {
+  const ChangeNameBottomSheet({super.key});
+
+  static Future<void> show(BuildContext context) {
+    return showAppBottomSheet<void>(context: context, builder: (_) => const ChangeNameBottomSheet());
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return TextInputDialog<void>(
+      title: context.l10n.accountChangeName,
+      labelText: context.l10n.accountName,
+      hintText: context.l10n.registerNameHint,
+      submitLabel: context.l10n.save,
       initialText: ref.read(authProvider)?.name,
-      validator: (value) => Validator.validateName(value, l10n),
+      textCapitalization: TextCapitalization.words,
+      autofillHints: const [AutofillHints.name],
+      validator: (value) => Validator.validateName(value, context.l10n),
       mutation: changeNameMutation,
-      onSubmit: (tsx, value) => tsx.get(authProvider.notifier).changeName(value),
-    ),
-  );
+      onSubmit: (tsx, name) => tsx.get(authProvider.notifier).changeName(name),
+    );
+  }
 }

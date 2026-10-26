@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../util/extensions.dart';
 import '../util/ui_constants.dart';
 import 'loading_button.dart';
+import 'standard_bottom_sheet.dart';
 
 /// A reusable dialog widget for collecting single text input from users.
 ///
@@ -30,6 +30,9 @@ class TextInputDialog<T> extends HookConsumerWidget {
   /// Stops input at this many characters, without showing a counter.
   final int? maxLength;
 
+  final TextCapitalization textCapitalization;
+  final Iterable<String>? autofillHints;
+
   final Mutation<T> mutation;
 
   /// The write, given the trimmed input; run it through [MutationTransaction.get].
@@ -49,10 +52,16 @@ class TextInputDialog<T> extends HookConsumerWidget {
     this.validator,
     this.initialText,
     this.maxLength,
+    this.textCapitalization = TextCapitalization.none,
+    this.autofillHints,
     required this.mutation,
     required this.onSubmit,
     this.onSuccess,
   });
+
+  /// Opens this dialog as an adaptive modal: a bottom sheet on mobile, a
+  /// centered dialog on tablet/desktop.
+  Future<T?> show(BuildContext context) => showAppBottomSheet<T>(context: context, builder: (_) => this);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -78,53 +87,35 @@ class TextInputDialog<T> extends HookConsumerWidget {
       onSuccess?.call(result);
     }
 
-    return Dialog(
-      constraints: const BoxConstraints(maxWidth: 560),
-      child: Padding(
-        padding: const EdgeInsets.all(UIConstants.paddingLarge),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              title,
-              style: context.textTheme.headlineSmall,
+    return StandardBottomSheet(
+      title: title,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: controller,
+            autofocus: true,
+            enabled: !isLoading,
+            textCapitalization: textCapitalization,
+            autofillHints: autofillHints,
+            inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
+            decoration: InputDecoration(
+              labelText: labelText,
+              hintText: hintText,
+              helperText: helperText,
+              errorText: validationError.value,
+              border: const OutlineInputBorder(),
             ),
-            const SizedBox(height: UIConstants.paddingLarge),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              enabled: !isLoading,
-              inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
-              decoration: InputDecoration(
-                labelText: labelText,
-                hintText: hintText,
-                helperText: helperText,
-                errorText: validationError.value,
-              ),
-              onSubmitted: isLoading ? null : (_) => submit(),
-            ),
-            const SizedBox(height: UIConstants.paddingLarge),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: isLoading ? null : () => context.pop(),
-                    child: Text(context.l10n.cancel),
-                  ),
-                ),
-                const SizedBox(width: UIConstants.paddingSmall),
-                Expanded(
-                  child: LoadingButton(
-                    isLoading: isLoading,
-                    onPressed: submit,
-                    child: Text(submitLabel),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+            onSubmitted: isLoading ? null : (_) => submit(),
+          ),
+          const SizedBox(height: UIConstants.paddingLarge),
+          LoadingButton(
+            isLoading: isLoading,
+            onPressed: submit,
+            child: Text(submitLabel),
+          ),
+        ],
       ),
     );
   }

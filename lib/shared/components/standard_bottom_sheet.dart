@@ -1,23 +1,77 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../util/extensions.dart';
 import '../util/ui_constants.dart';
 
-/// Opens a modal bottom sheet with the app's defaults: scroll-controlled, so it
-/// can grow with its content, kept below the status bar, and lifted above the
-/// on-screen keyboard (so sheet bodies don't pad for it themselves).
+/// Opens an adaptive modal: on mobile, a modal bottom sheet kept below the status bar
+/// and lifted above the on-screen keyboard; on tablet/desktop, a centered modal dialog.
 Future<T?> showAppBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   Color? backgroundColor,
 }) {
+  if (!context.isMobile) {
+    return showDialog<T>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: backgroundColor ?? dialogContext.colors.surface,
+        constraints: BoxConstraints(
+          maxWidth: 560,
+          maxHeight: MediaQuery.heightOf(dialogContext) * 0.85,
+        ),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedSuperellipseBorder(borderRadius: dialogContext.shapeLarge),
+        child: builder(dialogContext),
+      ),
+    );
+  }
+
   return showModalBottomSheet<T>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: backgroundColor,
     builder: (context) => _KeyboardInset(child: builder(context)),
+  );
+}
+
+/// Opens [showAppBottomSheet] for a long, scrollable body. On mobile the sheet
+/// can be dragged between [minChildSize] and one toolbar below the status bar,
+/// and [builder] gets the sheet's scroll controller; in the tablet/desktop dialog
+/// it gets `null`.
+Future<T?> showAppDraggableSheet<T>({
+  required BuildContext context,
+  required Widget Function(BuildContext context, ScrollController? scrollController) builder,
+  double initialChildSize = 0.6,
+  double minChildSize = 0.3,
+  bool snap = false,
+  List<double>? snapSizes,
+}) {
+  return showAppBottomSheet<T>(
+    context: context,
+    builder: (ctx) {
+      if (!ctx.isMobile) return builder(ctx, null);
+      // Sizes are fractions of the sheet's parent, which already excludes the status
+      // bar (`useSafeArea`), so measure it rather than the screen.
+      return LayoutBuilder(
+        builder: (ctx, constraints) {
+          final maxChildSize = (constraints.maxHeight - kToolbarHeight) / constraints.maxHeight;
+          return DraggableScrollableSheet(
+            initialChildSize: math.min(initialChildSize, maxChildSize),
+            minChildSize: minChildSize,
+            maxChildSize: maxChildSize,
+            expand: false,
+            snap: snap,
+            // On a short screen a snap size can fall outside the range; drop it.
+            snapSizes: snapSizes?.where((size) => size > minChildSize && size < maxChildSize).toList(),
+            builder: builder,
+          );
+        },
+      );
+    },
   );
 }
 

@@ -42,10 +42,10 @@ class DismissibleTile extends StatelessWidget {
       direction: onEdit != null ? DismissDirection.horizontal : DismissDirection.endToStart,
       background: onEdit != null
           ? Container(
-              color: editColor ?? Colors.orange,
+              color: editColor ?? context.colors.secondary,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingLarge),
-              child: const Icon(Icons.edit, color: Colors.white),
+              child: Icon(Icons.edit, color: context.colors.onSecondary),
             )
           : deleteBackground,
       secondaryBackground: onEdit != null ? deleteBackground : null,

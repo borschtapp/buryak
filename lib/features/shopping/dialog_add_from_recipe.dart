@@ -17,27 +17,13 @@ class ShoppingBottomSheet extends HookConsumerWidget {
 
   const ShoppingBottomSheet({super.key, required this.recipe, this.scrollController});
 
-  static void show(BuildContext context, Recipe recipe) {
-    // The sheet's parent already excludes the status bar (`useSafeArea`), so stop
-    // one toolbar below it.
-    final availableHeight = MediaQuery.heightOf(context) - MediaQuery.paddingOf(context).top;
-    final maxFraction = (availableHeight - kToolbarHeight) / availableHeight;
-
-    showAppBottomSheet<void>(
+  static Future<void> show(BuildContext context, Recipe recipe) {
+    return showAppDraggableSheet<void>(
       context: context,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.75,
-        minChildSize: 0.3,
-        maxChildSize: maxFraction,
-        expand: false,
-        snap: true,
-        snapSizes: maxFraction > 0.55 ? const [0.5] : null,
-        shouldCloseOnMinExtent: true,
-        builder: (context, scrollController) => ShoppingBottomSheet(
-          recipe: recipe,
-          scrollController: scrollController,
-        ),
-      ),
+      initialChildSize: 0.75,
+      snap: true,
+      snapSizes: const [0.5],
+      builder: (ctx, scrollController) => ShoppingBottomSheet(recipe: recipe, scrollController: scrollController),
     );
   }
 

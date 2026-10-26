@@ -19,18 +19,13 @@ Future<List<Collection>?> showCollectionsBottomSheet(
 }) {
   assert(recipeId.isNotEmpty, 'recipeId cannot be empty');
 
-  return showAppBottomSheet<List<Collection>>(
+  return showAppDraggableSheet<List<Collection>>(
     context: context,
-    builder: (context) => DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.4,
-      maxChildSize: 0.9,
-      expand: false,
-      builder: (context, scrollController) => _CollectionsBottomSheetContent(
-        recipeId: recipeId,
-        initialCollections: initialCollections,
-        scrollController: scrollController,
-      ),
+    minChildSize: 0.4,
+    builder: (ctx, scrollController) => _CollectionsBottomSheetContent(
+      recipeId: recipeId,
+      initialCollections: initialCollections,
+      scrollController: scrollController,
     ),
   );
 }
@@ -38,12 +33,12 @@ Future<List<Collection>?> showCollectionsBottomSheet(
 class _CollectionsBottomSheetContent extends HookConsumerWidget {
   final String recipeId;
   final List<Collection>? initialCollections;
-  final ScrollController scrollController;
+  final ScrollController? scrollController;
 
   const _CollectionsBottomSheetContent({
     required this.recipeId,
     required this.initialCollections,
-    required this.scrollController,
+    this.scrollController,
   });
 
   @override
@@ -116,11 +111,11 @@ class _CollectionsBottomSheetContent extends HookConsumerWidget {
                 return ListTile(
                   leading: Icon(
                     isInCollection ? Icons.check_box : Icons.check_box_outline_blank,
-                    color: isInCollection ? Colors.green : null,
+                    color: isInCollection ? context.colors.primary : null,
                   ),
                   title: Text(collection.name),
                   trailing: isInCollection
-                      ? Text(context.l10n.recipesCollectionSelected, style: const TextStyle(color: Colors.green, fontSize: 12))
+                      ? Text(context.l10n.recipesCollectionSelected, style: TextStyle(color: context.colors.primary, fontSize: 12))
                       : null,
                   onTap: isSaving
                       ? null

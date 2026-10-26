@@ -1,4 +1,5 @@
 import 'package:buryak/features/account/dialog_change_email.dart';
+import 'package:buryak/features/account/dialog_change_name.dart';
 import 'package:buryak/features/account/dialog_change_password.dart';
 import 'package:buryak/l10n/app_localizations.dart';
 import 'package:buryak/shared/models/user.dart';
@@ -42,7 +43,34 @@ void main() {
     return AppLocalizations.of(tester.element(find.text('open', skipOffstage: false)));
   }
 
-  Finder field(String label) => find.widgetWithText(TextFormField, label);
+  Finder field(String label) => find.widgetWithText(TextField, label);
+
+  group('ChangeNameBottomSheet', () {
+    testWidgets('a short new name is rejected before anything is sent', (tester) async {
+      final l10n = await open(tester, ChangeNameBottomSheet.show);
+
+      await tester.enterText(field(l10n.accountName), 'A');
+      await tester.tap(find.text(l10n.save));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.validatorNameLength), findsOneWidget);
+      verifyZeroInteractions(users);
+    });
+
+    testWidgets('a saved name updates the signed-in user and closes', (tester) async {
+      when(
+        () => users.update('user-1', name: 'New Name'),
+      ).thenAnswer((_) async => const User(id: 'user-1', householdId: 'household-1', email: 'test@example.com', name: 'New Name'));
+      final l10n = await open(tester, ChangeNameBottomSheet.show);
+
+      await tester.enterText(field(l10n.accountName), ' New Name ');
+      await tester.tap(find.text(l10n.save));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ChangeNameBottomSheet), findsNothing);
+      expect(containerOf(tester).read(authProvider)!.name, 'New Name');
+    });
+  });
 
   group('ChangeEmailBottomSheet', () {
     testWidgets('a wrong current password is shown on that field, not reported globally', (tester) async {

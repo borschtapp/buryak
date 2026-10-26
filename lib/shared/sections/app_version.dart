@@ -8,7 +8,7 @@ import '../constants.dart';
 import '../providers/update.dart';
 import '../util/extensions.dart';
 import '../util/ui_constants.dart';
-import 'dialog_update.dart';
+import '../components/dialog_update.dart';
 
 class AppVersionText extends HookWidget {
   final EdgeInsetsGeometry padding;

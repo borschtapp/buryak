@@ -15,6 +15,7 @@ class MockShoppingListRepository extends Mock implements ShoppingListRepository 
 
 void main() {
   testWidgets('fully expanded, the sheet stops one toolbar below the status bar', (tester) async {
+    tester.view.physicalSize = const Size(400 * 3, 600 * 3);
     const statusBar = 47.0;
     tester.view.padding = FakeViewPadding(top: statusBar * tester.view.devicePixelRatio);
     addTearDown(tester.view.reset);
@@ -34,6 +35,8 @@ void main() {
   });
 
   testWidgets('the sheet paints the themed surface like other bottom sheets', (tester) async {
+    tester.view.physicalSize = const Size(400 * 3, 600 * 3);
+    addTearDown(tester.view.reset);
     await pumpAndOpen(tester, (context) => ShoppingBottomSheet.show(context, Recipe.fromJson(fakeRecipeJson())));
 
     expect(tester.widget<BottomSheet>(find.byType(BottomSheet)).backgroundColor?.a, 1);
