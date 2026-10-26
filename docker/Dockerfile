@@ -1,27 +1,8 @@
-# Stage 1: build Flutter web
-FROM ghcr.io/cirruslabs/flutter:stable AS builder
-
-ARG API_BASE_URL
-ARG BUILD_NAME=0.0.0
-ARG BUILD_NUMBER=0
-
-WORKDIR /app
-
-COPY pubspec.yaml pubspec.lock ./
-RUN flutter pub get
-
-COPY . .
-RUN flutter gen-l10n
-RUN dart run build_runner build --delete-conflicting-outputs
-RUN flutter build web --release \
-    --dart-define=API_BASE_URL=${API_BASE_URL} \
-    --build-name=${BUILD_NAME} \
-    --build-number=${BUILD_NUMBER}
-
-# Stage 2: serve with Caddy
+# Note: Requires pre-built web artifacts in build/web.
+# Run `flutter build web --release` before building this container image.
 FROM caddy:alpine
 
-COPY --from=builder /app/build/web /srv
+COPY build/web /srv
 COPY docker/Caddyfile /etc/caddy/Caddyfile
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
