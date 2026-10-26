@@ -217,6 +217,9 @@
   "recipeLikeTooltip": "Подобається",
   "recipeDislikeTooltip": "Не подобається",
   "recipeLikeFailed": "Не вдалося оновити статус",
+  "recipeOpenInBrowser": "Відкрити в браузері",
+  "recipeRefreshFromSource": "Оновити з джерела",
+  "recipeRefreshed": "Рецепт оновлено з джерела",
   "recipeLikedBy": "Подобається: {names}",
   "@recipeLikedBy": {
     "placeholders": {

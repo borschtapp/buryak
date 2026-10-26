@@ -71,6 +71,12 @@ class RecipeRepository extends Repository {
     await sendRequest(method: .delete, path: '/$id');
   }
 
+  /// Re-scrapes an imported recipe from its source URL; returns it fully preloaded, like [findOne].
+  Future<Recipe> refresh(String id) async {
+    final response = await sendRequest(method: .post, path: '/$id/refresh');
+    return Recipe.fromJson(ensureMap(response));
+  }
+
   Future<RecipeCostEstimate> estimateCost(String recipeId) async {
     final response = await sendRequest(method: .get, path: '/$recipeId/cost');
     return RecipeCostEstimate.fromJson(ensureMap(response));

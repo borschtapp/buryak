@@ -217,6 +217,9 @@
   "recipeLikeTooltip": "Gefällt mir",
   "recipeDislikeTooltip": "Gefällt mir nicht",
   "recipeLikeFailed": "Status konnte nicht aktualisiert werden",
+  "recipeOpenInBrowser": "Im Browser öffnen",
+  "recipeRefreshFromSource": "Von der Quelle aktualisieren",
+  "recipeRefreshed": "Rezept von der Quelle aktualisiert",
   "recipeLikedBy": "Gefällt {names}",
   "@recipeLikedBy": {
     "placeholders": {

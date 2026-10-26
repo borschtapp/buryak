@@ -222,6 +222,9 @@
   "recipeLikeTooltip": "Like",
   "recipeDislikeTooltip": "Dislike",
   "recipeLikeFailed": "Failed to update liked status",
+  "recipeOpenInBrowser": "Open in browser",
+  "recipeRefreshFromSource": "Refresh from source",
+  "recipeRefreshed": "Recipe refreshed from source",
   "recipeLikedBy": "Liked by {names}",
   "@recipeLikedBy": {
     "placeholders": {

@@ -50,4 +50,16 @@ void main() {
     await container.read(recipeControllerProvider('1').future);
     expect(fetches, 3, reason: 'initial load, the refresh, and the reload after the write');
   });
+
+  test('refreshFromSource shows the refreshed recipe without fetching it again', () async {
+    when(() => repo.refresh('1')).thenAnswer((_) async => Recipe.fromJson(fakeRecipeJson(name: 'Refreshed')));
+
+    await refreshRecipeMutation('1').run(
+      container,
+      (tsx) => tsx.get(recipeControllerProvider('1').notifier).refreshFromSource(),
+    );
+
+    expect(container.read(recipeControllerProvider('1')).value?.name, 'Refreshed');
+    expect(fetches, 1, reason: 'the refresh response replaces the recipe');
+  });
 }

@@ -3769,25 +3769,22 @@ paths:
       summary: Update a recipe instruction.
       tags:
         - recipes
-  /api/v1/recipes/import:
+  /api/v1/recipes/{id}/refresh:
     post:
-      consumes:
-        - application/json
       description:
-        Backend attempts semantic extraction first, then AI extraction.
-        Returns the imported Recipe object.
+        Re-scrapes an imported recipe from its source URL. Returns 502
+        if the scrape is missing ingredients or instructions the recipe has.
       parameters:
-        - description: Import request
-          in: body
-          name: import
+        - description: Recipe ID
+          in: path
+          name: id
           required: true
-          schema:
-            $ref: "#/definitions/api.ImportRequest"
+          type: string
       produces:
         - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: "#/definitions/domain.Recipe"
         "400":
@@ -3798,13 +3795,25 @@ paths:
           description: Unauthorized
           schema:
             $ref: "#/definitions/sentinels.Error"
-        "422":
-          description: Unprocessable Entity
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: "#/definitions/sentinels.Error"
+        "504":
+          description: Gateway Timeout
           schema:
             $ref: "#/definitions/sentinels.Error"
       security:
         - ApiKeyAuth: []
-      summary: Import a recipe from URL.
+      summary: Refresh a recipe from its source URL.
       tags:
         - recipes
   /api/v1/shoppinglists:

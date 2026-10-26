@@ -6,8 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 
-import '../../helpers/repository_harness.dart';
 import '../../helpers/fake_recipe.dart';
+import '../../helpers/repository_harness.dart';
 
 void main() {
   final harness = setUpRepository((ref, client) => RecipeRepository(ref: ref, client: client));
@@ -58,6 +58,30 @@ void main() {
       final result = await harness.repository.create(Recipe.fromJson(fakeRecipeJson()));
 
       expect(result.id, 'new-id');
+    });
+
+    test('refresh posts to the recipe and returns the refreshed recipe', () async {
+      when(
+        () => harness.client.post(
+          any(),
+          headers: any(named: 'headers'),
+          body: any(named: 'body'),
+        ),
+      ).thenAnswer((_) async => http.Response(jsonEncode(fakeRecipeJson(id: '123', name: 'Refreshed')), 200));
+
+      final result = await harness.repository.refresh('123');
+
+      expect(result.name, 'Refreshed');
+      final uri =
+          verify(
+                () => harness.client.post(
+                  captureAny(),
+                  headers: any(named: 'headers'),
+                  body: any(named: 'body'),
+                ),
+              ).captured.single
+              as Uri;
+      expect(uri.path, endsWith('/api/v1/recipes/123/refresh'));
     });
 
     test('throws exception on error', () async {
