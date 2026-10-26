@@ -7,14 +7,12 @@ import 'content_frame.dart';
 class SearchableGridScaffold extends StatelessWidget {
   const SearchableGridScaffold({
     super.key,
-    this.searchBar,
+    required this.searchBar,
     required this.child,
-    this.topWidget,
   });
 
-  final Widget? searchBar;
+  final Widget searchBar;
   final Widget child;
-  final Widget? topWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -26,22 +24,11 @@ class SearchableGridScaffold extends StatelessWidget {
           color: context.colors.surface,
           child: ContentFrame(
             maxWidth: UIConstants.defaultMaxWidth,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ?topWidget,
-                if (searchBar case final bar?)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      UIConstants.paddingMedium,
-                      UIConstants.paddingSmall,
-                      UIConstants.paddingMedium,
-                      4,
-                    ),
-                    child: bar,
-                  ),
-              ],
+            padding: const EdgeInsets.symmetric(
+              horizontal: UIConstants.paddingMedium,
+              vertical: UIConstants.paddingSmall,
             ),
+            child: searchBar,
           ),
         ),
         Expanded(child: child),

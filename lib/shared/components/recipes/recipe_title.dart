@@ -45,10 +45,12 @@ class RecipeTitle extends StatelessWidget {
                 showPrefix: compact,
                 useUnderline: compact,
               ),
-              if (recipe.published != null) ...[
+              if (recipe.displayDate case final date?) ...[
                 Text(
-                  recipe.published!.localizedDate(context.l10n),
-                  style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
+                  date.localizedDate(context.l10n),
+                  style: context.textTheme.labelSmall?.copyWith(
+                    color: recipe.displayDateColor(context.colors),
+                  ),
                 ),
               ],
             ],

@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../models/meal_plan.dart';
+import '../models/recipe.dart';
+import '../models/recipe_filter.dart';
 import '../providers/theme.dart';
 import 'breakpoints.dart';
 
@@ -112,6 +114,14 @@ extension MealTypeL10n on MealType {
   };
 }
 
+/// The sort choices offered for recipe lists, in menu order.
+List<({String label, SortField field, SortOrder order})> recipeSortOptions(AppLocalizations l10n) => [
+  (label: l10n.recipesFilterSortNewest, field: SortField.id, order: SortOrder.desc),
+  (label: l10n.recipesFilterSortOldest, field: SortField.id, order: SortOrder.asc),
+  (label: l10n.recipesFilterSortNameAZ, field: SortField.name, order: SortOrder.asc),
+  (label: l10n.recipesFilterSortNameZA, field: SortField.name, order: SortOrder.desc),
+];
+
 const _fractionsMap = {
   '¼': 0.25,
   '½': 0.50,
@@ -134,6 +144,11 @@ const _fractionsMap = {
 };
 
 const double _fractionEpsilon = 0.01;
+
+extension RecipeDateColor on Recipe {
+  /// Text colour for [RecipeDates.displayDate]; muted when it falls back to the created date.
+  Color displayDateColor(ColorScheme colors) => published != null ? colors.onSurfaceVariant : colors.outline;
+}
 
 extension DoubleFormat on double? {
   /// The user-facing "pretty" version (e.g., "½", "2 ½", "0.005", "1.1").

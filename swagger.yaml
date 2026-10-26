@@ -644,6 +644,9 @@ definitions:
       cook_time:
         example: 1200
         type: integer
+      created:
+        format: date-time
+        type: string
       description:
         example:
           A classic Italian pasta dish made with eggs, cheese, pancetta, and
@@ -715,6 +718,9 @@ definitions:
       total_time:
         example: 2100
         type: integer
+      updated:
+        format: date-time
+        type: string
       user_id:
         type: string
       video:

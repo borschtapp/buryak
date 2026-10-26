@@ -79,12 +79,7 @@ class RecipeFilters extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final sortOptions = [
-      (label: l10n.recipesFilterSortNewest, field: SortField.id, order: SortOrder.desc),
-      (label: l10n.recipesFilterSortOldest, field: SortField.id, order: SortOrder.asc),
-      (label: l10n.recipesFilterSortNameAZ, field: SortField.name, order: SortOrder.asc),
-      (label: l10n.recipesFilterSortNameZA, field: SortField.name, order: SortOrder.desc),
-    ];
+    final sortOptions = recipeSortOptions(l10n);
 
     final filter = useState(initialFilter);
 

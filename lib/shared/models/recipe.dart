@@ -38,6 +38,8 @@ abstract class Recipe with _$Recipe {
     Rating? rating,
     Video? video,
     DateTime? published,
+    DateTime? created,
+    DateTime? updated,
     String? feedId,
     List<RecipeSavedUser>? savedBy,
     String? userId,
@@ -53,6 +55,10 @@ abstract class Recipe with _$Recipe {
   }) = _Recipe;
 
   factory Recipe.fromJson(Map<String, dynamic> json) => _$RecipeFromJson(json);
+}
+
+extension RecipeDates on Recipe {
+  DateTime? get displayDate => published ?? created;
 }
 
 extension RecipeCooking on Recipe {

@@ -2,10 +2,10 @@
   "@@locale": "uk",
   "appTitle": "Борщ",
   "navFeed": "Стрічка",
-  "navSaved": "Збережені",
-  "navMealPlan": "Меню",
+  "navSaved": "Збережене",
+  "navMealPlan": "План",
   "navShopping": "Покупки",
-  "navAccount": "Акаунт",
+  "navProfile": "Профіль",
   "errorSomethingWentWrong": "Щось пішло не так",
   "errorTryAgain": "Спробувати знову",
   "errorSessionExpired": "Термін дії сесії закінчився. Будь ласка, увійдіть знову.",
@@ -35,12 +35,12 @@
   "validatorNameLength": "Ім'я має містити щонайменше 2 символи.",
   "validatorUrl": "Введіть дійсну URL-адресу.",
   "validatorText": "Текст надто короткий.",
-  "validatorPositiveNumber": "Будь ласка, введіть дійсне додатне число.",
+  "validatorPositiveNumber": "Введіть додатне число.",
   "validatorFieldRequired": "Це поле є обов'язковим.",
   "loginWelcomeBack": "З поверненням",
   "loginTitle": "Увійдіть до свого акаунту",
   "loginEmail": "Електронна пошта",
-  "loginEmailHint": "abc@приклад.ua",
+  "loginEmailHint": "name@example.com",
   "loginPassword": "Пароль",
   "loginPasswordHint": "••••••••",
   "loginShowPassword": "Показати пароль",
@@ -106,14 +106,14 @@
   "householdJoinHousehold": "Приєднатись до домогосподарства",
   "householdJoinInviteCode": "Код запрошення",
   "householdJoinInviteCodeHint": "ABCD-1234",
-  "householdJoinHelper": "Введіть код запрошення, яким поділились з вами, щоб приєднатись до домогосподарства.",
+  "householdJoinHelper": "Введіть код запрошення, щоб приєднатися до домогосподарства.",
   "householdJoinSubmit": "Приєднатись",
-  "householdJoinCodeRequired": "Код є обов'язковим",
+  "householdJoinCodeRequired": "Код обов'язковий",
   "householdJoinSuccess": "Успішно приєднались до домогосподарства!",
   "householdRenameHousehold": "Перейменувати домогосподарство",
   "householdRenameName": "Назва домогосподарства",
   "householdRenameNameHint": "Моя кухня",
-  "householdRenameNameRequired": "Назва є обов'язковою",
+  "householdRenameNameRequired": "Назва обов'язкова",
   "householdLeave": "Покинути домогосподарство",
   "householdNoHousehold": "Немає домогосподарства",
   "householdCurrency": "Валюта",
@@ -144,7 +144,7 @@
   "importSuccessRecipe": "Рецепт імпортовано.",
   "importSuccessFeed": "Стрічку додано! Рецепти з'являться незабаром.",
   "recipesCookbookEmptyTitle": "Книг рецептів не знайдено",
-  "recipesCookbookEmptySubtitle": "Створіть одну в розділі «Збережені».",
+  "recipesCookbookEmptySubtitle": "Створіть одну в розділі «Збережене».",
   "recipesCookbooksUpdated": "Книги рецептів оновлено",
   "recipesCollectionSelected": "Вибрано",
   "recipesFilterTitle": "Фільтри",
@@ -169,7 +169,7 @@
   "recipesFilterDiet": "Дієта",
   "recipesFilterCategory": "Категорія",
   "recipesFilterPublisher": "Видавець",
-  "recipesEquipment": "Обладнання",
+  "recipesEquipment": "Приладдя",
   "recipesFilterLoading": "Завантаження {title}…",
   "@recipesFilterLoading": {
     "placeholders": {
@@ -187,7 +187,7 @@
   "recipesPreparation": "Приготування",
   "recipesStartCooking": "Почати готувати",
   "recipesNutritionTitle": "Харчова цінність",
-  "recipesNutritionFacts": "Цінність",
+  "recipesNutritionFacts": "КБЖВ",
   "recipesNutritionPerServing": "На порцію: {size}",
   "@recipesNutritionPerServing": {
     "placeholders": {
@@ -239,11 +239,11 @@
   },
   "cookingExitTooltip": "Вийти з режиму приготування",
   "cookingEnjoyMeal": "Смачного!",
-  "cookingMadeIt": "Готово",
+  "cookingMadeIt": "Приготовано",
   "plannerEmptyTitle": "Страв не заплановано",
   "plannerEmptySubtitle": "Додайте рецепти до свого меню.",
   "plannerDate": "Дата",
-  "plannerMealType": "Тип прийому їжі",
+  "plannerMealType": "Прийом їжі",
   "plannerServings": "Порції",
   "plannerDecreaseServings": "Зменшити порції",
   "plannerIncreaseServings": "Збільшити порції",
@@ -257,24 +257,24 @@
     }
   },
   "shoppingEmptyTitle": "Список покупок порожній",
-  "shoppingEmptySubtitle": "Натисніть +, щоб додати товари.",
-  "shoppingAddItem": "Додати товар",
-  "shoppingAddItemTitle": "Додати товар",
+  "shoppingEmptySubtitle": "Натисніть +, щоб додати продукт.",
+  "shoppingAddItem": "Додати продукт",
+  "shoppingAddItemTitle": "Додати продукт",
   "shoppingAddItemHint": "напр. Молоко",
   "shoppingAddItemLabel": "Назва продукту",
-  "shoppingEditItem": "Редагувати товар",
-  "shoppingItemUpdated": "Товар оновлено",
+  "shoppingEditItem": "Редагувати продукт",
+  "shoppingItemUpdated": "Продукт оновлено",
   "shoppingItemMergeFood": "Об'єднати з іншим продуктом…",
   "shoppingItemMerged": "Продукти об'єднано",
   "shoppingItemAmount": "Кількість",
   "shoppingItemUnit": "Одиниця",
   "shoppingItemName": "Назва",
-  "shoppingItemField": "Товар",
+  "shoppingItemField": "Продукт",
   "shoppingAddToShoppingTitle": "Додати до покупок",
   "shoppingNoIngredients": "Інгредієнтів для цього рецепту не знайдено.",
   "shoppingAddToList": "Додати до списку",
   "shoppingAllIngredientsAdded": "Всі інгредієнти додано до списку покупок",
-  "authorPublishedBy": "Опубліковано: ",
+  "authorPublishedBy": "Автор: ",
   "authorSourceLinkError": "Не вдалося відкрити посилання на джерело",
   "updateAvailableTitle": "Доступне оновлення",
   "updateAvailableContent": "Доступна нова версія. Оновіть, щоб продовжити.",
@@ -314,19 +314,19 @@
   "inviteToHousehold": "Запросити до домогосподарства",
   "inviteSendEmailDescription": "Надіслати запрошення на електронну пошту:",
   "inviteEmailAddress": "Електронна адреса",
-  "inviteEmailHint": "друг@приклад.ua",
+  "inviteEmailHint": "friend@example.com",
   "inviteSent": "Запрошення надіслано!",
   "inviteOrGenerateLink": "Або згенеруйте посилання для поширення:",
   "inviteShareLink": "Поділитися посиланням",
   "inviteSendEmailButton": "Надіслати запрошення на пошту",
   "inviteGenerateShareLink": "Створити посилання для запрошення",
-  "inviteShareText": "Приєднуйся до мого домогосподарства у Smetana: {url}",
+  "inviteShareText": "Приєднуйся до мого домогосподарства у Borscht: {url}",
   "@inviteShareText": {
     "placeholders": {
       "url": { "type": "String" }
     }
   },
-  "cookingPrepareToCook": "Підготовка до приготування",
+  "cookingPrepareToCook": "Підготовка",
   "cookingCookTimeLabel": "Час приготування: {duration}",
   "@cookingCookTimeLabel": {
     "placeholders": {
@@ -345,7 +345,7 @@
       "name": { "type": "String" }
     }
   },
-  "recipeYieldServings": "{count} порцій",
+  "recipeYieldServings": "{count, plural, =1{1 порція} few{{count} порції} many{{count} порцій} other{{count} порції}}",
   "@recipeYieldServings": {
     "placeholders": {
       "count": { "type": "int" }
@@ -379,7 +379,7 @@
   "durationNotAvailable": "н/д",
   "recipesNoRecipesYet": "Рецептів ще немає.",
   "recipesNoCookbooksYet": "Книг рецептів ще немає.",
-  "recipesRecipesCount": "{count, plural, =1{1 рецепт} few{{count} рецепти} many{{count} рецептів} other{{count} рецепти}}",
+  "recipesRecipesCount": "{count, plural, =1{1 рецепт} few{{count} рецепти} many{{count} рецептів} other{{count} рецепта}}",
   "@recipesRecipesCount": {
     "placeholders": {
       "count": { "type": "int" }
@@ -408,7 +408,7 @@
     }
   },
   "registerAcceptTermsSubtitle": "Будь ласка, прийміть Умови використання та Політику конфіденційності, щоб продовжити.",
-  "registerTermsAccept": "Я прочитав та приймаю {termsLink} та {privacyLink}.",
+  "registerTermsAccept": "Я погоджуюся з {termsLink} та {privacyLink}.",
   "@registerTermsAccept": {
     "placeholders": {
       "termsLink": {
@@ -429,7 +429,7 @@
   "feedSyncFailed": "Синхронізація не вдалася",
   "feedResyncPending": "Синхронізація займає більше часу, ніж очікувалось. Вона продовжиться у фоновому режимі.",
   "feedResyncNoRecipes": "Рецептів не знайдено.",
-  "feedResyncImported": "Імпортовано {count, plural, =1{1 новий рецепт} few{{count} нові рецепти} many{{count} нових рецептів} other{{count} нових рецепти}}.",
+  "feedResyncImported": "Імпортовано {count, plural, =1{1 новий рецепт} few{{count} нові рецепти} many{{count} нових рецептів} other{{count} нових рецептів}}.",
   "@feedResyncImported": {
     "placeholders": {
       "count": { "type": "int" }
@@ -442,19 +442,19 @@
   "cookbookCreateSubmit": "Створити",
   "cookbookCreateNameRequired": "Назва не може бути порожньою",
   "timeAgoJustNow": "Щойно",
-  "timeAgoMinutes": "{minutes}хв тому",
+  "timeAgoMinutes": "{minutes} хв тому",
   "@timeAgoMinutes": {
     "placeholders": {
       "minutes": { "type": "int" }
     }
   },
-  "timeAgoHours": "{hours}год тому",
+  "timeAgoHours": "{hours} год тому",
   "@timeAgoHours": {
     "placeholders": {
       "hours": { "type": "int" }
     }
   },
-  "timeAgoDays": "{days}д тому",
+  "timeAgoDays": "{days} д тому",
   "@timeAgoDays": {
     "placeholders": {
       "days": { "type": "int" }
@@ -504,7 +504,7 @@
   "recipeCostAddPrice": "Додати ціну",
   "recipeCostAddConversion": "Додати конвертацію",
   "recipeCostSkip": "Пропустити",
-  "recipeCostNoPrices": "Ціни ще не записані",
+  "recipeCostNoPrices": "Ціни ще не додано",
   "recipeCostNoPricesSubtitle": "Натисніть на інгредієнт, щоб додати його ціну.",
   "foodPriceTitle": "Ціни для {name}",
   "@foodPriceTitle": {
@@ -537,10 +537,10 @@
   "editIngredientFoodSearchHint": "Введіть щонайменше 2 символи",
   "editFoodTitle": "Редагувати продукт",
   "editFoodDescription": "Опис",
-  "editFoodDefaultUnit": "Одиниця за замовчуванням",
+  "editFoodDefaultUnit": "Стандартна одиниця",
   "editFoodMerge": "Об'єднати з…",
   "editFoodMergeTitle": "Об'єднати продукти",
-  "editFoodMergeMessage": "Замінити \"{source}\" на \"{target}\" усюди? Усі рецепти, товари в списку покупок і збережені ціни, що використовують \"{source}\", перейдуть на \"{target}\". Це не можна скасувати.",
+  "editFoodMergeMessage": "Замінити \"{source}\" на \"{target}\" усюди? Усі рецепти, продукти в списку покупок і збережені ціни, що використовують \"{source}\", перейдуть на \"{target}\". Це не можна скасувати.",
   "@editFoodMergeMessage": {
     "placeholders": {
       "source": { "type": "String" },
@@ -554,7 +554,7 @@
   "editUnitName": "Назва",
   "editUnitMerge": "Об'єднати з…",
   "editUnitMergeTitle": "Об'єднати одиниці",
-  "editUnitMergeMessage": "Замінити \"{source}\" на \"{target}\" усюди? Усі рецепти, товари в списку покупок і збережені ціни, що використовують \"{source}\", перейдуть на \"{target}\". Це не можна скасувати.",
+  "editUnitMergeMessage": "Замінити \"{source}\" на \"{target}\" усюди? Усі рецепти, продукти в списку покупок і збережені ціни, що використовують \"{source}\", перейдуть на \"{target}\". Це не можна скасувати.",
   "@editUnitMergeMessage": {
     "placeholders": {
       "source": { "type": "String" },
@@ -597,5 +597,6 @@
     "placeholders": {
       "food": { "type": "String" }
     }
-  }
+  },
+  "seeAll": "Дивитися всі"
 }

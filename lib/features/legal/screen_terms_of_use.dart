@@ -16,7 +16,7 @@ class TermsOfUseScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.accountTermsOfUse),
-        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.account)),
+        leading: BackButton(onPressed: () => context.popOrGoNamed(RouteNames.profile)),
       ),
       body: SingleChildScrollView(
         child: ContentFrame(
@@ -135,7 +135,7 @@ class TermsOfUseScreen extends StatelessWidget {
               Builder(
                 builder: (context) => InkWell(
                   child: const Paragraph('Please read our Privacy Policy.'),
-                  onTap: () => GoRouter.of(context).goNamed(RouteNames.privacy),
+                  onTap: () => context.goNamed(RouteNames.privacy),
                 ),
               ),
 

@@ -3,9 +3,9 @@
   "appTitle": "Borscht",
   "navFeed": "Feed",
   "navSaved": "Saved",
-  "navMealPlan": "Meal Plan",
+  "navMealPlan": "Planner",
   "navShopping": "Shopping",
-  "navAccount": "Account",
+  "navProfile": "Profile",
   "errorSomethingWentWrong": "Something went wrong",
   "errorTryAgain": "Try Again",
   "errorSessionExpired": "Your session expired. Please log in again.",
@@ -40,7 +40,7 @@
   "loginWelcomeBack": "Welcome back",
   "loginTitle": "Login to your account",
   "loginEmail": "Email",
-  "loginEmailHint": "abc@example.com",
+  "loginEmailHint": "name@example.com",
   "loginPassword": "Password",
   "loginPasswordHint": "••••••••",
   "loginShowPassword": "Show password",
@@ -325,7 +325,7 @@
   "inviteShareLink": "Share Link",
   "inviteSendEmailButton": "Send Email Invite",
   "inviteGenerateShareLink": "Generate Share Link",
-  "inviteShareText": "Join my household on Smetana: {url}",
+  "inviteShareText": "Join my household on Borscht: {url}",
   "@inviteShareText": {
     "placeholders": {
       "url": { "type": "String" }
@@ -350,7 +350,7 @@
       "name": { "type": "String" }
     }
   },
-  "recipeYieldServings": "{count} servings",
+  "recipeYieldServings": "{count, plural, =1{1 serving} other{{count} servings}}",
   "@recipeYieldServings": {
     "placeholders": {
       "count": { "type": "int" }
@@ -602,5 +602,6 @@
     "placeholders": {
       "food": { "type": "String" }
     }
-  }
+  },
+  "seeAll": "See all"
 }

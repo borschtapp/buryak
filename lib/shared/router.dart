@@ -15,6 +15,7 @@ import '../features/legal/screen_privacy_policy.dart';
 import '../features/legal/screen_terms_of_use.dart';
 import '../features/planner/screen_planner.dart';
 import '../features/recipes/screen_collection.dart';
+import '../features/recipes/screen_cookbooks.dart';
 import '../features/recipes/screen_recipe.dart';
 import '../features/recipes/screen_saved.dart';
 import '../features/shopping/screen_shopping.dart';
@@ -60,11 +61,11 @@ final List<AppDestination> destinations = [
     selectedIcon: const Icon(Icons.shopping_basket),
   ),
   AppDestination(
-    label: (l10n) => l10n.navAccount,
-    route: '/account',
-    name: RouteNames.account,
-    icon: const Icon(Icons.manage_accounts_outlined),
-    selectedIcon: const Icon(Icons.manage_accounts),
+    label: (l10n) => l10n.navProfile,
+    route: '/profile',
+    name: RouteNames.profile,
+    icon: const Icon(Icons.person_outline),
+    selectedIcon: const Icon(Icons.person),
   ),
 ];
 
@@ -98,9 +99,10 @@ const Map<String, int> _tabIndex = {
   RouteNames.saved: 1,
   RouteNames.planner: 2,
   RouteNames.shopping: 3,
-  RouteNames.account: 4,
+  RouteNames.profile: 4,
   RouteNames.feeds: 0,
   RouteNames.collection: 1,
+  RouteNames.cookbooks: 1,
   RouteNames.privacy: 4,
   RouteNames.terms: 4,
   RouteNames.login: 4,
@@ -137,13 +139,14 @@ class _RouteConfig {
 }
 
 const Map<String, _RouteConfig> _routeConfigs = {
-  RouteNames.account: _RouteConfig(contentScrollable: false),
+  RouteNames.profile: _RouteConfig(contentScrollable: false),
   RouteNames.feed: _RouteConfig(
     tabActionsBuilder: _buildFeedTabActions,
   ),
   RouteNames.feeds: _RouteConfig(hideBottomNav: true, contentScrollable: false),
   RouteNames.recipe: _RouteConfig(hideBottomNav: true, contentScrollable: false, extendBodyBehindAppBar: true),
   RouteNames.collection: _RouteConfig(hideBottomNav: true, contentScrollable: false, contentFullWidth: true),
+  RouteNames.cookbooks: _RouteConfig(hideBottomNav: true, contentScrollable: false, contentFullWidth: true),
 };
 
 List<Widget> _buildFeedTabActions(BuildContext context) => [
@@ -230,8 +233,8 @@ GoRouter router(Ref ref) {
             ),
           ),
           GoRoute(
-            name: RouteNames.account,
-            path: '/account',
+            name: RouteNames.profile,
+            path: '/profile',
             redirect: _authGuard(ref),
             pageBuilder: (context, state) => NoTransitionPage<void>(
               key: state.pageKey,
@@ -270,6 +273,16 @@ GoRouter router(Ref ref) {
             pageBuilder: (context, state) => CustomTransitionPage<void>(
               key: state.pageKey,
               child: CollectionScreen(collectionId: state.pathParameters['cid']!),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) => fadeScaleTransition(animation, child),
+            ),
+          ),
+          GoRoute(
+            name: RouteNames.cookbooks,
+            path: '/cookbooks',
+            redirect: _authGuard(ref),
+            pageBuilder: (context, state) => CustomTransitionPage<void>(
+              key: state.pageKey,
+              child: const CookbooksScreen(),
               transitionsBuilder: (context, animation, secondaryAnimation, child) => fadeScaleTransition(animation, child),
             ),
           ),
@@ -355,7 +368,7 @@ GoRouter router(Ref ref) {
           final code = state.uri.queryParameters['code'];
           if (code == null || code.isEmpty) return '/';
           if (ref.read(authProvider).isLoggedIn) {
-            return '/account?joinCode=$code';
+            return '/profile?joinCode=$code';
           } else {
             return '/register?code=$code';
           }
@@ -430,13 +443,19 @@ AppBar? _buildShellAppBar(BuildContext context, GoRouterState state, String? rou
           return Text(collectionAsync.whenOrNull(data: (c) => c.name) ?? context.l10n.cookbookDefaultTitle);
         },
       ),
-      leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.saved)),
+      leading: BackButton(onPressed: () => context.popOrGoNamed(RouteNames.saved)),
+    );
+  }
+  if (routeName == RouteNames.cookbooks) {
+    return AppBar(
+      title: Text(context.l10n.savedTabCookbooks),
+      leading: BackButton(onPressed: () => context.popOrGoNamed(RouteNames.saved)),
     );
   }
   if (routeName == RouteNames.feeds) {
     return AppBar(
       title: Text(context.l10n.manageFeedsTitle),
-      leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.feed)),
+      leading: BackButton(onPressed: () => context.popOrGoNamed(RouteNames.feed)),
       actions: [
         PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert),

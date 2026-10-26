@@ -16,6 +16,7 @@ part 'saved.g.dart';
 
 // Run with `tsx.get(savedCollectionsProvider.notifier)`.
 final createCollectionMutation = Mutation<void>(label: 'createCollection');
+final deleteCollectionMutation = Mutation<void>(label: 'deleteCollection');
 final updateRecipeCollectionsMutation = Mutation<void>(label: 'updateRecipeCollections');
 
 /// Likes the signed-in user toggled since their recipes were fetched, by recipe ID.
@@ -90,7 +91,7 @@ class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
     resetPagination();
     ref.watchSession();
     ref.watch(importTriggerProvider);
-    final filter = ref.read(savedRecipesFilterProvider);
+    final filter = ref.watch(savedRecipesFilterProvider);
     final result = await ref
         .read(recipeRepositoryProvider)
         .findAll(
@@ -166,6 +167,11 @@ class SavedCollections extends _$SavedCollections with PagedNotifierMixin<Collec
 
   Future<void> create(String name) async {
     await ref.read(collectionRepositoryProvider).create(name);
+    ref.invalidateSelf();
+  }
+
+  Future<void> delete(String id) async {
+    await ref.read(collectionRepositoryProvider).delete(id);
     ref.invalidateSelf();
   }
 

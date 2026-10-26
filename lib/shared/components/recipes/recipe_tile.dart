@@ -147,13 +147,15 @@ class RecipeTile extends HookConsumerWidget {
                         child: RecipeAuthorLine(recipe: recipe, showPrefix: false, useUnderline: false),
                       ),
                     ),
-                    if (recipe.published case final published?)
+                    if (recipe.displayDate case final date?)
                       Semantics(
-                        label: context.l10n.recipesPublishedDate(published.localizedDate(context.l10n)),
+                        label: context.l10n.recipesPublishedDate(date.localizedDate(context.l10n)),
                         excludeSemantics: true,
                         child: Text(
-                          published.localizedDate(context.l10n, omitCurrentYear: true),
-                          style: context.textTheme.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
+                          date.localizedDate(context.l10n, omitCurrentYear: true),
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color: recipe.displayDateColor(context.colors),
+                          ),
                         ),
                       ),
                   ],

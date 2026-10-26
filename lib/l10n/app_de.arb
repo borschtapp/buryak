@@ -1,13 +1,13 @@
 {
   "@@locale": "de",
   "appTitle": "Borscht",
-  "navFeed": "Feed",
+  "navFeed": "Entdecken",
   "navSaved": "Gespeichert",
-  "navMealPlan": "Plan",
-  "navShopping": "Einkaufen",
-  "navAccount": "Konto",
+  "navMealPlan": "Planer",
+  "navShopping": "Einkauf",
+  "navProfile": "Profil",
   "errorSomethingWentWrong": "Etwas ist schiefgelaufen",
-  "errorTryAgain": "Erneut versuchen",
+  "errorTryAgain": "Wiederholen",
   "errorSessionExpired": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.",
   "errorNoPermission": "Du hast keine Berechtigung dafür.",
   "errorNotFound": "Der angeforderte Eintrag wurde nicht gefunden.",
@@ -35,18 +35,18 @@
   "validatorNameLength": "Der Name muss mindestens 2 Zeichen lang sein.",
   "validatorUrl": "Bitte gib eine gültige URL ein.",
   "validatorText": "Der Text ist zu kurz.",
-  "validatorPositiveNumber": "Bitte geben Sie eine gültige positive Zahl ein.",
+  "validatorPositiveNumber": "Bitte eine positive Zahl eingeben.",
   "validatorFieldRequired": "Dieses Feld ist erforderlich.",
   "loginWelcomeBack": "Willkommen zurück",
   "loginTitle": "In dein Konto einloggen",
   "loginEmail": "E-Mail",
-  "loginEmailHint": "abc@beispiel.de",
+  "loginEmailHint": "name@example.com",
   "loginPassword": "Passwort",
   "loginPasswordHint": "••••••••",
   "loginShowPassword": "Passwort anzeigen",
   "loginHidePassword": "Passwort verbergen",
   "loginForgotPassword": "Passwort vergessen?",
-  "loginSubmit": "Jetzt einloggen",
+  "loginSubmit": "Anmelden",
   "loginRegisterCta": "Registrieren",
   "registerTitle": "Konto erstellen",
   "registerName": "Name",
@@ -106,10 +106,10 @@
   "householdJoinHousehold": "Haushalt beitreten",
   "householdJoinInviteCode": "Einladungscode",
   "householdJoinInviteCodeHint": "ABCD-1234",
-  "householdJoinHelper": "Gib den Einladungscode ein, der mit dir geteilt wurde, um dem Haushalt beizutreten.",
+  "householdJoinHelper": "Gib den Einladungscode ein, um dem Haushalt beizutreten.",
   "householdJoinSubmit": "Beitreten",
   "householdJoinCodeRequired": "Code ist erforderlich",
-  "householdJoinSuccess": "Haushalt erfolgreich beigetreten!",
+  "householdJoinSuccess": "Erfolgreich beigetreten!",
   "householdRenameHousehold": "Haushalt umbenennen",
   "householdRenameName": "Haushaltsname",
   "householdRenameNameHint": "Meine Küche",
@@ -127,7 +127,7 @@
   "searchNoResults": "Keine Ergebnisse",
   "feedFilterEmptyTitle": "Keine Ergebnisse",
   "feedFilterEmptySubtitle": "Passe deine Suche oder Filter an.",
-  "feedClearFilters": "Filter löschen",
+  "feedClearFilters": "Filter zurücksetzen",
   "feedsEmptyTitle": "Noch keine Feeds",
   "feedsEmptySubtitle": "Füge eine Feed-URL hinzu, um Rezepte von deinen Lieblings-Food-Blogs zu entdecken.",
   "feedsRemoveFeedTitle": "Feed entfernen",
@@ -148,7 +148,7 @@
   "recipesCookbooksUpdated": "Kochbücher aktualisiert",
   "recipesCollectionSelected": "Ausgewählt",
   "recipesFilterTitle": "Filter",
-  "recipesFilterClearAll": "Alle löschen",
+  "recipesFilterClearAll": "Zurücksetzen",
   "recipesFilterApply": "Anwenden",
   "recipesSearchHint": "Rezepte suchen…",
   "recipesFilterTooltip": "Filter",
@@ -169,7 +169,7 @@
   "recipesFilterDiet": "Diät",
   "recipesFilterCategory": "Kategorie",
   "recipesFilterPublisher": "Herausgeber",
-  "recipesEquipment": "Ausrüstung",
+  "recipesEquipment": "Utensilien",
   "recipesFilterLoading": "{title} wird geladen…",
   "@recipesFilterLoading": {
     "placeholders": {
@@ -243,13 +243,13 @@
   "plannerEmptyTitle": "Keine Mahlzeiten geplant",
   "plannerEmptySubtitle": "Füge Rezepte zu deinem Plan hinzu.",
   "plannerDate": "Datum",
-  "plannerMealType": "Mahlzeitentyp",
+  "plannerMealType": "Mahlzeit",
   "plannerServings": "Portionen",
   "plannerDecreaseServings": "Portionen verringern",
   "plannerIncreaseServings": "Portionen erhöhen",
-  "plannerMealUpdated": "Mahlzeitenplan aktualisiert",
-  "plannerMealAdded": "Zum Mahlzeitenplan hinzugefügt",
-  "plannerAddToPlan": "Zum Plan hinzufügen",
+  "plannerMealUpdated": "Plan aktualisiert",
+  "plannerMealAdded": "Zum Plan hinzugefügt",
+  "plannerAddToPlan": "Einplanen",
   "shoppingMarkAsBought": "{item} als gekauft markieren",
   "@shoppingMarkAsBought": {
     "placeholders": {
@@ -314,13 +314,13 @@
   "inviteToHousehold": "Zum Haushalt einladen",
   "inviteSendEmailDescription": "Einladung direkt per E-Mail senden:",
   "inviteEmailAddress": "E-Mail-Adresse",
-  "inviteEmailHint": "freund@beispiel.de",
+  "inviteEmailHint": "friend@example.com",
   "inviteSent": "Einladung gesendet!",
   "inviteOrGenerateLink": "Oder generiere einen Link zum Teilen über andere Apps:",
   "inviteShareLink": "Link teilen",
   "inviteSendEmailButton": "E-Mail-Einladung senden",
-  "inviteGenerateShareLink": "Teilungslink generieren",
-  "inviteShareText": "Tritt meinem Haushalt auf Smetana bei: {url}",
+  "inviteGenerateShareLink": "Freigabelink erstellen",
+  "inviteShareText": "Tritt meinem Haushalt auf Borscht bei: {url}",
   "@inviteShareText": {
     "placeholders": {
       "url": { "type": "String" }
@@ -338,14 +338,14 @@
   "collectionEmptyTitle": "Noch keine Rezepte",
   "collectionEmptySubtitle": "Dieses Kochbuch ist leer. Füge Rezepte aus deiner Bibliothek hinzu oder importiere neue.",
   "plannerMealFallback": "Mahlzeit",
-  "plannerMealPlanFallback": "Mahlzeitenplan",
+  "plannerMealPlanFallback": "Essensplan",
   "plannerEditMeal": "{name} bearbeiten",
   "@plannerEditMeal": {
     "placeholders": {
       "name": { "type": "String" }
     }
   },
-  "recipeYieldServings": "{count} Portionen",
+  "recipeYieldServings": "{count, plural, =1{1 Portion} other{{count} Portionen}}",
   "@recipeYieldServings": {
     "placeholders": {
       "count": { "type": "int" }
@@ -393,9 +393,9 @@
     }
   },
   "recipesMoreOptionsTooltip": "Weitere Optionen",
-  "opmlImportComingSoon": "OPML importieren (Demnächst verfügbar)",
-  "opmlExportComingSoon": "OPML exportieren (Demnächst verfügbar)",
-  "feedsRemoveFeedContent": "Entferne \"{name}\" und alle importierten Rezepte aus deinem Feed?",
+  "opmlImportComingSoon": "OPML importieren (In Kürze)",
+  "opmlExportComingSoon": "OPML exportieren (In Kürze)",
+  "feedsRemoveFeedContent": "\"{name}\" und alle importierten Rezepte aus deinem Feed entfernen?",
   "@feedsRemoveFeedContent": {
     "placeholders": {
       "name": { "type": "String" }
@@ -426,7 +426,7 @@
       "when": { "type": "String" }
     }
   },
-  "feedSyncFailed": "Synchronisierung fehlgeschlagen",
+  "feedSyncFailed": "Sync fehlgeschlagen",
   "feedResyncPending": "Synchronisierung dauert länger als erwartet. Sie wird im Hintergrund fortgesetzt.",
   "feedResyncNoRecipes": "Keine Rezepte gefunden.",
   "feedResyncImported": "Importiert {count, plural, =1{1 neues Rezept} other{{count} neue Rezepte}}.",
@@ -442,19 +442,19 @@
   "cookbookCreateSubmit": "Erstellen",
   "cookbookCreateNameRequired": "Name darf nicht leer sein",
   "timeAgoJustNow": "Gerade eben",
-  "timeAgoMinutes": "vor {minutes}m",
+  "timeAgoMinutes": "vor {minutes} Min.",
   "@timeAgoMinutes": {
     "placeholders": {
       "minutes": { "type": "int" }
     }
   },
-  "timeAgoHours": "vor {hours}h",
+  "timeAgoHours": "vor {hours} Std.",
   "@timeAgoHours": {
     "placeholders": {
       "hours": { "type": "int" }
     }
   },
-  "timeAgoDays": "vor {days}d",
+  "timeAgoDays": "vor {days} Tg.",
   "@timeAgoDays": {
     "placeholders": {
       "days": { "type": "int" }
@@ -584,7 +584,7 @@
       "food": { "type": "String" }
     }
   },
-  "foodConversionFormHint": "Definieren Sie, wie 1 {unit} von {food} einer Basiseinheit entspricht:",
+  "foodConversionFormHint": "Lege fest, wie 1 {unit} von {food} einer Basiseinheit entspricht:",
   "@foodConversionFormHint": {
     "placeholders": {
       "unit": { "type": "String" },
@@ -597,5 +597,6 @@
     "placeholders": {
       "food": { "type": "String" }
     }
-  }
+  },
+  "seeAll": "Alle anzeigen"
 }

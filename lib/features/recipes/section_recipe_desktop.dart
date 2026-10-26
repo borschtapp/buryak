@@ -103,10 +103,12 @@ class RecipeDesktopSection extends HookWidget {
               children: [
                 RecipeAuthorLine(recipe: recipe, showPrefix: false, useUnderline: false),
                 const Spacer(),
-                if (recipe.published != null)
+                if (recipe.displayDate case final date?)
                   Text(
-                    context.l10n.recipesPublishedDate(recipe.published!.localizedDate(context.l10n)),
-                    style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
+                    context.l10n.recipesPublishedDate(date.localizedDate(context.l10n)),
+                    style: context.textTheme.labelSmall?.copyWith(
+                      color: recipe.displayDateColor(context.colors),
+                    ),
                   ),
               ],
             ),

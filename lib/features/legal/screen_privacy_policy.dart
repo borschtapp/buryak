@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../shared/constants.dart';
 import '../../shared/layouts/article_content.dart';
@@ -16,7 +15,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.accountPrivacyPolicy),
-        leading: BackButton(onPressed: () => context.canPop() ? context.pop() : context.goNamed(RouteNames.account)),
+        leading: BackButton(onPressed: () => context.popOrGoNamed(RouteNames.profile)),
       ),
       body: const SingleChildScrollView(
         child: ContentFrame(

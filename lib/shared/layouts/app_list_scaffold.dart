@@ -79,17 +79,12 @@ class AppListScaffold<T> extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: NotificationListener<ScrollEndNotification>(
-                  onNotification: (notification) {
-                    if (hasMore && !isLoadingMore && notification.metrics.extentAfter < UIConstants.scrollThreshold) {
-                      onLoadMore?.call();
-                    }
-                    return false;
-                  },
-                  child: RefreshIndicator(
-                    onRefresh: onRefresh,
-                    child: content,
-                  ),
+                child: PagedRefreshScope(
+                  onRefresh: onRefresh,
+                  onLoadMore: onLoadMore,
+                  isLoadingMore: isLoadingMore,
+                  hasMore: hasMore,
+                  child: content,
                 ),
               ),
               if (isLoadingMore)
@@ -101,6 +96,44 @@ class AppListScaffold<T> extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Adds pull-to-refresh to the scroll view [child] and calls [onLoadMore] when a
+/// scroll ends near its bottom while more pages remain.
+///
+/// For paged lists that can't use [AppListScaffold], e.g. because other content
+/// must stay visible while the list loads.
+class PagedRefreshScope extends StatelessWidget {
+  final RefreshCallback onRefresh;
+  final VoidCallback? onLoadMore;
+  final bool isLoadingMore;
+  final bool hasMore;
+  final Widget child;
+
+  const PagedRefreshScope({
+    super.key,
+    required this.onRefresh,
+    this.onLoadMore,
+    this.isLoadingMore = false,
+    this.hasMore = false,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<ScrollEndNotification>(
+      onNotification: (notification) {
+        if (hasMore && !isLoadingMore && notification.metrics.extentAfter < UIConstants.scrollThreshold) {
+          onLoadMore?.call();
+        }
+        return false;
+      },
+      child: RefreshIndicator(
+        onRefresh: onRefresh,
+        child: child,
+      ),
     );
   }
 }

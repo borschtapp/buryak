@@ -139,4 +139,59 @@ void main() {
 
     expect(find.textContaining('Failed to load recipes'), findsOneWidget);
   });
+
+  testWidgets('FeedScreen shows published date when available, or falls back to created date with muted color', (tester) async {
+    final publishedDate = DateTime(2026, 3, 10);
+    final createdDate = DateTime(2026, 4, 15);
+
+    final recipes = [
+      Recipe.fromJson({
+        'id': 'r1',
+        'name': 'Published Recipe',
+        'published': publishedDate.toIso8601String(),
+        'created': createdDate.toIso8601String(),
+      }),
+      Recipe.fromJson({
+        'id': 'r2',
+        'name': 'Created Recipe',
+        'created': createdDate.toIso8601String(),
+      }),
+      const Recipe(
+        id: 'r4',
+        name: 'No Date Recipe',
+      ),
+    ];
+
+    when(
+      () => mockFeedRepository.stream(
+        preload: any(named: 'preload'),
+        filter: any(named: 'filter'),
+        limit: any(named: 'limit'),
+        offset: any(named: 'offset'),
+      ),
+    ).thenAnswer(
+      (_) async => PaginatedList(
+        data: recipes,
+        meta: Meta(total: recipes.length, limit: 20, offset: 0),
+      ),
+    );
+
+    await tester.pumpWidget(createFeedScreen());
+    await tester.pumpAndSettle();
+
+    Finder inTile(String name, Finder matching) =>
+        find.descendant(of: find.widgetWithText(RecipeTile, name), matching: matching);
+
+    // Published date is shown with standard variant color
+    final publishedText = tester.widget<Text>(inTile('Published Recipe', find.text('Mar 10')));
+    expect(publishedText, isNotNull);
+
+    // Falls back to created date when published is not available, with muted color
+    final createdText = tester.widget<Text>(inTile('Created Recipe', find.text('Apr 15')));
+    expect(createdText, isNotNull);
+    expect(createdText.style?.color, isNot(equals(publishedText.style?.color)));
+
+    // No date shown when neither is available
+    expect(inTile('No Date Recipe', find.byType(Text)), findsNWidgets(2)); // Title and author line only
+  });
 }

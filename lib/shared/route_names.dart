@@ -3,10 +3,11 @@ class RouteNames {
   static const String saved = 'recipes';
   static const String planner = 'planner';
   static const String shopping = 'shopping';
-  static const String account = 'account';
+  static const String profile = 'profile';
 
   static const String recipe = 'recipe';
   static const String collection = 'collection';
+  static const String cookbooks = 'cookbooks';
   static const String feeds = 'feeds';
 
   static const String login = 'login';
