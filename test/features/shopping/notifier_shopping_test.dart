@@ -145,4 +145,41 @@ void main() {
     await container.read(shoppingItemsProvider.future);
     expect(fetches, 3, reason: 'initial load, the refresh, and the reload after the write');
   });
+
+  test('deleteShoppingItemMutation deletes the item from the list', () async {
+    final container = containerWithList('list-1');
+    when(() => repo.findItems('list-1', limit: 20, offset: 0)).thenAnswer(
+      (_) async => _page([const ShoppingItem(id: 'i1', text: 'Milk')]),
+    );
+    when(() => repo.deleteItem('list-1', 'i1')).thenAnswer((_) async {});
+    container.listen(shoppingItemsProvider, (_, _) {});
+    await container.read(shoppingItemsProvider.future);
+
+    await deleteShoppingItemMutation.run(
+      container,
+      (tsx) => tsx.get(shoppingItemsProvider.notifier).deleteItem('i1'),
+    );
+
+    expect(container.read(shoppingItemsProvider).value, isEmpty);
+    verify(() => repo.deleteItem('list-1', 'i1')).called(1);
+  });
+
+  test('toggleShoppingItemMutation toggles bought state', () async {
+    final container = containerWithList('list-1');
+    const item = ShoppingItem(id: 'i1', text: 'Milk', isBought: false);
+    when(() => repo.findItems('list-1', limit: 20, offset: 0)).thenAnswer(
+      (_) async => _page([item]),
+    );
+    when(() => repo.updateItem('list-1', 'i1', isBought: true)).thenAnswer((_) async => item.copyWith(isBought: true));
+    container.listen(shoppingItemsProvider, (_, _) {});
+    await container.read(shoppingItemsProvider.future);
+
+    await toggleShoppingItemMutation.run(
+      container,
+      (tsx) => tsx.get(shoppingItemsProvider.notifier).toggleItem(item),
+    );
+
+    expect(container.read(shoppingItemsProvider).value?.first.isBought, isTrue);
+    verify(() => repo.updateItem('list-1', 'i1', isBought: true)).called(1);
+  });
 }

@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../shared/models/collection.dart';
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_ingredient.dart';
+import '../../shared/providers/food_catalog.dart';
 import '../../shared/providers/recipe_price.dart';
 import '../../shared/repositories/recipe_repository.dart';
 
@@ -18,6 +19,7 @@ final deleteIngredientMutation = Mutation<void>(label: 'deleteIngredient');
 class RecipeController extends _$RecipeController {
   @override
   Future<Recipe> build(String recipeId) {
+    ref.watch(foodCatalogChangedProvider(.recipes));
     return ref.watch(recipeRepositoryProvider).findOne(recipeId);
   }
 

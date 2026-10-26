@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../features/feed/notifier_feed_list.dart';
-import '../../route_names.dart';
-import '../../util/extensions.dart';
-import '../../util/validator.dart';
-import '../dialog_text_input.dart';
+import '../providers/importer.dart';
+import '../route_names.dart';
+import '../util/extensions.dart';
+import '../util/validator.dart';
+import 'dialog_text_input.dart';
 
 void showImportDialog(BuildContext context, {bool isFeedOnly = false}) {
   final l10n = context.l10n;

@@ -1,6 +1,7 @@
 import 'package:buryak/features/feed/notifier_feed_list.dart';
 import 'package:buryak/shared/models/import_result.dart';
 import 'package:buryak/shared/models/paginated_list.dart';
+import 'package:buryak/shared/providers/importer.dart';
 import 'package:buryak/shared/repositories/feed_repository.dart';
 import 'package:buryak/shared/repositories/import_repository.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -20,6 +20,8 @@ part 'user.g.dart';
 final changeNameMutation = Mutation<void>(label: 'changeName');
 final changeEmailMutation = Mutation<void>(label: 'changeEmail');
 final changePasswordMutation = Mutation<void>(label: 'changePassword');
+final logoutMutation = Mutation<void>(label: 'logout');
+final deleteAccountMutation = Mutation<void>(label: 'deleteAccount');
 
 /// The server rejected the current password given to confirm a credential change.
 class WrongPasswordException implements InlineError {}

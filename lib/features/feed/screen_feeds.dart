@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/dialog_confirm.dart';
 import '../../shared/components/dismissible_tile.dart';
 import '../../shared/components/empty_state.dart';
-import '../../shared/components/recipes/dialog_import.dart';
+import '../../shared/components/dialog_import.dart';
 import '../../shared/hooks.dart';
 import '../../shared/layouts/app_list_scaffold.dart';
 import '../../shared/models/feed.dart';
@@ -21,14 +22,14 @@ class FeedsScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final feedsAsync = ref.watch(feedListProvider);
 
-    useFab(
-      ref,
-      FloatingActionButton(
+    final fab = useMemoized(
+      () => FloatingActionButton(
         heroTag: 'feeds_add_fab',
         onPressed: () => showImportDialog(context, isFeedOnly: true),
         child: const Icon(Icons.add),
       ),
     );
+    useFab(ref, fab);
 
     return AppListScaffold<List<Feed>>(
       value: feedsAsync,
@@ -73,28 +74,24 @@ class FeedsScreen extends HookConsumerWidget {
     BuildContext context,
     Feed feed,
   ) async {
-    try {
-      await ref.read(feedListProvider.notifier).removeFeed(feed);
+    final removed = await removeFeedMutation.tryRun(
+      ref,
+      (tsx) => tsx.get(feedListProvider.notifier).removeFeed(feed),
+    );
 
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.feedsFeedRemoved(feed.name)),
-            action: SnackBarAction(
-              label: context.l10n.feedsUndo,
-              onPressed: () async {
-                try {
-                  await ref.read(feedListProvider.notifier).restoreFeed(feed);
-                } catch (e) {
-                  if (context.mounted) ref.handleException(e);
-                }
-              },
+    if (removed && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.feedsFeedRemoved(feed.name)),
+          action: SnackBarAction(
+            label: context.l10n.feedsUndo,
+            onPressed: () => restoreFeedMutation.tryRun(
+              ref,
+              (tsx) => tsx.get(feedListProvider.notifier).restoreFeed(feed),
             ),
           ),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) ref.handleException(e);
+        ),
+      );
     }
   }
 }

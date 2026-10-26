@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/models/recipe_ingredient.dart';
 import '../../shared/models/shopping_item.dart';
+import '../../shared/providers/food_catalog.dart';
 import '../../shared/providers/paged_notifier_mixin.dart';
 import '../../shared/providers/shopping.dart';
 import '../../shared/repositories/shopping_list_repository.dart';
@@ -15,6 +16,8 @@ const shoppingItemTextMaxLength = 255;
 // Run with `tsx.get(shoppingItemsProvider.notifier)`.
 final addShoppingItemMutation = Mutation<void>(label: 'addShoppingItem');
 final updateShoppingItemMutation = Mutation<void>(label: 'updateShoppingItem');
+final deleteShoppingItemMutation = Mutation<void>(label: 'deleteShoppingItem');
+final toggleShoppingItemMutation = Mutation<void>(label: 'toggleShoppingItem');
 
 // Run with `tsx.get(shoppingItemWriterProvider)`.
 final addShoppingItemsMutation = Mutation<void>(label: 'addShoppingItems');
@@ -58,6 +61,7 @@ class ShoppingItems extends _$ShoppingItems with PagedNotifierMixin<ShoppingItem
   @override
   Future<List<ShoppingItem>> build() async {
     resetPagination();
+    ref.watch(foodCatalogChangedProvider(.shoppingItems));
     final listId = await ref.watch(primaryShoppingListIdProvider.future);
 
     final itemsResponse = await ref.read(shoppingListRepositoryProvider).findItems(listId, limit: limit, offset: 0);

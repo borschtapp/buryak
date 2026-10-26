@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/empty_state.dart';
-import '../../shared/components/recipes/dialog_import.dart';
+import '../../shared/components/dialog_import.dart';
 import '../../shared/components/recipes/recipe_search_bar.dart';
 import '../../shared/components/recipes/recipes_grid.dart';
 import '../../shared/hooks.dart';
@@ -26,7 +26,6 @@ class FeedScreen extends HookConsumerWidget {
         onPressed: () => showImportDialog(context),
         child: const Icon(Icons.add),
       ),
-      [],
     );
 
     useFab(ref, isFiltersOpen.value ? null : fab);

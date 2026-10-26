@@ -1,14 +1,24 @@
 import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../features/recipes/controller_recipe.dart';
-import '../../features/shopping/notifier_shopping.dart';
 import '../models/food.dart';
 import '../repositories/food_repository.dart';
 import '../repositories/unit_repository.dart';
 import 'recipe_price.dart';
 
 part 'food_catalog.g.dart';
+
+/// Caches that embed foods, so a catalog write must reload them.
+enum FoodEmbedder { recipes, shoppingItems }
+
+/// Bumped when a catalog write changes what [embedder] shows; it watches this to reload.
+@Riverpod(keepAlive: true)
+class FoodCatalogChanged extends _$FoodCatalogChanged {
+  @override
+  int build(FoodEmbedder embedder) => 0;
+
+  void trigger() => state++;
+}
 
 // Mutations for the catalog writes below. Run them with `tsx.get(foodCatalogProvider)`;
 // sheets watch them for pending state, and failures reach the user through
@@ -60,9 +70,9 @@ class FoodCatalog {
       clearDefaultUnit: clearDefaultUnit,
       pantry: pantry,
     );
-    _ref.invalidate(recipeControllerProvider);
-    // Shopping items embed the food, so a rename shows there too.
-    if (name != null) _ref.invalidate(shoppingItemsProvider);
+    // Recipes embed the whole food; shopping items show only its name.
+    _changed(FoodEmbedder.recipes);
+    if (name != null) _changed(FoodEmbedder.shoppingItems);
     // A rename can't move a cost estimate; pantry and default unit can.
     if (unitChanged || pantry != null) _ref.invalidate(recipeCostEstimateProvider);
   }
@@ -77,7 +87,7 @@ class FoodCatalog {
     _ref.read(foodUnitPreferencesProvider.notifier).setPreferred(food.id, unitId);
     _pricesChanged(food.id);
     // The server makes the first price's unit the food's default; recipes embed the food.
-    if (food.defaultUnitId == null) _ref.invalidate(recipeControllerProvider);
+    if (food.defaultUnitId == null) _changed(FoodEmbedder.recipes);
   }
 
   Future<void> deletePrice(String foodId, String priceId) async {
@@ -132,10 +142,13 @@ class FoodCatalog {
   }
 
   /// Merges reassign prices, conversions, ingredients and shopping items across the household.
-  void _foodsReassigned() => _ref
-    ..invalidate(foodPricesProvider)
-    ..invalidate(foodConversionsProvider)
-    ..invalidate(recipeCostEstimateProvider)
-    ..invalidate(recipeControllerProvider)
-    ..invalidate(shoppingItemsProvider);
+  void _foodsReassigned() {
+    _ref
+      ..invalidate(foodPricesProvider)
+      ..invalidate(foodConversionsProvider)
+      ..invalidate(recipeCostEstimateProvider);
+    FoodEmbedder.values.forEach(_changed);
+  }
+
+  void _changed(FoodEmbedder embedder) => _ref.read(foodCatalogChangedProvider(embedder).notifier).trigger();
 }

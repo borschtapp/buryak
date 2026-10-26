@@ -37,7 +37,8 @@ class AccountScreen extends HookConsumerWidget {
     }, [joinCode]);
 
     final userState = ref.watch(authProvider);
-    final isDeleting = useState(false);
+    final isDeleting = ref.watch(deleteAccountMutation).isPending;
+    final isLoggingOut = ref.watch(logoutMutation).isPending;
     if (userState == null) {
       return Center(child: Text(context.l10n.accountUserNotFound));
     }
@@ -126,24 +127,23 @@ class AccountScreen extends HookConsumerWidget {
                   leading: const Icon(Icons.logout),
                   title: context.l10n.accountLogout,
                   trailing: null,
-                  isLoading: isDeleting.value,
+                  isLoading: isLoggingOut,
                   onTap: () async {
-                    try {
-                      await ref.read(authProvider.notifier).logout();
-                      if (context.mounted) {
-                        context.goNamed(RouteNames.login);
-                      }
-                    } catch (e) {
-                      ref.handleException(e);
+                    final loggedOut = await logoutMutation.tryRun(
+                      ref,
+                      (tsx) => tsx.get(authProvider.notifier).logout(),
+                    );
+                    if (loggedOut && context.mounted) {
+                      context.goNamed(RouteNames.login);
                     }
                   },
                 ),
                 SettingsTile(
                   leading: Icon(Icons.delete_forever, color: errorColor),
                   foregroundColor: errorColor,
-                  title: isDeleting.value ? context.l10n.accountDeletingAccount : context.l10n.accountDeleteAccount,
+                  title: isDeleting ? context.l10n.accountDeletingAccount : context.l10n.accountDeleteAccount,
                   trailing: null,
-                  isLoading: isDeleting.value,
+                  isLoading: isDeleting,
                   onTap: () async {
                     final confirmed = await showConfirmDialog(
                       context,
@@ -153,16 +153,12 @@ class AccountScreen extends HookConsumerWidget {
                       destructive: true,
                     );
                     if (confirmed && context.mounted) {
-                      isDeleting.value = true;
-                      try {
-                        await ref.read(authProvider.notifier).deleteAccount();
-                        if (context.mounted) {
-                          context.goNamed(RouteNames.login);
-                        }
-                      } catch (e) {
-                        ref.handleException(e);
-                      } finally {
-                        isDeleting.value = false;
+                      final deleted = await deleteAccountMutation.tryRun(
+                        ref,
+                        (tsx) => tsx.get(authProvider.notifier).deleteAccount(),
+                      );
+                      if (deleted && context.mounted) {
+                        context.goNamed(RouteNames.login);
                       }
                     }
                   },

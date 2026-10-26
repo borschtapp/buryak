@@ -175,25 +175,20 @@ GoRouter router(Ref ref) {
           final appBar = _buildShellAppBar(context, state, routeName);
           final tabActions = config?.tabActionsBuilder?.call(context);
 
-          // FABs are published by screens via shellFabProvider.
-          Widget? fab;
-          if (routeName == RouteNames.feed || routeName == RouteNames.shopping || routeName == RouteNames.saved) {
-            fab = Consumer(
-              builder: (ctx, ref, _) => ref.watch(shellFabProvider) ?? const SizedBox.shrink(),
-            );
-          }
-
-          return RootLayout(
-            currentIndex: tabIdx,
-            appBar: appBar,
-            appBarTitle: config?.appBarTitle,
-            tabActions: tabActions,
-            hideBottomNavigationBar: config?.hideBottomNav ?? false,
-            contentScrollable: config?.contentScrollable ?? true,
-            extendBodyBehindAppBar: config?.extendBodyBehindAppBar ?? false,
-            contentFullWidth: config?.contentFullWidth ?? false,
-            floatingActionButton: fab,
-            child: child,
+          // FABs are published by screens via shellFabProvider (see `useFab`).
+          return Consumer(
+            builder: (context, ref, _) => RootLayout(
+              currentIndex: tabIdx,
+              appBar: appBar,
+              appBarTitle: config?.appBarTitle,
+              tabActions: tabActions,
+              hideBottomNavigationBar: config?.hideBottomNav ?? false,
+              contentScrollable: config?.contentScrollable ?? true,
+              extendBodyBehindAppBar: config?.extendBodyBehindAppBar ?? false,
+              contentFullWidth: config?.contentFullWidth ?? false,
+              floatingActionButton: ref.watch(shellFabProvider),
+              child: child,
+            ),
           );
         },
         routes: [

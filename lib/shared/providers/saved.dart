@@ -8,6 +8,7 @@ import '../models/recipe_filter.dart';
 import '../models/recipe_saved_user.dart';
 import '../repositories/collection_repository.dart';
 import '../repositories/recipe_repository.dart';
+import 'importer.dart';
 import 'paged_notifier_mixin.dart';
 import 'user.dart';
 
@@ -88,6 +89,7 @@ class SavedRecipes extends _$SavedRecipes with PagedNotifierMixin<Recipe> {
   Future<List<Recipe>> build() async {
     resetPagination();
     ref.watchSession();
+    ref.watch(importTriggerProvider);
     final filter = ref.read(savedRecipesFilterProvider);
     final result = await ref
         .read(recipeRepositoryProvider)

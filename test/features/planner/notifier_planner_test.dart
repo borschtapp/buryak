@@ -223,4 +223,16 @@ void main() {
 
     expect(await cold.read(mealPlanWeekProvider.future), [existing, created]);
   });
+
+  test('deleteMealPlanMutation deletes plan from the week', () async {
+    when(() => repo.delete('p1')).thenAnswer((_) async {});
+
+    await deleteMealPlanMutation.run(
+      container,
+      (tsx) => tsx.get(mealPlanWeekProvider.notifier).deletePlan('p1'),
+    );
+
+    expect(container.read(mealPlanWeekProvider).value, isEmpty);
+    verify(() => repo.delete('p1')).called(1);
+  });
 }

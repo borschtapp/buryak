@@ -44,13 +44,10 @@ class PlannerScreen extends ConsumerWidget {
           return DismissibleTile(
             key: ValueKey(entry.id),
             label: entry.recipe?.name ?? entry.description ?? context.l10n.plannerMealPlanFallback,
-            onDelete: () async {
-              try {
-                await ref.read(mealPlanWeekProvider.notifier).deletePlan(entry.id);
-              } catch (e) {
-                ref.handleException(e);
-              }
-            },
+            onDelete: () => deleteMealPlanMutation.tryRun(
+              ref,
+              (tsx) => tsx.get(mealPlanWeekProvider.notifier).deletePlan(entry.id),
+            ),
             child: ListTile(
               leading: const Icon(Icons.restaurant_menu),
               title: Text(entry.recipe?.name ?? entry.description ?? context.l10n.plannerMealFallback),

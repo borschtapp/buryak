@@ -11,6 +11,9 @@ part 'notifier_planner.g.dart';
 // Run with `tsx.get(mealPlanWriterProvider)`.
 final saveMealPlanMutation = Mutation<void>(label: 'saveMealPlan');
 
+// Run with `tsx.get(mealPlanWeekProvider.notifier)`.
+final deleteMealPlanMutation = Mutation<void>(label: 'deleteMealPlan');
+
 @Riverpod(keepAlive: true)
 MealPlanWriter mealPlanWriter(Ref ref) => MealPlanWriter(ref);
 

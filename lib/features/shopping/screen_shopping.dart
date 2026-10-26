@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../shared/components/dismissible_tile.dart';
@@ -19,14 +20,15 @@ class ShoppingScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    useFab(
-      ref,
-      FloatingActionButton(
+    final fab = useMemoized(
+      () => FloatingActionButton(
         heroTag: 'shopping_add_fab',
         onPressed: () => showAddItemDialog(context),
         child: const Icon(Icons.add),
       ),
     );
+
+    useFab(ref, fab);
 
     final itemsAsync = ref.watch(shoppingItemsProvider);
     final notifier = ref.read(shoppingItemsProvider.notifier);
@@ -65,25 +67,19 @@ class ShoppingScreen extends HookConsumerWidget {
             key: ValueKey(item.id),
             label: item.text ?? context.l10n.shoppingItemField,
             onEdit: openEditSheet,
-            onDelete: () async {
-              try {
-                await ref.read(shoppingItemsProvider.notifier).deleteItem(item.id);
-              } catch (e) {
-                ref.handleException(e);
-              }
-            },
+            onDelete: () => deleteShoppingItemMutation.tryRun(
+              ref,
+              (tsx) => tsx.get(shoppingItemsProvider.notifier).deleteItem(item.id),
+            ),
             child: ListTile(
               onLongPress: openEditSheet,
               leading: Checkbox(
                 value: item.isBought ?? false,
                 semanticLabel: context.l10n.shoppingMarkAsBought(item.text ?? context.l10n.shoppingItemField),
-                onChanged: (_) async {
-                  try {
-                    await ref.read(shoppingItemsProvider.notifier).toggleItem(item);
-                  } catch (e) {
-                    ref.handleException(e);
-                  }
-                },
+                onChanged: (_) => toggleShoppingItemMutation.tryRun(
+                  ref,
+                  (tsx) => tsx.get(shoppingItemsProvider.notifier).toggleItem(item),
+                ),
               ),
               title: Text(
                 item.text ?? '',

@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/models/recipe.dart';
 import '../../shared/models/recipe_filter.dart';
+import '../../shared/providers/importer.dart';
 import '../../shared/providers/paged_notifier_mixin.dart';
 import '../../shared/providers/user.dart';
 import '../../shared/repositories/feed_repository.dart';
@@ -28,6 +29,7 @@ class FeedStream extends _$FeedStream with PagedNotifierMixin<Recipe> {
   Future<List<Recipe>> build() async {
     resetPagination();
     ref.watchSession();
+    ref.watch(importTriggerProvider);
     final filter = ref.watch(feedFilterProvider);
     // Use ref.read (not ref.watch) for the repository — consistent with
     // loadMore() and avoids spurious rebuilds from a stable provider.

@@ -7,6 +7,7 @@ import 'package:buryak/shared/models/user.dart';
 import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/repositories/feed_repository.dart';
 import 'package:buryak/shared/repositories/household_repository.dart';
+import 'package:buryak/shared/route_names.dart';
 import 'package:buryak/shared/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -302,6 +303,47 @@ void main() {
 
       expect(find.byType(AccountScreen), findsOneWidget);
       expect(find.text('Login to your account'), findsNothing);
+    });
+  });
+
+  group('Shell FAB', () {
+    Finder fab(String heroTag) => find.byWidgetPredicate((w) => w is FloatingActionButton && w.heroTag == heroTag);
+
+    testWidgets('Feeds shows its own FAB, and back on Feed the Feed FAB returns', (tester) async {
+      when(
+        () => mockFeedRepository.findAll(preload: any(named: 'preload')),
+      ).thenAnswer((_) async => PaginatedList(data: [], meta: const Meta(total: 0, limit: 20, offset: 0)));
+      final container = ProviderContainer(
+        overrides: [
+          authProvider.overrideWith(() => MockAuthNotifier(User.fromJson(fakeUserJson()))),
+          feedRepositoryProvider.overrideWithValue(mockFeedRepository),
+          householdRepositoryProvider.overrideWithValue(mockHouseholdRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+      final router = container.read(routerProvider);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(fab('feed_add_fab'), findsOneWidget);
+
+      router.pushNamed(RouteNames.feeds);
+      await tester.pumpAndSettle();
+      expect(fab('feeds_add_fab'), findsOneWidget);
+      expect(fab('feed_add_fab'), findsNothing);
+
+      router.pop();
+      await tester.pumpAndSettle();
+      expect(fab('feed_add_fab'), findsOneWidget);
+      expect(fab('feeds_add_fab'), findsNothing);
     });
   });
 }

@@ -6,36 +6,31 @@ import 'providers/shell.dart';
 
 /// Hook to manage a FloatingActionButton in the shell's RootLayout.
 ///
-/// Sets the FAB on mount and clears it on unmount.
+/// Shows [fab] while this screen's route is on top: a page pushed over it hides
+/// the FAB, and popping that page brings it back. Clears it on unmount.
 void useFab(WidgetRef ref, Widget? fab) {
-  // A generation counter ensures stale post-frame callbacks (e.g. from a
-  // previous screen's cleanup that fires after this screen has already
-  // registered its own FAB) do not clobber the current value.
-  final token = useRef(Object());
+  final isCurrent = ModalRoute.isCurrentOf(useContext()) ?? true;
 
   useEffect(() {
-    final myToken = Object();
-    token.value = myToken;
+    if (fab == null || !isCurrent) return null;
 
-    if (fab != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (ref.context.mounted && identical(token.value, myToken)) {
-          ref.read(shellFabProvider.notifier).update(fab);
-        }
-      });
-    }
-
+    // The provider can't change during build, so both writes wait for the frame,
+    // and their callbacks may run in either order. Each run owns its FAB under a
+    // fresh token, so a stale hide (this screen's previous FAB, or a screen that
+    // lost the top of the stack) is a no-op once a newer FAB is shown.
+    final owner = Object();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (ref.context.mounted) ref.read(shellFabProvider.notifier).show(owner, fab);
+    });
     return () {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Only clear if no newer registration has taken over.
-        if (!identical(token.value, myToken)) return;
         try {
-          ref.read(shellFabProvider.notifier).update(null);
+          ref.read(shellFabProvider.notifier).hide(owner);
         } catch (e) {
           // Only swallow StateError (provider disposed during teardown).
           if (e is! StateError) rethrow;
         }
       });
     };
-  }, [fab]);
+  }, [fab, isCurrent]);
 }

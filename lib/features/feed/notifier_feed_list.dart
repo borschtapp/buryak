@@ -2,37 +2,16 @@ import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../shared/models/feed.dart';
-import '../../shared/models/import_result.dart';
-import '../../shared/providers/saved.dart';
+import '../../shared/providers/importer.dart';
 import '../../shared/repositories/feed_repository.dart';
 import '../../shared/repositories/import_repository.dart';
 import 'notifier_feed.dart';
 
 part 'notifier_feed_list.g.dart';
 
-// Run with `tsx.get(importerProvider)`.
-final importMutation = Mutation<ImportResult>(label: 'import');
-
-@Riverpod(keepAlive: true)
-Importer importer(Ref ref) => Importer(ref);
-
-/// Imports recipes and feeds. Kept off [FeedList] so an import started from
-/// another screen doesn't load the feed list only to throw it away.
-class Importer {
-  Importer(this._ref);
-
-  final Ref _ref;
-
-  /// Imports a recipe or feed from [url]; with [feedOnly], only a feed.
-  Future<ImportResult> importUrl(String url, {required bool feedOnly}) async {
-    final result = await _ref.read(importRepositoryProvider).import(url, type: feedOnly ? 'feed' : 'auto');
-    _ref
-      ..invalidate(feedListProvider)
-      ..invalidate(feedStreamProvider)
-      ..invalidate(savedRecipesProvider);
-    return result;
-  }
-}
+// Run with `tsx.get(feedListProvider.notifier)`.
+final removeFeedMutation = Mutation<void>(label: 'removeFeed');
+final restoreFeedMutation = Mutation<void>(label: 'restoreFeed');
 
 @riverpod
 class FeedList extends _$FeedList {
@@ -40,6 +19,7 @@ class FeedList extends _$FeedList {
 
   @override
   Future<List<Feed>> build() async {
+    ref.watch(importTriggerProvider);
     final result = await ref
         .watch(feedRepositoryProvider)
         .findAll(

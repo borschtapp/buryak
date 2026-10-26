@@ -5,13 +5,25 @@ part 'shell.g.dart';
 
 /// FAB widget published by the active screen, consumed by the shell's [RootLayout].
 ///
-/// Screens with tab-specific FABs (e.g. [SavedScreen]) write to this notifier
-/// via [useEffect]; the shell's [Consumer] renders whatever is current.
-/// Set to `null` to let the shell fall back to its route-level default.
+/// Screens publish through `useFab`, which shows a FAB only while its route is on
+/// top; the shell's [Consumer] renders whatever is current.
 @Riverpod(keepAlive: true)
 class ShellFab extends _$ShellFab {
+  Object? _owner;
+
   @override
   Widget? build() => null;
 
-  void update(Widget? fab) => state = fab;
+  /// Shows [fab] on behalf of [owner], replacing any other FAB.
+  void show(Object owner, Widget fab) {
+    _owner = owner;
+    state = fab;
+  }
+
+  /// Removes [owner]'s FAB; a no-op once a newer FAB has been shown.
+  void hide(Object owner) {
+    if (!identical(_owner, owner)) return;
+    _owner = null;
+    state = null;
+  }
 }
