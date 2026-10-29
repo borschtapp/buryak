@@ -32,10 +32,21 @@ void main() {
       () => repo.findAll(
         from: any(named: 'from'),
         to: any(named: 'to'),
+        limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => PaginatedList(data: [existing], meta: const Meta(total: 1, limit: 20, offset: 0)));
     container.listen(mealPlanWeekProvider, (_, _) {});
     await container.read(mealPlanWeekProvider.future);
+  });
+
+  test('build fetches the whole week in one page, not the server default of 10', () async {
+    verify(
+      () => repo.findAll(
+        from: any(named: 'from'),
+        to: any(named: 'to'),
+        limit: 100,
+      ),
+    ).called(1);
   });
 
   test('createPlan appends the created plan without re-fetching the week', () async {
@@ -52,6 +63,7 @@ void main() {
       () => repo.findAll(
         from: any(named: 'from'),
         to: any(named: 'to'),
+        limit: any(named: 'limit'),
       ),
     ).called(1);
   });
@@ -87,6 +99,7 @@ void main() {
       () => repo.findAll(
         from: any(named: 'from'),
         to: any(named: 'to'),
+        limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => PaginatedList(data: [existing, created], meta: const Meta(total: 2, limit: 20, offset: 0)));
     response.complete(created);
@@ -158,6 +171,7 @@ void main() {
         () => repo.findAll(
           from: start,
           to: captureAny(named: 'to'),
+          limit: any(named: 'limit'),
         ),
       ).captured.single;
       expect(to, DateTime(start.year, start.month, start.day + 6), reason: 'week starting $start');
@@ -194,6 +208,7 @@ void main() {
       () => repo.findAll(
         from: any(named: 'from'),
         to: any(named: 'to'),
+        limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async {
       final snapshot = serverPlans; // taken when the request is sent
@@ -217,6 +232,7 @@ void main() {
       () => repo.findAll(
         from: any(named: 'from'),
         to: any(named: 'to'),
+        limit: any(named: 'limit'),
       ),
     );
     week.complete();

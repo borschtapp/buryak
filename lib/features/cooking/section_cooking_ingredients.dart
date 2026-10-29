@@ -15,6 +15,7 @@ class CookingIngredientsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cookTime = recipe.cookTime.asDuration ?? recipe.totalTime.asDuration;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
       child: Column(
@@ -29,7 +30,7 @@ class CookingIngredientsPage extends StatelessWidget {
                   context.l10n.cookingPrepareToCook,
                   style: context.textTheme.headlineSmall,
                 ),
-                if (recipe.cookTime != null || recipe.totalTime != null) ...[
+                if (cookTime != null) ...[
                   const SizedBox(height: UIConstants.paddingSmall),
                   Row(
                     children: [
@@ -40,7 +41,7 @@ class CookingIngredientsPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        context.l10n.cookingCookTimeLabel((recipe.cookTime ?? recipe.totalTime).asDuration!.localized(context.l10n)),
+                        context.l10n.cookingCookTimeLabel(cookTime.localized(context.l10n)),
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: context.colors.onSurfaceVariant,
                         ),

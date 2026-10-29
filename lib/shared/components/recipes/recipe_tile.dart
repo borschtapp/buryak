@@ -52,7 +52,7 @@ class RecipeTile extends HookConsumerWidget {
                   child: Hero(
                     tag: 'recipe_tile_${recipe.id}',
                     child: Semantics(
-                      label: 'Photo of ${recipe.name}',
+                      label: context.l10n.recipePhotoLabel(recipe.name),
                       excludeSemantics: true,
                       child: recipe.imageUrl == null
                           ? const RecipePlaceholder()

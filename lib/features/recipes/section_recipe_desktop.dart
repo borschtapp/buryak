@@ -66,7 +66,6 @@ class RecipeDesktopSection extends HookWidget {
                 if (recipe.hasCookableInstructions) ...[
                   FilledButton.icon(
                     onPressed: () {
-                      if (!context.mounted) return;
                       context.pushNamed(
                         RouteNames.cooking,
                         pathParameters: {'rid': recipe.id},

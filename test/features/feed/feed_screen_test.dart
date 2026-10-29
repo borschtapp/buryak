@@ -137,7 +137,7 @@ void main() {
     await tester.pumpWidget(createFeedScreen());
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Failed to load recipes'), findsOneWidget);
+    expect(find.text(lookupAppLocalizations(const Locale('en')).errorConnectionIssue), findsOneWidget);
   });
 
   testWidgets('FeedScreen shows published date when available, or falls back to created date with muted color', (tester) async {

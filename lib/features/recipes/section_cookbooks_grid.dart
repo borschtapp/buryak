@@ -136,7 +136,7 @@ class _CollectionCard extends ConsumerWidget {
                       destructive: true,
                     );
 
-                    if (confirmed) {
+                    if (confirmed && context.mounted) {
                       final deleted = await deleteCollectionMutation.tryRun(
                         ref,
                         (tsx) => tsx.get(savedCollectionsProvider.notifier).delete(collection.id),

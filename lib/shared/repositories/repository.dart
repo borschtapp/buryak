@@ -73,7 +73,7 @@ abstract class Repository {
       final success = await ref.read(authProvider.notifier).refreshLogin();
       if (!success) {
         await ref.read(authProvider.notifier).logout();
-        throw GeneralApiException(message: 'Authentication session expired');
+        throw GeneralApiException(message: 'Authentication session expired', statusCode: 401);
       }
     }
 

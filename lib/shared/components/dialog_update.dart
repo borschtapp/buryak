@@ -80,7 +80,6 @@ class UpdateDialog extends HookWidget {
       if (Platform.isAndroid && apkUrl != null) {
         downloadAndInstall(apkUrl);
       } else {
-        // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
         launchUrl(
           Uri.parse('https://github.com/${AppConstants.releasesGithubRepo}/releases/latest'),

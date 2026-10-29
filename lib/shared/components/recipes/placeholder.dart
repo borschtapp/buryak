@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../util/extensions.dart';
+import '../../util/ui_constants.dart';
 
 class RecipePlaceholder extends StatelessWidget {
   final double? height;
@@ -16,7 +17,11 @@ class RecipePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveHeight = height ?? (context.isMobile ? min(MediaQuery.heightOf(context) * 0.4, 400.0) : 500.0);
+    final effectiveHeight =
+        height ??
+        (context.isMobile
+            ? min(MediaQuery.heightOf(context) * 0.4, UIConstants.recipeMaxImageHeight)
+            : UIConstants.recipeMaxImageHeightDesktop);
 
     return Image.asset(
       'assets/images/recipe_placeholder.png',

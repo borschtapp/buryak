@@ -73,6 +73,8 @@ class ErrorHandler extends _$ErrorHandler {
       return (text, null);
     }
     if (e is GeneralApiException) {
+      // No HTTP response (timeout, socket error): the raw message is a Dart exception dump.
+      if (e.statusCode == null && e.originalException != null) return (null, ErrorMessageKey.connectionIssue);
       return switch (e.statusCode) {
         401 => (null, ErrorMessageKey.sessionExpired),
         403 => (null, ErrorMessageKey.noPermission),

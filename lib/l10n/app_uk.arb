@@ -120,6 +120,11 @@
   "householdChangeCurrency": "Змінити валюту",
   "householdCurrencyNone": "Валюту не встановлено",
   "currencyName": "{code, select, AUD{Австралійський долар} BRL{Бразильський реал} CAD{Канадський долар} CHF{Швейцарський франк} CNY{Китайський юань} CZK{Чеська крона} DKK{Данська крона} EUR{Євро} GBP{Британський фунт} HKD{Гонконгський долар} HUF{Угорський форинт} INR{Індійська рупія} JPY{Японська єна} KRW{Південнокорейська вона} MXN{Мексиканське песо} NOK{Норвезька крона} NZD{Новозеландський долар} PLN{Польський злотий} SEK{Шведська крона} SGD{Сінгапурський долар} TRY{Турецька ліра} UAH{Українська гривня} USD{Долар США} ZAR{Південноафриканський ранд} other{{code}}}",
+  "@currencyName": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
   "serverUrlTitle": "URL сервера",
   "serverUrlLabel": "Залиште порожнім для демо-сервера",
   "feedEmptyTitle": "Рецептів не знайдено",
@@ -212,6 +217,18 @@
   "recipePlan": "Планувати",
   "recipeShop": "Купити",
   "recipeShareTooltip": "Поділитись",
+  "recipePhotoLabel": "Фото: {name}",
+  "@recipePhotoLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipeStepImageLabel": "Зображення до кроку {step}",
+  "@recipeStepImageLabel": {
+    "placeholders": {
+      "step": { "type": "int" }
+    }
+  },
   "recipeSaveTooltip": "Зберегти",
   "recipeUnsaveTooltip": "Видалити",
   "recipeLikeTooltip": "Подобається",
@@ -625,6 +642,7 @@
     }
   },
   "foodConversionDeleteTitle": "Видалити конвертацію?",
+  "foodConversionEditTooltip": "Редагувати конвертацію",
   "foodConversionDeleteContent": "Видалення цієї конвертації може вплинути на оцінку вартості у всіх рецептах, що використовують {food}.",
   "@foodConversionDeleteContent": {
     "placeholders": {

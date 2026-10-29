@@ -2,10 +2,19 @@ import 'package:buryak/shared/providers/error_handler.dart';
 import 'package:buryak/shared/providers/user.dart';
 import 'package:buryak/shared/repositories/repository.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:hooks_riverpod/experimental/mutation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
+  test('a request that got no HTTP response resolves to the connection issue message', () {
+    final cause = http.ClientException('Connection refused');
+    expect(
+      ErrorHandler.resolve(GeneralApiException(message: cause.toString(), originalException: cause)),
+      (null, ErrorMessageKey.connectionIssue),
+    );
+  });
+
   test('MutationErrorReporter leaves errors shown inline to their form', () async {
     final container = ProviderContainer(observers: [MutationErrorReporter()]);
     addTearDown(container.dispose);

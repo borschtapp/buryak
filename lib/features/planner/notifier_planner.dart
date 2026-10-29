@@ -48,7 +48,7 @@ class MealPlanWeek extends _$MealPlanWeek {
     final from = _weekStart(ref.watch(currentDateProvider).value);
     // Calendar days, not 6 × 24 h, which ends a day early when clocks go back.
     final to = DateTime(from.year, from.month, from.day + 6);
-    final result = await ref.read(mealPlanRepositoryProvider).findAll(from: from, to: to);
+    final result = await ref.read(mealPlanRepositoryProvider).findAll(from: from, to: to, limit: 100);
     return result.data;
   }
 

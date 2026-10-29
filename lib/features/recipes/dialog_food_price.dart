@@ -353,7 +353,7 @@ class _ConversionSection extends ConsumerWidget {
             if (shown != null) ...[
               IconButton(
                 icon: const Icon(Icons.edit_outlined, size: 18),
-                tooltip: context.l10n.save,
+                tooltip: context.l10n.foodConversionEditTooltip,
                 visualDensity: VisualDensity.compact,
                 onPressed: () => FoodConversionBottomSheet.show(
                   context,

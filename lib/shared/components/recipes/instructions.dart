@@ -40,7 +40,7 @@ class Instructions extends StatelessWidget {
                 ClipRRect(
                   borderRadius: context.shapeMedium,
                   child: Semantics(
-                    label: 'Image for step ${step.order ?? index + 1}',
+                    label: context.l10n.recipeStepImageLabel(step.order ?? index + 1),
                     child: CachedNetworkImage(
                       imageUrl: step.imageUrl!,
                       fit: BoxFit.cover,

@@ -217,6 +217,18 @@
   "recipePlan": "Plan",
   "recipeShop": "Shop",
   "recipeShareTooltip": "Share",
+  "recipePhotoLabel": "Photo of {name}",
+  "@recipePhotoLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recipeStepImageLabel": "Image for step {step}",
+  "@recipeStepImageLabel": {
+    "placeholders": {
+      "step": { "type": "int" }
+    }
+  },
   "recipeSaveTooltip": "Save",
   "recipeUnsaveTooltip": "Unsave",
   "recipeLikeTooltip": "Like",
@@ -630,6 +642,7 @@
     }
   },
   "foodConversionDeleteTitle": "Remove conversion?",
+  "foodConversionEditTooltip": "Edit conversion",
   "foodConversionDeleteContent": "Removing this conversion may affect cost estimates in all recipes using {food}.",
   "@foodConversionDeleteContent": {
     "placeholders": {

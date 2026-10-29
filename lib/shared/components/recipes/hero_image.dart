@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/recipe.dart';
+import '../../util/extensions.dart';
 import 'placeholder.dart';
 
 /// A Hero-wrapped recipe image shared between mobile and desktop views.
@@ -25,7 +26,7 @@ class RecipeHeroImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget imageWidget = Semantics(
-      label: 'Photo of ${recipe.name}',
+      label: context.l10n.recipePhotoLabel(recipe.name),
       excludeSemantics: true,
       child: recipe.imageUrl != null
           ? CachedNetworkImage(

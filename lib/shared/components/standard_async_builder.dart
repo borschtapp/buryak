@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../util/error_extensions.dart';
 import '../util/extensions.dart';
 import 'error_state.dart';
 
@@ -32,7 +33,7 @@ class StandardAsyncBuilder<T> extends StatelessWidget {
           error ??
           (err, stack) => ErrorState(
             title: errorTitle ?? context.l10n.errorSomethingWentWrong,
-            message: err.toString(),
+            message: context.errorMessage(err),
             onRetry: onRetry,
           ),
     );
