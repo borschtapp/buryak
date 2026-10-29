@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../shared/components/error_state.dart';
 import '../../shared/components/standard_bottom_sheet.dart';
 import '../../shared/models/food_price.dart';
+import '../../shared/models/food_unit_conversion.dart';
 import '../../shared/models/recipe_ingredient.dart';
 import '../../shared/models/unit.dart';
 import '../../shared/providers/recipe_price.dart';
@@ -59,7 +60,7 @@ class IngredientConversionSheet extends ConsumerWidget {
     }
 
     final unitsById = units.byId;
-    final ingredientUnit = ingredient.unitId != null ? unitsById[ingredient.unitId] : units.piece;
+    final ingredientUnit = units.unitOrPiece(ingredient.unitId);
     final priceUnit = unitsById[price.unitId];
     final bridge = ingredientUnit != null && priceUnit != null ? bridgingConversion(ingredientUnit, priceUnit) : null;
     if (bridge == null) return FoodPriceBottomSheet(food: food, ingredient: ingredient);
@@ -69,7 +70,7 @@ class IngredientConversionSheet extends ConsumerWidget {
       unitId: bridge.source.id,
       unitName: bridge.source.name,
       // A food has at most one conversion per source unit, so an existing one is retargeted.
-      existing: conversions.where((c) => c.unitId == bridge.source.id).firstOrNull,
+      existing: conversions.fromUnit(bridge.source.id),
       targetUnitId: bridge.target.id,
     );
   }

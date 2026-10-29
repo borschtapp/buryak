@@ -14,12 +14,17 @@ abstract final class IngredientCostStatus {
 
 @freezed
 abstract class RecipeIngredientCost with _$RecipeIngredientCost {
+  const RecipeIngredientCost._();
+
   const factory RecipeIngredientCost({
     required String ingredientId,
     double? cost,
     FoodPrice? foodPrice,
     required String status,
   }) = _RecipeIngredientCost;
+
+  /// Left out of the total until a price, or a conversion to the price's unit, is added.
+  bool get isUnpriced => status == IngredientCostStatus.missingPrice || status == IngredientCostStatus.incompatibleUnit;
 
   factory RecipeIngredientCost.fromJson(Map<String, dynamic> json) => _$RecipeIngredientCostFromJson(json);
 }
@@ -34,12 +39,9 @@ abstract class RecipeCostEstimate with _$RecipeCostEstimate {
     double? perServing,
   }) = _RecipeCostEstimate;
 
-  bool get isComplete =>
-      items == null ||
-      !items!.any((i) => i.status == IngredientCostStatus.missingPrice || i.status == IngredientCostStatus.incompatibleUnit);
+  bool get isComplete => items == null || !items!.any((i) => i.isUnpriced);
 
-  int get missingCount =>
-      items?.where((i) => i.status == IngredientCostStatus.missingPrice || i.status == IngredientCostStatus.incompatibleUnit).length ?? 0;
+  int get missingCount => items?.where((i) => i.isUnpriced).length ?? 0;
 
   factory RecipeCostEstimate.fromJson(Map<String, dynamic> json) => _$RecipeCostEstimateFromJson(json);
 }

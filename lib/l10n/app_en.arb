@@ -514,6 +514,44 @@
   "recipeCostSkip": "Skip",
   "recipeCostNoPrices": "No prices recorded yet",
   "recipeCostNoPricesSubtitle": "Tap an ingredient to add its price.",
+  "recipeCostSectionMissing": "Needs Price",
+  "recipeCostSectionPriced": "Priced",
+  "recipeCostProgress": "{total, plural, =1{{priced} of 1 ingredient priced} other{{priced} of {total} ingredients priced}}",
+  "@recipeCostProgress": {
+    "placeholders": {
+      "priced": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "recipeCostPriceBasis": "{price} / {unit}",
+  "@recipeCostPriceBasis": {
+    "placeholders": {
+      "price": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "recipeCostPriceBasisAmount": "{price} / {amount} {unit}",
+  "@recipeCostPriceBasisAmount": {
+    "placeholders": {
+      "price": { "type": "String" },
+      "amount": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "foodPriceConversionNeeded": "Recipe uses {unit}. Add a conversion to link it with {priceUnit}.",
+  "@foodPriceConversionNeeded": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "priceUnit": { "type": "String" }
+    }
+  },
+  "foodPriceUnitsUnlinkable": "The recipe's {unit} can't be linked with {priceUnit}. Record the price per {unit} instead.",
+  "@foodPriceUnitsUnlinkable": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "priceUnit": { "type": "String" }
+    }
+  },
   "foodPriceTitle": "Prices for {name}",
   "@foodPriceTitle": {
     "placeholders": {
@@ -583,6 +621,12 @@
       "unit": { "type": "String" },
       "amount": { "type": "String" },
       "targetUnit": { "type": "String" }
+    }
+  },
+  "foodConversionReplaces": "Replaces {conversion}: a food has one conversion per unit.",
+  "@foodConversionReplaces": {
+    "placeholders": {
+      "conversion": { "type": "String" }
     }
   },
   "foodConversionDeleteTitle": "Remove conversion?",

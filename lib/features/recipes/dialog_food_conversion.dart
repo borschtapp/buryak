@@ -44,6 +44,7 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
     required String unitName,
     List<FoodPrice> prices = const [],
     FoodUnitConversion? existing,
+    String? targetUnitId,
   }) {
     showAppBottomSheet<void>(
       context: context,
@@ -53,6 +54,7 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
         unitName: unitName,
         prices: prices,
         existing: existing,
+        targetUnitId: targetUnitId,
       ),
     );
   }
@@ -62,9 +64,11 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final initialTargetUnitId = targetUnitId ?? existing?.targetUnitId;
     // An amount only holds for the unit it was given in.
-    final amountController = useTextEditingController(
-      text: existing?.targetUnitId == initialTargetUnitId ? existing?.targetAmount.formatAmount : null,
-    );
+    String amountFor(String? target) => switch (existing) {
+      final existing? when existing.targetUnitId == target => existing.targetAmount.formatAmount,
+      _ => '',
+    };
+    final amountController = useTextEditingController(text: amountFor(initialTargetUnitId));
     final isSaving = ref.watch(saveConversionMutation).isPending;
     final unitsAsync = ref.watch(allUnitsProvider);
     final unitsById = (unitsAsync.value ?? const <Unit>[]).byId;
@@ -77,6 +81,9 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
     final selectedTargetUnitId =
         pickedTargetUnitId.value ??
         [food.defaultUnitId, ...prices.map((p) => p.unitId)].map((id) => unitsById[id]).nonNulls.where(isTarget).firstOrNull?.id;
+
+    // Saving another target replaces the existing conversion, which other recipes may price by.
+    final replaced = existing?.targetUnitId != selectedTargetUnitId ? existing : null;
 
     Future<void> submit() async {
       if (!formKey.currentState!.validate()) return;
@@ -134,7 +141,11 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
                   child: UnitPickerFormField(
                     unitsAsync: unitsAsync,
                     selectedUnitId: selectedTargetUnitId,
-                    onSelected: (u) => pickedTargetUnitId.value = u.id,
+                    onSelected: (u) {
+                      // Swap the amount along with the target, unless the user typed their own.
+                      if (amountController.text == amountFor(selectedTargetUnitId)) amountController.text = amountFor(u.id);
+                      pickedTargetUnitId.value = u.id;
+                    },
                     labelText: context.l10n.foodConversionTargetUnit,
                     where: isTarget,
                     validator: (_) => selectedTargetUnitId == null ? context.l10n.validatorFieldRequired : null,
@@ -156,6 +167,19 @@ class FoodConversionBottomSheet extends HookConsumerWidget {
                 ),
               ],
             ),
+            if (replaced != null) ...[
+              const SizedBox(height: UIConstants.paddingSmall),
+              Text(
+                context.l10n.foodConversionReplaces(
+                  context.l10n.foodConversionSummary(
+                    unitName,
+                    replaced.targetAmount.formatAmount,
+                    replaced.targetUnitIn(unitsById)?.name ?? replaced.targetUnitId,
+                  ),
+                ),
+                style: context.textTheme.bodySmall?.copyWith(color: context.colors.error),
+              ),
+            ],
             const SizedBox(height: UIConstants.paddingMedium),
             LoadingButton(
               isLoading: isSaving,

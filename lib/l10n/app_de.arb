@@ -509,6 +509,44 @@
   "recipeCostSkip": "Überspringen",
   "recipeCostNoPrices": "Noch keine Preise erfasst",
   "recipeCostNoPricesSubtitle": "Tippe auf eine Zutat, um ihren Preis hinzuzufügen.",
+  "recipeCostSectionMissing": "Preis fehlt",
+  "recipeCostSectionPriced": "Erfasst",
+  "recipeCostProgress": "{total, plural, =1{{priced} von 1 Zutat mit Preis} other{{priced} von {total} Zutaten mit Preis}}",
+  "@recipeCostProgress": {
+    "placeholders": {
+      "priced": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "recipeCostPriceBasis": "{price} / {unit}",
+  "@recipeCostPriceBasis": {
+    "placeholders": {
+      "price": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "recipeCostPriceBasisAmount": "{price} / {amount} {unit}",
+  "@recipeCostPriceBasisAmount": {
+    "placeholders": {
+      "price": { "type": "String" },
+      "amount": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "foodPriceConversionNeeded": "Rezept verwendet {unit}. Füge eine Umrechnung zu {priceUnit} hinzu.",
+  "@foodPriceConversionNeeded": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "priceUnit": { "type": "String" }
+    }
+  },
+  "foodPriceUnitsUnlinkable": "Die Einheit {unit} aus dem Rezept lässt sich nicht mit {priceUnit} verknüpfen. Erfasse den Preis pro {unit}.",
+  "@foodPriceUnitsUnlinkable": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "priceUnit": { "type": "String" }
+    }
+  },
   "foodPriceTitle": "Preise für {name}",
   "@foodPriceTitle": {
     "placeholders": {
@@ -578,6 +616,12 @@
       "unit": { "type": "String" },
       "amount": { "type": "String" },
       "targetUnit": { "type": "String" }
+    }
+  },
+  "foodConversionReplaces": "Ersetzt {conversion}: Ein Lebensmittel hat eine Umrechnung pro Einheit.",
+  "@foodConversionReplaces": {
+    "placeholders": {
+      "conversion": { "type": "String" }
     }
   },
   "foodConversionDeleteTitle": "Umrechnung entfernen?",

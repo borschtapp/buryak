@@ -28,6 +28,8 @@ class RecipeCost extends ConsumerWidget {
 
   /// For an ingredient whose food has a [price] in a unit its amount can't be converted to.
   final void Function(RecipeIngredient ingredient, FoodPrice price)? onAddConversion;
+
+  /// For an ingredient without a food; one with a food opens [onAddPrice] when set.
   final void Function(RecipeIngredient ingredient)? onIngredientTap;
   final void Function(RecipeIngredient ingredient)? onIngredientLongPress;
 
@@ -103,13 +105,20 @@ class _CostContent extends StatelessWidget {
     for (final ingredient in ingredients) {
       final cost = costByIngredientId[ingredient.id];
       if (cost == null) continue;
-      if (cost.status == IngredientCostStatus.missingPrice || cost.status == IngredientCostStatus.incompatibleUnit) {
+      if (cost.isUnpriced) {
         actionableIngredients.add((ingredient: ingredient, cost: cost));
       } else if (cost.status == IngredientCostStatus.calculated) {
         pricedIngredients.add((ingredient: ingredient, cost: cost));
       }
       // pantry items intentionally omitted from both lists
     }
+
+    // An ingredient with a food opens its price; one without opens the ingredient.
+    final (addPrice, tap) = (onAddPrice, onIngredientTap);
+    final onTap = addPrice == null ? tap : (RecipeIngredient i) => i.food != null ? addPrice(i) : tap?.call(i);
+
+    final totalCount = actionableIngredients.length + pricedIngredients.length;
+    final pricedCount = pricedIngredients.length;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -158,6 +167,27 @@ class _CostContent extends StatelessWidget {
                   ),
               ],
             ),
+            if (totalCount > 0) ...[
+              const SizedBox(height: UIConstants.paddingMedium),
+              Row(
+                children: [
+                  Expanded(
+                    child: LinearProgressIndicator(
+                      value: pricedCount / totalCount,
+                      minHeight: 6,
+                      borderRadius: BorderRadius.circular(4),
+                      backgroundColor: context.colors.surfaceContainerHighest,
+                      color: pricedCount == totalCount ? context.colors.primary : context.colors.tertiary,
+                    ),
+                  ),
+                  const SizedBox(width: UIConstants.paddingMedium),
+                  Text(
+                    context.l10n.recipeCostProgress(pricedCount, totalCount),
+                    style: context.textTheme.labelSmall?.copyWith(color: context.colors.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ],
           ] else ...[
             const SizedBox(height: UIConstants.paddingMedium),
             Text(
@@ -171,18 +201,31 @@ class _CostContent extends StatelessWidget {
             ),
           ],
           if (actionableIngredients.isNotEmpty && onAddPrice != null) ...[
-            const SizedBox(height: UIConstants.paddingMedium),
+            const SizedBox(height: UIConstants.paddingLarge),
+            _SectionHeader(
+              title: context.l10n.recipeCostSectionMissing,
+              count: actionableIngredients.length,
+              containerColor: context.colors.errorContainer,
+              onContainerColor: context.colors.onErrorContainer,
+            ),
+            const SizedBox(height: UIConstants.paddingSmall),
             _MissingPricesList(
               ingredients: actionableIngredients,
               onAddPrice: onAddPrice!,
               onAddConversion: onAddConversion,
-              onIngredientTap: onIngredientTap,
+              onIngredientTap: onTap,
               onIngredientLongPress: onIngredientLongPress,
             ),
           ],
           if (pricedIngredients.isNotEmpty) ...[
-            const SizedBox(height: UIConstants.paddingMedium),
-            if (actionableIngredients.isNotEmpty && onAddPrice != null) const Divider(),
+            const SizedBox(height: UIConstants.paddingLarge),
+            _SectionHeader(
+              title: context.l10n.recipeCostSectionPriced,
+              count: pricedIngredients.length,
+              containerColor: context.colors.primaryContainer,
+              onContainerColor: context.colors.onPrimaryContainer,
+            ),
+            const SizedBox(height: UIConstants.paddingSmall),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -191,7 +234,7 @@ class _CostContent extends StatelessWidget {
                     ingredient: entry.ingredient,
                     cost: entry.cost,
                     formatter: formatter,
-                    onIngredientTap: onIngredientTap,
+                    onIngredientTap: onTap,
                     onIngredientLongPress: onIngredientLongPress,
                   ),
               ],
@@ -236,6 +279,37 @@ class _CostCard extends StatelessWidget {
   }
 }
 
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({
+    required this.title,
+    required this.count,
+    required this.containerColor,
+    required this.onContainerColor,
+  });
+
+  final String title;
+  final int count;
+  final Color containerColor;
+  final Color onContainerColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: context.textTheme.titleSmall?.copyWith(
+            color: context.colors.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: UIConstants.paddingSmall),
+        Badge.count(count: count, backgroundColor: containerColor, textColor: onContainerColor),
+      ],
+    );
+  }
+}
+
 class _MissingPricesList extends StatelessWidget {
   const _MissingPricesList({
     required this.ingredients,
@@ -257,38 +331,10 @@ class _MissingPricesList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (final (:ingredient, :cost) in ingredients)
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            onTap: onIngredientTap != null ? () => onIngredientTap!(ingredient) : null,
-            onLongPress: onIngredientLongPress != null ? () => onIngredientLongPress!(ingredient) : null,
-            leading: StandardPicture(
-              imageUrl: ingredient.food?.imageUrl,
-              fallbackIcon: Icons.shopping_basket_outlined,
-              size: 40,
-              shape: PictureShape.circle,
-              backgroundColor: Colors.transparent,
-            ),
-            title: Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    ingredient.displayName,
-                    style: context.textTheme.bodyMedium,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (ingredient.displayAmount.isNotEmpty) ...[
-                  const SizedBox(width: 4),
-                  Text(
-                    '· ${ingredient.displayAmount}',
-                    style: context.textTheme.bodySmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ],
-            ),
+          _IngredientTile(
+            ingredient: ingredient,
+            onTap: onIngredientTap,
+            onLongPress: onIngredientLongPress,
             // Free-text ingredients can't be priced until they're linked to a food.
             trailing: ingredient.food == null ? null : _addButton(context, ingredient, cost),
           ),
@@ -326,15 +372,19 @@ class _PricedIngredientTile extends StatelessWidget {
     final price = cost.foodPrice;
     if (price == null) return const SizedBox.shrink();
 
-    final amountStr = price.amount.formatAmount;
+    // The title shows the recipe's amount; this shows the price the cost comes from.
+    final priceText = formatter.format(price.price);
+    final basis = switch (price.unit?.name) {
+      null => null,
+      final unit when price.amount == 1 => context.l10n.recipeCostPriceBasis(priceText, unit),
+      final unit => context.l10n.recipeCostPriceBasisAmount(priceText, price.amount.formatAmount, unit),
+    };
 
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      dense: true,
-      onTap: onIngredientTap != null ? () => onIngredientTap!(ingredient) : null,
-      onLongPress: onIngredientLongPress != null ? () => onIngredientLongPress!(ingredient) : null,
-      leading: Icon(Icons.check_circle_outline, color: context.colors.primary),
-      title: Text(ingredient.displayName, style: context.textTheme.bodyMedium),
+    return _IngredientTile(
+      ingredient: ingredient,
+      priced: true,
+      onTap: onIngredientTap,
+      onLongPress: onIngredientLongPress,
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -343,13 +393,90 @@ class _PricedIngredientTile extends StatelessWidget {
             formatter.format(cost.cost ?? price.price),
             style: context.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
-          if (price.unit != null)
+          if (basis != null)
             Text(
-              context.l10n.foodPricePerAmountUnit(amountStr, price.unit!.name),
+              basis,
               style: context.textTheme.bodySmall?.copyWith(color: context.colors.onSurfaceVariant),
             ),
         ],
       ),
+    );
+  }
+}
+
+/// An ingredient row: its picture, with a check once [priced], and its name and amount.
+class _IngredientTile extends StatelessWidget {
+  const _IngredientTile({
+    required this.ingredient,
+    this.priced = false,
+    this.onTap,
+    this.onLongPress,
+    this.trailing,
+  });
+
+  final RecipeIngredient ingredient;
+  final bool priced;
+  final void Function(RecipeIngredient)? onTap;
+  final void Function(RecipeIngredient)? onLongPress;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final (tap, longPress) = (onTap, onLongPress);
+    final picture = StandardPicture(
+      imageUrl: ingredient.food?.imageUrl,
+      fallbackIcon: Icons.shopping_basket_outlined,
+      size: 40,
+      shape: PictureShape.circle,
+      backgroundColor: Colors.transparent,
+    );
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      dense: true,
+      onTap: tap != null ? () => tap(ingredient) : null,
+      onLongPress: longPress != null ? () => longPress(ingredient) : null,
+      leading: !priced
+          ? picture
+          : Stack(
+              clipBehavior: Clip.none,
+              children: [
+                picture,
+                PositionedDirectional(
+                  end: -2,
+                  bottom: -2,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: context.colors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.check, size: 10, color: context.colors.onPrimary),
+                  ),
+                ),
+              ],
+            ),
+      title: Row(
+        children: [
+          Flexible(
+            child: Text(
+              ingredient.displayName,
+              style: context.textTheme.bodyMedium,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (ingredient.displayAmount.isNotEmpty) ...[
+            const SizedBox(width: 4),
+            Text(
+              '· ${ingredient.displayAmount}',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
+      ),
+      trailing: trailing,
     );
   }
 }
